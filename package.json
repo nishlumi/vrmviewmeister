@@ -1,0 +1,106 @@
+{
+  "name": "vrmviewmeister",
+  "version": "1.0.0b",
+  "private": true,
+  "scripts": {
+    "dev": "set NODE_ENV=delevopment&&set PORT=5026&&node ./app.js",
+    "start": "set NODE_ENV=production&&node ./app.js",
+    "fullbuild": "webpack&workbox generateSW workbox-config.js",
+    "wpbuild": "webpack",
+    "watch": "webpack --watch",
+    "swbuild": "workbox generateSW workbox-config.js",
+    "compile:electron": "node compile_electron4html.js",
+    "electron": "electron .",
+    "build:win": "electron-builder --win --x64",
+    "build:win-portable": "electron-builder --win --x64 --dir",
+    "build:mac": "electron-builder --mac --x64",
+    "build:linux": "electron-builder --linux --x64"
+  },
+  "main": "main.js",
+  "build": {
+    "appId": "com.simazir.vrmviewmeister",
+    "afterSign": "notarize.js",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "assets",
+      "public",
+      "main.js",
+      "preload.js",
+      "package.json",
+      "package-lock.json"
+    ],
+    "mac": {
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "dist/entitlements.mac.plist",
+      "entitlementsInherit": "dist/entitlements.mac.plist",
+      "icon": "assets/app_icon.icns",
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.graphics-design"
+    },
+    "win": {
+      "icon": "assets/app_icon.ico",
+      "target": "nsis"
+    },
+    "linux": {
+      "icon": "assets/app_icon.png",
+      "target": "AppImage",
+      "category": "Graphics"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "dmg": {
+      "icon": "assets/app_icon.icns",
+      "sign": false
+    },
+    "appImage": {
+      "category": "Graphics",
+      "desktop": {
+        "Name": "VRMViewMeister",
+        "Comment": "",
+        "Icon": "assets/app_icon.png",
+        "Type": "Application",
+        "Terminal": false,
+        "Encoding": "UTF-8",
+        "Categories": "Graphics"
+      }
+    }
+  },
+  "dependencies": {
+    "@interactjs/actions": "^1.10.11",
+    "@interactjs/auto-start": "^1.10.11",
+    "@interactjs/dev-tools": "^1.10.11",
+    "@interactjs/interact": "^1.10.11",
+    "@interactjs/modifiers": "^1.10.11",
+    "compression": "^1.7.4",
+    "cookie-parser": "~1.4.6",
+    "debug": "~4.3.4",
+    "dotenv": "^16.0.0",
+    "electron-notarize": "^1.2.1",
+    "express": "~4.18.1",
+    "morgan": "~1.10.0",
+    "nunjucks": "^3.2.3",
+    "vue": "^3.2.31",
+    "vue-i18n": "^9.1.10",
+    "workbox-cli": "^6.5.3"
+  },
+  "devDependencies": {
+    "@interactjs/types": "^1.10.11",
+    "@intlify/vue-i18n-loader": "^4.2.0",
+    "electron": "^17.1.0",
+    "electron-builder": "^22.14.13",
+    "interactjs": "^1.10.11",
+    "quasar": "^2.6.6",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.8.1",
+    "workbox-sw": "^6.5.3",
+    "workbox-webpack-plugin": "^6.5.3"
+  }
+}

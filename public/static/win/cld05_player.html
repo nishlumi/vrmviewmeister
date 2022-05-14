@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="same-origin">
+    <meta name="google" content="nositelinkssearchbox">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="msapplication-tilecolor" content="#FFFFFF">
+    <meta name="msapplication-tileimage" content="../img/app_icon.png">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Video player</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="../lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="../css/index.css">
+    <style>
+        .fit-video {
+            width : 100%;
+            height: calc(100% - 48px);
+        }
+    </style>
+</head>
+<body>
+    <!-- example of injection point where you write your app template -->
+    <div id="q-app" style="width:100%;height:100%;"  v-cloak>
+        <q-bar class="bg-primary text-white" style="height:48px">
+            <q-btn
+                icon="open_in_browser" flat
+                @click="open_fromapp"
+            >
+                <q-tooltip>
+                    <span>{{ _T("Load video from app") }}</span>
+                </q-tooltip>
+            </q-btn>
+            <q-btn
+                icon="cloud_upload"  flat
+                @click="open_fromlocal"
+            >
+                <q-tooltip>
+                    <span>{{ _T("Load a video from local") }}</span>
+                </q-tooltip>
+            </q-btn>
+            <input type="file" ref="hidfile" class="common_ui_off" 
+                @change="hidfile_onchange"
+            />
+            <!--
+            <q-file dense dark label="video file from local"
+                clearable accept="video/*"
+                :model-value="myapp.files"
+                @update:model-value="updateFiles"
+                style="width:100%;"
+            >
+                <template v-slot:file="{ index, file }">
+                    <q-chip
+                        class="full-width q-my-xs"
+                        square
+                        @remove="cancelFile"
+                    >
+                        <div >
+                            {{ file.name }}
+                        </div>
+                
+                        <q-tooltip>
+                            {{ file.name }}
+                        </q-tooltip>
+                    </q-chip>
+                </template>
+                
+            </q-file>
+            -->
+            <q-chip
+                class="full-width"
+                square
+            >
+                <div >
+                    {{ myapp.loadedVideoName }}
+                </div>
+        
+                <q-tooltip>
+                    {{ myapp.loadedVideoName }}
+                </q-tooltip>
+            </q-chip>
+        </q-bar>
+        <video controls ref="vplayer"
+            :src="myapp.videourl"
+            :ratio="myapp.videoratio"
+            class="fit-video"
+        ></video>
+
+        <q-dialog v-model="myapp.showmsg">
+            <q-card>
+              <q-card-section>
+                <div class="text-h6">VRMViewMeister</div>
+              </q-card-section>
+      
+              <q-card-section class="q-pt-none">
+                {{ myapp.msgcontent }}
+              </q-card-section>
+      
+              <q-card-actions align="right">
+                <q-btn flat label="OK" color="primary" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+    </div>
+
+    <script src="../lib/vue/vue.global.prod.js"></script>
+    <script src="../lib/vue/vue-i18n.global.prod.js"></script>
+    <script src="../lib/quasar/quasar.umd.prod.js"></script>
+    <script src="../lib/quasar/lang/ja.umd.prod.js"></script>
+    <script src="../lib/quasar/lang/eo.umd.prod.js"></script>
+    <script src="../lib/quasar/lang/en-US.umd.prod.js"></script>
+    <script src="../lib/localforage.min.js"></script>
+
+    <script src="../js/util.js"></script>
+
+    <script src="../js/client_cld05.js" type="module"></script>
+</body>
+</html>

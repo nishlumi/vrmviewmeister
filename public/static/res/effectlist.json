@@ -1,0 +1,55 @@
+{
+    "Action" : [
+        "BubbleMissile",
+        "BulletDirt",
+        "BulletMetal",
+        "MagicAuraBlue",
+        "MagicAuraYellow",
+        "MagicChargeYellow",
+        "MagicCircleYellow",
+        "MagicEnchantGreen",
+        "MagicFieldBlue",
+        "MuzzleFlash01",
+        "RoundHit",
+        "ShieldSoftBlue",
+        "ShieldSoftPurple",
+        "ShieldSoftYellow",
+        "SwordHit",
+        "SwordHitCritical",
+        "SwordSlashMini",
+        "SwordSlashThick",
+        "SwordWaveYellow"
+    ],
+    "Explosion" : [
+        "DustExplosion",
+        "EnergyExplosionPink",
+        "ExplosionFireballSoftFire",
+        "FlashExplosionGreen",
+        "FrostExplosion",
+        "LightningExplosionYellow",
+        "MagicSoftExplosionFire",
+        "SmallExplosion",
+        "StarExplosionOrange",
+        "TinyExplosion",
+        "TinyFlames"
+    ],
+    "Smoke" : [
+        "DustMotesEffect",
+        "DustStorm",
+        "GroundFog",
+        "Heat Distortion",
+        "PressurisedSteam",
+        "RisingSteam",
+        "SandSwirlsEffect",
+        "SmokeEffect",
+        "SparksEffect",
+        "Steam"
+    ],
+    "Water" : [
+        "BigSplash",
+        "RainEffect1",
+        "Shower",
+        "WaterLeak",
+        "WaterWake"
+    ]
+}

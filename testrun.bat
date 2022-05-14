@@ -1,0 +1,1 @@
+SET DEBUG=vrmviewmeister:* & npm start

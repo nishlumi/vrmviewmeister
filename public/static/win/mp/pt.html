@@ -1,0 +1,220 @@
+<head>
+    <meta charset="utf-8">
+
+    <title>Pose tracking</title>
+    <!--<meta name="referrer" content="same-origin">-->
+
+
+
+    <!--
+        <link rel="stylesheet" type="text/css" href="demo.css" crossorigin="anonymous">
+
+        /static/lib/mediapipe/
+        https://cdn.jsdelivr.net/npm/@mediapipe/
+
+          
+    
+    <link rel="stylesheet" type="text/css" href="/static/lib/mediapipe/control_utils_3d/landmark_grid.css" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/lib/mediapipe/control_utils/control_utils.css" crossorigin="anonymous">
+    <script src="/static/lib/mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="/static/lib/mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script>
+    <script src="/static/lib/mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="/static/lib/mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="/static/lib/mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+-->
+    <!---->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.2/landmark_grid.css" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.2/control_utils_3d.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.4/pose.js" crossorigin="anonymous"></script>
+    
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/quasar@2.4.13/dist/quasar.prod.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="../../css/pt.css">
+    <!--
+    <style>
+        .square-box {
+        width: 33%;
+        height: 0;
+        padding-top: 33%;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        }
+        .common_ui_off {
+            display: none !important;
+        }
+
+        .landmark-grid-container {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top:0;
+        left:0;
+        background-color: #99999999;
+        }
+        #shot_loadingIcon {
+            position : absolute;
+            top : 10px;
+            left : 10px;
+            z-index : 99;
+            font-size : 20pt;
+        }
+        .loading-spinner {
+            visibility: visible;
+            animation-name: loopiconspin;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            animation-duration: 1s;
+            animation-fill-mode: forwards;
+            animation-play-state: running;
+        }
+        @keyframes loopiconspin {
+            0% {
+                transform: rotate(0deg);
+                color : white;
+            }
+            25% {
+                transform: rotate(90deg);
+                color : white;
+            }
+            50% {
+                transform: rotate(180deg);
+                color : white;
+            }
+            75% {
+                transform: rotate(270deg);
+                color : white;
+            }
+            100% {
+                transform: rotate(360deg);
+                color : red;
+            }
+        }
+    </style>
+-->
+</head>
+<body>
+    <div id="q-app"  v-cloak style="width:100%;height:100%;">
+        <q-layout view="hHr Lpr lfr">
+
+            <q-drawer
+                side="right"
+                v-model="mpapp.drawer.show"
+                bordered
+                :width="300"
+                :breakpoint="500"
+                class="text-black"
+            >
+                <q-card>
+                    <q-card-section>
+                        <div class="row">
+                            <div class="col-6">
+                                <q-btn round color="primary" icon="mdi-human"  @click="takeshot_onclick"></q-btn>
+                            </div>
+                            <div class="col-6">
+                                <!--<q-btn round color="primary" icon="menu" @click="mpapp.drawer.show=!mpapp.drawer.show"></q-btn>-->
+                            </div>
+                        </div>
+                        <div class="row">
+                            <q-toggle v-model="mpapp.drawer.camera.show" color="primary" label="Camera"></q-toggle>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <span>{{ _T("save_timer") }}</span>
+                            </div>
+                            <div class="col-11 offset-1">
+                                <q-input v-model="mpapp.drawer.timer.seconds" type="number"
+                                    label="Timer"
+                                    :min="1" :max="10" :step="1"
+                                ></q-input>
+                                <span>{{ _T("seconds") }}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <q-toggle v-model="mpapp.states.poseOptions.selfieMode" color="primary" label="Selfie"></q-toggle>
+                        </div>
+                        <div class="row q-pb-md q-pl-md">
+                            <div class="col-12">
+                                <div id="srcpicker" ref="srcpicker"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <span>{{_T("minDetectionConfidence")}}</span>
+                            </div>
+                            <div class="col-11 offset-1">
+                                <q-slider
+                                    v-model="mpapp.states.poseOptions.minDetectionConfidence"
+                                    :min="1" :max="1" :step="0.01" color="primary"
+                                ></q-slider>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <span>{{_T("minTrackingConfidence")}}</span>
+                            </div>
+                            <div class="col-11 offset-1">
+                                <q-slider
+                                    v-model="mpapp.states.poseOptions.minTrackingConfidence"
+                                    :min="1" :max="1" :step="0.01" color="primary"
+                                ></q-slider>
+                            </div>
+                        </div>
+                    </q-card-section>
+                </q-card>
+            </q-drawer>
+            
+            <q-page-container>
+                <q-page>
+                    <q-page-sticky position="top-left" :offset="[18,18]">
+                        <q-circular-progress v-if="mpapp.progress"
+                            indeterminate
+                            size="md"
+                            :thickness="1"
+                            color="primary"
+                            center-color="grey-8"
+                            track-color="transparent"
+                            class="q-ma-md"
+                        ></q-circular-progress>
+                    </q-page-sticky>
+                    <q-page-sticky position="bottom-right" :offset="[18,18]">
+                        
+                    </q-page-sticky>
+                    <q-page-sticky position="top-right" :offset="[18,18]">
+                        
+                    </q-page-sticky>
+
+                    
+                </q-page>
+            </q-page-container>
+        </q-layout>
+    </div>
+    <div class="container">
+        <video  ref="ivid" class="input_video"></video><!--class="output_canvas" -->
+        <canvas ref="ocan" class="output_canvas" width="1280px" height="720px"></canvas>
+        <div class="loading">
+        <div class="spinner"></div>
+        <div class="message">Loading</div>
+    </div>
+    <audio src="../../res/aud01_capture.mp3" ref="aud01_capture" class="common_ui_off"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-i18n@next/dist/vue-i18n.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.5.5/dist/quasar.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.5.5/dist/lang/ja.umd.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.5.5/dist/lang/eo.umd.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.5.5/dist/lang/en-US.umd.prod.js"></script>
+    <script src="../../lib/localforage.min.js"></script>
+
+    <!--<script src="../res/appconst.js"></script>-->
+    <script src="../../js/util.js"></script>
+
+
+    <script src="../../js/client_cldmp.js" type="module"></script>
+</body>

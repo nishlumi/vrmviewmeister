@@ -1,0 +1,223 @@
+/*
+  develop sample:
+  http://localhost:5020/vrmview/test/timelinedev/
+*/
+.vvtimeline-area {
+    width : 100%;
+    height : 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+.vvtimeline-area .vvtl-toolbar {
+    width: 100%;
+    height: 32px;
+    overflow : hidden;
+}
+/* ---base box-----------------------------------------------------------*/
+.vvtimeline-area .vvtl-seekbar {
+    width: 100%;
+    height: 48px;
+    overflow : hidden;
+}
+.vvtimeline-area .vvtl-seekbar > div {
+    height : 100%;
+}
+.vvtl-seekbar .seekbar-body {
+    width : 100%;
+    overflow : hidden;
+}
+
+.vvtimeline-area .vvtl-timeline {
+    width: 100%;
+    height: calc(100% - 48px);
+    overflow : auto;
+}
+.vvtimeline-area .vvtl-timeline-withtoolbar {
+    width: 100%;
+    height: calc(100% - 48px - 32px);
+    overflow : auto;
+}
+
+/*==================================================================
+  Timeline box
+
+  |-----------|---------------------------------------------|
+   target name ------0-----1-------2---3-------4-5-----------
+               <- scroll bar                               ->
+   .grid-oneline
+   .grid-oneline-namebox | .grid-oneline-timelinebox 
+     div                 |   div
+               
+   
+*/
+
+/* === base of grid layout ====================================================== */
+.grid-oneline {
+    width : 100%;
+    display : grid;
+    grid-template-columns : repeat(25,4%);
+}
+.grid-oneline .oneline-namebox {
+    grid-column: 1 / 8;
+    overflow: hidden;
+}
+.grid-oneline .oneline-seekbox {
+    grid-column : 8 / 25;
+    padding-top : 1.5rem;
+}
+.grid-oneline .oneline-seekbox-opt {
+    grid-column : 21 / 25;
+    padding-top : 1rem;
+}
+.grid-oneline .oneline-timelinebox {
+    grid-column : 8 / 25;
+    overflow-x : hidden;
+    overflow-y : hidden;
+}
+.vvtl-timeline .grid-headerarea {
+    height : 35px;
+}
+.vvtl-timeline .grid-mainarea {
+    height : calc(100% - 50px);
+    overflow : hidden;
+}
+.vvtl_timeline .grid-scrollarea {
+    height : 15px;
+    overflow : hidden;
+}
+.vvtl-timeline .grid-scrollbarx {
+    grid-column : 8 / 25;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width : 100%;
+    /*visibility : hidden;*/
+}
+.grid-scrollbarx.scroll-on {
+    height : 15px;
+}
+.grid-scrollbarx.scroll-off {
+    height : 0;
+}
+.grid-scrollbarx .scroll-content {
+    width: max-content;
+    height : 0;
+}
+.vvtl-timeline .grid-scrollbary {
+    grid-column : 25 / 26;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    width : 50%;
+}
+.grid-scrollbary .scroll-content {
+    height: max-content;
+    width : 0;
+}
+/* === direct child of namebox, timelinebox ==================================*/
+.grid-oneline .oneline-namebox > div  {
+    height: 35px;
+    width : 100%;
+    border : 1px #999999 solid;
+    overflow : hidden;
+}
+.grid-oneline .oneline-timelinebox > div {
+    height: 35px;
+    width : max-content;
+    border : 1px #999999 solid;
+    overflow: hidden;
+}
+.grid-scrollbary .scroll-content > div {
+    height: 35px;
+    width : 1;
+    overflow: hidden;
+}
+
+/* === elements in toolbar ====================================================================== */
+.vvtl-toolbar .divider {
+    width : 5px;
+    height : 20px;
+    border-right : 2px #AFAFAF inset;
+    display : inline-block;
+    position : relative;
+    top : 5px;
+    margin-right : 5px;
+}
+
+/* === elements in namebox =====lid============================================================= */
+.oneline-namebox .btn-visibility {
+    float : right;
+}
+.oneline-namebox .namebox-child {
+    padding-left : 3px;
+}
+.oneline-namebox .namebox-child span {
+    cursor : default;
+}
+.oneline-namebox .currentcursor {
+    background-color : rgba(40,128,255,0.5);
+}
+
+/* === elements in timelinebox ============================================================== */
+.framerow-scale-one {
+    cursor : default;
+}
+.framerow-scale-every10 {
+    cursor : default;
+}
+.framerow-scale-one.showsize-normal, .framerow-scale-every10.showsize-normal, .framerow-scale-one .currentcursor, .framerow-scale-every10 .currentcursor {
+    width : 32px;
+}
+.framerow-scale-one.showsize-small, .framerow-scale-one .currentcursor {
+    width : 6px;
+}
+.framerow-scale-every10.showsize-small {
+    top : -20px;
+}
+.framerow-scale-one.showsize-small span {
+    visibility : hidden;
+}
+.oneline-timelinebox .frameheader {
+    display: inline-block;
+    /*width : 32px;*/
+    height: 35px;
+    text-align : center;
+    border-right : 1px grey dotted;
+    background-color : #929eaf;
+    cursor : default;
+    position : relative;
+}
+.oneline-timelinebox .framecell {
+    display: inline-block;
+    /*width : 32px;*/
+    height: 35px;
+    border-right : 1px grey dotted;
+    z-index : 1;
+    cursor : default;
+    overflow : hidden;
+}
+.grid-scrollbarx .scroll-content .frameheader {
+    display: inline-block;
+    /*width : 32px;*/
+    height: 35px;
+    text-align : center;
+    /*border-right : 1px grey dotted;
+    background-color : #c0c8d4;*/
+    cursor : default;
+    position : relative;
+}
+.oneline-timelinebox .currentcursor {
+    background-color : rgba(40,128,255,0.5);
+    /*width : 32px;*/
+    height: 35px;
+}
+.framekey-box {
+    /*width : 32px;*/
+    height : 35px;
+    background-color : rgba(255,69,69);
+    color : #FFFFFF;
+    z-index : 2;
+    cursor : grab;
+    text-align : center;
+}
+.framekey-box .material-icons {
+    margin-top : 12%;
+}
