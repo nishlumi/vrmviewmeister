@@ -13,7 +13,7 @@ import { appModelOperator } from './model/operator.js';
  * @returns 
  */
 export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData, objpropData, timelineData, refs) => {
-    const buildUrl = "Build";
+    const buildUrl = document.getElementById("UnityBuildPath").value;
     const unitycontainer = Vue.ref(null);
     const unityConfig = Vue.ref({
         loaderUrl : buildUrl + "/Builds.loader.js",
@@ -298,6 +298,13 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
                     ribbonData.elements.audio.se.playbtn_state = "play_circle";
                     ribbonData.elements.audio.se.seek = parseFloat(js[2]);
                 }
+            }
+        );
+        AppQueue.fixedList["intervalLoadingProject_unity2html"] = new queueData(
+            null,
+            "intervalLoadingProject_unity2html",QD_INOUT.returnJS,
+            (val) => {
+                mainData.elements.percentLoad.current = val;
             }
         );
     }

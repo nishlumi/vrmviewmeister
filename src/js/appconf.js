@@ -10,7 +10,7 @@ export class VVConfigTemplate {
             UseDarkTheme : false,
             focus_camera_onselect :false,
             distance_camera_viewpoint : 2.5,
-            stock_opened_file_history : false,
+            stock_opened_file_history : true,
             shortcut_vrminfo_from_history : false,
             use_fsaa_for_history : false,
         };

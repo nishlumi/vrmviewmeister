@@ -34,6 +34,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         VFileHelper.openFromDialog(FILEOPTION[accepts],(files,cd,err)=>{
             if (cd == 0) {
                 mainData.elements.loading = true;
+                mainData.elements.loadingTypePercent = false;
                 modelLoader.OnChange_Common_AppFile(files[0],FILEOPTION[accepts]);
             }
         });
@@ -264,7 +265,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else if (ename == "listcapture") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
 
-            mainData.elements.win_screenshot = window.open("./static/win/cld03_capture.html","capturewindow",
+            mainData.elements.win_screenshot = window.open("./static/win/capture/index.html","capturewindow",
                 `width=${parseInt(window.outerWidth * 0.7)},height=${parseInt(window.outerHeight * 0.7)},alwaysRaised=yes,resizable=yes,autoHideMenuBar=true`
             );
             
@@ -278,7 +279,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else if (ename == "videoplayer") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
 
-            mainData.elements.win_vplayer = window.open("./static/win/cld05_player.html","playerwindow",
+            mainData.elements.win_vplayer = window.open("./static/win/vplayer/index.html","playerwindow",
                 "width=720,height=570,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
             );
         }else if (ename == "rotate360") {
@@ -414,7 +415,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             },"");
         }else if (ename == "poselist") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
-            mainData.elements.win_pose = window.open("static/win/cld02_poselst.html","posewindow",
+            mainData.elements.win_pose = window.open("static/win/pose/index.html","posewindow",
                 "width=400,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
             );
         }else if (ename == "resetposition") {
@@ -449,7 +450,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 return;
             }
             appConfirm(t("msg_start_mediapipe"),() => {
-                mainData.elements.win_mediapipe = window.open("./static/win/mp/mp.html",
+                mainData.elements.win_mediapipe = window.open("./static/win/mp/index.html",
                     "_blank",
                     "width=1280,height=720,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
                 );

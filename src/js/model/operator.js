@@ -127,9 +127,10 @@ export class appModelOperator {
                 null
             ));
         }
+        const proj = this.mainData.data.project;
 
-        this.mainData.data.project.timelineFrameLength = parseInt(this.mainData.appconf.confs.animation.initial_framecount);
-        this.mainData.data.project.baseDuration = this.mainData.data.project.timelineFrameLength / 6000.0;
+        proj.timelineFrameLength = parseInt(this.mainData.appconf.confs.animation.initial_framecount);
+        proj.baseDuration = proj.timelineFrameLength / 6000.0;
         this.mainData.states.currentProjectFilename = "project";
         this.mainData.states.currentProjectHandle = null;
         this.mainData.states.currentProjectFromFile = true;
@@ -138,7 +139,8 @@ export class appModelOperator {
         //---set up fixed object
         this.mainData.data.vrms.splice(0,this.mainData.data.vrms.length);
         this.timelineData.data.timelines.splice(0,this.timelineData.data.timelines.length);
-        this.mainData.data.project.casts.splice(0,this.mainData.data.project.casts);
+        proj.casts.splice(0,proj.casts.length);
+        proj.timeline.characters.splice(0, proj.timeline.characters.length);
         //for (var i = mainData.data.vrms.length-1; i >= 0; i--) {
         //    modelOperator.del_objectItem(mainData.data.vrms[i]);
         //}
@@ -184,7 +186,7 @@ export class appModelOperator {
     /**
      * Get Cast(Role) from role name
      * @param {String} roleName role name of Cast
-     * @param {STring} conditionType role is rolename, title is roletitle
+     * @param {STring} conditionType role is rolename, title is roletitle, path is path
      * @returns 
     */
     getRole (roleName,conditionType) {
@@ -194,6 +196,8 @@ export class appModelOperator {
                 if (match.roleName == roleName) return true;
             }else if (conditionType == "title") {
                 if (match.roleTitle == roleName) return true;
+            }else if (conditionType == "path") {
+                if (match.path == roleName) return true;
             }
             
             return false;
@@ -292,20 +296,33 @@ export class appModelOperator {
      * operation after adding OtherObject ~ Effect
      * @param {AF_TARGETTYPE} type 
      * @param {JSON} json 
+     * @param {String} path
      * @returns 
      */
-    addObject (type, json)  {
+    addObject (type, json, path)  {
         //[creation point] VVAvatar
         var it = new VVAvatar(type,json);
 
         this.mainData.data.vrms.push(it);
         
-        //[creation point] VVCast
-        var role = new VVCast(json.roleName,json.roleTitle);
-        role.avatar = it;
-        role.avatarId = it.id;
-        role.type = it.type;
-        this.mainData.data.project.casts.push(role);
+        var role = null;
+        if (json.isOverwrite == "o") {
+            role = this.getRole(path,"path");
+        }
+        if (role != null) {
+            role.avatar = it;
+            role.avatarId = it.id;
+            role.type = it.type;
+        }else{
+            //[creation point] VVCast
+            var role = new VVCast(json.roleName,json.roleTitle);
+            role.avatar = it;
+            role.avatarId = it.id;
+            role.avatarTitle = path;
+            role.path = path;
+            role.type = it.type;
+            this.mainData.data.project.casts.push(role);
+        }
 
         //+++this.children.timeline.appendTimeline(role);
 
@@ -313,6 +330,36 @@ export class appModelOperator {
             avatar :it,
             role : role
         };
+    }
+    /**
+     * 
+     * @param {AF_TARGETTYPE} type 
+     * @param {JSON} json 
+     * @param {Array<String>} additionalData
+     * @returns {VVAvatar}
+     */
+    addRecoverObject(type, json, additionalData) {
+
+        var role = null;
+        if (additionalData[2] == "o") {
+            role = this.getRole(additionalData[1],"title");
+        }
+
+        //[creation point] VVAvatar
+        var hitobj = "";
+        for (var obj in AF_TARGETTYPE) {
+            if (AF_TARGETTYPE[obj] == type) {
+                hitobj = obj;
+                break;
+            }
+        }
+        var it = new VVAvatar(hitobj,{
+            id : cast.avatarId,
+            Title : cast.avatarTitle || hitobj,
+            type : hitobj,
+        });
+        this.mainData.data.vrms.push(it);
+        return it;
     }
     /**
      * 
@@ -1112,27 +1159,154 @@ export class appModelOperator {
      * 
      * @param {VVAnimationProject} project 
      */
-     LoadAndApplyToTimelineUI(project) {
+    async LoadAndApplyToTimelineUI(project) {
         this.ribbonData.elements.frame.max = parseInt(project.timelineFrameLength);
 
         this.ribbonData.elements.frame.fps = parseInt(project.fps);
 
-        //---update Unity side for FPS and frame size
-        /*
-        var cnt = this.ribbonData.elements.frame.max;
-        AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'SetTimelineFrameLength',param:cnt},
-            "",QD_INOUT.toUNITY,
-            null
-        ));
-        var fps = this.ribbonData.elements.frame.fps;
-        AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'SetFps',param:fps},
-            "",QD_INOUT.toUNITY,
-            null
-        ));
-        AppQueue.start();
-        */
+        //---set up new cast and role
+        for (var i = 0; i < project.casts.length; i++) {
+            var cast = project.casts[i];
+
+            if (cast.avatarId != "") {
+                if (cast.type == AF_TARGETTYPE.VRM) {
+                    var f = await AppDB.vrm.getItem(cast.path);
+                    if (f) {
+                        var fdata = URL.createObjectURL(f);
+                        //this.mainData.data.objectUrl.vrm = fdata;
+                        //this.mainData.states.fileloadname = f.name;
+                        //this.mainData.states.fileloadtype = "v";
+                        //this.mainData.states.loadingfileHandle = f;
+                        AppQueue.add(new queueData(
+                            {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
+                            "firstload_vrm",QD_INOUT.returnJS,
+                            this.UnityCallback.historySendObjectInfo,
+                            {callback:this.UnityCallback,objectURL:fdata}
+                        ));
+                        AppQueue.add(new queueData(
+                            {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
+                            "accept_vrm",QD_INOUT.returnJS,
+                            this.UnityCallback.firstload_vrm,
+                            {callback:this.UnityCallback,filename:f.name,
+                             fileloadtype: "v",
+                             loadingfileHandle : f}
+                        ));
+                    }else{
+                        this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                        //---error file notify
+                        Quasar.Notify.create({
+                            message : "VRM: " + this._t("msg_notfound_file") + ": " + cast.path,
+                            position : "bottom-right",
+                            color : "negative",
+                            textColor : "white",
+                            timeout : 3000,
+                            multiLine : true
+                        });
+                    }
+                }else if (cast.type == AF_TARGETTYPE.OtherObject) {
+                    var f = await AppDB.obj.getItem(cast.path);
+                    if (f) {
+                        var fdata = URL.createObjectURL(f);
+                        //this.mainData.data.objectUrl.vrm = fdata;
+                        //this.mainData.states.fileloadname = f.name;
+                        //this.mainData.states.fileloadtype = "o";
+                        //this.mainData.states.loadingfileHandle = f;
+                        var filearr =  f.name.split(".");
+                        var ext = filearr[filearr.length-1];
+                        
+                        fdata += "," + f.name + "," + ext;
+                        AppQueue.add(new queueData(
+                            {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:fdata},
+                            "sendobjectinfo",QD_INOUT.returnJS,
+                            this.UnityCallback.sendObjectInfo,
+                            {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
+                                fileloadtype: "o",
+                                loadingfileHandle : f}
+                        ));
+                    }else{
+                        this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                        //---error file notify
+                        Quasar.Notify.create({
+                            message : "Other Object: " + this._t("msg_notfound_file") + ": " +  cast.path,
+                            position : "bottom-right",
+                            color : "negative",
+                            textColor : "white",
+                            timeout : 3000,
+                            multiLine : true
+                        });
+                    }
+                }else if (cast.type == AF_TARGETTYPE.Image) {
+                    var f = await  AppDB.image.getItem(cast.path);
+                    if (f) {
+                        var fdata = URL.createObjectURL(f);
+                        //this.mainData.states.fileloadname = f.name;
+                        //this.mainData.states.loadingfile = fdata;
+                        //this.mainData.states.loadingfileHandle = f;
+                        var filearr =  f.name.split(".");
+                        var ext = filearr[filearr.length-1];
+                        
+                        var param = fdata + "," + f.name + "," + ext;
+                        AppQueue.add(new queueData(
+                            {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:param},
+                            "sendobjectinfo",QD_INOUT.returnJS,
+                            this.UnityCallback.sendObjectInfo,
+                            {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
+                                fileloadtype: "img",
+                                loadingfileHandle : f}
+                        ));
+                        AppQueue.start();
+                    }else{
+                        this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                        //---error file notify
+                        Quasar.Notify.create({
+                            message : "Image: " + this._t("msg_notfound_file") + ": " + cast.path,
+                            position : "bottom-right",
+                            color : "negative",
+                            textColor : "white",
+                            timeout : 3000,
+                            multiLine : true
+                        });
+                    }
+                }else if (cast.type == AF_TARGETTYPE.UImage) {
+                    var f = await AppDB.image.getItem(cast.path);
+                    if (f) {
+                        var fdata = URL.createObjectURL(f);
+                        //this.mainData.states.fileloadname = f.name;
+                        //this.mainData.states.loadingfile = fdata;
+                        //this.mainData.states.loadingfileHandle = f;
+                        var filearr =  f.name.split(".");
+                        var ext = filearr[filearr.length-1];
+                        
+                        var param = fdata + "," + f.name + "," + ext;
+                        AppQueue.add(new queueData(
+                            {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:param},
+                            "sendobjectinfo",QD_INOUT.returnJS,
+                            this.UnityCallback.sendObjectInfo,
+                            {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
+                                fileloadtype: "ui",
+                                loadingfileHandle : f}
+                        ));
+                        AppQueue.start();
+                    }else{
+                        this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                        //---error file notify
+                        Quasar.Notify.create({
+                            message : "UImage: " + this._t("msg_notfound_file") + ": " + cast.path,
+                            position : "bottom-right",
+                            color : "negative",
+                            textColor : "white",
+                            timeout : 3000,
+                            multiLine : true
+                        });
+                    }
+                }else if (cast.type == AF_TARGETTYPE.SystemEffect){
+                }else if (cast.type == AF_TARGETTYPE.Stage) {
+                }else if (cast.type == AF_TARGETTYPE.Audio) {
+                }else{
+                    
+                }
+            }
+        }
 
         //---set up new data timeline
         project.timeline.characters.forEach(element => {
@@ -1155,10 +1329,10 @@ export class appModelOperator {
     }
     /**
      * 
-     * @param {VVAnimationFrameActor} element targeted frame actor object on the Unity
+     * @param {VVAnimationFrameActor} timelineElement targeted frame actor object on the Unity
      * @param {String} role target role's roleName
      */
-    SingleApplyToTimelineUI(element, role) {
+    SingleApplyToTimelineUI(timelineElement, role) {
         var av = this.getAvatarFromRole(role);
         if (av) {
             var tl = this.timelineData.data.timelines.find(item => {
@@ -1167,7 +1341,7 @@ export class appModelOperator {
             });
             if (tl) { //---already role timeline exists.
                 //---enumurate and insert frames of the Avatar
-                element.frames.forEach(frame => {
+                timelineElement.frames.forEach(frame => {
                     var fdata = new VVTimelineFrameData(frame.index,{
                         //targetId : av.id,
                         //targetType : av.type,
@@ -1176,7 +1350,6 @@ export class appModelOperator {
                     tl.insertFrame(frame.index,fdata);
                     
                 });
-                
             }else{
                 //---timeline not exist, create timeline of HTML version
                 /**
@@ -1195,7 +1368,7 @@ export class appModelOperator {
                     this.timelineData.data.timelines.push(tl);
                     
                     //---enumurate and insert frames of the Avatar
-                    element.frames.forEach(frame => {
+                    timelineElement.frames.forEach(frame => {
                         var fdata = new VVTimelineFrameData(frame.index,{
                             //key : frame.index,
                             //data : nav
@@ -1303,8 +1476,11 @@ export class appModelOperator {
             //: parseFloat(this.states.selectedAvatar.TPoseInfo.y);
         var posx = 1; var posy = 2; var posz = 3; var rotx = 4; var roty = 5; var rotz = 6;
         var pelvis = 6;
-        var leftlowerarm = 7; var rightlowerarm = 9; var lefthand = 8; var righthand = 10;
-        var leftlowerleg = 11; var rightlowerleg = 13; var leftfoot = 12; var rightfoot = 14;
+        var leftshoulder = IKBoneType.LeftShoulder; var rightshoulder = IKBoneType.RightShoulder; 
+        var leftlowerarm = IKBoneType.LeftLowerArm; var rightlowerarm = IKBoneType.RightLowerArm; 
+        var lefthand = IKBoneType.LeftHand; var righthand = IKBoneType.RightHand;
+        var leftlowerleg = IKBoneType.LeftLowerLeg; var rightlowerleg = IKBoneType.RightLowerLeg; 
+        var leftfoot = ikbo; var rightfoot = 14;
 
         var poseland = pose.poseWorldLandmarks;
         //Head ~ Pelvis
@@ -1318,19 +1494,20 @@ export class appModelOperator {
         for (var obj in IKBoneType) {
             iknames.push(obj);
         }
+        var ikix = 0;
 
         var unitylist = [];
 
         //---IKParent
         unitylist.push({
-            ikname : iknames[0],
+            ikname : iknames[IKBoneType.IKParent],
             position : ss.list[0].position,
             rotation : new UnityVector3(180,180,180)
         });
 
         //---EyeviewHandle
         unitylist.push({
-            ikname : iknames[1],
+            ikname : iknames[IKBoneType.EyeViewHandle],
             position : new UnityVector3(
                 TwoPoint2CenterCalc(poseland[2].x,poseland[5].x),
                 ss.list[1].position.y,ss.list[1].position.z
@@ -1340,7 +1517,7 @@ export class appModelOperator {
 
         //---Nose 2 Head
         unitylist.push({
-            ikname : iknames[2],
+            ikname : iknames[IKBoneType.Head],
             position : new UnityVector3(
                 poseland[0].x, pelvisY + Math.abs(poseland[0].y),
                 ss.list[2].position.z
@@ -1350,20 +1527,21 @@ export class appModelOperator {
 
         //---Nose 2 LookAt
         unitylist.push({
-            ikname : iknames[3],
+            ikname : iknames[IKBoneType.LookAt],
             position : new UnityVector3(
                 poseland[0].x, pelvisY + Math.abs(poseland[0].y),
                 ss.list[3].position.z
             ),
             rotation : new UnityVector3(180,180,180)
         });
+        ikix++;
 
         //---Left Shoulder + Right Shoulder 2 Aim
         var newx = TwoPoint2CenterCalc(poseland[11].x, poseland[12].x);
         var newy = pelvisY + ((Math.abs(poseland[11].y) + Math.abs(poseland[12].y)) * 0.5);
         var newz = TwoPoint2CenterCalc(poseland[11].z, poseland[12].z);
         unitylist.push({
-            ikname : iknames[4],
+            ikname : iknames[IKBoneType.Aim],
             position : new UnityVector3(
                 newz, ss.list[4].position.y,
                 ss.list[4].position.z
@@ -1373,14 +1551,14 @@ export class appModelOperator {
 
         //---2 Chest
         unitylist.push({
-            ikname : iknames[5],
+            ikname : iknames[IKBoneType.Chest],
             position : new UnityVector3(newx,newy,newz),
             rotation : new UnityVector3(180,180,180)
         });
 
         //hip 2 Pelvis
         unitylist.push({
-            ikname : iknames[6],
+            ikname : iknames[IKBoneType.Pelvis],
             position : new UnityVector3(
                 TwoPoint2CenterCalc(poseland[23].x, poseland[24].x),
                 pelvisY + ((Math.abs(poseland[23].y) + Math.abs(poseland[24].y)) * 0.5) ,
@@ -1389,9 +1567,31 @@ export class appModelOperator {
             rotation : new UnityVector3(180,180,180)
         });
 
+        //---Left shoulder
+        unitylist.push({
+            ikname : iknames[IKBoneType.LeftShoulder],
+            position : new UnityVector3(
+                poseland[11].x,
+                pelvisY + Math.abs(poseland[11].y),
+                poseland[11].z
+            ),
+            rotation : new UnityVector3(180,180,180)
+        });
+
+        //---Right shoulder
+        unitylist.push({
+            ikname : iknames[IKBoneType.RightShoulder],
+            position : new UnityVector3(
+                poseland[12].x,
+                pelvisY + Math.abs(poseland[12].y),
+                poseland[12].z
+            ),
+            rotation : new UnityVector3(180,180,180)
+        });
+
         //---Left elbow 2 Left Lower Arm
         unitylist.push({
-            ikname : iknames[leftlowerarm],
+            ikname : iknames[IKBoneType.LeftLowerArm],
             position : new UnityVector3(
                 poseland[13].x,
                 pelvisY + Math.abs(poseland[13].y),
@@ -1402,7 +1602,7 @@ export class appModelOperator {
 
         //---Right elbow 2 Right Lower Arm
         unitylist.push({
-            ikname : iknames[rightlowerarm],
+            ikname : iknames[IKBoneType.RightLowerArm],
             position : new UnityVector3(
                 poseland[14].x,
                 pelvisY + Math.abs(poseland[14].y),
@@ -1412,7 +1612,7 @@ export class appModelOperator {
         });
         //---Left wrist 2 left Hand
         unitylist.push({
-            ikname : iknames[lefthand],
+            ikname : iknames[IKBoneType.LeftHand],
             position : new UnityVector3(
                 poseland[15].x,
                 pelvisY + Math.abs(poseland[15].y),
@@ -1422,7 +1622,7 @@ export class appModelOperator {
         });
         //---Right wrist 2 right Hand
         unitylist.push({
-            ikname : iknames[righthand],
+            ikname : iknames[IKBoneType.RightHand],
             position : new UnityVector3(
                 poseland[16].x,
                 pelvisY + Math.abs(poseland[16].y),
@@ -1435,7 +1635,7 @@ export class appModelOperator {
         //---Pelvis ~ Foot
         //---Left knee 2 Left Lower leg
         unitylist.push({
-            ikname : iknames[leftlowerleg],
+            ikname : iknames[IKBoneType.LeftLowerLeg],
             position : new UnityVector3(
                 poseland[25].x,
                 pelvisY - Math.abs(poseland[25].y),
@@ -1446,7 +1646,7 @@ export class appModelOperator {
 
         //---Right knee 2 Right Lower leg
         unitylist.push({
-            ikname : iknames[rightlowerleg],
+            ikname : iknames[IKBoneType.RightLowerLeg],
             position : new UnityVector3(
                 poseland[26].x,
                 pelvisY - Math.abs(poseland[26].y),
@@ -1457,7 +1657,7 @@ export class appModelOperator {
 
         //---Left ankle 2 Left foot
         unitylist.push({
-            ikname : iknames[leftfoot],
+            ikname : iknames[IKBoneType.LeftLeg],
             position : new UnityVector3(
                 poseland[27].x,
                 pelvisY - Math.abs(poseland[27].y),
@@ -1468,7 +1668,7 @@ export class appModelOperator {
 
         //---Right ankle 2 Right foot
         unitylist.push({
-            ikname : iknames[rightfoot],
+            ikname : iknames[IKBoneType.RightLeg],
             position : new UnityVector3(
                 poseland[28].x,
                 pelvisY - Math.abs(poseland[28].y),
@@ -1523,6 +1723,14 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
         }
         modelOperator.select_objectItem(newval.id);
     });
+    const wa_percentCurrent = Vue.watch(() => mainData.elements.percentLoad.current,(newval)=>{
+        if (mainData.elements.percentLoad.current >= 1.0) {
+            mainData.elements.loadingTypePercent = false;
+        }
+    });
+    const cmp_percentLoad = Vue.computed(() => {
+        return (mainData.elements.percentLoad.current * 100).toFixed(2) + "%";
+    });
     
     //---finalize-------------------------------------
     return {
@@ -1533,6 +1741,7 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
             deselect_objectItem, select_objectItem,
             listupBlendShapes,listupEquipList
         })*/
-        wa_selectedAvatar
+        wa_selectedAvatar,wa_percentCurrent,
+        cmp_percentLoad
     };
 }

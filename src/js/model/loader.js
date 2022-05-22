@@ -62,13 +62,16 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             });
             
         }else{
+            var dbtype = "";
             if (fileloadtype == "v") {
                 //---For VRM(VRoid)
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
                     "firstload_vrm",QD_INOUT.returnJS,
                     callback.sendObjectInfo,
-                    {callback,objectURL:fdata}
+                    {callback,objectURL:fdata,filename:fileloadname,
+                        fileloadtype: fileloadtype,
+                        loadingfileHandle : tmpfile}
                 ));
             }else if (fileloadtype == "o") {
                 //---For VBX, Obj, etc...
@@ -77,8 +80,11 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:fdata},
                     "sendobjectinfo",QD_INOUT.returnJS,
                     callback.sendObjectInfo,
-                    {callback,objectURL:fdata}
+                    {callback,objectURL:fdata,filename:fileloadname,
+                        fileloadtype: fileloadtype,
+                        loadingfileHandle : tmpfile}
                 ));
+                dbtype = "OBJECTS";
             }else if (fileloadtype == "bgm") {
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.FileMenuCommands,method:'OpenBGM',param:fdata+","+fileloadname},
@@ -94,21 +100,38 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     {callback,objectURL:fdata}
                 ));
             }else if (fileloadtype == "img") {
+                fdata += "," + fileloadname + "," + ext;
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:fdata},
                     "sendobjectinfo",QD_INOUT.returnJS,
                     callback.sendObjectInfo,
-                    {callback,objectURL:fdata}
+                    {callback,objectURL:fdata,filename:fileloadname,
+                        fileloadtype: fileloadtype,
+                        loadingfileHandle : tmpfile}
                 ));
+                dbtype = "IMAGES";
             }else if (fileloadtype == "ui") {
+                fdata += "," + fileloadname + "," + ext;
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:fdata},
                     "sendobjectinfo",QD_INOUT.returnJS,
                     callback.sendObjectInfo,
-                    {callback,objectURL:fdata}
+                    {callback,objectURL:fdata,filename:fileloadname,
+                        fileloadtype: fileloadtype,
+                        loadingfileHandle : tmpfile}
                 ));
+                dbtype = "IMAGES";
             }
             AppQueue.start();
+
+            //---save to recently history
+            if (mainData.appconf.confs.application.stock_opened_file_history === true) {
+                //---This timing is PROJECT,OBJECTS only (VRM and IMAGES is after)
+                if (["OBJECTS","IMAGES"].indexOf(dbtype) > -1) {
+                    saveToInternalStorage(dbtype, tmpfile);
+                }
+                
+            }
         }
 
         
@@ -210,6 +233,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 }
 
                 mainData.elements.loading = true;
+                mainData.elements.loadingTypePercent = false;
                 //---load file body
                 _appfileLoader(fdata,
                     mainData.states.fileloadname, 
@@ -343,6 +367,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             return;
         }
         mainData.elements.loading = true;
+        mainData.elements.loadingTypePercent = false;
         var filetype = mainData.states.fileloadtype;
 
         OnChange_Common_AppFile(targetfiles[0], filetype);
@@ -373,6 +398,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
      */
     const OnChange_AppFilePicker = async (filetype) => {
         mainData.elements.loading = true;
+        mainData.elements.loadingTypePercent = false;
         //File Sytem Access API
         if (filetype in FILEOPTION) {
             if ("showOpenFilePicker" in window) {
@@ -483,7 +509,9 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
             "firstload_vrm",QD_INOUT.returnJS,
             callback.firstload_vrm,
-            {callback}
+            {callback,filename:mainData.states.loadingfile,
+                fileloadtype: "v",
+                loadingfileHandle : mainData.states.loadingfileHandle}
         ));
         AppQueue.start();
     }
@@ -497,7 +525,12 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:mainData.states.loadingfile},
             "sendobjectinfo",QD_INOUT.returnJS,
             callback.sendObjectInfo,
-            {callback}
+            {callback,
+                objectURL:mainData.states.loadingfile,
+                filename:mainData.states.fileloadname,
+                fileloadtype: "img",
+                loadingfileHandle : mainData.states.loadingfileHandle
+            }
         ));
         AppQueue.start();
         mainData.elements.imageSelector.show = false;
@@ -512,7 +545,12 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:mainData.states.loadingfile},
             "sendobjectinfo",QD_INOUT.returnJS,
             callback.sendObjectInfo,
-            {callback}
+            {callback,
+                objectURL:mainData.states.loadingfile,
+                filename:mainData.states.fileloadname,
+                fileloadtype: "ui",
+                loadingfileHandle : mainData.states.loadingfileHandle
+            }
         ));
         AppQueue.start();
         mainData.elements.imageSelector.show = false;

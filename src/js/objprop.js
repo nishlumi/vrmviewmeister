@@ -202,9 +202,13 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     const OnChange_Position3D = (newval) => {
         //if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
         //console.log(objpropData.elements.common.position3d.x, objpropData.elements.common.position3d.y, objpropData.elements.common.position3d.z);
+        var x = parseFloat(objpropData.elements.common.position3d.x);
+        var y = parseFloat(objpropData.elements.common.position3d.y);
+        var z = parseFloat(objpropData.elements.common.position3d.z);
+        if (isNaN(x) || isNaN(y) || isNaN(z)) return;
         
         objpropData.states.isEditingFromUI = true;
-        var param = `${parseFloat(objpropData.elements.common.position3d.x)},${parseFloat(objpropData.elements.common.position3d.y)},${parseFloat(objpropData.elements.common.position3d.z)},1`;
+        var param = `${x},${y},${z},1`;
 
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetPositionFromOuter',param:param},
@@ -217,9 +221,13 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     const OnChange_Rotation3D = (newval) => {
         //var sel = modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id);
         //if (!sel) return false;
+        var x = parseFloat(objpropData.elements.common.rotation3d.x);
+        var y = parseFloat(objpropData.elements.common.rotation3d.y);
+        var z = parseFloat(objpropData.elements.common.rotation3d.z);
+        if (isNaN(x) || isNaN(y) || isNaN(z)) return;
 
         objpropData.states.isEditingFromUI = true;
-        var param = `${parseFloat(objpropData.elements.common.rotation3d.x)},${parseFloat(objpropData.elements.common.rotation3d.y)},${parseFloat(objpropData.elements.common.rotation3d.z)},1`;
+        var param = `${x},${y},${z},1`;
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetRotationFromOuter',param:param},
             "",QD_INOUT.toUNITY,
@@ -230,9 +238,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     const OnChange_Scale3D = (newval) => {
         //var sel = modelOperator.getSelected_objectItem();
         //if (!sel) return false;
+        var x = parseFloat(objpropData.elements.common.scale3d.x);
+        if (isNaN(x)) return;
 
         objpropData.states.isEditingFromUI = true;
-        var fl = parseFloat(objpropData.elements.common.scale3d.x) / 100.0;
+        var fl = x / 100.0;
 
         var vec = new UnityVector3(0,0,0);
         if (mainData.states.selectedAvatar.type == AF_TARGETTYPE.Stage) {
@@ -254,12 +264,15 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_Position2D = () => {
         //if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
+        var x = parseFloat(objpropData.elements.common.position2d.x);
+        var y = parseFloat(objpropData.elements.common.position2d.y);
+        if (isNaN(x) || isNaN(y)) return;
         
         objpropData.states.isEditingFromUI = true;
 
-        var valueY = parseFloat(objpropData.elements.common.position2d.y) * -1;
+        var valueY = y * -1;
 
-        var param = `${objpropData.elements.common.position2d.x},${valueY},1`;
+        var param = `${x},${valueY},1`;
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetPositionFromOuter',param:param},
             "",QD_INOUT.toUNITY,
@@ -270,9 +283,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_Rotation2D = () => {
         //if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
+        var z = parseFloat(objpropData.elements.common.rotation2d.z);
+        if (isNaN(z)) return;
 
         objpropData.states.isEditingFromUI = true;
-        var param = parseFloat(objpropData.elements.common.rotation2d.z);
+        var param = z;
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetRotationZFromOuter',param:param},
             "",QD_INOUT.toUNITY,
@@ -283,8 +298,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_Size2D = () => {
         //if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
+        var x = parseFloat(objpropData.elements.common.size2d.x);
+        var y = parseFloat(objpropData.elements.common.size2d.y);
+        if (isNaN(x) || isNaN(y)) return;
 
-        var param = `${objpropData.elements.common.size2d.x},${objpropData.elements.common.size2d.y}`;
+        var param = `${x},${y}`;
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetSizeFromOuter',param:param},
             "",QD_INOUT.toUNITY,
@@ -295,8 +313,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_Scale2D = () => {
         //if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
+        var x = parseFloat(objpropData.elements.common.scale2d.x);
+        var y = parseFloat(objpropData.elements.common.scale2d.y);
+        if (isNaN(x) || isNaN(y)) return;
 
-        var param = `${objpropData.elements.common.scale2d.x},${objpropData.elements.common.scale2d.y}`;
+        var param = `${x},${y}`;
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetScaleFromOuter',param:param},
             "",QD_INOUT.toUNITY,
@@ -306,7 +327,10 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         return true;
     }
     const OnChange_JumpNum = (val) => {
-        var param = `${objpropData.elements.common.jumpPower},${objpropData.elements.common.jumpNum}`;
+        var jp = parseInt(objpropData.elements.common.jumpPower);
+        var num = parseInt(objpropData.elements.common.jumpNum);
+        if (isNaN(jp) || isNaN(num)) return;
+        var param = `${jp},${num}`;
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetJump',param:param},
             "",QD_INOUT.toUNITY,
@@ -417,6 +441,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_HeadLock = (val) => {
         var param = parseInt(val);
+        if (isNaN(param)) return;
+
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetHeadLock', param:param},
             "",QD_INOUT.toUNITY,
@@ -427,10 +453,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     //------Hand---
     const _HandWatchBody = (leftright,newval)=>{
         if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
-
+        var poseval = parseFloat(newval.poseValue);
+        if (isNaN(poseval)) return;
 
         var handdirection = leftright;
-        const param = `${handdirection},${newval.poseSelected.value},${parseFloat(newval.poseValue) / 100.0}`;
+        const param = `${handdirection},${newval.poseSelected.value},${poseval / 100.0}`;
 
         AppQueue.add(new queueData(
             {target:AppQueue.unity.OperateActiveVRM,method:'PosingHandFromOuter',param:param},
@@ -448,7 +475,10 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     //------Blendshape---
     const OnChange_BlendShape = (value,evt) => {
-        var param = `${evt.id},${parseFloat(value)}`;
+        var bs = parseFloat(value);
+        if (isNaN(bs)) return;
+
+        var param = `${evt.id},${bs}`;
         AppQueue.add(new queueData(
             {target:AppQueue.unity.OperateActiveVRM,method:'changeAvatarBlendShapeByName', param:param},
             "",QD_INOUT.toUNITY,
@@ -469,6 +499,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_Blink_interval = (val) => {
         var param = parseFloat(val);
+        if (isNaN(param)) return;
+
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetBlinkInterval', param:param},
             "",QD_INOUT.toUNITY,
@@ -478,6 +510,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_Blink_opening = (val) => {
         var param = parseFloat(val);
+        if (isNaN(param)) return;
+
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetBlinkOpeningSeconds', param:param},
             "",QD_INOUT.toUNITY,
@@ -487,6 +521,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_Blink_closing = (val) => {
         var param = parseFloat(val);
+        if (isNaN(param)) return;
+
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetBlinkCloseSeconds', param:param},
             "",QD_INOUT.toUNITY,
@@ -496,6 +532,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const OnChange_Blink_closeTime = (val) => {
         var param = parseFloat(val);
+        if (isNaN(param)) return;
+
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetBlinkClosingTime', param:param},
             "",QD_INOUT.toUNITY,

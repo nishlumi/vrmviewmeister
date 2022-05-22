@@ -10,7 +10,7 @@ export const defineAppMainData = () => {
             name : t("appName"),
             description : t("appDescription"),
             version : "1.0.0b",
-            revision : "20220514-01",
+            revision : "20220522-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         },
         appconf : new VVAppConfig(),
@@ -18,6 +18,11 @@ export const defineAppMainData = () => {
             header : true,
             appinfodlg : false,
             loading : false,
+            loadingTypePercent : false,
+            percentLoad : {
+                percent : 0,
+                current : 0,                
+            },
             canvas : {
                 width : 960,
                 height: 480,

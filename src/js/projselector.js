@@ -1,6 +1,6 @@
 import { appModelOperator } from "./model/operator.js";
 import { UnityCallbackFunctioner } from "./model/callback.js";
-import { FILEEXTENSION_ANIMATION, FILEOPTION, INTERNAL_FILE } from "../res/appconst.js";
+import { FILEEXTENSION_ANIMATION, FILEOPTION, INTERNAL_FILE, AF_TARGETTYPE } from "../res/appconst.js";
 import { VVAnimationProject } from "./prop/cls_vvavatar.js";
 import { AppDBMeta } from "./appconf.js";
 import { VFileHelper, VFileOptions, VFileType } from "../../public/static/js/filehelper.js";
@@ -17,14 +17,24 @@ import { VFileHelper, VFileOptions, VFileType } from "../../public/static/js/fil
 export function defineProjectSelector(app, Quasar, mainData, modelOperator, callback, refs) {
     const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
+    /**
+     * recover data path from history DB
+     * @param {object} db
+     * @param {String} rawpath 
+     * @param {AF_TARGETTYPE} objtype 
+     */
+    const inputDatapathFromHistory = async (db, rawpath, objtype) => {
+        var result = await db.getItem(rawpath);
+        if (result) {
+
+        }
+        return result;
+    }
     const onclick_ok_projectSelector = async () => {
         var datadb = AppDB[mainData.elements.projectSelector.selectDB];
 
         console.log(datadb);
-        try {
-            /**
-             * @type {FileSystemFileHandle}
-             */
+        try {            
             var originalresult = await datadb.getItem(mainData.elements.projectSelector.selected)
             if (originalresult) {
                 var options = {
@@ -37,6 +47,38 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                     mainData.states.currentProjectFilename = mainData.elements.projectSelector.selected;
                     mainData.states.currentProjectHandle = mainData.elements.projectSelector.selected;
                     mainData.states.currentProjectFromFile = false;
+
+                    //mainData.elements.loading = true;
+                    mainData.elements.loadingTypePercent = true;
+                    //---recover File object
+                    /**
+                     * @type {Array<VVCast>}
+                     */
+                    var casts = originalresult.casts;
+                    var fullCount = 0;
+                    for (var c = 0; c < casts.length; c++) {
+                        var INTF = "";
+                        var path = "";
+                        if (casts[c].type == AF_TARGETTYPE.VRM) {
+                            INTF = INTERNAL_FILE.VRM;
+                            fullCount++;
+                        }else if (casts[c].type == AF_TARGETTYPE.OtherObject) { 
+                            INTF = INTERNAL_FILE.OBJECTS;
+                            var castfile = await inputDatapathFromHistory(AppDB[INTF],casts[c].path,casts[c].type);
+                            if (castfile) {
+                                fullCount++;
+                            }
+                        }else if (casts[c].type == AF_TARGETTYPE.Image) {
+                            INTF = INTERNAL_FILE.IMAGES;
+                            fullCount++;
+                        }else if (casts[c].type == AF_TARGETTYPE.UImage) {
+                            INTF = INTERNAL_FILE.IMAGES;
+                            fullCount++;
+                        }
+                    }
+                    mainData.elements.percentLoad.percent = (100.0 / parseFloat(fullCount)) / 100;
+
+                    //---call Unity
                     AppQueue.add(new queueData(
                         {target:AppQueue.unity.ManageAnimation,method:'LoadProject',param:JSON.stringify(originalresult)},
                         "openproject",QD_INOUT.returnJS,
@@ -60,13 +102,14 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                             result = originalresult;
                         }
                         mainData.elements.loading = true;
+                        mainData.elements.loadingTypePercent = false;
                         if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.VRM) {
                             var f = result; //await result.getFile();
                             var fdata = URL.createObjectURL(f);
-                            mainData.data.objectUrl.vrm = fdata;
-                            mainData.states.fileloadname = f.name;
-                            mainData.states.fileloadtype = "v";
-                            mainData.states.loadingfileHandle = result;
+                            //mainData.data.objectUrl.vrm = fdata;
+                            //mainData.states.fileloadname = f.name;
+                            //mainData.states.fileloadtype = "v";
+                            //mainData.states.loadingfileHandle = result;
                             AppQueue.add(new queueData(
                                 {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
                                 "firstload_vrm",QD_INOUT.returnJS,
@@ -78,7 +121,9 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                                     {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
                                     "accept_vrm",QD_INOUT.returnJS,
                                     callback.firstload_vrm,
-                                    {callback}
+                                    {callback,filename:f.name,
+                                        fileloadtype: "v",
+                                        loadingfileHandle : f}
                                 ));
                             }
                         }else if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.OBJECTS) {
@@ -88,6 +133,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                             mainData.data.objectUrl.vrm = fdata;
                             mainData.states.fileloadname = f.name;
                             mainData.states.fileloadtype = "v";
+                            mainData.states.loadingfileHandle = result;
                             var filearr =  mainData.states.fileloadname.split(".");
                             var ext = filearr[filearr.length-1];
                             
@@ -96,7 +142,9 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                                 {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:fdata},
                                 "sendobjectinfo",QD_INOUT.returnJS,
                                 callback.sendObjectInfo,
-                                {callback,objectURL:fdata}
+                                {callback,objectURL:fdata,filename:f.name,
+                                    fileloadtype: "o",
+                                    loadingfileHandle : f}
                             ));
                         }else if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.IMAGES) {
                             var f = result; //await result.getFile();
@@ -165,6 +213,15 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                 if (v2) {
                     await dataDB.removeItem(mainData.elements.projectSelector.selected);
                     onclick_refresh_projectSelector();
+
+                    //---remove materials in project
+                    var keys = await AppDB.materials.keys();
+                    for (var i = 0; i < keys.length; i++) {
+                        var js = await AppDB.materials.getItem(keys[i]);
+                        if (js.projectName == mainData.elements.projectSelector.selected) {
+                            await AppDB.materials.removeItem(keys[i]);
+                        }
+                    }
                 }
             }
         });

@@ -9,7 +9,10 @@ export const defineAppObjlistProp = () => {
 
     var tmpIKBoneType = [{label:"---",value:IKBoneType.Unknown}];
     for (var obj in IKBoneType) {
-        if ((obj != "IKParent") && (obj != "Head") && (obj != "Unknown")) {
+        if ((IKBoneType[obj] != IKBoneType.IKParent) && (IKBoneType[obj] != IKBoneType.Head) && 
+            (IKBoneType[obj] != IKBoneType.Unknown) && 
+            (IKBoneType[obj] != IKBoneType.LeftShoulder) && (IKBoneType[obj] != IKBoneType.RightShoulder)
+        ) {
             tmpIKBoneType.push({
                 label : obj,
                 value : IKBoneType[obj]

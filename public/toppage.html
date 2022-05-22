@@ -319,11 +319,11 @@
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
                             <q-btn flat dense icon="open_with" :label="$t('ribbon_vrm_resetposition')" no-caps 
-                                @click="RibbonFuncModel('resetposition')"
+                                @click="ribbonEvent.RibbonFuncModel('resetposition')"
                             ></q-btn>
                             <br>
                             <q-btn flat dense icon="crop_rotate" :label="$t('ribbon_vrm_resetrotate')" no-caps 
-                                @click="RibbonFuncModel('resetrotate')"
+                                @click="ribbonEvent.RibbonFuncModel('resetrotate')"
                             ></q-btn>
                         </div>
                         <div class="ribbon-toolbar">
@@ -1206,7 +1206,7 @@
                                     <q-toggle v-model="objpropData.elements.vrmui.movemode" color="primary"></q-toggle>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row common_ui_off" >
                                 <div class="col-6">
                                     {{ $t('Head IK move level') }}
                                 </div>
@@ -3025,6 +3025,22 @@
                 </q-card-section>
             </q-card>
         </q-dialog>
+        <q-dialog v-model="mainData.elements.loadingTypePercent" style="width:250px;">
+            <q-card class="my-card" style="width: 220px;">
+                <q-card-section>
+                    <div class="q-ma-md">
+                        <q-linear-progress
+                            :value="mainData.elements.percentLoad.current"
+                            color="secondary" size="20px"
+                        >
+                            <div class="absolute-full flex flex-center">
+                                <q-badge color="white" text-color="black" :label="cmp_percentLoad"></q-badge>
+                            </div>
+                        </q-linear-progress>
+                    </div>
+                </q-card-section>
+            </q-card>
+        </q-dialog>
         <appinfo-dlg
             v-model="mainData.elements.appinfodlg"
             :name="mainData.appinfo.name"
@@ -3419,6 +3435,7 @@
     <audio src="static/res/aud01_capture.mp3" ref="aud01_capture" class="common_ui_off"></audio>
 
 </div>
+    <input type="hidden" id="UnityBuildPath" value="Build">
 
     <!-- start global include by CDN -->
     <script src="static/lib/vue/vue.global.<$ jsenv $>js"></script>

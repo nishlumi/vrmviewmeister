@@ -180,24 +180,23 @@ export function defineBonetranDlg(app, Quasar) {
                 var posx = 1; var posy = 2; var posz = 3; var rotx = 4; var roty = 5; var rotz = 6;
                 
                 //---EyeviewHandle
-                setCell(posx, 1, sdata[1][posx] * -1);
+                setCell(posx, IKBoneType.EyeViewHandle, sdata[1][posx] * -1);
                 
                 //---Head
-                setCell(posx, 2, sdata[2][posx] * -1);
+                setCell(posx, IKBoneType.Head, sdata[2][posx] * -1);
         
                 //---LookAt
-                setCell(posx, 3, sdata[3][posx] * -1);
+                setCell(posx, IKBoneType.LookAt, sdata[3][posx] * -1);
         
                 //---Aim
-                setCell(posx, 4, sdata[4][posx] * -1);
+                setCell(posx, IKBoneType.Aim, sdata[4][posx] * -1);
         
                 //---Chest
-                setCell(posx, 5, sdata[5][posx] * -1);
+                setCell(posx, IKBoneType.Chest, sdata[5][posx] * -1);
         
                 //---Pelvis
-                setCell(posx, 6, sdata[6][posx] * -1);
+                setCell(posx, IKBoneType.Pelvis, sdata[6][posx] * -1);
         
-                //---Left Lower Arm from Right
                 var mirrorLR = function(tleft, tright)  {
                     setCell(posx, tleft, sdata[tright][posx] * -1);
                     setCell(posy, tleft, sdata[tright][posy]);
@@ -206,29 +205,37 @@ export function defineBonetranDlg(app, Quasar) {
                     setCell(roty, tleft, sdata[tright][roty] * -1);
                     setCell(rotz, tleft, sdata[tright][rotz] * -1);
                 }
-                mirrorLR(7,9);
+
+                //---Right Shouloder from Left
+                mirrorLR(IKBoneType.LeftShoulder, IKBoneType.RightShoulder);
+
+                //---Right Lower Arm from Left
+                mirrorLR(IKBoneType.LeftLowerArm, IKBoneType.RightLowerArm);
+        
+                //---Right Hand from Left
+                mirrorLR(IKBoneType.LeftHand, IKBoneType.RightHand);
+        
+                //---Left Shouloder from Right
+                mirrorLR(IKBoneType.RightShoulder, IKBoneType.LeftShoulder);
+
+                //---Left Lower Arm from Right
+                mirrorLR(IKBoneType.RightLowerArm, IKBoneType.LeftLowerArm);
         
                 //---Left Hand from Right
-                mirrorLR(8,10);
-        
-                //---Right Lower Arm from Right
-                mirrorLR(9,7);
-        
-                //---Right Hand from Right
-                mirrorLR(10,8);
+                mirrorLR(IKBoneType.RightHand, IKBoneType.LeftHand);
         
                 //---------------------------------------------------------
                 //---Left Lower Leg from Right
-                mirrorLR(11,13);
+                mirrorLR(IKBoneType.LeftLowerLeg, IKBoneType.RightLowerLeg);
         
                 //---Left Foot from Right
-                mirrorLR(12,14);
+                mirrorLR(IKBoneType.LeftLeg, IKBoneType.RightLeg);
         
                 //---Right Lower Leg from Right
-                mirrorLR(13,11);
+                mirrorLR(IKBoneType.RightLowerLeg, IKBoneType.LeftLowerLeg);
         
                 //---Right Foot from Right
-                mirrorLR(14,12);
+                mirrorLR(IKBoneType.RightLeg, IKBoneType.LeftLeg);
             }
 
 
@@ -257,7 +264,7 @@ export function defineBonetranDlg(app, Quasar) {
                 //---spreadsheet
                 var bonedata = [];
                 for (var obj in IKBoneType) {
-                    if ((IKBoneType[obj] >= 0) && (IKBoneType[obj] <= 14)) {
+                    if ((IKBoneType[obj] >= IKBoneType.IKParent) && (IKBoneType[obj] <= IKBoneType.RightLeg)) {
                         bonedata.push([obj,0,0,0,0,0,0]);
                     }
                 }

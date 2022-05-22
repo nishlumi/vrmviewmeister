@@ -102,7 +102,9 @@ export class VFileOperator {
         this.callbacks.open = callback;
         try {
             if (this.flags.isEnableFSAA) {
-                var files = await window.showOpenFilePicker(fileoption.openOptions);
+                var vfopt = new VFileOptions();
+                vfopt.types = fileoption.types;
+                var files = await window.showOpenFilePicker(vfopt.openOptions);
                 if (files) {
                     this.common_open(files);
                 }

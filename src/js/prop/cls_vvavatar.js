@@ -174,11 +174,11 @@ export class VVAvatar {
         }else if (this.type == AF_TARGETTYPE.Stage) {
             this.thumbnail = locpath + "img/pic_stage.png";
         }
-        this.animations.name = js.animationName;
-        this.animations.length = parseFloat(js.animationLength);
-        this.animations.wrapMode = js.animationWrapMode;
+        this.animations.name = js.animationName || "";
+        this.animations.length = js.animationLength ? parseFloat(js.animationLength) : 0;
+        this.animations.wrapMode = js.animationWrapMode || js.animationWrapMode;
 
-        this.motion = js.motion;
+        this.motion = js.motion || "";
     }
     getBlendShape (name) {
         var ret = null;
@@ -330,10 +330,12 @@ export class VVCast {
         this.roleName = name || "";
         this.roleTitle = title || "";
         this.avatarId = "";
+        this.avatarTitle = "";
         this.type = AF_TARGETTYPE.Unknown;
         this.bodyHeight = [];
         this.bodyInfoList = [];
         this.path = "";
+        this.ext = "";
         /**
          * @type {VVAvatar}
          */
@@ -416,7 +418,7 @@ export class VVAnimationProject {
         /**
          * @type {VVAnimationMotionTimeline}
          */
-        this.timeline = null;
+        this.timeline = new VVAnimationMotionTimeline();
         this.timelineFrameLength = 60.0;
         this.baseDuration = this.timelineFrameLength / 6000.0;
         this.fps = 60;
@@ -431,7 +433,7 @@ export class VVAnimationProject {
         /**
          * @type {VVAnimationProjectMaterialPackage}
          */
-        this.materialManager = {};
+        this.materialManager = new VVAnimationProjectMaterialPackage();
         this.isSharing = false;
         this.isReadonly = false;
         //this.isNew = true;
@@ -440,13 +442,22 @@ export class VVAnimationProject {
             if ("mkey" in param) this.mkey = param.mkey;
             if ("casts" in param) {
                 param.casts.forEach(item => {
-                    var vv = new VVCast(item.roleName, item.roleTitle);
-                    vv.avatar = item.avatar;
-                    vv.avatarId = item.avatarId;
-                    vv.type = item.type;
-                    vv.bodyHeight = item.bodyHeight;
-                    vv.bodyInfoList = item.bodyInfoList;
-                    this.casts.push(vv);
+                    var ishit = this.casts.findIndex(match => {
+                        if (match.roleName == item.roleName) return true;
+                        return false;
+                    });
+                    if (ishit == -1) {
+                        var vv = new VVCast(item.roleName, item.roleTitle);
+                        vv.avatar = item.avatar || "";
+                        vv.avatarId = item.avatarId || "";
+                        vv.avatarTitle = item.avatarTitle || "";
+                        vv.type = item.type;
+                        vv.path = item.path || "";
+                        vv.ext = item.ext || "";
+                        vv.bodyHeight = item.bodyHeight;
+                        vv.bodyInfoList = item.bodyInfoList;
+                        this.casts.push(vv);
+                    }                    
                 });
                 
             }
@@ -495,12 +506,14 @@ export class VVAnimationProject {
                 ) {
                     //[creation point] VVCast
                     var vv = new VVCast(item.roleName, item.roleTitle);
-                    vv.avatar = item.avatar;
+                    vv.avatar = item.avatar || null;
                     vv.avatarId = item.avatarId;
+                    vv.avatarTitle = item.avatarTitle || "";
                     vv.type = item.type;
                     vv.bodyHeight = item.bodyHeight;
                     vv.bodyInfoList = item.bodyInfoList;
                     vv.path = item.path || "";
+                    vv.ext = item.ext || "";
                     this.casts.push(vv);
                 }
             });

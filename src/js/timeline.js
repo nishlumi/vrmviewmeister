@@ -96,7 +96,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         
         for (var i = 0; i < mainData.data.project.casts.length; i++) {
             var item = mainData.data.project.casts[i];
-            if (item.avatar != null) {
+            if ((item.avatar != null) && (item.avatar != "")) {
                 var param = new AnimationParsingOptions();
                 param.index = newval;
                 param.isCameraPreviewing = 0;

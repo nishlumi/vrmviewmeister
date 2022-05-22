@@ -70,7 +70,7 @@ const app = Vue.createApp({
         const { UnityCallback } = defineUnityCallback(mainData.value, ribbonData.value,objlistData.value,objpropData.value,timelineData.value, unityConfig.value,{
             lnk_saveproject
         });
-        const { modelOperator,wa_selectedAvatar } = defineModelOperator(mainData.value,ribbonData.value,objlistData.value,objpropData.value,timelineData.value,UnityCallback,{
+        const { modelOperator,wa_selectedAvatar,wa_percentCurrent,cmp_percentLoad } = defineModelOperator(mainData.value,ribbonData.value,objlistData.value,objpropData.value,timelineData.value,UnityCallback,{
             unitycontainer
         });
         const { modelLoader, dnd } = defineModelLoader(app, Quasar, mainData.value, timelineData.value, modelOperator, UnityCallback, {
@@ -222,7 +222,8 @@ const app = Vue.createApp({
 
             //---method, properties
             modelLoader, modelOperator, dnd,UnityCallback,
-            wa_selectedAvatar
+            wa_selectedAvatar,wa_percentCurrent,
+            cmp_percentLoad
         }
     }
 })

@@ -202,6 +202,8 @@ export function defineVpadDlg(app, Quasar) {
                         }
                     }
                 ));
+                currentValueZero();
+                
                 /*AppQueue.add(new queueData(
                     {target:AppQueue.unity.Camera,method:'GetTranslationCameraFromOuter'},
                     "cameraposition",QD_INOUT.returnJS,
@@ -376,6 +378,9 @@ export function defineVpadDlg(app, Quasar) {
             }
             const onclick_rotation_zero = ({evt, ...newInfo}) => {
                 //onclick_rotation({x:0, y:0},newInfo);
+                currentValueZero();
+            }
+            const currentValueZero = () => {
                 data.value.elements.rotation.current.x = 0;
                 data.value.elements.rotation.current.y = 0;
 

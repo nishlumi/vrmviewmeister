@@ -58,7 +58,18 @@ export class UnityCallbackFunctioner {
         var timelineData = callback.timelineData;
         var modelOperator = callback.modelOperator;
 
+        // option paramater
+        /*
+            callback @type {UnityCallbackFunctioner}
+            objectURL @type {String}  object URL
+            filename @type {String} file name
+            fileloadtype @type {String} file indicated flag
+            loadingfileHandle @type {File} File object
+        */
         var objectURL = options.objectURL;
+        var filename = options.filename || "";
+        var fileloadtype = options.fileloadtype || "";
+        var loadingfileHandle = options.loadingfileHandle || null;
         if (objectURL != "") URL.revokeObjectURL(objectURL);
         mainData.elements.loading = false;
         if (typeof js == "string") {
@@ -78,27 +89,28 @@ export class UnityCallbackFunctioner {
                 //URL.revokeObjectURL(mainData.data.objectUrl.vrm);
             }else{
                 if (mainData.states.fileloadname != "") {
-                    js["Title"] = mainData.states.fileloadname;
+                    js["Title"] = filename;
                 }
-                var addedObj = modelOperator.addObject(js.type, js);
+                var baseFilepath = (loadingfileHandle) ? loadingfileHandle.name : "";
+                var addedObj = modelOperator.addObject(js.type, js, baseFilepath);
                 //modeloperator.deselect_objectItem();
                 mainData.states.selectedAvatar = addedObj.avatar;
-                addedObj.role.path = (mainData.states.loadingfileHandle) ? mainData.states.loadingfileHandle.name : "";
+                addedObj.role.path = baseFilepath;
 
                 var role = addedObj.role;
+
                 //[creation point] VVTimelineTarget
-                timelineData.data.timelines.push(new VVTimelineTarget(role));
+                var ishit = timelineData.data.timelines.find(item => {
+                    if ((item.target.roleName == role.roleName) || (item.target.roleTitle == role.roleTitle)) return true;
+                    return false;
+                });
+                if (ishit) {
+                    ishit.setTarget(role);
+                }else{
+                    timelineData.data.timelines.push(new VVTimelineTarget(role));
+                }
 
                 if (addedObj.avatar.type == AF_TARGETTYPE.OtherObject) {
-
-                    /*AppQueue.add(new queueData(
-                        {target:addedObj.id,method:'ListUserMaterial'},
-                        "enummaterial",QD_INOUT.returnJS,
-                        this.callbackDB.enummaterial
-                    ));*/
-                    
-                    //if (mainData.data.objectUrl.vrm != "") URL.revokeObjectURL(mainData.data.objectUrl.vrm);
-                    //AppQueue.start();
                     //---first only load materials
                     if (!mainData.elements.projdlg.mat_firstload) {
                         modelOperator.load_materialFileBody();
@@ -108,10 +120,14 @@ export class UnityCallbackFunctioner {
 
                 if (mainData.states.loadingfile) URL.revokeObjectURL(mainData.states.loadingfile);
                 mainData.states.loadingfileHandle = null;
+                loadingfileHandle = null;
             }
             mainData.states.fileloadname = "";
-
-
+        }
+        if (mainData.elements.loadingTypePercent) {
+            if (mainData.elements.percentLoad.current <= 1.0) {
+                mainData.elements.percentLoad.current += mainData.elements.percentLoad.percent;
+            }
         }
     }
     async historySendObjectInfo (js, options) {
@@ -143,7 +159,7 @@ export class UnityCallbackFunctioner {
 
             //URL.revokeObjectURL(mainData.data.objectUrl.vrm);
         }
-        mainData.states.fileloadname = "";
+        //mainData.states.fileloadname = "";
     }
     /**
      * Load VRM after confirm dialog
@@ -159,10 +175,22 @@ export class UnityCallbackFunctioner {
         var timelineData = callback.timelineData;
         var modelOperator = callback.modelOperator;
 
+        // option paramater
+        /*
+            callback @type {UnityCallbackFunctioner}
+            objectURL @type {String}  object URL
+            filename @type {String} file name
+            fileloadtype @type {String} file indicated flag
+            loadingfileHandle @type {File} File object
+        */
+        var filename = options.filename || "";
+        var fileloadtype = options.fileloadtype || "";
+        var loadingfileHandle = options.loadingfileHandle || null;
+
         var arr = js.split(",");
         var role = modelOperator.addVRM(AF_TARGETTYPE.VRM,mainData.data.preview,arr);
         //var role = modelOperator.getRoleFromAvatar(mainData.data.preview.id);
-        role.path = (mainData.states.loadingfileHandle) ? mainData.states.loadingfileHandle.name : "";
+        role.path = (loadingfileHandle) ? loadingfileHandle.name : "";
         //modeloperator.select_objectItem(mainData.data.preview.id);
         mainData.states.selectedAvatar = mainData.data.preview;
         
@@ -177,7 +205,7 @@ export class UnityCallbackFunctioner {
             timelineData.data.timelines.push(new VVTimelineTarget(role));
         }
         mainData.data.preview = null;
-        mainData.states.loadingfileHandle = null;
+        loadingfileHandle = null;
 
         //---option changed: each loading of VRM: HingeLimited
         AppQueue.add(new queueData(
@@ -186,6 +214,11 @@ export class UnityCallbackFunctioner {
             null
         ));
         //AppQueue.start();
+        if (mainData.elements.loadingTypePercent) {
+            if (mainData.elements.percentLoad.current <= 1.0) {
+                mainData.elements.percentLoad.current += mainData.elements.percentLoad.percent;
+            }
+        }
     }
     async firstload_audio (val, options) {
         /**
@@ -512,7 +545,7 @@ export class UnityCallbackFunctioner {
         objpropData.elements.objectui.animation.clipselected = val;
     }
     async get_anmimationcliplist (val, objpropData) {
-        var lst = val.split(",");
+        var lst = val.split("=");
         objpropData.elements.objectui.animation.cliplist = lst;
     }
     async get_animationspeed(val, objpropData) {
@@ -1325,13 +1358,19 @@ export class UnityCallbackFunctioner {
         const mainData = callback.mainData;
         const modelOperator = callback.modelOperator;
         const modelLoader = callback.modelLoader;
+        //const objectUrls = options.objectUrls;
 
-        mainData.elements.loading = false;
+        //---revoke object urls
+        /*objectUrls.forEach(item => {
+            URL.revokeObjectURL(item);
+        });*/
+
+        //mainData.elements.loadingTypePercent = false;
         mainData.states.loadingfileHandle = null;
         modelOperator.destroy_materialFile(true);
         modelLoader.setupDefaultObject();
         
-        //---AnimationProject
+        //---Return is AnimationProject.
         var js = JSON.parse(val);
 
         var proj = new VVAnimationProject(js);
@@ -1345,7 +1384,7 @@ export class UnityCallbackFunctioner {
 
 
         //---apply value to UI
-        modelOperator.LoadAndApplyToTimelineUI(mainData.data.project);
+        await modelOperator.LoadAndApplyToTimelineUI(mainData.data.project);
         callback.timelineData.states.currentcursor = 1;
         modelOperator.listload_materialFile("p",proj.materialManager);
 
