@@ -12,6 +12,7 @@ export const LimitOfCallbackObjectProperty = 10;
 export const FILEEXTENSION_VRM = ".vrm";
 export const FILEEXTENSION_POSE = ".vvmpose";
 export const FILEEXTENSION_MOTION = ".vvmmot";
+export const FILEEXTENSION_MOTION_GENERAL = [".bvh"];
 export const FILEEXTENSION_ANIMATION = ".vvmproj";
 export const FILEEXTENSION_DEFAULT = ".json";
 export const FILEEXTENSION_OTHEROBJECT = [".obj",".fbx",".zip",".gltf",".glb",".ply",".stl",".3mf"];
@@ -38,7 +39,7 @@ export const FILEOPTION = {
         types: [
             {
                 description : "VVM motion file",
-                accept : {"application/json": [".vvmmot",".json"]}
+                accept : {"application/json": [".vvmmot",".json",".bvh"]}
             }
         ]
     },

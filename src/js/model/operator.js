@@ -1,8 +1,9 @@
 import { AF_TARGETTYPE, AF_MOVETYPE, CNS_BODYBONES, IKBoneType, INTERNAL_FILE, FILEEXTENSION_ANIMATION} from "../../res/appconst.js"
 import { VVAnimationProject, VVAvatar, VVCast, VVSelectedObjectItem,  VVBlendShape, VVAvatarEquipSaveClass, VVTimelineTarget, VVTimelineFrameData, VVAnimationFrameActor, VVAnimationProjectMaterialPackage } from '../prop/cls_vvavatar.js';
-import { AnimationRegisterOptions, UnityVector3 } from "../prop/cls_unityrel.js";
+import { AnimationRegisterOptions, BvhData, BvhNode, UnityVector3 } from "../prop/cls_unityrel.js";
 import { ChildReturner } from "../../../public/static/js/cls_childreturner.js";
 import { AppDBMeta } from "../appconf.js";
+import { token } from "morgan";
 
 export class appModelOperator {
     constructor(mainData, ribbonData, objlistData, objpropData, timelineData, UnityCallback, refs) {
@@ -1696,6 +1697,109 @@ export class appModelOperator {
             null
         ));
         AppQueue.start();
+    }
+
+    analyzeBVH (text) {
+        var filearr = text.split(/\r|\n|\r\n/);
+        if (filearr[0] !== "HIERARCHY") {
+            console.error("BVH file error.");
+            return;
+        }
+        var nodeList = [];
+        var motionList = [];
+        var rootNode = new BvhNode();
+        /**
+         * @type {BvhNode}
+         */
+        var isCurrentJoint = null;
+        var isMotionPhase = false;
+        for (var ln of filearr) {
+            var childNode = new BvhNode();
+            var tokens = ln.trim().split(/[\s]+/);
+            if (isMotionPhase) {
+                //---analyze motion
+                if (!isNaN(parseFloat(tokens[0]))) {
+                    var flist = [];
+                    for (var i = 0; i < tokens.length; i++) {
+                        var fv = parseFloat(tokens[i]);
+                        if (!isNaN(fv)) {
+                            flist.push(fv);
+                        }
+                    }
+                    motionList.push(flist);
+                }
+            }else{
+                //---analyze bone
+                if (tokens[0].toUpperCase() == "ROOT") {
+                    rootNode.joint = tokens[1];
+                    isCurrentJoint = rootNode;
+                }
+                if (tokens[0].toUpperCase() == "JOINT") {
+                    //---finish previous node
+                    nodeList.push(isCurrentJoint);
+                    isCurrentJoint = null;
+    
+                    //---start node
+                    childNode.joint = tokens[1];
+                    isCurrentJoint = childNode;
+                }
+                if (tokens[0].toUpperCase() == "OFFSET") {
+                    isCurrentJoint.offset = tokens.filter(item => {
+                        if (!isNaN(parseFloat(item))) return true; 
+                        return false;
+                    });   
+                }
+                if (tokens[0].toUpperCase() == "CHANNELS") {
+                    for (var cha = 2; cha < tokens.length; cha++) {
+                        isCurrentJoint.channels.push(tokens[cha]);
+                    }
+                }
+                if ((tokens[0].toUpperCase() == "END") && (tokens[0].toUpperCase() == "SITE")) {
+                    childNode.endsite = true;
+                }
+            }
+            if (tokens[0].toUpperCase() == "MOTION") isMotionPhase = true;
+            
+        }
+        var rowIndex = 0;
+        var motionTL = [];
+        //---packing as vector
+        for (var ml of motionList) {
+            var mtline = {};
+            for (var nd = 0; nd < nodeList.length; nd++) {
+                rowIndex = (nd * nodeList[nd].channels.length);
+                var vpos = new UnityVector3(0, 0, 0);
+                var vrot = new UnityVector3(0, 0, 0);
+                for (var cha = 0; cha < nodeList[nd].channels.length; cha++) {
+                    var chastr = nodeList[nd].channels[cha];
+                    if (chastr.toLowerCase() == "xposition") {
+                        vpos.x = ml[rowIndex + cha];
+                    }else if (chastr.toLowerCase() == "yposition") {
+                        vpos.y = ml[rowIndex + cha];
+                    }else if (chastr.toLowerCase() == "zposition") {
+                        vpos.z = ml[rowIndex + cha];
+                    }else if (chastr.toLowerCase() == "xrotation") {
+                        vrot.x = ml[rowIndex + cha];
+                    }else if (chastr.toLowerCase() == "yrotation") {
+                        vrot.y = ml[rowIndex + cha];
+                    }else if (chastr.toLowerCase() == "zrotation") {
+                        vrot.z = ml[rowIndex + cha];
+                    }
+                }
+                var mtdata = {
+                    "bone" : nodeList[nd].joint,
+                    "position" : vpos,
+                    "rotation" : vrot
+                };
+                mtline[nodeList[nd].joint] = mtdata;
+            }
+            motionTL.push(mtline);
+        }
+
+        var bdata = new BvhData();
+        bdata.bones = nodeList;
+        bdata.motions = motionTL;
+        return bdata;
     }
 }
 

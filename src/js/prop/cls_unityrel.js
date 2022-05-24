@@ -406,3 +406,57 @@ export class AvatarIKMappingClass {
         this.name = "self";
     }
 }
+export class BvhNode {
+    constructor() {
+        /**
+         * @type {Array<Number>}
+         */
+        this.offset = [];
+        /**
+         * @type {Array<String>}
+         */
+        this.channels = [];
+        /**
+         * @type {String}
+         */
+        this.joint = "";
+        /**
+         * @type {Boolean}
+         */
+        this.endsite = false;
+        /**
+         * @type {BvhNode}
+         */
+        this.child = {};
+    }
+}
+export class BvhData {
+    constructor() {
+        /**
+         * @type {Array<BvhNode>}
+         */
+        this.bones = [];
+        /**
+         * @type {Array<Array<Number>>}
+         */
+        this.motions = [];
+    }
+    getSpecifyBoneMotion(lineIndex, joint, channel) {
+        var ret = null;
+        var boneIndex = this.bones.findIndex(item => {
+            if (item.joint.toLowerCase() == joint.toLowerCase()) return true;
+            return false;
+        });
+        if (boneIndex > -1) {
+            var chaIndex = this.bones[boneIndex].channels.findIndex(cha => {
+                if (cha.toLowerCase() == channel.toLowerCase()) return true;
+                return false;
+            });
+            if (chaIndex > -1) {
+                var finalIndex = (boneIndex * this.bones[boneIndex].channels.length) + chaIndex;
+                ret = this.motions[lineIndex][finalIndex];
+            }
+        }
+        return ret;
+    }
+}

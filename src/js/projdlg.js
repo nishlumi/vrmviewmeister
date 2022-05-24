@@ -1,7 +1,7 @@
 import { appModelOperator } from "./model/operator.js";
 import { UnityCallbackFunctioner } from "./model/callback.js";
 import { VVTimelineTarget } from "./prop/cls_vvavatar.js";
-import { AF_TARGETTYPE, FILEEXTENSION_DEFAULT, FILEEXTENSION_MOTION, FILEOPTION } from "../res/appconst.js";
+import { AF_TARGETTYPE, FILEEXTENSION_DEFAULT, FILEEXTENSION_MOTION, FILEEXTENSION_MOTION_GENERAL, FILEOPTION } from "../res/appconst.js";
 import { VFileHelper, VFileOptions, VFileType } from "../../public/static/js/filehelper.js";
 /**
  * 
@@ -161,6 +161,9 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
     }
     const fil_animmotion_onchange = async (evt) => {
         var onefile = evt.target.files[0];
+        /**
+         * @type {File}
+         */
         var file = null;
         if (VFileHelper.flags.isHistoryFSAA && VFileHelper.flags.isEnableFSAA) {
             file = await onefile.getFile();
@@ -170,7 +173,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
 
         const projdlg = mainData.elements.projdlg;
         var tmpcast = null;
-        if (mainData.elements.projdlg.tab == "role") {
+        /*if (mainData.elements.projdlg.tab == "role") {
             //---mode for editing role title
             var hitIndex = projdlg.editroles.findIndex(item => {
                 if (item.name == projdlg.roleselection) return true;
@@ -182,7 +185,9 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
                 
                 
             }
-        }else if (mainData.elements.projdlg.tab == "avatar") {
+        }else 
+        */
+        if (mainData.elements.projdlg.tab == "avatar") {
             //---mode for selecting avatar
             var hitSelavatar = projdlg.selavatars.findIndex(item => {
                 if (!projdlg.avatarselection) return false;
@@ -196,25 +201,43 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
         }
         if (!tmpcast) return;
 
-
+        const CHECK_GENERALMOTION = (filename) => {
+            var ret = false;
+            for (var i = 0; i < FILEEXTENSION_MOTION_GENERAL.length; i++) {
+                if (filename.indexOf(FILEEXTENSION_MOTION_GENERAL[i]) > -1) {
+                    ret = true;
+                    break;
+                }
+            }
+            return ret;
+        }
         var fdata = URL.createObjectURL(file);
         if ((file.name.indexOf(FILEEXTENSION_MOTION) > -1) ||
-            (file.name.indexOf(FILEEXTENSION_DEFAULT) > -1)
+            (file.name.indexOf(FILEEXTENSION_DEFAULT) > -1) ||
+            (CHECK_GENERALMOTION(file.name))
         ) {
-            //---Firstly, set target.
-            AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetLoadTargetSingleMotion',param:tmpcast.roleName},
-                "",QD_INOUT.toUNITY,
-                null
-            ));
-            //---Second load a motion data.
-            AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'LoadSingleMotion',param:fdata},
-                "openmotionresult",QD_INOUT.returnJS,
-                callback.openmotionresult,
-                {callback}
-            ));
-            AppQueue.start();
+            if (file.name.indexOf(FILEEXTENSION_MOTION_GENERAL[0])) {
+                //---if Bvh, analyze this data
+                var text = await file.text();
+                var data = modelOperator.analyzeBVH(text);
+                console.log(data);
+            }else{
+                //---Firstly, set target.
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'SetLoadTargetSingleMotion',param:tmpcast.roleName},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+                //---Second load a motion data.
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'LoadSingleMotion',param:fdata},
+                    "openmotionresult",QD_INOUT.returnJS,
+                    callback.openmotionresult,
+                    {callback}
+                ));
+                AppQueue.start();
+            }
+            
         }else{
             appAlert(t("msg_error_allfile"));
         }
