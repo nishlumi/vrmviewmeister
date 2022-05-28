@@ -1193,6 +1193,9 @@ export class appModelOperator {
 
         this.ribbonData.elements.frame.fps = parseInt(project.fps);
 
+        var overmb = this.mainData.appconf.confs.application.not_autoload_over_mb || -1;
+        const calc_overmb = parseInt(overmb)*1024*1024;
+
         //---set up new cast and role
         for (var i = 0; i < project.casts.length; i++) {
             var cast = project.casts[i];
@@ -1201,25 +1204,30 @@ export class appModelOperator {
                 if (cast.type == AF_TARGETTYPE.VRM) {
                     var f = await AppDB.vrm.getItem(cast.path);
                     if (f) {
-                        var fdata = URL.createObjectURL(f);
-                        //this.mainData.data.objectUrl.vrm = fdata;
-                        //this.mainData.states.fileloadname = f.name;
-                        //this.mainData.states.fileloadtype = "v";
-                        //this.mainData.states.loadingfileHandle = f;
-                        AppQueue.add(new queueData(
-                            {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
-                            "firstload_vrm",QD_INOUT.returnJS,
-                            this.UnityCallback.historySendObjectInfo,
-                            {callback:this.UnityCallback,objectURL:fdata}
-                        ));
-                        AppQueue.add(new queueData(
-                            {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
-                            "accept_vrm",QD_INOUT.returnJS,
-                            this.UnityCallback.firstload_vrm,
-                            {callback:this.UnityCallback,filename:f.name,
-                             fileloadtype: "v",
-                             loadingfileHandle : f}
-                        ));
+                        if ((overmb == -1) || (f.size < calc_overmb)) {
+                            var fdata = URL.createObjectURL(f);
+                            //this.mainData.data.objectUrl.vrm = fdata;
+                            //this.mainData.states.fileloadname = f.name;
+                            //this.mainData.states.fileloadtype = "v";
+                            //this.mainData.states.loadingfileHandle = f;
+                            AppQueue.add(new queueData(
+                                {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
+                                "firstload_vrm",QD_INOUT.returnJS,
+                                this.UnityCallback.historySendObjectInfo,
+                                {callback:this.UnityCallback,objectURL:fdata}
+                            ));
+                            AppQueue.add(new queueData(
+                                {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
+                                "accept_vrm",QD_INOUT.returnJS,
+                                this.UnityCallback.firstload_vrm,
+                                {callback:this.UnityCallback,filename:f.name,
+                                 fileloadtype: "v",
+                                 loadingfileHandle : f}
+                            ));
+                        }else{
+                            this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                        }
+                        
                     }else{
                         this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
                         //---error file notify
@@ -1235,23 +1243,27 @@ export class appModelOperator {
                 }else if (cast.type == AF_TARGETTYPE.OtherObject) {
                     var f = await AppDB.obj.getItem(cast.path);
                     if (f) {
-                        var fdata = URL.createObjectURL(f);
-                        //this.mainData.data.objectUrl.vrm = fdata;
-                        //this.mainData.states.fileloadname = f.name;
-                        //this.mainData.states.fileloadtype = "o";
-                        //this.mainData.states.loadingfileHandle = f;
-                        var filearr =  f.name.split(".");
-                        var ext = filearr[filearr.length-1];
-                        
-                        fdata += "," + f.name + "," + ext;
-                        AppQueue.add(new queueData(
-                            {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:fdata},
-                            "sendobjectinfo",QD_INOUT.returnJS,
-                            this.UnityCallback.sendObjectInfo,
-                            {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
-                                fileloadtype: "o",
-                                loadingfileHandle : f}
-                        ));
+                        if ((overmb == -1) || (f.size < calc_overmb)) {
+                            var fdata = URL.createObjectURL(f);
+                            //this.mainData.data.objectUrl.vrm = fdata;
+                            //this.mainData.states.fileloadname = f.name;
+                            //this.mainData.states.fileloadtype = "o";
+                            //this.mainData.states.loadingfileHandle = f;
+                            var filearr =  f.name.split(".");
+                            var ext = filearr[filearr.length-1];
+                            
+                            fdata += "," + f.name + "," + ext;
+                            AppQueue.add(new queueData(
+                                {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:fdata},
+                                "sendobjectinfo",QD_INOUT.returnJS,
+                                this.UnityCallback.sendObjectInfo,
+                                {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
+                                    fileloadtype: "o",
+                                    loadingfileHandle : f}
+                            ));
+                        }else{
+                            this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                        }
                     }else{
                         if (cast.path == "%BLANK%") {
                             //---Non file object
@@ -1272,23 +1284,27 @@ export class appModelOperator {
                 }else if (cast.type == AF_TARGETTYPE.Image) {
                     var f = await  AppDB.image.getItem(cast.path);
                     if (f) {
-                        var fdata = URL.createObjectURL(f);
-                        //this.mainData.states.fileloadname = f.name;
-                        //this.mainData.states.loadingfile = fdata;
-                        //this.mainData.states.loadingfileHandle = f;
-                        var filearr =  f.name.split(".");
-                        var ext = filearr[filearr.length-1];
-                        
-                        var param = fdata + "," + f.name + "," + ext;
-                        AppQueue.add(new queueData(
-                            {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:param},
-                            "sendobjectinfo",QD_INOUT.returnJS,
-                            this.UnityCallback.sendObjectInfo,
-                            {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
-                                fileloadtype: "img",
-                                loadingfileHandle : f}
-                        ));
-                        AppQueue.start();
+                        if ((overmb == -1) || (f.size < calc_overmb)) {
+                            var fdata = URL.createObjectURL(f);
+                            //this.mainData.states.fileloadname = f.name;
+                            //this.mainData.states.loadingfile = fdata;
+                            //this.mainData.states.loadingfileHandle = f;
+                            var filearr =  f.name.split(".");
+                            var ext = filearr[filearr.length-1];
+                            
+                            var param = fdata + "," + f.name + "," + ext;
+                            AppQueue.add(new queueData(
+                                {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:param},
+                                "sendobjectinfo",QD_INOUT.returnJS,
+                                this.UnityCallback.sendObjectInfo,
+                                {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
+                                    fileloadtype: "img",
+                                    loadingfileHandle : f}
+                            ));
+                            AppQueue.start();
+                        }else{
+                            this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                        }
                     }else{
                         this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
                         //---error file notify
@@ -1304,23 +1320,27 @@ export class appModelOperator {
                 }else if (cast.type == AF_TARGETTYPE.UImage) {
                     var f = await AppDB.image.getItem(cast.path);
                     if (f) {
-                        var fdata = URL.createObjectURL(f);
-                        //this.mainData.states.fileloadname = f.name;
-                        //this.mainData.states.loadingfile = fdata;
-                        //this.mainData.states.loadingfileHandle = f;
-                        var filearr =  f.name.split(".");
-                        var ext = filearr[filearr.length-1];
-                        
-                        var param = fdata + "," + f.name + "," + ext;
-                        AppQueue.add(new queueData(
-                            {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:param},
-                            "sendobjectinfo",QD_INOUT.returnJS,
-                            this.UnityCallback.sendObjectInfo,
-                            {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
-                                fileloadtype: "ui",
-                                loadingfileHandle : f}
-                        ));
-                        AppQueue.start();
+                        if ((overmb == -1) || (f.size < calc_overmb)) {
+                            var fdata = URL.createObjectURL(f);
+                            //this.mainData.states.fileloadname = f.name;
+                            //this.mainData.states.loadingfile = fdata;
+                            //this.mainData.states.loadingfileHandle = f;
+                            var filearr =  f.name.split(".");
+                            var ext = filearr[filearr.length-1];
+                            
+                            var param = fdata + "," + f.name + "," + ext;
+                            AppQueue.add(new queueData(
+                                {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:param},
+                                "sendobjectinfo",QD_INOUT.returnJS,
+                                this.UnityCallback.sendObjectInfo,
+                                {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
+                                    fileloadtype: "ui",
+                                    loadingfileHandle : f}
+                            ));
+                            AppQueue.start();
+                        }else{
+                            this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                        }
                     }else{
                         this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
                         //---error file notify

@@ -75,9 +75,9 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 ));
             }else if (fileloadtype == "o") {
                 //---For VBX, Obj, etc...
-                fdata += "," + fileloadname + "," + ext;
+                var param = [fdata,fileloadname,ext].join("\t");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:fdata},
+                    {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:param},
                     "sendobjectinfo",QD_INOUT.returnJS,
                     callback.sendObjectInfo,
                     {callback,objectURL:fdata,filename:fileloadname,
@@ -87,22 +87,22 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 dbtype = "OBJECTS";
             }else if (fileloadtype == "bgm") {
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.FileMenuCommands,method:'OpenBGM',param:fdata+","+fileloadname},
+                    {target:AppQueue.unity.FileMenuCommands,method:'OpenBGM',param:fdata+"\t"+fileloadname},
                     "firstload_audio",QD_INOUT.returnJS,
                     callback.firstload_audio,
                     {callback,objectURL:fdata}
                 ));
             }else if (fileloadtype == "se") {
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.FileMenuCommands,method:'OpenSE',param:fdata+","+fileloadname},
+                    {target:AppQueue.unity.FileMenuCommands,method:'OpenSE',param:fdata+"\t"+fileloadname},
                     "firstload_audio",QD_INOUT.returnJS,
                     callback.firstload_audio,
                     {callback,objectURL:fdata}
                 ));
             }else if (fileloadtype == "img") {
-                fdata += "," + fileloadname + "," + ext;
+                var param = [fdata,fileloadname].join("\t");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:fdata},
+                    {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:param},
                     "sendobjectinfo",QD_INOUT.returnJS,
                     callback.sendObjectInfo,
                     {callback,objectURL:fdata,filename:fileloadname,
@@ -110,10 +110,10 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                         loadingfileHandle : tmpfile}
                 ));
                 dbtype = "IMAGES";
-            }else if (fileloadtype == "ui") {
-                fdata += "," + fileloadname + "," + ext;
+            }else if (fileloadtype == "ui") {                
+                var param = [fdata,fileloadname].join("\t");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:fdata},
+                    {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:param},
                     "sendobjectinfo",QD_INOUT.returnJS,
                     callback.sendObjectInfo,
                     {callback,objectURL:fdata,filename:fileloadname,
@@ -521,8 +521,10 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         if (mainData.appconf.confs.application.stock_opened_file_history === true) {
             await saveToInternalStorage("IMAGES", mainData.states.loadingfileHandle);            
         }
+
+        var param = [mainData.states.loadingfile,mainData.states.fileloadname].join("\t");
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:mainData.states.loadingfile},
+            {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:param},
             "sendobjectinfo",QD_INOUT.returnJS,
             callback.sendObjectInfo,
             {callback,
@@ -541,8 +543,9 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         if (mainData.appconf.confs.application.stock_opened_file_history === true) {
             await saveToInternalStorage("IMAGES", mainData.states.loadingfileHandle);            
         }
+        var param = [mainData.states.loadingfile,mainData.states.fileloadname].join("\t");
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:mainData.states.loadingfile},
+            {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:param},
             "sendobjectinfo",QD_INOUT.returnJS,
             callback.sendObjectInfo,
             {callback,

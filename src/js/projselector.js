@@ -141,9 +141,9 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                             var filearr =  mainData.states.fileloadname.split(".");
                             var ext = filearr[filearr.length-1];
                             
-                            fdata += "," + mainData.states.fileloadname + "," + ext;
+                            var param = [fdata,mainData.states.fileloadname,ext].join("\t");
                             AppQueue.add(new queueData(
-                                {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:fdata},
+                                {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:param},
                                 "sendobjectinfo",QD_INOUT.returnJS,
                                 callback.sendObjectInfo,
                                 {callback,objectURL:fdata,filename:f.name,
