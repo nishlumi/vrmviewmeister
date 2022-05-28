@@ -19,7 +19,11 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
     //---computed------------------------------------
     const chechAvatarThumbnail = Vue.computed(() => {
         return (tl) => {
-            return (tl.target && tl.target.avatar) ? tl.target.avatar.thumbnail : "static/img/pic_undefined.png";
+            var thumb = "static/img/pic_undefined.png";
+            if (tl.target && tl.target.avatar) {
+                thumb = tl.target.avatar.thumbnail;
+            }
+            return thumb;
         }
     });
     const checkAvatarLabel = Vue.computed(() => {

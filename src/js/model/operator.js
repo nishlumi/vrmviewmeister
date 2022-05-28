@@ -135,6 +135,29 @@ export class appModelOperator {
         this.mainData.states.currentProjectFilename = "project";
         this.mainData.states.currentProjectHandle = null;
         this.mainData.states.currentProjectFromFile = true;
+
+        //---ribbon bar
+        const syseff = this.ribbonData.elements.syseff;
+        syseff.bloom.checked = false;
+        syseff.bloom.intensity = 0;
+        syseff.chroma.checked = false;
+        syseff.chroma.intensity = 0;
+        syseff.colorgrd.checked = false;
+        syseff.colorgrd.filter = "";
+        syseff.colorgrd.temperature = 0;
+        syseff.colorgrd.tint = 0;
+        syseff.depthov.checked = false;
+        syseff.depthov.aperture = 5.6;
+        syseff.depthov.focallength = 50;
+        syseff.grain.checked = false;
+        syseff.grain.intensity = 1;
+        syseff.grain.size = 1;
+        syseff.vignette.checked = false;
+        syseff.vignette.intensity = 0;
+        syseff.moblur.checked = false;
+        syseff.moblur.shutterangle = 270;
+        syseff.moblur.samplecount = 10;
+
         this.setTitle("");
 
         //---set up fixed object
@@ -308,7 +331,7 @@ export class appModelOperator {
         
         var role = null;
         if (json.isOverwrite == "o") {
-            role = this.getRole(path,"path");
+            role = this.getRole(path,"title");
         }
         if (role != null) {
             role.avatar = it;
@@ -355,10 +378,15 @@ export class appModelOperator {
             }
         }
         var it = new VVAvatar(hitobj,{
-            id : cast.avatarId,
-            Title : cast.avatarTitle || hitobj,
+            id : json.avatarId,
+            Title : json.avatarTitle || hitobj,
             type : hitobj,
         });
+        if (role != null) {
+            role.avatar = it;
+            role.avatarId = it.id;
+            role.type = it.type;
+        }
         this.mainData.data.vrms.push(it);
         return it;
     }
@@ -1225,16 +1253,21 @@ export class appModelOperator {
                                 loadingfileHandle : f}
                         ));
                     }else{
-                        this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
-                        //---error file notify
-                        Quasar.Notify.create({
-                            message : "Other Object: " + this._t("msg_notfound_file") + ": " +  cast.path,
-                            position : "bottom-right",
-                            color : "negative",
-                            textColor : "white",
-                            timeout : 3000,
-                            multiLine : true
-                        });
+                        if (cast.path == "%BLANK%") {
+                            //---Non file object
+                            var it = this.addRecoverObject(cast.type, cast, ["",cast.roleTitle, "o"]);
+                        }else{
+                            this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
+                            //---error file notify
+                            Quasar.Notify.create({
+                                message : "Other Object: " + this._t("msg_notfound_file") + ": " +  cast.path,
+                                position : "bottom-right",
+                                color : "negative",
+                                textColor : "white",
+                                timeout : 3000,
+                                multiLine : true
+                            });
+                        }
                     }
                 }else if (cast.type == AF_TARGETTYPE.Image) {
                     var f = await  AppDB.image.getItem(cast.path);
@@ -1304,7 +1337,8 @@ export class appModelOperator {
                 }else if (cast.type == AF_TARGETTYPE.Stage) {
                 }else if (cast.type == AF_TARGETTYPE.Audio) {
                 }else{
-                    
+                    //---Non file object
+                    var it = this.addRecoverObject(cast.type, cast, ["",cast.roleTitle, "o"]);
                 }
             }
         }

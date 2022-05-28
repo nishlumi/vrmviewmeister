@@ -327,7 +327,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         return true;
     }
     const OnChange_JumpNum = (val) => {
-        var jp = parseInt(objpropData.elements.common.jumpPower);
+        var jp = parseFloat(objpropData.elements.common.jumpPower);
         var num = parseInt(objpropData.elements.common.jumpNum);
         if (isNaN(jp) || isNaN(num)) return;
         var param = `${jp},${num}`;
@@ -346,7 +346,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         param.copyFrom(objpropData.elements.common.punch);
         param.isEnable = param.isEnable == true ? 1 : 0;
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetPunch',param:JSON.stringify(param)},
+            {target:mainData.states.selectedAvatar.id,method:'SetPunchFromOuter',param:JSON.stringify(param)},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -358,7 +358,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         param.isEnable = param.isEnable == true ? 1 : 0;
         param.fadeOut = param.fadeOut == true ? 1 : 0;
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetShake',param:JSON.stringify(param)},
+            {target:mainData.states.selectedAvatar.id,method:'SetShakeFromOuter',param:JSON.stringify(param)},
             "",QD_INOUT.toUNITY,
             null
         ));

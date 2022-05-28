@@ -2,9 +2,9 @@ import { DEFAULTMEM } from "../res/appconst.js";
 import { VVAppConfig } from "./appconf.js";
 
 const template = `
-<q-dialog v-model="show" persistent style="max-width:540px;max-height:600px;">
-    <q-card style="width:540px;height:600px;">
-        <q-card-section class="q-ma-none q-pl-xs q-pr-xs" >
+<q-dialog v-model="show" persistent style="max-width:600px;max-height:700px;">
+    <q-card>
+        <q-card-section class="q-ma-none q-pl-xs q-pr-xs" style="width:600px;height:700px;">
             <q-tabs
                 v-model="tabIndex"
                 class="text-primary"
@@ -86,11 +86,17 @@ const template = `
                                     </div>
                                     
                                 </div>
-                                <!--<div class="row">
-                                    <div class="col-12">
-                                        <q-checkbox v-model="appconf.confs.application.use_fsaa_for_history" :label="$t('msg_use_fsaa_for_history')"></q-checkbox>
+                                <div class="row">
+                                    <div class="col-8 q-pt-sm">
+                                        <span class="">{{ $t('msg_not_autoload_over_mb')}}</span>
                                     </div>
-                                </div>-->
+                                    <div class="col-2 q-pl-sm">
+                                        <q-input v-model="appconf.confs.application.not_autoload_over_mb" type="number" min="1" max="9999" step="1" dense></q-input>
+                                    </div>
+                                    <div class="col-1 q-pt-md">
+                                        <span>MB</span>
+                                    </div>
+                                </div>
                             </q-item-section>
                         </q-item>
                     </q-list>

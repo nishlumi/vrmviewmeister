@@ -219,6 +219,18 @@ export function defineKeyframeDlg(app, Quasar) {
                     if (show.value === true) {
                         common_loadUnityConfig(newval.target, kfapp.value.elements.frameIndex);
                     }
+                    //---connect the Unity only when dialog opened
+                    var fkey = newval.getFrameByKey(frameIndex.value);
+                    if (fkey) {
+                        kfapp.value.states.disable = false;
+                        kfapp.value.states.disableFrameBtn = false;
+                        if (show.value === true) {
+                            common_loadUnityConfig(timeline.value.target, kfapp.value.elements.frameIndex);
+                        }
+                    }else{
+                        kfapp.value.states.disable = true;
+                        kfapp.value.states.disableFrameBtn = true;
+                    }
                 }
                 
             });

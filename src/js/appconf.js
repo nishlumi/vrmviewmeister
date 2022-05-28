@@ -13,6 +13,7 @@ export class VVConfigTemplate {
             stock_opened_file_history : true,
             shortcut_vrminfo_from_history : false,
             use_fsaa_for_history : false,
+            not_autoload_over_mb : 50,
         };
         this.model = {
             use_animation_generic_when_otherobject :false,

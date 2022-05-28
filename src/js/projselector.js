@@ -76,7 +76,11 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                             fullCount++;
                         }
                     }
-                    mainData.elements.percentLoad.percent = (100.0 / parseFloat(fullCount)) / 100;
+                    if (fullCount == 0) {
+                        mainData.elements.percentLoad.percent = 0;
+                    }else{
+                        mainData.elements.percentLoad.percent = (100.0 / parseFloat(fullCount)) / 100;
+                    }
 
                     //---call Unity
                     AppQueue.add(new queueData(
@@ -257,8 +261,8 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
             }
 
             var vopt = new VFileType();
-            vopt.accept = FILEOPTION.PROJECT.types.accept;
-            vopt.description = FILEOPTION.PROJECT.types.description;
+            vopt.accept = FILEOPTION.PROJECT.types[0].accept;
+            vopt.description = FILEOPTION.PROJECT.types[0].description;
             var vf = new VFileOptions();
             vf.types.push(vopt);
             vf.suggestedName = fullname;

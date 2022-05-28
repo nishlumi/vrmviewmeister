@@ -4,7 +4,7 @@ import { appModelOperator } from "./operator.js";
 import { LimitOfCallbackObjectProperty } from "../../res/appconst.js";
 import { AppDBMeta } from "../appconf.js";
 import { VFileHelper, VFileOptions, VFileType } from "../../../public/static/js/filehelper.js";
-import { UnityColor } from "../prop/cls_unityrel.js";
+import { AvatarPunchEffect, AvatarShakeEffect, UnityColor } from "../prop/cls_unityrel.js";
 
 
 export class UnityCallbackFunctioner {
@@ -92,7 +92,7 @@ export class UnityCallbackFunctioner {
                     js["Title"] = filename;
                 }
                 var baseFilepath = (loadingfileHandle) ? loadingfileHandle.name : "";
-                var addedObj = modelOperator.addObject(js.type, js, baseFilepath);
+                var addedObj = modelOperator.addObject(js.type, js, js.roleTitle);
                 //modeloperator.deselect_objectItem();
                 mainData.states.selectedAvatar = addedObj.avatar;
                 addedObj.role.path = baseFilepath;
@@ -361,12 +361,17 @@ export class UnityCallbackFunctioner {
          * @type {UnityCallbackFunctioner}
          */
         const callback = options.callback;
-        if (val == "") return;
-        /**
-         * @type {AvatarPunchEffect}
-         */
-        var js = JSON.parse(val);
-        js.isEnable = js.isEnable == 1 ? true : false;
+
+        var js = "";
+        if (val == "") {
+            js = new AvatarPunchEffect();
+        }else{
+            /**
+             * @type {AvatarPunchEffect}
+             */
+            js = JSON.parse(val);
+            js.isEnable = js.isEnable == 1 ? true : false;
+        }
         callback.objpropData.elements.common.punch = js;
     }
     async getshake(val, options) {
@@ -374,13 +379,19 @@ export class UnityCallbackFunctioner {
          * @type {UnityCallbackFunctioner}
          */
         const callback = options.callback;
-        if (val == "") return;
-        /**
-         * @type {AvatarShakeEffect}
-         */
-        var js = JSON.parse(val);
-        js.isEnable = js.isEnable == 1 ? true : false;
-        js.fadeOut = js.fadeOut == 1 ? true : false;
+
+        var js = "";
+        if (val == "") {
+            js = new AvatarShakeEffect();
+        }else{
+            /**
+             * @type {AvatarShakeEffect}
+             */
+            js = JSON.parse(val);
+            js.isEnable = js.isEnable == 1 ? true : false;
+            js.fadeOut = js.fadeOut == 1 ? true : false;
+ 
+        }
         callback.objpropData.elements.common.shake = js;
     }
     //===VRM properties==========================================
@@ -1382,13 +1393,18 @@ export class UnityCallbackFunctioner {
         mainData.elements.projdlg.pinfo.license = proj.meta.license;
         mainData.elements.projdlg.pinfo.url = proj.meta.referurl;
 
+        //---load project material
+        modelOperator.listload_materialFile("p",proj.materialManager);
 
         //---apply value to UI
         await modelOperator.LoadAndApplyToTimelineUI(mainData.data.project);
         callback.timelineData.states.currentcursor = 1;
-        modelOperator.listload_materialFile("p",proj.materialManager);
 
         modelOperator.setTitle(mainData.states.currentProjectFilename);
+
+        if (mainData.elements.percentLoad.percent == 0) {
+            mainData.elements.loadingTypePercent = false;
+        }
     }
     async saveproject(val,options) {
         /**
@@ -1425,7 +1441,7 @@ export class UnityCallbackFunctioner {
                 if (target.roleName == item.roleName) return true;
                 return false;
             });
-            if (ishit) {
+            if (ishit && (item.path != "")) {
                 ishit.path = item.path;
             }
         });

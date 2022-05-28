@@ -216,7 +216,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
             (file.name.indexOf(FILEEXTENSION_DEFAULT) > -1) ||
             (CHECK_GENERALMOTION(file.name))
         ) {
-            if (file.name.indexOf(FILEEXTENSION_MOTION_GENERAL[0])) {
+            if (file.name.indexOf(FILEEXTENSION_MOTION_GENERAL[0]) > -1) {
                 //---if Bvh, analyze this data
                 var text = await file.text();
                 var data = modelOperator.analyzeBVH(text);
