@@ -1252,9 +1252,9 @@ export class appModelOperator {
                             var filearr =  f.name.split(".");
                             var ext = filearr[filearr.length-1];
                             
-                            fdata += "," + f.name + "," + ext;
+                            var param = [fdata,f.name,ext].join("\t");
                             AppQueue.add(new queueData(
-                                {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:fdata},
+                                {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:param},
                                 "sendobjectinfo",QD_INOUT.returnJS,
                                 this.UnityCallback.sendObjectInfo,
                                 {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
@@ -1292,7 +1292,7 @@ export class appModelOperator {
                             var filearr =  f.name.split(".");
                             var ext = filearr[filearr.length-1];
                             
-                            var param = fdata + "," + f.name + "," + ext;
+                            var param = [fdata,f.name,ext].join("\t");
                             AppQueue.add(new queueData(
                                 {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:param},
                                 "sendobjectinfo",QD_INOUT.returnJS,
@@ -1328,7 +1328,7 @@ export class appModelOperator {
                             var filearr =  f.name.split(".");
                             var ext = filearr[filearr.length-1];
                             
-                            var param = fdata + "," + f.name + "," + ext;
+                            var param = [fdata,f.name,ext].join("\t");
                             AppQueue.add(new queueData(
                                 {target:AppQueue.unity.FileMenuCommands,method:'UIImageFileSelected',param:param},
                                 "sendobjectinfo",QD_INOUT.returnJS,
