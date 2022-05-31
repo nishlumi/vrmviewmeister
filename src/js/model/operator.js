@@ -1535,7 +1535,7 @@ export class appModelOperator {
         var leftlowerarm = IKBoneType.LeftLowerArm; var rightlowerarm = IKBoneType.RightLowerArm; 
         var lefthand = IKBoneType.LeftHand; var righthand = IKBoneType.RightHand;
         var leftlowerleg = IKBoneType.LeftLowerLeg; var rightlowerleg = IKBoneType.RightLowerLeg; 
-        var leftfoot = ikbo; var rightfoot = 14;
+        var leftfoot = IKBoneType.LeftLeg; var rightfoot = IKBoneType.RightLeg;
 
         var poseland = pose.poseWorldLandmarks;
         //Head ~ Pelvis
@@ -1577,7 +1577,7 @@ export class appModelOperator {
                 poseland[0].x, pelvisY + Math.abs(poseland[0].y),
                 ss.list[2].position.z
             ),
-            rotation : new UnityVector3(180,180,180)
+            rotation : new UnityVector3(180,0,180)
         });
 
         //---Nose 2 LookAt
@@ -1608,7 +1608,7 @@ export class appModelOperator {
         unitylist.push({
             ikname : iknames[IKBoneType.Chest],
             position : new UnityVector3(newx,newy,newz),
-            rotation : new UnityVector3(180,180,180)
+            rotation : new UnityVector3(180,0,180)
         });
 
         //hip 2 Pelvis
@@ -1619,7 +1619,7 @@ export class appModelOperator {
                 pelvisY + ((Math.abs(poseland[23].y) + Math.abs(poseland[24].y)) * 0.5) ,
                 TwoPoint2CenterCalc(poseland[23].z, poseland[24].z)
             ),
-            rotation : new UnityVector3(180,180,180)
+            rotation : new UnityVector3(180,0,180)
         });
 
         //---Left shoulder
@@ -1627,7 +1627,7 @@ export class appModelOperator {
             ikname : iknames[IKBoneType.LeftShoulder],
             position : new UnityVector3(
                 poseland[11].x,
-                pelvisY + Math.abs(poseland[11].y),
+                Math.abs(poseland[11].y), //pelvisY + 
                 poseland[11].z
             ),
             rotation : new UnityVector3(180,180,180)
@@ -1638,7 +1638,7 @@ export class appModelOperator {
             ikname : iknames[IKBoneType.RightShoulder],
             position : new UnityVector3(
                 poseland[12].x,
-                pelvisY + Math.abs(poseland[12].y),
+                Math.abs(poseland[12].y), //pelvisY + 
                 poseland[12].z
             ),
             rotation : new UnityVector3(180,180,180)
@@ -1673,7 +1673,7 @@ export class appModelOperator {
                 pelvisY + Math.abs(poseland[15].y),
                 poseland[15].z
             ),
-            rotation : new UnityVector3(180,180,180)
+            rotation : new UnityVector3(180,0,180)
         });
         //---Right wrist 2 right Hand
         unitylist.push({
@@ -1683,7 +1683,7 @@ export class appModelOperator {
                 pelvisY + Math.abs(poseland[16].y),
                 poseland[16].z
             ),
-            rotation : new UnityVector3(180,180,180)
+            rotation : new UnityVector3(180,0,180)
         });
 
 
@@ -1718,7 +1718,7 @@ export class appModelOperator {
                 pelvisY - Math.abs(poseland[27].y),
                 poseland[27].z
             ),
-            rotation : new UnityVector3(180,180,180)
+            rotation : new UnityVector3(180,0,180)
         });
 
         //---Right ankle 2 Right foot
@@ -1729,7 +1729,7 @@ export class appModelOperator {
                 pelvisY - Math.abs(poseland[28].y),
                 poseland[28].z
             ),
-            rotation : new UnityVector3(180,180,180)
+            rotation : new UnityVector3(180,0,180)
         });
         
         var param = JSON.stringify({
