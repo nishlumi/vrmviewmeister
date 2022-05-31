@@ -191,6 +191,7 @@
                                 <q-tooltip>{{ $t('ribbon_capture_dlvideo') }}</q-tooltip>
                             </q-btn>
                             <a href="" ref="lnk_recdownload" id="lnk_recdownload" download="movie.webm" class="common_ui_off"></a>
+                            <q-btn flat dense :icon="ribbonData.elements.lnk_download.icon_mute" @click="ribbonEvent.RibbonFuncScreen('videomute')" no-caps ></q-btn>
                             <br>
                             <q-btn flat dense icon="open_in_browser" no-caps label="Video player" @click="ribbonEvent.RibbonFuncScreen('videoplayer')"></q-btn>
                         </div>

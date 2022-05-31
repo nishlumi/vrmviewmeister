@@ -10,7 +10,7 @@ export const defineAppMainData = () => {
             name : t("appName"),
             description : t("appDescription"),
             version : "1.0.0b",
-            revision : "20220529-02",
+            revision : "20220531-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         },
         appconf : new VVAppConfig(),

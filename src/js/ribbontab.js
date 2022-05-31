@@ -276,6 +276,16 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else if (ename == "endrecord") {
             ribbonData.elements.lnk_download.state = false;
         //}else if (ename == "downloadvideo") {
+        }else if (ename == "videomute") {
+            var tracks = callback.unity.screen.recorder.stream.getAudioTracks();
+            if (tracks.length > 0) {
+                tracks[0].enabled = !tracks[0].enabled;
+                if (tracks[0].enabled) {
+                    ribbonData.elements.lnk_download.icon_mute = "volume_up";
+                }else{
+                    ribbonData.elements.lnk_download.icon_mute = "volume_mute";
+                }
+            }
         }else if (ename == "videoplayer") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
 
