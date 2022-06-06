@@ -1,6 +1,6 @@
 import { AF_TARGETTYPE, AF_MOVETYPE, CNS_BODYBONES, IKBoneType, INTERNAL_FILE, FILEEXTENSION_ANIMATION} from "../../res/appconst.js"
 import { VVAnimationProject, VVAvatar, VVCast, VVSelectedObjectItem,  VVBlendShape, VVAvatarEquipSaveClass, VVTimelineTarget, VVTimelineFrameData, VVAnimationFrameActor, VVAnimationProjectMaterialPackage } from '../prop/cls_vvavatar.js';
-import { AnimationRegisterOptions, BvhData, BvhNode, UnityVector3 } from "../prop/cls_unityrel.js";
+import { AnimationParsingOptions, AnimationRegisterOptions, BvhData, BvhNode, UnityVector3 } from "../prop/cls_unityrel.js";
 import { ChildReturner } from "../../../public/static/js/cls_childreturner.js";
 import { AppDBMeta } from "../appconf.js";
 import { token } from "morgan";
@@ -1438,7 +1438,71 @@ export class appModelOperator {
 
         }
     }
+    /**
+     * load frame contents of all timeline 
+     * @param {Number} newval 
+     */
+    common_loadFrame (newval){
+        
+        for (var i = 0; i < this.mainData.data.project.casts.length; i++) {
+            var item = this.mainData.data.project.casts[i];
+            if ((item.avatar != null) && (item.avatar != "")) {
+                var param = new AnimationParsingOptions();
+                param.index = newval;
+                param.isCameraPreviewing = 0;
+                
+                param.isExecuteForDOTween = 1;
+                //param.isCompileAnimation = this.appconf.confs.animation.with_compling ? 1 : 0;
+                //param.targetId = item.avatar.id;
+                /*
+                if (this.appconf.confs.animation.preview_onlyselected_whenselected === true) {
+                }*/
+                param.targetRole = item.roleName;
+                param.targetType = item.avatar.type.toString();
 
+                var js = JSON.stringify(param);
+
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'PreviewSingleFrame',param:js},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+            }
+            
+        }
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'BackupPreviewMarker'},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'FinishPreviewMarker'},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+
+        //---fixed every call: SystemEffect, Audio
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.AudioBGM,method:'GetIndicatedPropertyFromOuter'},
+            "getpropbgm",QD_INOUT.returnJS,
+            this.UnityCallback.getPropertyAudio,
+            {callback:this.UnityCallback, AudioType:AppQueue.unity.AudioBGM}
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.AudioSE,method:'GetIndicatedPropertyFromOuter'},
+            "getpropse",QD_INOUT.returnJS,
+            this.UnityCallback.getPropertyAudio,
+            {callback:this.UnityCallback, AudioType:AppQueue.unity.AudioSE}
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageSystemEffect,method:'GetIndicatedPropertyFromOuter',param:1},
+            "getpropsyse",QD_INOUT.returnJS,
+            this.UnityCallback.getPropertySystemEffect,
+            {callback:this.UnityCallback}
+        ));
+        this.select_objectItem(this.mainData.states.selectedAvatar.id,true);
+        //AppQueue.start();
+    }
     
     //==============================================================
     //
@@ -1884,6 +1948,12 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
     const wa_percentCurrent = Vue.watch(() => mainData.elements.percentLoad.current,(newval)=>{
         if (mainData.elements.percentLoad.current >= 1.0) {
             mainData.elements.loadingTypePercent = false;
+            Vue.nextTick(() => {
+                mainData.elements.percentLoad.current = 0;
+                //---load first frame
+                modelOperator.common_loadFrame(1);
+            });
+            
         }
     });
     const cmp_percentLoad = Vue.computed(() => {

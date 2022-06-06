@@ -1404,6 +1404,7 @@ export class UnityCallbackFunctioner {
 
         if (mainData.elements.percentLoad.percent == 0) {
             mainData.elements.loadingTypePercent = false;
+            modelOperator.common_loadFrame(1);
         }
     }
     async saveproject(val,options) {

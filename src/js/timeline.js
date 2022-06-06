@@ -96,7 +96,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         //grid_scrolly.value.scrollLeft += evt.deltaX;
     }
     //===toolbar===================================
-    const common_loadFrame = (newval) => {
+    /*const common_loadFrame = (newval) => {
         
         for (var i = 0; i < mainData.data.project.casts.length; i++) {
             var item = mainData.data.project.casts[i];
@@ -108,9 +108,9 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
                 param.isExecuteForDOTween = 1;
                 //param.isCompileAnimation = this.appconf.confs.animation.with_compling ? 1 : 0;
                 //param.targetId = item.avatar.id;
-                /*
-                if (this.appconf.confs.animation.preview_onlyselected_whenselected === true) {
-                }*/
+                
+                //if (this.appconf.confs.animation.preview_onlyselected_whenselected === true) {
+                //}
                 param.targetRole = item.roleName;
                 param.targetType = item.avatar.type.toString();
 
@@ -156,7 +156,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         ));
         modelOperator.select_objectItem(mainData.states.selectedAvatar.id,true);
         //AppQueue.start();
-    }
+    }*/
     const skip_previous_onclick = () => {
         var param = new AnimationParsingOptions();
         param.index = timelineData.states.currentcursor;
@@ -212,7 +212,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
     }
     const loadFrame_onclick = () => {
         if (!mainData.states.animationPlaying) {
-            common_loadFrame(timelineData.states.currentcursor);
+            modelOperator.common_loadFrame(timelineData.states.currentcursor);
         }
     }
 
@@ -245,7 +245,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             (!mainData.states.animationPlaying) &&
             (mainData.appconf.confs.animation.recover_pose_whenselected === true)
         ) {
-            common_loadFrame(newval);
+            modelOperator.common_loadFrame(newval);
         }
 
         mainData.elements.keyframedlg.frame = newval;
@@ -386,7 +386,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             judgeVClass,existsKeyFrame,getCurrentModeSize,chechAvatarThumbnail,checkAvatarLabel,
             //---events, watches-------------------
             wa_tlLength,
-            common_loadFrame,
+            //common_loadFrame,
             gridscrollx_onscroll,gridscrolly_onscroll,timelinebox_onwheel,namebox_onwheel,
             skip_previous_onclick,skip_next_onclick,zoom_in_onclick,zoom_out_onclick,seekbar_onchange,loadFrame_onclick,panelToggleBtn_onclick,
 
