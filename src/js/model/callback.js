@@ -422,14 +422,14 @@ export class UnityCallbackFunctioner {
                             if (item.value == ln[1]) return true;
                             return false;
                         });
-                        callback.objpropData.elements.vrmui.lefthand.poseValue = parseInt(ln[2]) * 100;
+                        callback.objpropData.elements.vrmui.lefthand.poseValue = parseInt(parseFloat(ln[2]) * 100);
                     }else{
                         callback.objpropData.elements.vrmui.righthand.poseSelected = 
                         callback.objpropData.elements.vrmui.righthand.poseOptions.find(item => {
                             if (item.value == ln[1]) return true;
                             return false;
                         });
-                        callback.objpropData.elements.vrmui.righthand.poseValue = parseInt(ln[2]) * 100;
+                        callback.objpropData.elements.vrmui.righthand.poseValue = parseInt(parseFloat(ln[2]) * 100);
                     }
                 }
             }

@@ -331,7 +331,10 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
         //---new saving value {label:String, value:String}
         var avatarName = row.name.label || row.name;
         var avatarID = row.name.value;
-        
+
+        var newrole = modelOperator.getRoleFromAvatar(avatarID);
+        var newpath = newrole.path;
+        var newext = newrole.ext;
 
         var projdlg = mainData.elements.projdlg;
 
@@ -395,6 +398,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
                 //---unlink cast and avatar
                 tl.target.avatar = null;
                 tl.target.avatarId = "";
+                tl.target.path = "";
                 tl.detachTarget();
 
             }
@@ -418,6 +422,8 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
             if (cast) {
                 cast.avatar = newavatar;
                 cast.avatarId = newavatar.id;
+                cast.path = newpath;
+                cast.ext = newext;
 
                 //---apply to Unity
                 var param = row.roleName + "," + avatarID;
