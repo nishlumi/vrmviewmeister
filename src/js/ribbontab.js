@@ -132,8 +132,45 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         return js;
     }
     //===============================================================
-    //  check method
+    //  Computed events
     //===============================================================
+    const chk_enableClipboardButton = Vue.computed(() => {
+        var ret = true;
+        //---if current frame of timeline is empty, disable
+        var hitFrame = mainData.states.selectedTimeline.frames.find(item => {
+            if (item.key == ribbonData.elements.frame.current) return true;
+            return false;
+        });
+        if (!hitFrame) ret = false;
+
+        //---if avatar of role of timeline is empty, disable
+        if (mainData.states.selectedTimeline.target) {
+            if (!mainData.states.selectedTimeline.target.avatar) ret = false;
+        }else{
+            ret = false;
+        }
+
+        //---Because to use is disabled, return !Boolean
+        return !ret;
+    });
+    const chk_enableKeyframeButton = Vue.computed(() => {
+        var ret = true;
+        
+        //---if avatar of role of timeline is empty, disable
+        if (mainData.states.selectedTimeline.target) {
+            if (!mainData.states.selectedTimeline.target.avatar) ret = false;
+        }else{
+            ret = false;
+        }
+
+        //---mainData.states.animationPlaying is true, disable
+        if (mainData.states.animationPlaying === true) ret = false;
+
+
+        //---Because to use is disabled, return !Boolean
+        return !ret;
+    });
+
     const chkbgmenable = Vue.computed(() => {
         var flag = false;
         if (ribbonData.elements.audio.bgm.selection != null) {
@@ -652,7 +689,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             for (var obj = 0; obj <  timelineData.data.timelines.length; obj++) {
                 var fdata = new VVTimelineFrameData(aro.index,{});
                 var tl = timelineData.data.timelines[obj];
-                if (tl) {
+                if (tl && tl.target && tl.target.avatar) {
                     var keyframe = tl.getFrameByKey(fdata.key);
                     if (keyframe) {
                         tl.setFrameByKey(fdata.key, fdata);
@@ -1357,6 +1394,10 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     });
     return Vue.reactive({
         RibbonFuncHome, RibbonFuncScreen, RibbonFuncModel, RibbonFuncAnimation,RibbonFuncSystemEffect, RibbonFuncAudio,
+
+        //---computed
+        chk_enableClipboardButton, chk_enableKeyframeButton,
+
         //---watches
         //wa_langbox_selected,
         wa_lnkdownload_onoff,

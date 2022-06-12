@@ -253,6 +253,10 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
     },{deep:true});
 
     //===name box ================================
+    /**
+     * 
+     * @param {VVTimelineTarget} item 
+     */
     const namebox_onclick = (item) => {
         for (var obj = 0; obj < timelineData.data.timelines.length; obj++) {
             timelineData.data.timelines[obj].selected.currentcursor = false;

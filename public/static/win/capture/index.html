@@ -21,7 +21,7 @@
 </head>
 <body>
     <div id="q-app" v-cloak>
-        <q-layout view="hHh LpR lff">
+        <q-layout view="hHh LpR lff" style="width:inherit;height: inherit;">
             <q-header v-model="capapp.header.show" reveal elevated bordered>
                 <q-toolbar class="bg-primary text-white">
                     <q-btn flat round dense icon="refresh" @click="refresh_onclick">
@@ -57,15 +57,19 @@
                     </q-list>
                 </q-list>
             </q-drawer>
-            <q-page-container>
-                <q-page>
-                    <q-img
-                        :src="capapp.imagepanel.src"
-                        :alt="capapp.imagepanel.alt"
-                        fit="scale-down"
-                        spinner-color="primary"
-                        spinner-size="82px"
-                    ></q-img>
+            <q-page-container  style="width:inherit;height: inherit;">
+                <q-page padding  style="width:inherit;height: inherit;overflow: auto;">
+                    <div class="row">
+                        <div class="col-12">
+                            <q-img
+                                :src="capapp.imagepanel.src"
+                                :alt="capapp.imagepanel.alt"
+                                spinner-color="primary"
+                                spinner-size="82px"
+                            ></q-img>
+                        </div>
+                    </div>
+                    
                 </q-page>
             </q-page-container>
         </q-layout>

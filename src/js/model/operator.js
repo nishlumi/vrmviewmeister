@@ -395,6 +395,14 @@ export class appModelOperator {
      * @param {VVAvatar} avatar 
      */
     addKeyFrame(avatar) {
+        /**
+         * @type {VVTimelineTarget}
+         */
+        var selectedTimeline = this.mainData.states.selectedTimeline;
+        if (selectedTimeline.target.avatar == null) {
+            appAlert(this._t("msg_disable1_addkeyframe"));
+            return;
+        }
         if (this.timelineData.states.currentcursor == 0) return;
         var aro = new AnimationRegisterOptions();
         aro.targetId = avatar.id;

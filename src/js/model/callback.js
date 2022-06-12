@@ -1676,15 +1676,15 @@ export class UnityCallbackFunctioner {
         var vopt = new VFileType();
         vopt = FILEOPTION.MOTION.types[0];
         var vf = new VFileOptions();
+        vf.suggestedName = "motion.vvmmot";
         
         if (VFileHelper.flags.isElectron) {
             vf.types.push(vopt);
-            vf.suggestedName = "motion.vvmmot";
             VFileHelper.saveUsingDialog(val,vf,true);
         }else{
-            appPrompt(callback.t("msg_project_save"),(val)=>{
+            appPrompt(callback.t("msg_motion_save"),(fname)=>{
                 vf.types.push(vopt);
-                vf.suggestedName = val;
+                vf.suggestedName = fname;
                 VFileHelper.saveUsingDialog(val,vf,true);
             },vf.suggestedName);
         }

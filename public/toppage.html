@@ -444,6 +444,7 @@
                         <div class="ribbon-toolbar">
                             <q-btn flat icon="edit" :label="$t('cons_apply')" no-caps 
                                 @click="ribbonEvent.setmaxframe_onchange"
+                                :disable="ribbonEvent.chk_enableKeyframeButton"
                             ></q-btn>
                         </div>
                         <div class="ribbon-group-title">Frame operation</div>
@@ -452,30 +453,33 @@
                     <div class="ribbon-group">
                         <q-btn flat icon="add_task" :label="$t('tl_utl_reg1')" class="qbtn-fullheight" stack no-caps stretch 
                             @click="ribbonEvent.RibbonFuncAnimation('addkeyframe')"
-                            :disabled="mainData.states.animationPlaying"
+                            :disable="ribbonEvent.chk_enableKeyframeButton"
                         ></q-btn>
                     </div>
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
                             <q-btn flat icon="content_cut" no-caps 
                                 @click="ribbonEvent.RibbonFuncAnimation('cutframe')"
+                                :disable="ribbonEvent.chk_enableClipboardButton"
                             ></q-btn>
                             <q-btn flat icon="content_copy" no-caps 
                                 @click="ribbonEvent.RibbonFuncAnimation('copyframe')"
+                                :disable="ribbonEvent.chk_enableClipboardButton"
                             ></q-btn>
                             <q-btn flat icon="content_paste" no-caps 
                                 @click="ribbonEvent.RibbonFuncAnimation('pasteframe')"
+                                :disable="ribbonEvent.chk_enableClipboardButton"
                             ></q-btn>
                             <br>
                             <q-btn flat icon="group_add" :label="$t('tl_utl_reg2')" no-caps 
                                 @click="ribbonEvent.RibbonFuncAnimation('addallkeyframe')"
-                                :disabled="mainData.states.animationPlaying"
+                                :disable="ribbonEvent.chk_enableKeyframeButton"
                             ></q-btn>
                         </div>
                         <div class="ribbon-toolbar">
                             <q-btn flat icon="delete" :label="$t('tl_utl_del1')" no-caps 
                                 @click="ribbonEvent.RibbonFuncAnimation('delkeyframe')"
-                                :disabled="mainData.states.animationPlaying"
+                                :disable="ribbonEvent.chk_enableClipboardButton"
                             ></q-btn>
                         </div>
                     </div>
@@ -486,7 +490,7 @@
                         
                         <q-btn flat icon="add_task" :label="$t('tl_utl_reg1')" class="qbtn-fullheight" stack no-caps stretch 
                             @click="ribbonEvent.RibbonFuncSystemEffect('addkeyframe')"
-                            :disabled="mainData.states.animationPlaying"
+                            :disable="ribbonEvent.chk_enableKeyframeButton"
                         ></q-btn>
                         
                         <!--
@@ -607,7 +611,7 @@
                         
                         <q-btn flat icon="add_task" :label="$t('tl_utl_reg1')" class="qbtn-fullheight" stack no-caps stretch 
                             @click="ribbonEvent.RibbonFuncAudio('addkeyframe')"
-                            :disable="mainData.states.animationPlaying"
+                            :disable="ribbonEvent.chk_enableKeyframeButton"
                         ></q-btn>
                         
                         <!--
@@ -923,7 +927,7 @@
                             <q-item-section v-text="$t('objlistmenu_centerfocus')"></q-item-section>
                         </q-item>
                         <q-item clickable v-close-popup dense @click="objlistEvent.listmenu_addkeyframe_onclick"
-                            :disable="mainData.states.animationPlaying"
+                            :disable="ribbonEvent.chk_enableKeyframeButton"
                         >
                             <q-item-section avatar>
                                 <q-icon name="bookmark_add"></q-icon>
@@ -932,7 +936,7 @@
                         </q-item>
                         <q-separator></q-separator>
                         <q-item clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
-                            :disable="mainData.states.animationPlaying"
+                            :disable="ribbonEvent.chk_enableKeyframeButton"
                         >
                             <q-item-section avatar>
                                 <q-icon name="restart_alt"></q-icon>
@@ -940,7 +944,7 @@
                             <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
                         </q-item>
                         <q-item clickable v-close-popup dense @click="objlistEvent.listmenu_removeobj_onclick"
-                            :disable="objlistEvent.checkListSelStage || mainData.states.animationPlaying"
+                            :disable="objlistEvent.checkListSelStage || ribbonEvent.chk_enableKeyframeButton"
                         >
                             <q-item-section avatar>
                                 <q-icon name="delete"></q-icon>
@@ -948,7 +952,7 @@
                             <q-item-section v-text="$t('ribbon_vrm_remove')"></q-item-section>
                         </q-item>
                         <q-item clickable v-close-popup dense @click="objlistEvent.listmenu_removerole_onclick"
-                            :disable="objlistEvent.checkListSelStage || mainData.states.animationPlaying"
+                            :disable="objlistEvent.checkListSelStage || ribbonEvent.chk_enableKeyframeButton"
                         >
                             <q-item-section avatar>
                                 <q-icon name="delete"></q-icon>

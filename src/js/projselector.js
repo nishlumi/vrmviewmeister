@@ -110,10 +110,10 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                         if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.VRM) {
                             var f = result; //await result.getFile();
                             var fdata = URL.createObjectURL(f);
-                            //mainData.data.objectUrl.vrm = fdata;
-                            //mainData.states.fileloadname = f.name;
-                            //mainData.states.fileloadtype = "v";
-                            //mainData.states.loadingfileHandle = result;
+                            mainData.data.objectUrl.vrm = fdata;
+                            mainData.states.fileloadname = f.name;
+                            mainData.states.fileloadtype = "v";
+                            mainData.states.loadingfileHandle = result;
                             AppQueue.add(new queueData(
                                 {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
                                 "firstload_vrm",QD_INOUT.returnJS,
