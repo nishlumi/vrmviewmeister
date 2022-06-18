@@ -153,6 +153,13 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         //---Because to use is disabled, return !Boolean
         return !ret;
     });
+    const chk_enablePasteButton = Vue.computed(() => {
+        var clip = mainData.data.clipboard.frame;
+        var ret = (clip != null);
+
+        //---return !Boolean
+        return !ret;
+    });
     const chk_enableKeyframeButton = Vue.computed(() => {
         var ret = true;
         
@@ -658,6 +665,8 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.data.clipboard.frame = {
                 mode : "cut",
                 index : timelineData.states.currentcursor,
+                roleName : mainData.states.selectedCast.roleName,
+                roleType : mainData.states.selectedCast.type
             };
         }else if (ename == "copyframe") {
             var param = `${mainData.states.selectedCast.roleName},${mainData.states.selectedCast.type},${timelineData.states.currentcursor},0`;
@@ -670,6 +679,8 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.data.clipboard.frame = {
                 mode : "copy",
                 index : timelineData.states.currentcursor,
+                roleName : mainData.states.selectedCast.roleName,
+                roleType : mainData.states.selectedCast.type
             };
         }else if (ename == "pasteframe") {
             var param = `${mainData.states.selectedCast.roleName},${mainData.states.selectedCast.type},${timelineData.states.currentcursor}`;
@@ -1396,7 +1407,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         RibbonFuncHome, RibbonFuncScreen, RibbonFuncModel, RibbonFuncAnimation,RibbonFuncSystemEffect, RibbonFuncAudio,
 
         //---computed
-        chk_enableClipboardButton, chk_enableKeyframeButton,
+        chk_enableClipboardButton, chk_enableKeyframeButton,chk_enablePasteButton,
 
         //---watches
         //wa_langbox_selected,

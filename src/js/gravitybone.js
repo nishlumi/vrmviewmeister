@@ -48,8 +48,8 @@ export function defineGravityboneDlg(app, Quasar) {
                             position : "absolute",
                             bottom : "-9999px",
                             right : "-9999px",
-                            width : "865px",
-                            height : "450px",
+                            width : "870px",
+                            height : "500px",
                             zIndex : 5001,
                             backgroundColor : "#FFFFFF"
                         },

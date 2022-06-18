@@ -1533,6 +1533,14 @@ export class appModelOperator {
                 var js = JSON.parse(data.data);
                 this.returnMediaPipePose(js);
             }
+        }else if (data.windowName == "bonetransform") {
+            if (data.funcName == "apply_pose") {
+                var js = JSON.parse(data.data);
+                this.returnBoneTransformApply(js);
+            }else if (data.funcName == "call_getikvalue") {
+                var js = JSON.parse(data.data);
+                this.returnBoneTransformReloadBtn(js);
+            }
         }
     }
     //--------------------------------------------------
@@ -1824,6 +1832,65 @@ export class appModelOperator {
         ));
         AppQueue.start();
     }
+    //-------------------------------------------------
+    // bonetransform window
+    //-------------------------------------------------
+    returnBoneTransformApply(data) {
+        if (!this.mainData.states.selectedAvatar) {
+            appAlert(this._t("msg_pose_noselectmodel"));
+            return;
+        }
+        if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
+            appAlert(this._t("msg_pose_noselectmodel"));
+            return;
+        }
+        
+        var param = JSON.stringify({
+            list : data.list
+        });
+        if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:0},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.add(new queueData(
+                {target:data.avatarId,method:'SetIKTransformAll',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:1},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        }
+    }
+    returnBoneTransformReloadBtn(data) {
+        if (this.mainData.states.selectedAvatar.id != data.avatarId) return;
+        if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) return;
+
+        AppQueue.add(new queueData(
+            {target:this.mainData.states.selectedAvatar.id,method:'GetIKTransformAll'},
+            "alliktransform",QD_INOUT.returnJS,
+            (val) => {
+                var js = JSON.parse(val);
+
+                var clsdata = {
+                    //avatarId : this.mainData.states.selectedAvatar.id,
+                    //avatarType: this.mainData.states.selectedAvatar.type,
+                    data : js
+                };
+                AppDB.temp.setItem("btapp_call_getikvalue",clsdata);
+                AppDB.temp.setItem("bonetran_avatar_id",this.mainData.states.selectedAvatar.id);
+                AppDB.temp.setItem("bonetran_avatar_title",this.mainData.states.selectedAvatar.title);
+                AppDB.temp.setItem("bonetran_avatar_type",this.mainData.states.selectedAvatar.type);
+        
+            }
+        ));
+        AppQueue.start();
+    }
 
     analyzeBVH (text) {
         var filearr = text.split(/\r|\n|\r\n/);
@@ -1952,6 +2019,14 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
             ));
         }
         modelOperator.select_objectItem(newval.id);
+
+        AppDB.temp.setItem("bonetran_avatar_id",newval.id);
+        AppDB.temp.setItem("bonetran_avatar_title",newval.title);
+        AppDB.temp.setItem("bonetran_avatar_type",newval.type);
+        if (newval.type == AF_TARGETTYPE.VRM) {
+            modelOperator.returnBoneTransformReloadBtn({avatarId:newval.id});
+        }
+        
     });
     const wa_percentCurrent = Vue.watch(() => mainData.elements.percentLoad.current,(newval)=>{
         if (mainData.elements.percentLoad.current >= 1.0) {

@@ -10,7 +10,7 @@ export const defineAppMainData = () => {
             name : t("appName"),
             description : t("appDescription"),
             version : "1.0.0b",
-            revision : "20220612-01",
+            revision : "20220618-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         },
         appconf : new VVAppConfig(),
@@ -203,6 +203,7 @@ export const defineAppMainData = () => {
             win_pose : null,
             win_vplayer : null,
             win_mediapipe : null,
+            win_bonetransform : null,
             footer : true
         },
         states : {

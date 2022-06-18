@@ -379,7 +379,14 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         return true;
     },{deep:true});
     const OnClicked_editIKPosition = () => {
-        mainData.elements.bonetrandlg.show = true;
+        //mainData.elements.bonetrandlg.show = true;
+
+        modelOperator.returnBoneTransformReloadBtn({avatarId: mainData.states.selectedAvatar.id});
+
+        mainData.elements.win_bonetransform = window.open("./static/win/bonetran/index.html",
+        "_blank",
+        "width=865,height=500,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+    );
     }
     const OnClicked_editGravity = () => {
         mainData.elements.gravitybonedlg.show = true;

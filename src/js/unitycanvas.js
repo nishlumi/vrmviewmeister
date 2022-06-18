@@ -258,7 +258,8 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
             "completeanima_unity2html",QD_INOUT.returnJS,
             (val) => {
                 //console.log(val);
-                timelineData.states.currentcursor = mainData.data.project.timelineFrameLength;
+                //timelineData.states.currentcursor = mainData.data.project.timelineFrameLength;
+                modelOperator.select_keyframePosition(mainData.data.project.timelineFrameLength-1);
                 Vue.nextTick(() => {
                     mainData.states.animationPlaying = false;
     
@@ -272,10 +273,12 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
                     }
                     if (mainData.appconf.confs.animation.recover_firstpose_whenfinished === true) {
                         if (mainData.appconf.confs.animation.recover_firstpose_timeout == 0) {
-                            timelineData.states.currentcursor = 1;
+                            //timelineData.states.currentcursor = 1;
+                            modelOperator.select_keyframePosition(0);
                         }else{
                             setTimeout(() => {
-                                timelineData.states.currentcursor = 1;
+                                //timelineData.states.currentcursor = 1;
+                                modelOperator.select_keyframePosition(0);
                             },mainData.appconf.confs.animation.recover_firstpose_timeout);
                         }
                         
