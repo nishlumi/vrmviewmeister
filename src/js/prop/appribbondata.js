@@ -42,7 +42,7 @@ export const defineAppRibbonData = () => {
                 href : "",
                 state : false,
                 obj : null,
-                icon_mute : "volume_mute",
+                icon_mute : "volume_up",
             },
             optionArea : {
                 rotate360 : false,
