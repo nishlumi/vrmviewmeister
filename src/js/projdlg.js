@@ -222,20 +222,32 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
                 var data = modelOperator.analyzeBVH(text);
                 console.log(data);
             }else{
-                //---Firstly, set target.
-                AppQueue.add(new queueData(
-                    {target:AppQueue.unity.ManageAnimation,method:'SetLoadTargetSingleMotion',param:tmpcast.roleName},
-                    "",QD_INOUT.toUNITY,
-                    null
-                ));
-                //---Second load a motion data.
-                AppQueue.add(new queueData(
-                    {target:AppQueue.unity.ManageAnimation,method:'LoadSingleMotion',param:fdata},
-                    "openmotionresult",QD_INOUT.returnJS,
-                    callback.openmotionresult,
-                    {callback}
-                ));
-                AppQueue.start();
+                const callbody = () => {
+                    //---Firstly, set target.
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'SetLoadTargetSingleMotion',param:tmpcast.roleName},
+                        "",QD_INOUT.toUNITY,
+                        null
+                    ));
+                    //---Second load a motion data.
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'LoadSingleMotion',param:fdata},
+                        "openmotionresult",QD_INOUT.returnJS,
+                        callback.openmotionresult,
+                        {callback}
+                    ));
+                    AppQueue.start();
+                }
+                var text = await file.text();
+                var jsdata = JSON.parse(text);
+                var msgadd = `${jsdata.frames[jsdata.frames.length-1].index}`;
+                if (mainData.data.project.timelineFrameLength < jsdata.frames[jsdata.frames.length-1].index) {
+                    appConfirm(t("msg_openmotion_error3")+msgadd,() => {
+                        callbody();
+                    });
+                }else{
+                    callbody();
+                }
             }
             
         }else{

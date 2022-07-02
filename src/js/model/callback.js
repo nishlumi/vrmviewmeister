@@ -55,6 +55,7 @@ export class UnityCallbackFunctioner {
          */
         const callback = options.callback;
         var mainData = callback.mainData;
+        var ribbonData = callback.ribbonData;
         var timelineData = callback.timelineData;
         var modelOperator = callback.modelOperator;
 
@@ -88,7 +89,7 @@ export class UnityCallbackFunctioner {
 
                 //URL.revokeObjectURL(mainData.data.objectUrl.vrm);
             }else{
-                if (mainData.states.fileloadname != "") {
+                if (filename != "") {
                     js["Title"] = filename;
                 }
                 var baseFilepath = (loadingfileHandle) ? loadingfileHandle.name : "";
@@ -121,6 +122,13 @@ export class UnityCallbackFunctioner {
                 if (mainData.states.loadingfile) URL.revokeObjectURL(mainData.states.loadingfile);
                 mainData.states.loadingfileHandle = null;
                 loadingfileHandle = null;
+
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+
             }
             mainData.states.fileloadname = "";
         }
@@ -172,6 +180,7 @@ export class UnityCallbackFunctioner {
          */
         const callback = options.callback;
         var mainData = callback.mainData;
+        var ribbonData = callback.ribbonData;
         var timelineData = callback.timelineData;
         var modelOperator = callback.modelOperator;
 
@@ -210,6 +219,11 @@ export class UnityCallbackFunctioner {
         //---option changed: each loading of VRM: HingeLimited
         AppQueue.add(new queueData(
             {target:AppQueue.unity.ManageAnimation,method:'SetHingeLimited',param:mainData.appconf.confs.model.body_natural_limit ? 1 : 0},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -1092,7 +1106,7 @@ export class UnityCallbackFunctioner {
         const stageui = callback.objpropData.elements.stageui;
 
         for (var i = 0; i < stageui.typeoptions.length; i++) {
-            if (val == stageui.typeoptions.value) {
+            if (val == stageui.typeoptions[i].value) {
                 stageui.typeselected = stageui.typeoptions[i];
                 break;
             }

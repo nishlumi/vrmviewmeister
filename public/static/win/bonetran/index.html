@@ -49,14 +49,14 @@
         <div :class="data.elements.panelCSS" style="width:100%;height:100%;">
             <div class="row basic-dialog-toolbar bg-primary text-grey-1">
                 <q-btn flat round dense icon="bookmark_added" @click="apply_onclick" :disabled="btapp.header.btndisable">
-                    <q-tooltip v-text="$t('apply pose')"></q-tooltip>
+                    <q-tooltip v-text="_T('apply pose')"></q-tooltip>
                 </q-btn>
                 <q-btn flat round dense icon="refresh" style="margin-left:1rem;" @click="reload_onclick" :disabled="btapp.header.btndisable">
-                    <q-tooltip v-text="$t('refresh')"></q-tooltip>
+                    <q-tooltip v-text="_T('refresh')"></q-tooltip>
                 </q-btn>
                 <q-separator spaced inset vertical dark></q-separator>
                 <q-btn flat round dense icon="mdi-mirror" style="margin-left:1rem;" @click="mirrorpose_onclick" :disabled="btapp.header.btndisable">
-                    <q-tooltip v-text="$t('reverse pose')"></q-tooltip>
+                    <q-tooltip v-text="_T('reverse pose')"></q-tooltip>
                 </q-btn>
                 <q-space></q-space>
                 <q-toolbar-title v-text="btapp.mainwin.avatar.title"></q-toolbar-title>

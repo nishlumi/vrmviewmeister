@@ -131,6 +131,8 @@ export class appModelOperator {
         const proj = this.mainData.data.project;
 
         proj.timelineFrameLength = parseInt(this.mainData.appconf.confs.animation.initial_framecount);
+        this.ribbonData.elements.frame.max = proj.timelineFrameLength;
+
         proj.baseDuration = proj.timelineFrameLength / 6000.0;
         this.mainData.states.currentProjectFilename = "project";
         this.mainData.states.currentProjectHandle = null;
@@ -1117,7 +1119,7 @@ export class appModelOperator {
 
         //---current reset
         this.objpropData.elements.vrmui.blendshapes.splice(0,this.objpropData.elements.vrmui.blendshapes.length);
-        //avatar.blendShapeList.splice(0,avatar.blendShapeList.length);
+        avatar.blendShapeList.splice(0,avatar.blendShapeList.length);
 
         //---(re)generate blend shape items
         if (avatar.type == AF_TARGETTYPE.VRM) {
@@ -1509,6 +1511,9 @@ export class appModelOperator {
             {callback:this.UnityCallback}
         ));
         this.select_objectItem(this.mainData.states.selectedAvatar.id,true);
+        if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
+            this.returnBoneTransformReloadBtn({avatarId:this.mainData.states.selectedAvatar.id});
+        }
         //AppQueue.start();
     }
     

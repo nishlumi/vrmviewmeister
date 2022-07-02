@@ -393,6 +393,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 callback.sendObjectInfo,
                 {callback}
             ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
             AppQueue.start();
         }else if (ename == "adduimage") {
             Sub_openfile("ui","IMAGES");
@@ -403,6 +408,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 callback.sendObjectInfo,
                 {callback}
             ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
             AppQueue.start();
         }else if (ename == "addeffect") {
             AppQueue.add(new queueData(
@@ -410,6 +420,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 "sendobjectinfo",QD_INOUT.returnJS,
                 callback.sendObjectInfo,
                 {callback}
+            ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+                "",QD_INOUT.toUNITY,
+                null
             ));
             AppQueue.start();
         }else if (ename == "addspotlight") {
@@ -419,6 +434,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 callback.sendObjectInfo,
                 {callback}
             ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
             AppQueue.start();
         }else if (ename == "addpointlight") {
             AppQueue.add(new queueData(
@@ -426,6 +446,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 "sendobjectinfo",QD_INOUT.returnJS,
                 callback.sendObjectInfo,
                 {callback}
+            ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+                "",QD_INOUT.toUNITY,
+                null
             ));
             AppQueue.start();
         }else if (ename == "addbasicshape") {
@@ -435,6 +460,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 "sendobjectinfo",QD_INOUT.returnJS,
                 callback.sendObjectInfo,
                 {callback}
+            ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+                "",QD_INOUT.toUNITY,
+                null
             ));
             AppQueue.start();
         }else if (ename == "openvrm") {

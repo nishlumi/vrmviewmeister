@@ -43,6 +43,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
     //---events, watch-------------------------------
     
     const wa_tlLength = Vue.watch(() => mainData.data.project.timelineFrameLength,(newval) => {
+        ribbonData.elements.frame.max = newval;
         timelineData.data.headercounts.splice(0, timelineData.data.headercounts.length);
         for (var i = 0; i < newval; i++) {
             timelineData.data.headercounts.push({
