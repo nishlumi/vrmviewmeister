@@ -476,9 +476,6 @@ export class appModelOperator {
         if (await handle.requestPermission(options) === "granted"){
             return true;
         }
-        if (await fileHandle.requestPermission(opts) === 'granted') {
-            return true;
-        }
         // not grant permission, return false.
         return false;
     }
