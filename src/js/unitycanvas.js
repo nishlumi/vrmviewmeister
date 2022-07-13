@@ -218,7 +218,6 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
             "previewend_otherobjectAnimation_unity2html",QD_INOUT.returnJS,
             (val) => {
                 var js = val.split(",");
-                console.log(js);
                 objpropData.elements.objectui.animation.play_icon = "play_circle";
             }
         );
@@ -293,7 +292,7 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
             (val) => {
                 var js = val.split("\t");
                 //0 - s/b , 1 - name, 2 - time, 3 - length
-                console.log(js);
+                //console.log(js);
                 if (js[0] == "b") {
                     ribbonData.elements.audio.bgm.playbtn_state = "play_circle";
                     ribbonData.elements.audio.bgm.seek = parseFloat(js[2]);

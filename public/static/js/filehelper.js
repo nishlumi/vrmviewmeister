@@ -61,7 +61,7 @@ export class VFileOperator {
     constructor() {
         this.flags = {
             //Is enable File System Access API ?
-            isEnableFSAA : ("showOpenFilePicker" in window) ? true : false,
+            isEnableFSAA : false, //("showOpenFilePicker" in window) ? true : false,
             //It is FileSystemFileHandle, save to the history.(Chromium, Electron only)
             isHistoryFSAA : false,
 
@@ -114,6 +114,7 @@ export class VFileOperator {
                     arr = fileoption.types[0].accept[obj];
                     break;
                 }
+                this.elements.uploader.value = null;
                 this.elements.uploader.accept = arr.join(",");
                 this.elements.uploader.click();
             }
@@ -208,7 +209,7 @@ export class VFileOperator {
                     filters : filters,
                     data : content
                 });
-                console.log(ret);
+                //console.log(ret);
             }else{
                 if (
                     ((useHTMLSaving == undefined) && (this.flags.isEnableFSAA))
@@ -273,7 +274,7 @@ export class VFileOperator {
                     path : fileOrHandle,
                     data : content
                 });
-                console.log(ret);
+                //console.log(ret);
             }
             if (
                 ((useHTMLSaving == undefined) && (this.flags.isEnableFSAA))

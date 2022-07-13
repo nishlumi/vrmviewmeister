@@ -6,7 +6,12 @@
     <type fullname="UserHandleSpace.ownscr_effectcallback1" preserve="all" />
   </assembly>
   <assembly fullname="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityStandardAssets.Water.GerstnerDisplace" preserve="all" />
+    <type fullname="UnityStandardAssets.Water.PlanarReflection" preserve="all" />
+    <type fullname="UnityStandardAssets.Water.SpecularLighting" preserve="all" />
+    <type fullname="UnityStandardAssets.Water.WaterBase" preserve="all" />
     <type fullname="UnityStandardAssets.Water.WaterBasic" preserve="all" />
+    <type fullname="UnityStandardAssets.Water.WaterTile" preserve="all" />
   </assembly>
   <assembly fullname="Unity.Addressables, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" preserve="all">
     <type fullname="UnityEngine.AddressableAssets.Addressables" preserve="all" />

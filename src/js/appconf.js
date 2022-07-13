@@ -14,6 +14,8 @@ export class VVConfigTemplate {
             shortcut_vrminfo_from_history : false,
             use_fsaa_for_history : false,
             not_autoload_over_mb : 50,
+            enable_backup : true,
+            backup_project_interval : 1
         };
         this.model = {
             use_animation_generic_when_otherobject :false,
@@ -103,6 +105,7 @@ export class VVAppConfig{
        
         this.data = {
             lastfiles : [],
+            backupID : null,
         }
     }
     uninstall() {        
@@ -282,7 +285,6 @@ export class VVAppConfig{
         //AppQueue.start();
 
         VFileHelper.flags.isHistoryFSAA = this.confs.application.use_fsaa_for_history;
-
        
     }
     openFormTemplate() {

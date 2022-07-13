@@ -149,6 +149,10 @@ const app = Vue.createApp({
                     modelLoader.downloadAddressableAssetBundles();
                     modelLoader.onload_effectDirectory();
                     AppQueue.start();
+                    mainData.value.states.currentEditOperationCount = 0;
+                    mainData.value.states.backupEditOperationCount = 0;
+            
+                    modelLoader.schedulingBackup();
                 });
 
                 /**
@@ -159,7 +163,7 @@ const app = Vue.createApp({
                     if (evt.origin != location.origin) return;
 
                     if (evt.data && evt.data.isvvm) {
-                        console.log(evt.data);
+                        //console.log(evt.data);
                         modelOperator.filteringFromChildWindow(evt.data);
                     }
                     

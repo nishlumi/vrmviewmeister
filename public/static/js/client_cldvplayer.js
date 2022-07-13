@@ -50,7 +50,6 @@ const app = Vue.createApp({
             cleanUp();
         }
         const updateFiles = (targetfiles) => {
-            console.log(targetfiles);
             myapp.value.files = targetfiles;
            
         }

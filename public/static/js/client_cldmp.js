@@ -248,7 +248,7 @@ const app = Vue.createApp({
             });
             
             loadSetting();
-            console.log(opener);
+            //console.log(opener);
         });
 
         return {

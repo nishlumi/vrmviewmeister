@@ -238,6 +238,20 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 });
             });
             */
+        }else if (ename == "clearcachewebgl") {
+            appConfirm(t("msg_clearcache"),()=>{
+                AppQueue.list.splice(0,AppQueue.list.length);
+                AppQueue.isExecuting = false;
+            });
+        }else if (ename == "clearcachetemp") {
+            appConfirm(t("msg_clearcache"),()=>{
+                AppDB.clearAll();
+                //AppDB.clearHistory();
+            });
+        }else if (ename == "clearcacheconf") {
+            appConfirm(t("msg_clearcache"),()=>{
+                mainData.appconf.uninstall();
+            });
         }else if (ename == "vrminfo") {
             Sub_vrminfo();
         }else if (ename == "openvrm") {
@@ -658,13 +672,12 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
             mainData.states.animationPlaying = false;
-        }else if (ename == "setfps") {
-            //---FPS--------------------------------------=====
-            var param = parseInt(ribbonData.elements.frame.fps);
+        }else if (ename == "setbaseduration") {
+            var param = parseFloat(options.value);
             if (isNaN(param)) return;
-    
+            
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetFps',param:param},
+                {target:AppQueue.unity.ManageAnimation,method:'SetBaseDuration', param:param},
                 "",QD_INOUT.toUNITY,
                 null
             ));
@@ -682,6 +695,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            mainData.states.currentEditOperationCount++;
         }else if (ename == "addkeyframe") {
             modelOperator.addKeyFrame(mainData.states.selectedAvatar);
         }else if (ename == "cutframe") {
@@ -762,6 +776,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     null
                 ));
                 AppQueue.start();
+                mainData.states.currentEditOperationCount++;
             });
         }else if (ename == "delemptyline") {
         }
@@ -1275,9 +1290,9 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             value: ribbonData.elements.frame.max
         });
     }
-    const setfps_onchange = (evt) => {
-        RibbonFuncAnimation("setfps",{
-            value: ribbonData.elements.frame.fps
+    const setbaseduration_onchange = (evt) => {
+        RibbonFuncAnimation("setbaseduration",{
+            value: ribbonData.elements.frame.baseDuration
         });
     }
     const setloop_onchange = (evt) => {
@@ -1455,7 +1470,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         
         openproject_file_onclick,openproject_internal_onclick,
         saveproject_file_onclick,saveproject_internal_onclick,saveasproject_file_onclick,saveasproject_internal_onclick,
-        setmaxframe_onchange,setfps_onchange,setloop_onchange,setcurrentframe_onchange,
+        setmaxframe_onchange,setbaseduration_onchange,setloop_onchange,setcurrentframe_onchange,
 
         bloom_checked_onchange, bloom_intensity_onchange,
         chroma_checked_onchange, chroma_intensity_onchange, 

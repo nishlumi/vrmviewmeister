@@ -14,7 +14,7 @@ const template = `
                 <q-tab name="model"  label="Model"></q-tab>
                 <q-tab name="animation" label="Animation"></q-tab>
             </q-tabs>
-            <q-tab-panels v-model="tabIndex" animated style="height:470px">
+            <q-tab-panels v-model="tabIndex" animated style="height:auto">
                 <q-tab-panel name="application">
                     <q-list >
                         <q-item>
@@ -95,6 +95,23 @@ const template = `
                                     </div>
                                     <div class="col-1 q-pt-md">
                                         <span>MB</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <q-checkbox v-model="appconf.confs.application.enable_backup" :label="$t('msg_enable_backup')"></q-checkbox>
+                                    </div>
+                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-8 q-pt-sm">
+                                        <span>{{ $t('msg_backup_project_interval')}}</span>
+                                    </div>
+                                    <div class="col-2 q-pl-sm">
+                                        <q-input v-model="appconf.confs.application.backup_project_interval" type="number" min="1" max="10" step="1" dense></q-input>
+                                    </div>
+                                    <div class="col-1 q-pt-md">
+                                        <span>{{ $t('msg_backup_project_interval2')}}</span>
                                     </div>
                                 </div>
                             </q-item-section>

@@ -33,14 +33,14 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
     const onclick_ok_projectSelector = async () => {
         var datadb = AppDB[mainData.elements.projectSelector.selectDB];
 
-        console.log(datadb);
+        //console.log(datadb);
         try {            
             var originalresult = await datadb.getItem(mainData.elements.projectSelector.selected)
             if (originalresult) {
                 var options = {
                     mode : "read"
                 };
-                console.log(originalresult);
+                //console.log(originalresult);
                 if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) {
                     modelOperator.newProject(false);
 
@@ -171,7 +171,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                 
             }
         }catch(e) {
-            console.log(e);
+            console.error(e);
         }
         
         

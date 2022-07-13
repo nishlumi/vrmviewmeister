@@ -390,7 +390,6 @@ const app = Vue.createApp({
 
             //loadData();
             loadSetting();
-            console.log(opener);
 
             btapp.value.lpID = setInterval(async () => {
                 var call_getikvalue = await AppDB.temp.getItem("btapp_call_getikvalue");

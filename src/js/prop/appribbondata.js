@@ -53,7 +53,7 @@ export const defineAppRibbonData = () => {
             },
             //---Model
             basicshapes : [
-                t("sphere"),t("capsule"),t("cylinder"),t("cube"),t("plane"),t("quad")
+                t("sphere"),t("capsule"),t("cylinder"),t("cube"),t("plane"),t("quad"),t("water surface")
             ],
             //---Animation
             frame : {
@@ -61,6 +61,7 @@ export const defineAppRibbonData = () => {
                     icon : "play_arrow"
                 },
                 fps : 60,
+                baseDuration : 0.01,
                 isloop : false,
                 current : 1,
                 max : 60

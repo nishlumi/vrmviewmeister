@@ -179,7 +179,8 @@ export const defineAppObjlistProp = () => {
                     shader : [
                         {label : "Standard", value:"Standard"},
                         {label : "VRM/MToon", value:"VRM/MToon"},
-                        {label : "Water", value:"FX/Water4"}
+                        {label : "Water", value:"FX/Water4"},
+                        {label : "Water2", value:"FX/Water (Basic)"}
                     ],
                     shaderselected : null,
                     colorselected: "#FFFFFFFF",
@@ -310,6 +311,21 @@ export const defineAppObjlistProp = () => {
                 ustg_metallic : 0,
                 ustg_glossiness : 0,
                 ustg_emissioncolor : "#FFFFFFFF",
+                stage_sea : {
+                    //---waterbasic
+                    waveScale : 0.07,
+                    //---simplewater
+                    fresnelScale : 0.65714,
+                    basecolor : "#EAEAEA",
+                    reflectionColor : "#27444C",
+                    specularColor : "#EAEAEA",
+                    waveAmplitude : new UnityVector4(0.36 ,-0.05, 0, 0),
+                    waveFrequency : new UnityVector4(0.5, 0.38, 0.59, 0.6),
+                    waveSteepness : new UnityVector4(-12.8, 2, -1.62, -3.81),
+                    waveSpeed : new UnityVector4(-4.84, -3.73, -6.92, -6.08),
+                    waveDirectionAB : new UnityVector4(0.469 ,0.354, -0.2, 0.1),
+                    waveDirectionCD : new UnityVector4(0.7033 ,-0.679, 0.7175, -0.2),
+                },
                 skymodeoptions : tmpskymodeoptions,
                 skymodeselected :  tmpskymodeoptions[1],
                 skyshaderoptions : tmpskyshaderoptions,

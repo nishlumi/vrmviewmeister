@@ -133,7 +133,10 @@ export class appModelOperator {
         proj.timelineFrameLength = parseInt(this.mainData.appconf.confs.animation.initial_framecount);
         this.ribbonData.elements.frame.max = proj.timelineFrameLength;
 
-        proj.baseDuration = proj.timelineFrameLength / 6000.0;
+        this.mainData.elements.projdlg.pinfo.fps = proj.fps;
+
+        this.ribbonData.elements.frame.baseDuration = proj.fps / 6000.0;
+
         this.mainData.states.currentProjectFilename = "project";
         this.mainData.states.currentProjectHandle = null;
         this.mainData.states.currentProjectFromFile = true;
@@ -175,6 +178,8 @@ export class appModelOperator {
         //});
         //---forcely remove empty timeline
         //modelOperator.clearTimeline();
+        this.mainData.states.currentEditOperationCount = 0;
+        this.mainData.states.backupEditOperationCount = 0;
     }
     //==============================================================
     //
@@ -390,6 +395,7 @@ export class appModelOperator {
             role.type = it.type;
         }
         this.mainData.data.vrms.push(it);
+
         return it;
     }
     /**
@@ -507,6 +513,7 @@ export class appModelOperator {
         //---after select
         this.mainData.states.selectedAvatar = this.mainData.data.vrms[afterIndex];
         
+
         return ret;
     }
     /**
@@ -532,6 +539,8 @@ export class appModelOperator {
             null
         ));
         //AppQueue.start();
+        this.mainData.states.currentEditOperationCount++;
+
     }
     del_timelineOnly (role) {
         var index = this.mainData.data.project.casts.findIndex(match => {
@@ -546,6 +555,7 @@ export class appModelOperator {
         });
         if (tlindex > -1) this.timelineData.data.timelines.splice(tlindex,1);
         if (index > -1) this.mainData.data.project.casts.splice(index,1);
+
     }
     /**
      * To remove all timelines
@@ -557,6 +567,8 @@ export class appModelOperator {
                 this.timelineData.data.timelines.splice(i,1);
             }
         }
+
+        this.mainData.states.currentEditOperationCount++;
     }
     /**
      * To remove the object all type.(not Cast)
@@ -906,6 +918,13 @@ export class appModelOperator {
                     "getstagetype",QD_INOUT.returnJS,
                     this.UnityCallback.getstagetype,
                     {callback : this.UnityCallback}
+                ));
+                //---sea stage
+                AppQueue.add(new queueData(
+                    {target:selected.avatar.id,method:'ListUserMaterialFromOuter',param:"1"},
+                    "getseastage_material",QD_INOUT.returnJS,
+                    this.UnityCallback.getseastage_material,
+                    {callback: this.UnityCallback}
                 ));
                 //---user stage
                 AppQueue.add(new queueData(
@@ -1402,6 +1421,7 @@ export class appModelOperator {
                 return false;
             });
             if (tl) { //---already role timeline exists.
+                tl.clearAll();
                 //---enumurate and insert frames of the Avatar
                 timelineElement.frames.forEach(frame => {
                     var fdata = new VVTimelineFrameData(frame.index,{

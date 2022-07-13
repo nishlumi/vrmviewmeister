@@ -117,7 +117,7 @@ class TimelineDialog {
            opener.MYAPP.select_objectItem(opener.MYAPP.states.selectedAvatar.id);
         });
         this.elements.timeline.on("SelectTarget",(id)=>{
-            console.log("timeline id=",id);
+            //console.log("timeline id=",id);
             opener.MYAPP.states.selectedTimeline = id;
             var ju = ["SystemEffect","BGM","SE","Stage"];
             var ishit = ju.findIndex(m => {

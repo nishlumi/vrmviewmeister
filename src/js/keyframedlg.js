@@ -185,7 +185,7 @@ export function defineKeyframeDlg(app, Quasar) {
                     {target:AppQueue.unity.ManageAnimation,method:'GetDurationFromOuter',param:JSON.stringify(aro)},
                     "getduration",QD_INOUT.returnJS,
                     (val) => {
-                        console.log(val);
+                        //console.log(val);
                         kfapp.value.elements.duration = Math.floor(parseFloat(val) * 10000000) / 10000000;
                     }
                 ));
@@ -289,7 +289,7 @@ export function defineKeyframeDlg(app, Quasar) {
                     "setease",QD_INOUT.returnJS,
                     (val)=>{
                         var js = JSON.parse(val);
-                        console.log(js);
+                        //console.log(js);
                     }
                 ));
                 
@@ -368,7 +368,7 @@ export function defineKeyframeDlg(app, Quasar) {
                     ],
                     listeners : {
                         start(evt) {
-                            console.log("start",evt);
+                            //console.log("start",evt);
                         },
                         move (event) {
                             kfapp.value.elements.win.position.x += event.dx

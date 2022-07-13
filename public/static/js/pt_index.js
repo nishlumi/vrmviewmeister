@@ -158,7 +158,7 @@ class PoseTracking {
             label : "Camera",
             checked: true,
             onChange: (checked) => {
-                console.log(checked);
+                //console.log(checked);
                 if (this.states.currentsrc == "video") {
                     this.elements.srcPicker.m.getVideoTracks()[0].enabled = checked;
                 }

@@ -147,7 +147,7 @@ export function defineGravityboneDlg(app, Quasar) {
                     ],
                     listeners : {
                         start(evt) {
-                            console.log("start",evt);
+                            //console.log("start",evt);
                         },
                         move (event) {
                             data.value.elements.win.position.x += event.dx
@@ -198,10 +198,10 @@ export function defineGravityboneDlg(app, Quasar) {
                         return false;
                     },
                     onchange : (el,  cell,  ox,  oy, newValue, oldValue) => {
-                        console.log(cell, ox, oy, newValue);
+                        //console.log(cell, ox, oy, newValue);
                     },
                     onafterchanges : (el, records) => {
-                        console.log(records);
+                        //console.log(records);
                         for (var i = 0; i < records.length; i++) {
                             var x = parseInt(records[i].x);
                             var y = parseInt(records[i].y);

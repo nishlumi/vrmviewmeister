@@ -159,6 +159,9 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         //AppQueue.start();
     }*/
     const skip_previous_onclick = () => {
+        if (timelineData.states.currentcursor > 1) {
+            modelOperator.select_keyframePosition(timelineData.states.currentcursor - 1);
+        }
         var param = new AnimationParsingOptions();
         param.index = timelineData.states.currentcursor;
         param.targetRole = mainData.states.selectedCast.roleName;
@@ -178,6 +181,9 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         AppQueue.start();
     }
     const skip_next_onclick = () =>{
+        if (timelineData.states.currentcursor <= mainData.data.project.timelineFrameLength) {
+            modelOperator.select_keyframePosition(timelineData.states.currentcursor + 1);
+        }
         var param = new AnimationParsingOptions();
         param.index = timelineData.states.currentcursor;
         param.targetRole = mainData.states.selectedCast.roleName;
@@ -292,7 +298,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
 
     //===timeline box=============================
     const keyframebox_onclick = (item, frameitem) => {
-        console.log(JSON.original(item), JSON.original(frameitem));
+        //console.log(JSON.original(item), JSON.original(frameitem));
         var index = parseInt(frameitem.text);
         if (isNaN(index) === false) {
             //---change target timeline

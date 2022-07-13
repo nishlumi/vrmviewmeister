@@ -261,7 +261,7 @@ export function defineVpadDlg(app, Quasar) {
                 }
 
                 var param = data.value.elements.rotation.current.x + "," + (data.value.elements.rotation.current.y * -1);
-                console.log(param);
+                //console.log(param);
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.Camera,method:'RotateCameraPosFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
@@ -272,7 +272,6 @@ export function defineVpadDlg(app, Quasar) {
             const onswipe_progress = ({evt, ...newInfo}) => {
                 data.value.elements.progress.info = newInfo;
 
-                console.log(newInfo);
                 var moveVal = newInfo.distance;
                 moveVal.x = moveVal.x * 0.1;
                 moveVal.y = moveVal.y * 0.1;
@@ -290,7 +289,6 @@ export function defineVpadDlg(app, Quasar) {
                 }
 
                 var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
-                console.log(param);
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.Camera,method:'TranslateCameraPosFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
@@ -299,7 +297,6 @@ export function defineVpadDlg(app, Quasar) {
                 AppQueue.start();
             }
             const onswipe_translation = ({evt, ...newInfo}) => {
-                //console.log(evt, newInfo);
                 
                 data.value.elements.translation.info = newInfo;
                 //data.value.elements.translation.power = newInfo.duration;
@@ -327,7 +324,6 @@ export function defineVpadDlg(app, Quasar) {
                 }
 
                 var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
-                console.log(param);
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.Camera,method:'TranslateCameraPosFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
@@ -470,7 +466,7 @@ export function defineVpadDlg(app, Quasar) {
                     ],
                     listeners : {
                         start(evt) {
-                            console.log("start",evt);
+                            //console.log("start",evt);
                         },
                         move (event) {
                             data.value.elements.win.position.x += event.dx

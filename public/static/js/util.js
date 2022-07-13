@@ -389,6 +389,20 @@ function appConfirm(message,callback,callthen) {
 	});
 	
 }
+function appConfirmWithCancel(message,callback,callcancel) {
+	Quasar.Dialog.create({
+		message : message,
+		cancel : true,
+		persistent : true
+	})
+	.onOk(() => {
+		(callback)();
+	})
+	.onCancel(() => {
+		(callcancel)();
+	});
+	
+}
 function appPrompt( message, callthen, defaultval ) {
 	Quasar.Dialog.create({
 		message : message,
@@ -535,6 +549,17 @@ function checkRange(min,val,max){
 		return true;
 	}
 	return false;
+}
+function fullRound(value, base) {
+    return Math.round(value * base) / base;
+}
+
+function fullCeil(value, base) {
+    return Math.ceil(value * base) / base;
+}
+
+function fullFloor(value, base) {
+    return Math.floor(value * base) / base;
 }
 
 const AppDB = {
@@ -705,7 +730,6 @@ const AppStorage = {
         return a;
     },
     set: function (key, value) {
-        //console.log("set size=", JSON.stringify(value).length, JSON.stringify(value));
         if (curLocale.environment.platform == "windowsapp") {
             Windows.Storage.ApplicationData.current.localSettings.values[key] = JSON.stringify(value);
         } else {
@@ -717,7 +741,6 @@ const AppStorage = {
         }
 	},
 	setText: function (key, value) {
-        //console.log("set size=", JSON.stringify(value).length, JSON.stringify(value));
         if (curLocale.environment.platform == "windowsapp") {
             Windows.Storage.ApplicationData.current.localSettings.values[key] = JSON.stringify(value);
         } else {

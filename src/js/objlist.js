@@ -79,7 +79,7 @@ export function defineObjlist (app,Quasar,mainData,objlistData,modelOperator) {
     const objectlist_onclicked = (item) => {
         if (item != null) {
             //---send information to Unity
-            console.log(item);
+            //console.log(item);
             //---fire watch event of <object-list> = METHOD: select_objectItem    
             mainData.states.selectedAvatar = item;
         }

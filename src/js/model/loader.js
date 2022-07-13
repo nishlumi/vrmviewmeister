@@ -55,7 +55,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 }
             })
             .catch(err => {
-                console.log(err);
+                console.error(err);
                 appAlert(t("msg_error_allfile"));
                 mainData.states.currentProjectFilename = "";
                 mainData.states.currentProjectHandle = null;
@@ -144,8 +144,8 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         //+++MYAPP.states.fileloadtype = "v";
     };
     const dragenter_evt = (event) => {
-        console.log("drag enter=>");
-        console.log(event);
+        //console.log("drag enter=>");
+        //console.log(event);
         
     };
     const dragleave_evt = (event) => {
@@ -175,7 +175,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             
             //for (var i = 0; i < fileHandles.length; i++) {
             for await (const handle of fileHandles) {
-                console.log(handle);
+                //console.log(handle);
                 var tmpfile = handle; //await handle.getFile();
                 if (VFileHelper.flags.isHistoryFSAA && VFileHelper.flags.isEnableFSAA) {
                     tmpfile = await handle.getFile();
@@ -323,7 +323,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         timelineData.data.timelines.push(TLstage);
         mainData.states.selectedAvatar = ret.avatar;
         
-        console.log(mainData.data);
+        //console.log(mainData.data);
     }
 
     /**
@@ -346,7 +346,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         var filearr =  mainData.states.fileloadname.split(".");
         var ext = filearr[filearr.length-1];
 
-        console.log(mainData.states.fileloadtype);
+        //console.log(mainData.states.fileloadtype);
 
         _appfileLoader(fdata, mainData.states.fileloadname,ext, mainData.states.fileloadtype,file);
 
@@ -445,7 +445,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     mainData.elements.loading = false;
                 }
             }else{
-                console.log("Not found window.showOpenFilePicker...");
+                console.error("Not found window.showOpenFilePicker...");
             }
         }
         
@@ -572,7 +572,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         //AppQueue.start();
     }
     const onchange_configdlg = (val) => {
-        console.log(val);
+        //console.log(val);
         //---Change states of FileSystemAccess API
         /*
         if (mainData.appconf.confs.application.use_fsaa_for_history != val.confs.application.use_fsaa_for_history) {
@@ -589,6 +589,28 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         mainData.appconf.save();
 
         modelOperator.setDarkMode(mainData.appconf.confs.application.UseDarkTheme);
+
+        //---backup functions
+        schedulingBackup();
+    }
+    const schedulingBackup = () => {
+        if (mainData.appconf.confs.application.enable_backup === true) {
+            if (mainData.appconf.data.backupID) clearInterval(mainData.appconf.data.backupID);
+            mainData.appconf.data.backupID = setInterval(() => {
+                if (mainData.states.currentEditOperationCount != mainData.states.backupEditOperationCount) {
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'SaveProject'},
+                        "saveproject",QD_INOUT.returnJS,
+                        callback.saveproject,
+                        {callback, disktype : "bkup", savetype : "overwrite"}
+                    ));
+                    AppQueue.start();
+                }
+                mainData.states.backupEditOperationCount = mainData.states.currentEditOperationCount;
+            },parseInt(mainData.appconf.confs.application.backup_project_interval) * 60 * 1000)
+        }else{
+            if (mainData.appconf.data.backupID) clearInterval(mainData.appconf.data.backupID);
+        }
     }
 
 
@@ -640,6 +662,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             OnOk_VrminfoDlg,
             onclick_imageSelectorImage,onclick_imageSelectorUImage,
             onload_effectDirectory,onchange_configdlg,
+            schedulingBackup,
             checkSWUpdate,
             downloadAddressableAssetBundles,
             //load_materialFile,destroy_materialFile,

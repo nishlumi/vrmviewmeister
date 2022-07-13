@@ -63,7 +63,21 @@
                             <div class="ribbon-toolbar">
                                 <q-btn flat no-caps dense :label="$t('ribbon_thisapp')" @click="ribbonEvent.RibbonFuncHome('thisapp')"></q-btn>
                                 <br>
-                                <q-btn flat no-caps dense icon="cached" :label="$t('ribbon_clearcache')" @click="ribbonEvent.RibbonFuncHome('clearcache')"></q-btn>
+                                <q-btn flat no-caps dense icon="cached" :label="$t('ribbon_clearcache')" ><!-- @click="ribbonEvent.RibbonFuncHome('clearcache')" -->
+                                    <q-menu>
+                                        <q-list>
+                                            <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcachewebgl')">
+                                                <q-item-section>{{ $t('clearcache_webgl')}}</q-item-section>
+                                            </q-item>                                        
+                                            <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcachetemp')">
+                                                <q-item-section>{{ $t('clearcache_temp')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcacheconf')">
+                                                <q-item-section>{{ $t('clearcache_config')}}</q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </q-menu>
+                                </q-btn>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left: 2rem;">
                                 <q-select v-model="ribbonData.elements.language_box.selected" 
@@ -81,6 +95,7 @@
                                 </q-select>
                             </div>
                             <div class="ribbon-group-title">Application</div>
+                            
                         </div>
                         <div class="ribbon-group-sep"></div>
                         <div class="ribbon-group">
@@ -423,7 +438,13 @@
                             <br>
                             <div class="row">
                                 <div class="col-6">
-                                    <q-input type="number" v-model="ribbonData.elements.frame.fps" :label="$t('frame_duration')" @update:model-value="ribbonEvent.setfps_onchange" dense :min="15" :max="90" :step="15" class="animtab-inputbox" ></q-input>
+                                    <q-input type="number" v-model="ribbonData.elements.frame.baseDuration" 
+                                        
+                                        :label="$t('frame_duration')" 
+                                        @update:model-value="ribbonEvent.setbaseduration_onchange" dense 
+                                        class="animtab-inputbox" 
+                                        :min="0.0001" :max="99.9999" :step="0.0001"
+                                    ></q-input>
                                 </div>
                                 <div class="col-6">
                                     <q-checkbox right-label v-model="ribbonData.elements.frame.isloop" @update:model-value="ribbonEvent.setloop_onchange" >
@@ -1838,7 +1859,7 @@
                                     @update:model-value="objpropEvent.objectMaterial_onselected"
                                 ></q-select>
                                 
-                                <fieldset>
+                                <fieldset v-if="objpropData.elements.objectui.materialnames.length > 0">
                                     <legend v-text="objpropData.elements.objectui.materialnameSelected"></legend>
                                     <div class="otherobject-materialbox">
                                         <div class="row">
@@ -2434,7 +2455,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <ucolor-picker v-model="objpropData.elements.stageui.ustg_color"
-                                            :label="$t('Color filter')"
+                                            :label="$t('color')"
                                             @change="objpropEvent.ustg_Color_onchange"
                                         ></ucolor-picker>
                                     </div>
@@ -2478,6 +2499,234 @@
                                             :label="$t('Emission color')"
                                             @change="objpropEvent.ustg_emissioncolor_onchange"
                                         ></ucolor-picker>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-if="objpropEvent.checkStageTypeWater == 'seatime'">
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ $t('Wave Scale')}}
+                                    </div>
+                                    <div class="col-11 offset-sm-1">
+                                        <q-slider
+                                            v-model="objpropData.elements.stageui.stage_sea.waveScale"
+                                            label color="primary"
+                                            :min="0.02" :max="0.15" :step="0.001"
+                                            @update:model-value="objpropEvent.seastg_WaveScale_onchange"
+                                        ></q-slider>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-if="objpropEvent.checkStageTypeWater == 'basicsea'">
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ $t('Fresnel Scale')}}
+                                    </div>
+                                    <div class="col-11 offset-sm-1">
+                                        <q-slider
+                                            v-model="objpropData.elements.stageui.stage_sea.fresnelScale"
+                                            label color="primary"
+                                            :min="0.15" :max="4" :step="0.1"
+                                            @update:model-value="objpropEvent.seastg_FresnelScale_onchange"
+                                        ></q-slider>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <ucolor-picker v-model="objpropData.elements.stageui.stage_sea.basecolor"
+                                            :label="$t('color')"
+                                            @change="objpropEvent.seastg_BaseColor_onchange"
+                                        ></ucolor-picker>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <ucolor-picker v-model="objpropData.elements.stageui.stage_sea.reflectionColor"
+                                            :label="$t('Reflection color')"
+                                            @change="objpropEvent.seastg_ReflectionColor_onchange"
+                                        ></ucolor-picker>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <ucolor-picker v-model="objpropData.elements.stageui.stage_sea.specularColor"
+                                            :label="$t('Specular color')"
+                                            @change="objpropEvent.seastg_SpecularColor_onchange"
+                                        ></ucolor-picker>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ $t('Wave Amplitude')}}
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.x" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="X"
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.y" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.z" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.w" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="W"
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></q-input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ $t('Wave Frequency')}}
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.x" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="X"
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.y" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.z" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.w" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="W"
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></q-input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ $t('Wave Steepness')}}
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.x" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="X"
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.y" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.z" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.w" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="W"
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></q-input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ $t('Wave Speed')}}
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.x" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="X"
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.y" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.z" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.w" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="W"
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></q-input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ $t('Wave Direction AB')}}
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.x" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="X"
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.y" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.z" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.w" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="W"
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></q-input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ $t('Wave Direction CD')}}
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.x" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="X"
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.y" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.z" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></q-input>
+                                    </div>
+                                    <div class="col-5 offset-sm-1">
+                                        <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.w" 
+                                            type="number" :min="-10" :max="10" :step="0.01" dense label="W"
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></q-input>
                                     </div>
                                 </div>
                             </template>
@@ -3109,7 +3358,18 @@
                             <div class="row">
                                 <div class="col-12"><q-input v-model="mainData.elements.projdlg.pinfo.url" type="text" label="URL"></q-input></div>
                             </div>
-                            
+                            <div class="row">
+                                <div class="col-2">
+                                    <q-input type="number" v-model="mainData.elements.projdlg.pinfo.fps" 
+                                        label="FPS" 
+                                        
+                                        :min="15" :max="90" :step="15" 
+                                    ></q-input>
+                                </div>
+                                <div class="col-2 q-pt-md">
+                                    <q-btn color="primary" label="OK" @click="projectdlgEvent.fps_onchange"></q-btn>
+                                </div>
+                            </div>
                         </q-tab-panel>
                         <!--
                         <q-tab-panel name="role" class="q-pa-xs">

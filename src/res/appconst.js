@@ -212,15 +212,16 @@ export const CameraClearFlags = {
 };
 export const StageType = {
     Default : 0,
-    SeaDaytime : 1,
-    SeaNight : 2,
-    DryGround : 3,
-    Desert : 4,
-    Field1 : 5,
-    Field2 : 6,
-    Field3 : 7,
-    Field4 : 8,
-    User : 9
+    BasicSeaLevel : 1,
+    SeaDaytime : 2,
+    SeaNight : 3,
+    DryGround : 4,
+    Desert : 5,
+    Field1 : 6,
+    Field2 : 7,
+    Field3 : 8,
+    Field4 : 9,
+    User : 10
 };
 /*var  EffectDirectory = {
     "Explosion" : {

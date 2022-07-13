@@ -155,7 +155,6 @@ const app = Vue.createApp({
 
             loadData();
             loadSetting();
-            console.log(opener);
         });
 
         return {

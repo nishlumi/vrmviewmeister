@@ -420,8 +420,8 @@ export class VVAnimationProject {
          */
         this.timeline = new VVAnimationMotionTimeline();
         this.timelineFrameLength = 60.0;
-        this.baseDuration = this.timelineFrameLength / 6000.0;
         this.fps = 60;
+        this.baseDuration = this.fps / 6000.0;
         this.meta = {
             name : "",
             license : "",
@@ -704,7 +704,7 @@ export class VVTimelineTarget {
     }
     clearAll() {
         if (this.readonly) return;
-        var item = this.frames.splice(i,this.frames.length);
+        var item = this.frames.splice(0,this.frames.length);
     }
 }
 export class VVProp {

@@ -3,6 +3,7 @@ import { UnityCallbackFunctioner } from "./model/callback.js";
 import { VVTimelineTarget } from "./prop/cls_vvavatar.js";
 import { AF_TARGETTYPE, FILEEXTENSION_DEFAULT, FILEEXTENSION_MOTION, FILEEXTENSION_MOTION_GENERAL, FILEOPTION } from "../res/appconst.js";
 import { VFileHelper, VFileOptions, VFileType } from "../../public/static/js/filehelper.js";
+import { AnimationParsingOptions } from "./prop/cls_unityrel.js";
 /**
  * 
  * @param {*} app 
@@ -149,7 +150,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
 
         var fopt = new VFileOptions();
         fopt.types = FILEOPTION.MOTION.types;
-        VFileHelper.openFromDialog(fopt,async (files,cd,err)=>{
+        VFileHelper.openFromDialog(FILEOPTION.MOTION,async (files,cd,err)=>{
             if (cd == 0) {
                 await fil_animmotion_onchange({
                     target : {
@@ -160,6 +161,8 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
         });
     }
     const fil_animmotion_onchange = async (evt) => {
+        if (evt.target.files.length == 0) return;
+
         var onefile = evt.target.files[0];
         /**
          * @type {File}
@@ -220,7 +223,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
                 //---if Bvh, analyze this data
                 var text = await file.text();
                 var data = modelOperator.analyzeBVH(text);
-                console.log(data);
+                //console.log(data);
             }else{
                 const callbody = () => {
                     //---Firstly, set target.
@@ -236,6 +239,23 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
                         callback.openmotionresult,
                         {callback}
                     ));
+                    {
+                        var param = new AnimationParsingOptions();
+                        param.index = 1;
+                        param.isCameraPreviewing = 0;
+                        
+                        param.isExecuteForDOTween = 1;
+                        param.targetRole = tmpcast.roleName;
+                        param.targetType = tmpcast.avatar.type.toString();
+
+                        var js = JSON.stringify(param);
+
+                        AppQueue.add(new queueData(
+                            {target:AppQueue.unity.ManageAnimation,method:'PreviewSingleFrame',param:js},
+                            "",QD_INOUT.toUNITY,
+                            null
+                        ));
+                    }
                     AppQueue.start();
                 }
                 var text = await file.text();
@@ -294,13 +314,41 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
         AppQueue.start();
     }
 
+    //=========================================================================
+    //  Project info tab
+    //=========================================================================
+    const fps_onchange = (val) => {
+        //---FPS--------------------------------------===== setfps
+        appConfirmWithCancel(t("msg_fps_warning"),()=> {
+            var param = parseInt(mainData.elements.projdlg.pinfo.fps);
+            if (isNaN(param)) {
+                mainData.elements.projdlg.pinfo.fps = mainData.elements.projdlg.pinfo.oldfps;
+                return;
+            }
+    
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'SetFps',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+            mainData.elements.projdlg.pinfo.oldfps = mainData.elements.projdlg.pinfo.fps;
+        },() => {
+            mainData.elements.projdlg.pinfo.fps = mainData.elements.projdlg.pinfo.oldfps;     
+        });
+
+        
+    }
+    //=========================================================================
+    //  role tab
+    //=========================================================================
+
     /**
      * Apply changing row.roleTitle by Edit Popup
      * @param {String} val 
      * @param {*} row line data of mainData.elements.projdlg.selavatars
      */
     const oneditok_roleTitle = (val, row) => {
-        console.log("edit ok?",val, row);
 
         //---update cast in project on html side.
         var role = modelOperator.getRole(row.roleName);
@@ -350,8 +398,8 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
 
         var projdlg = mainData.elements.projdlg;
 
-        console.log("old=",oldID, oldName);
-        console.log("new=",avatarID, avatarName);
+        //console.log("old=",oldID, oldName);
+        //console.log("new=",avatarID, avatarName);
         //--------------------------------------------------
         //---apply detaching old reference
         //--------------------------------------------------
@@ -575,7 +623,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
                     {target:AppQueue.unity.ManageAnimation,method:'RemoveMaterialFromOuter', param:param},
                     "removematerial",QD_INOUT.returnJS,
                     (val, options) => {
-                        console.log("refCount=",val);
+                        //console.log("refCount=",val);
                         if (val == -1) {
                             appAlert(t('msg_material_untilRefer'));
                         }else{
@@ -600,7 +648,6 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
      * @param {*} row 
      */
     const onselectok_material = (val, row) => {
-        console.log(val, row);
 
         var param = [
             row.oldname,
@@ -631,7 +678,6 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
                 if (item.type == row.typeId) return true;
                 return false;
             });
-            console.log(arr);
             var ret = [{
                 label : 'None',
                 value : "null",
@@ -659,6 +705,9 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
             oneditok_roleTitle,onselectok_avatar,filteredlist_selavatar_popup,
             
             wa_mat_tabradio,
+
+            fps_onchange,
+
             fil_proj_material_onChange,fil_proj_material_btn_clicked,materialNoPreview_onclick,
             materialFileLoad_onclick,materialFileRemove_onclick,
             onselectok_material,

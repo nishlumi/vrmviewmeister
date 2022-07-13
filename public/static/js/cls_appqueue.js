@@ -125,7 +125,7 @@ const AppQueue = {
                 }
             }
         }catch(e) {
-            console.log("appqueue start error:",e);
+            console.error("appqueue start error:",e);
             AppDB.writeLog("appqueue.start","error",{err:e, data:first});
             this.isExecuting = false;
             //---remove 1st element 
@@ -149,7 +149,7 @@ const AppQueue = {
             }
         }
         catch (e) {
-            console.log("appqueue next error:",e,first);
+            console.error("appqueue next error:",e,first);
             AppDB.writeLog("appqueue.next","error",{err:e, data:first});
             this.isExecuting = false;
             this.list.splice(0,1);
@@ -168,8 +168,6 @@ const AppQueue = {
             if (current) {
                 //AppDB.temp.getItem(current.key)
                 //.then(async item => {
-                    //console.log("curkey=",curkey);
-                    //console.log("current=",current,value);
                     if (curkey != current.key) return false;
 
                     //---call callback with item of IndexedDB

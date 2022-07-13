@@ -624,10 +624,12 @@ export class UnityCallbackFunctioner {
             el.objectui.materialnames.splice(0, el.objectui.materialnames.length);
             el.objectui.materials.splice(0,el.objectui.materials.length);
             lst.forEach(item => {
-                var itemarr = item.split("=");
-                mainData.states.selectedAvatar.materials.push(itemarr);
-                el.objectui.materials.push(itemarr);
-                el.objectui.materialnames.push(itemarr[0]);
+                if (item != "") {
+                    var itemarr = item.split("=");
+                    mainData.states.selectedAvatar.materials.push(itemarr);
+                    el.objectui.materials.push(itemarr);
+                    el.objectui.materialnames.push(itemarr[0]);
+                }
             });
             el.objectui.materialnameSelected = "";
             Vue.nextTick(() => {
@@ -709,12 +711,12 @@ export class UnityCallbackFunctioner {
             callback.isplayanima_oth(arr[2],options);
 
             callback.getplayflag_oth(arr[3],options);
-            //---seek position animation
+            //---max length [6]
+            callback.get_animationmaxlength(arr[6],callback.objpropData);
+            //---seek position animation [4]
             callback.getseek4oth(arr[4],options);
             //---animation speed 
             callback.get_animationspeed(arr[5],callback.objpropData);
-            //---max length
-            callback.get_animationmaxlength(arr[6],callback.objpropData);
             //---wrap mode
             callback.get_animationwrapmode(arr[7],callback.objpropData);
             //---animation clip list
@@ -1112,6 +1114,68 @@ export class UnityCallbackFunctioner {
             }
         }
     }
+    async getseastage_material(val, options) {
+        /**
+         * @type {UnityCallbackFunctioner}
+         */
+        const callback = options.callback;
+        const stageui = callback.objpropData.elements.stageui;
+        const stage_sea = stageui.stage_sea;
+
+        var js = val.split("=");
+        if (js.length > 12) {
+            // 0 - key name
+            // 1 - shader name
+            // 2 - wave scale
+            stage_sea.waveScale = parseFloat(js[2]);
+            // 3 - fresnel scale
+            stage_sea.fresnelScale = parseFloat(js[3]);
+            // 4 - base color
+            stage_sea.basecolor = "#" + js[4];
+            // 5 - reflection color
+            stage_sea.reflectionColor = "#" + js[5];
+            // 6 - specular color
+            stage_sea.reflectionColor = "#" + js[6];
+            // 7 - wave amplitude
+            var wa = js[7].split(",");
+            stage_sea.waveAmplitude.x = parseFloat(wa[0]);
+            stage_sea.waveAmplitude.y = parseFloat(wa[1]);
+            stage_sea.waveAmplitude.z = parseFloat(wa[2]);
+            stage_sea.waveAmplitude.w = parseFloat(wa[3]);
+            // 8 - wave frequency
+            var wf = js[8].split(",");
+            stage_sea.waveFrequency.x = parseFloat(wf[0]);
+            stage_sea.waveFrequency.y = parseFloat(wf[1]);
+            stage_sea.waveFrequency.z = parseFloat(wf[2]);
+            stage_sea.waveFrequency.w = parseFloat(wf[3]);
+            // 9 - wave steepness
+            var wst = js[9].split(",");
+            stage_sea.waveSteepness.x = parseFloat(wst[0]);
+            stage_sea.waveSteepness.y = parseFloat(wst[1]);
+            stage_sea.waveSteepness.z = parseFloat(wst[2]);
+            stage_sea.waveSteepness.w = parseFloat(wst[3]);
+            // 10- wave speed
+            var ws = js[10].split(",");
+            stage_sea.waveSpeed.x = parseFloat(ws[0]);
+            stage_sea.waveSpeed.y = parseFloat(ws[1]);
+            stage_sea.waveSpeed.z = parseFloat(ws[2]);
+            stage_sea.waveSpeed.w = parseFloat(ws[3]);
+            // 11- wave direction AB
+            var wdab = js[11].split(",");
+            stage_sea.waveDirectionAB.x = parseFloat(wdab[0]);
+            stage_sea.waveDirectionAB.y = parseFloat(wdab[1]);
+            stage_sea.waveDirectionAB.z = parseFloat(wdab[2]);
+            stage_sea.waveDirectionAB.w = parseFloat(wdab[3]);
+            // 12- wave direction CD
+            var wdcd = js[12].split(",");
+            stage_sea.waveDirectionCD.x = parseFloat(wdcd[0]);
+            stage_sea.waveDirectionCD.y = parseFloat(wdcd[1]);
+            stage_sea.waveDirectionCD.z = parseFloat(wdcd[2]);
+            stage_sea.waveDirectionCD.w = parseFloat(wdcd[3]);
+        }
+
+
+    }
     async getustg_materialfloat(val, options) {
         /**
          * @type {UnityCallbackFunctioner}
@@ -1243,6 +1307,7 @@ export class UnityCallbackFunctioner {
             
         }
         */
+        callback.mainData.states.currentEditOperationCount++;
     }
     async takescreenshot (val, options) {
         /**
@@ -1314,6 +1379,8 @@ export class UnityCallbackFunctioner {
             }
             //---preview this frame
             //callback.timelineEvent.common_loadFrame(parseInt(cursor));
+
+            mainData.states.currentEditOperationCount++;
         }
     }
     //----------------------------------------------------------------------------
@@ -1383,6 +1450,7 @@ export class UnityCallbackFunctioner {
         const mainData = callback.mainData;
         const modelOperator = callback.modelOperator;
         const modelLoader = callback.modelLoader;
+        const ribbonData = callback.ribbonData;
         //const objectUrls = options.objectUrls;
 
         //---revoke object urls
@@ -1400,6 +1468,15 @@ export class UnityCallbackFunctioner {
 
         var proj = new VVAnimationProject(js);
         mainData.data.project.setFromUnity(proj);
+
+        //---apply UI
+        mainData.elements.projdlg.pinfo.fps = proj.fps;
+        var bd = parseFloat(proj.baseDuration);
+        if (isNaN(bd)) {
+            ribbonData.elements.frame.baseDuration = 0.01;
+        }else{
+            ribbonData.elements.frame.baseDuration = fullRound(bd,1000);
+        }
         
         //---set up meta
         mainData.elements.projdlg.pinfo.name = proj.meta.name;
@@ -1441,6 +1518,7 @@ export class UnityCallbackFunctioner {
                 multiLine : true
             });
         }
+        const BKUPNAME = "%BACKUP%";
 
         var js = JSON.parse(val);
 
@@ -1519,6 +1597,10 @@ export class UnityCallbackFunctioner {
             }
             const enterSave = (value)=>{
                 var filename = value;
+                if (filename.indexOf(BKUPNAME) > -1) {
+                    appAlert(callback.t("msg_project_save_error1"));
+                    return;
+                }
                 if (filename == "") filename = "project" + FILEEXTENSION_ANIMATION;
                 if (filename.indexOf(FILEEXTENSION_ANIMATION) == -1) filename += FILEEXTENSION_ANIMATION;
                 //---to internal storage
@@ -1575,46 +1657,50 @@ export class UnityCallbackFunctioner {
                     appAlert(ret.err);
                 }
                 
-                /*
-                if ("showSaveFilePicker" in window) {
-                    //
-                    // @type {FileSystemFileHandle}
-                    //
-                    const savepicker = await window.showSaveFilePicker({
-                        suggestedName : mainData.states.currentProjectFilename,
-                        types: FILEOPTION.PROJECT.types
-                    });
-                    if (savepicker) {
-                        const writer = await savepicker.createWritable();
-                        writer.write(JSON.stringify(proj));
-                        await writer.close();
-    
-                        //var tmpname = savepicker.name.split(".");
-                        mainData.states.currentProjectFilename = savepicker.name;
-                        mainData.states.currentProjectHandle = savepicker;
-                        mainData.states.currentProjectFromFile = true;
-                        modelOperator.setTitle(mainData.states.currentProjectFilename);
-                        notify();
-                    }
-                }else{
-                    console.log("Not found window.showSaveFilePicker...");
-                }
-                */
+                
             }else{
                 var ret = await VFileHelper.saveOnefile(mainData.states.currentProjectHandle,JSON.stringify(proj),vfopt);
                 if (ret.cd == 0) {
                     notify();
                 }else{
                     appAlert(ret.err);
-                }
-                /*
-                const writer = await mainData.states.currentProjectHandle.createWritable();
-                writer.write(JSON.stringify(proj));
-                await writer.close();
-                notify();
-                */
+                }                
+            }            
+        }else if (disktype == "bkup") {
+            const funcbody = (filename,cmeta,cproj) => {
+                AppDB.scene_meta.setItem(cmeta.fullname,cmeta);
+                AppDB.scene.setItem(cmeta.fullname,cproj)
+                .then(res => {
+                    
+                });
             }
-            
+
+            var filename = BKUPNAME + FILEEXTENSION_ANIMATION;
+            //---to internal storage
+            AppDB.scene_meta.getItem(filename)
+            .then((existmeta) => {
+                var curdate = new Date();
+                var meta = new AppDBMeta(
+                    filename + (filename.indexOf(FILEEXTENSION_ANIMATION) == -1 ? FILEEXTENSION_ANIMATION : ""),
+                    filename,
+                    JSON.stringify(proj).length,
+                    "PROJECT",
+                    curdate,
+                    curdate,   
+                );
+                
+                if (existmeta) {
+                    //---already exists, overwrite
+                    meta = existmeta;
+                    meta.updatedDate = curdate;
+                    meta.size = JSON.stringify(proj).length;
+                    funcbody(filename,meta,proj);
+                }else{
+                    //---newly save
+                    funcbody(filename,meta,proj);
+                }
+                
+            });
         }
     }
     async clearemptytimeline (val, options) {

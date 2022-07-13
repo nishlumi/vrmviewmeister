@@ -59,6 +59,20 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         if (objpropData.elements.stageui.typeselected.value == StageType.User) return true;
         return false;
     });
+    const checkStageTypeWater = Vue.computed(() => {
+        if (
+            (objpropData.elements.stageui.typeselected.value == StageType.BasicSeaLevel)
+            
+        )  {
+            return "basicsea";
+        }else if (
+            (objpropData.elements.stageui.typeselected.value == StageType.SeaDaytime) ||
+            (objpropData.elements.stageui.typeselected.value == StageType.SeaNight)
+        ) {
+            return "seatime"
+        }
+        return "";
+    });
     const checkSkyMode = Vue.computed(() => {
         if (objpropData.elements.stageui.skymodeselected.value == 1) return true;
         return false;
@@ -97,7 +111,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     });
     const checkMaterialShaderWater = Vue.computed(() => {
         if (objpropData.elements.objectui.matopt.shaderselected == null) return false;
-        return objpropData.elements.objectui.matopt.shaderselected.value == "FX/Water4";
+        return (
+            (objpropData.elements.objectui.matopt.shaderselected.value == "FX/Water4")
+            ||
+            (objpropData.elements.objectui.matopt.shaderselected.value == "FX/SimpleWater4")
+        );
     });
     const checkEnumMaterialTexture = Vue.computed(() => {
         var arr = [{
@@ -366,7 +384,6 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     //===VRM========================================
     const wa_propVRMMoveMode = Vue.watch(() => objpropData.elements.vrmui.movemode,(newval) => {
-        console.log(newval);
         
         if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
         
@@ -399,12 +416,10 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         AppQueue.start();*/
     }
     const OnChanged_IKHandleSelected = (val) => {
-        console.log(val);
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'GetIKTargetFromOuter',param:val.value},
             "getikhandletarget",QD_INOUT.returnJS,
             (val2) => {
-                console.log(val2);
                 
                 var arr = checkEnumAssignObjectOfIKHandles.value;
                 var ishit = arr.find(item => {
@@ -604,7 +619,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         //---equip
         //exchange avatar to the cast
         var equipitem = modelOperator.getRoleFromAvatar(sel);
-        console.log("equipitem=",equipitem);
+        //console.log("equipitem=",equipitem);
         if (equipitem) {
             var newequip = mainData.states.selectedAvatar.equip(true,bodypart,equipitem);
             objpropData.elements.vrmui.equip.equipments.push(newequip);
@@ -617,7 +632,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     //===OtherObject=====================================
     const objectMaterial_onselected = (val) => {
-        console.log(val);
+        //console.log(val);
         
     }
     /**
@@ -947,7 +962,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             "maintex",
             "#Camera" + val.value
         ];
-        console.log(param);
+        //console.log(param);
 
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetUserMaterialFromOuter', param:param.join(",")},
@@ -1092,7 +1107,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const objectAnimationLoop_onchange = (val) => {
         var param = val.value;
-        console.log(param);
+        //console.log(param);
         if (isNaN(param.value)) return;
         
         AppQueue.add(new queueData(
@@ -1115,7 +1130,6 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     //===Light=====================================
     const lightRendermode_onchange = (val) => {
-        console.log(val);
         var param = parseInt(val.value);
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetRenderMode',param:param},
@@ -1391,9 +1405,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         if (newval.value == null) return;
         var param = newval.value;
         
-        console.log(param);
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.Stage,method:'SelectStageRef',param:param},
+            {target:AppQueue.unity.Stage,method:'SelectStageFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -1406,6 +1419,17 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
                 {target:AppQueue.unity.Stage,method:'GetMaterialUserStageFromOuter'},
                 "getustg_materialfloat",QD_INOUT.returnJS,
                 UnityCallback.getustg_materialfloat,
+                {callback: UnityCallback}
+            ));
+        }else if (
+            (param == StageType.BasicSeaLevel) ||
+            (param == StageType.SeaDaytime) ||
+            (param == StageType.SeaNight)
+        ) {
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Stage,method:'ListUserMaterialFromOuter',param:"1"},
+                "getseastage_material",QD_INOUT.returnJS,
+                UnityCallback.getseastage_material,
                 {callback: UnityCallback}
             ));
         }
@@ -1443,7 +1467,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             MUtility.toHexaColor(val)
         ];
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetMaterialToUserStage', param:param.join(",")},
+            {target:AppQueue.unity.Stage,method:'SetMaterialToUserStage', param:param.join(",")},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -1455,7 +1479,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             val
         ];
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetMaterialToUserStage', param:param.join(",")},
+            {target:AppQueue.unity.Stage,method:'SetMaterialToUserStage', param:param.join(",")},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -1484,12 +1508,104 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     const ustg_emissioncolor_onchange = (val) => {
         var param = "emissioncolor," + MUtility.toHexaColor(val);
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.Camera,method:'SetMaterialToUserStage',param:param},
+            {target:AppQueue.unity.Stage,method:'SetMaterialToUserStage',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
         AppQueue.start();
     }
+    //=== BasicSeaLevel, Sea***** methods
+    const seastg_WaveScale_onchange = (val) => {
+        var param = [
+            "wavescale",
+            val
+        ];
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Stage,method:'SetUserMaterialFromOuter', param:param.join(",")},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const seastg_FresnelScale_onchange = (val) => {
+        var param = [
+            "fresnelscale",
+            val
+        ];
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Stage,method:'SetUserMaterialFromOuter', param:param.join(",")},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const seastg_BaseColor_onchange = (val) => {
+        var param = [
+            "basecolor",
+            val
+        ];
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Stage,method:'SetUserMaterialFromOuter', param:param.join(",")},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const seastg_ReflectionColor_onchange = (val) => {
+        var param = [
+            "reflectioncolor",
+            val
+        ];
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Stage,method:'SetUserMaterialFromOuter', param:param.join(",")},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const seastg_SpecularColor_onchange = (val) => {
+        var param = [
+            "specularcolor",
+            val
+        ];
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Stage,method:'SetUserMaterialFromOuter', param:param.join(",")},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const seastg_Vector4MaterialSend = (matname, matval) => {
+        var param = [
+            matname,
+            `${matval.x}\t${matval.y}\t${matval.z}\t${matval.w}`
+        ];
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Stage,method:'SetUserMaterialFromOuter', param:param.join(",")},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const seastg_WaveAmplitude_onchange = (val) => {
+        seastg_Vector4MaterialSend("waveamplitude",objpropData.elements.stageui.stage_sea.waveAmplitude);
+    }
+    const seastg_WaveFrequency_onchange = (val) => {
+        seastg_Vector4MaterialSend("wavefrequency",objpropData.elements.stageui.stage_sea.waveFrequency);
+    }
+    const seastg_WaveSteepness_onchange = (val) => {
+        seastg_Vector4MaterialSend("wavesteepness",objpropData.elements.stageui.stage_sea.waveSteepness);
+    }
+    const seastg_WaveSpeed_onchange = (val) => {
+        seastg_Vector4MaterialSend("wavespeed",objpropData.elements.stageui.stage_sea.waveSpeed);
+    }
+    const seastg_WaveDirectionAB_onchange = (val) => {
+        seastg_Vector4MaterialSend("wavedirectionab",objpropData.elements.stageui.stage_sea.waveDirectionAB);
+    }
+    const seastg_WaveDirectionCD_onchange = (val) => {
+        seastg_Vector4MaterialSend("wavedirectioncd",objpropData.elements.stageui.stage_sea.waveDirectionCD);
+    }
+
     //---sky properties--------------------------------------------
     const skyMode_onchange = (val) => {
         var param = val.value;
@@ -1748,7 +1864,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             //---computed-----------------------
             checkDimension, curprop,
             checkVRM,checkOObject,checkLight,checkCamera,checkImage,checkEffect,
-            checkStage,checkStageType,checkSkyMode,checkSkyShaderProcedural,checkSkyShader6sided,
+            checkStage,checkStageType,checkStageTypeWater,checkSkyMode,checkSkyShaderProcedural,checkSkyShader6sided,
             checkText,checkUImage,
             checkVRMEquipItemChecked,showEquipedItemBodypart,
             checkMaterialShaderVRMMToon,checkMaterialShaderStandard,checkMaterialShaderWater,
@@ -1794,7 +1910,12 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             effectAnimationRegister_onclick,effectColliderFlag_onchange,effectColliderSize_onchange,
             colliderSelector_addbox_onclick,colliderTarget_remove_onclick,
 
-            wa_typeselected,
+            wa_typeselected, 
+            seastg_WaveScale_onchange, seastg_FresnelScale_onchange,seastg_BaseColor_onchange,seastg_ReflectionColor_onchange,
+            seastg_SpecularColor_onchange,seastg_Vector4MaterialSend,seastg_WaveAmplitude_onchange,
+            seastg_WaveFrequency_onchange,seastg_WaveSteepness_onchange,seastg_WaveSpeed_onchange,
+            seastg_WaveDirectionAB_onchange, seastg_WaveDirectionCD_onchange,
+
             ustg_maintex_onchange,ustg_bumpmap_onchange,
             ustg_Color_onchange,ustg_Blendmode_onchange,
             ustg_metallic_onchange,ustg_glossiness_onchange,ustg_emissioncolor_onchange,

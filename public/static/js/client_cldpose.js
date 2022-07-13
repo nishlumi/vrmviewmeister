@@ -113,30 +113,7 @@ const app = Vue.createApp({
 
                     }
                 });
-                /*
-                var bb = new Blob([JSON.stringify(poseapp.value.list.selected.data)], { type: "application/json" });
-                if (poseapp.value.header.url) window.URL.revokeObjectURL(poseapp.value.header.url);
-
-                var burl = window.URL.createObjectURL(bb);
-                lnk_posedownload.value.href  = burl;
-                lnk_posedownload.value.download = poseapp.value.list.selected.name + ".vvmpose";
-                lnk_posedownload.value.click();
-                */
-
-                //---File System Access API
-                /*
-                if ("showSaveFilePicker" in window) {
-                    const savepicker = await window.showSaveFilePicker(fileoption);
-                    if (savepicker) {
-                        const writer = await savepicker.createWritable();
-                        writer.write(JSON.stringify(poseapp.value.list.selected.data));
-                        await writer.close();
-                    }
-                    
-                }else{
-                    console.log("Not found window.showSaveFilePicker...");
-                }
-                */
+                
             }
         }
         const upload_onclick = async () => {
@@ -155,49 +132,16 @@ const app = Vue.createApp({
                         var filename = files[0].name.split(".")[0];
                         AppDB.pose.setItem(filename,js)
                         .then(data => {
-                            console.log(data);
+                            //console.log(data);
                             refresh_onclick();
                         })
                         .catch(err => {
-                            console.log(err);
+                            console.error(err);
                         });
                         
                     }
                 }
             });
-            /*
-            if ("showOpenFilePicker" in window) {
-                var files = await window.showOpenFilePicker(fileoption);
-                if (files) {
-                    if (files.length > 0) {
-                        var f0 = files[0];
-                        var f = await f0.getFile();
-                        var data = await f.text();
-                        if (data) {
-                            var js = JSON.parse(data);
-                            if ((!js) || 
-                                !("frameData" in js)
-                            ) {
-                                appAlert(_T("msg_pose_erroropen"));
-                                return;
-                            }
-                            var filename = f.name.split(".")[0];
-                            AppDB.pose.setItem(filename,js)
-                            .then(data => {
-                                console.log(data);
-                                refresh_onclick();
-                            })
-                            .catch(err => {
-                                console.log(err);
-                            });
-                            
-                        }
-                    }
-                }
-            }else{
-                console.log("Not found window.showOpenFilePicker...");
-            }
-            */
         }
 
         const selectListItem = (item) => {
