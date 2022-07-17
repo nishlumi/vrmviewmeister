@@ -1,11 +1,13 @@
 import { AF_TARGETTYPE, AF_MOVETYPE, FILEEXTENSION_VRM,
     FILEEXTENSION_OTHEROBJECT, FILEEXTENSION_IMAGE,
-    FILEEXTENSION_ANIMATION, FILEEXTENSION_DEFAULT, FILEOPTION, INTERNAL_FILE, StageType, EFFECTLIST
+    FILEEXTENSION_ANIMATION, FILEEXTENSION_DEFAULT, FILEOPTION, 
+    FILEEXTENSION_MOTION, INTERNAL_FILE, StageType, EFFECTLIST
 } from "../../res/appconst.js"
 import { AppDBMeta } from "../appconf.js";
 import {  VVAvatar, VVCast,VVAnimationProject, VVTimelineFrameData, VVTimelineTarget } from '../prop/cls_vvavatar.js';
 import { VFileHelper } from "../../../public/static/js/filehelper.js";
 import { appModelOperator } from "./operator.js";
+import { AnimationParsingOptions } from "../prop/cls_unityrel.js";
 
 /**
  * 
@@ -29,7 +31,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
      * @param {String} fileloadtype file type character
      * @param {File} tmpfile effective file object
      */
-    const _appfileLoader = (fdata, fileloadname, ext, fileloadtype, tmpfile) => {
+    const _appfileLoader = async (fdata, fileloadname, ext, fileloadtype, tmpfile) => {
         if (fileloadtype == "ap") {
             //---For Animation Project
             tmpfile.text()
@@ -60,7 +62,59 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 mainData.states.currentProjectFilename = "";
                 mainData.states.currentProjectHandle = null;
             });
-            
+        }else if (fileloadtype == "mot") {
+            const callbody = (fdata) => {
+                //---Firstly, set target.
+                var tmpcast = mainData.states.selectedCast;
+                if (tmpcast) {
+                    if (!tmpcast.avatar) {
+                        appAlert(t("msg_openmotion_error4"));
+                        callback.mainData.elements.loading = false;
+                        return;
+                    }
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'SetLoadTargetSingleMotion',param:tmpcast.roleName},
+                        "",QD_INOUT.toUNITY,
+                        null
+                    ));
+                    //---Second load a motion data.
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'LoadSingleMotion',param:fdata},
+                        "openmotionresult",QD_INOUT.returnJS,
+                        callback.openmotionresult,
+                        {callback}
+                    ));
+                    {
+                        var param = new AnimationParsingOptions();
+                        param.index = 1;
+                        param.isCameraPreviewing = 0;
+                        
+                        param.isExecuteForDOTween = 1;
+                        param.targetRole = tmpcast.roleName;
+                        param.targetType = tmpcast.type.toString();
+    
+                        var js = JSON.stringify(param);
+    
+                        AppQueue.add(new queueData(
+                            {target:AppQueue.unity.ManageAnimation,method:'PreviewSingleFrame',param:js},
+                            "",QD_INOUT.toUNITY,
+                            null
+                        ));
+                    }
+                    AppQueue.start();
+                }
+                
+            }
+            var text = await tmpfile.text();
+            var jsdata = JSON.parse(text);
+            var msgadd = `${jsdata.frames[jsdata.frames.length-1].index}`;
+            if (mainData.data.project.timelineFrameLength < jsdata.frames[jsdata.frames.length-1].index) {
+                appConfirm(t("msg_openmotion_error3")+msgadd,() => {
+                    callbody(fdata);
+                });
+            }else{
+                callbody(fdata);
+            }
         }else{
             var dbtype = "";
             if (fileloadtype == "v") {
@@ -225,6 +279,10 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     ) {
                         mainData.states.fileloadtype = "ap";
                         filetype = "PROJECT";
+                    }else if (tmpfile.name.toLowerCase().indexOf(FILEEXTENSION_MOTION) > -1) {
+                        //---if AnimationSingleMotion file (neccesary .vvmmot, don't .json)
+                        mainData.states.fileloadtype = "mot";
+                        filetype = "MOTION";
                     }
                 }
 
@@ -236,7 +294,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 mainData.elements.loading = true;
                 mainData.elements.loadingTypePercent = false;
                 //---load file body
-                _appfileLoader(fdata,
+                await _appfileLoader(fdata,
                     mainData.states.fileloadname, 
                     ext, 
                     mainData.states.fileloadtype, 
@@ -348,7 +406,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
 
         //console.log(mainData.states.fileloadtype);
 
-        _appfileLoader(fdata, mainData.states.fileloadname,ext, mainData.states.fileloadtype,file);
+        await _appfileLoader(fdata, mainData.states.fileloadname,ext, mainData.states.fileloadtype,file);
 
         //---save to recently history
         if (mainData.appconf.confs.application.stock_opened_file_history === true) {

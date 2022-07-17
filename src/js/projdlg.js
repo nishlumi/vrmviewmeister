@@ -246,7 +246,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
                         
                         param.isExecuteForDOTween = 1;
                         param.targetRole = tmpcast.roleName;
-                        param.targetType = tmpcast.avatar.type.toString();
+                        param.targetType = tmpcast.type.toString();
 
                         var js = JSON.stringify(param);
 
@@ -393,8 +393,8 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
         var avatarID = row.name.value;
 
         var newrole = modelOperator.getRoleFromAvatar(avatarID);
-        var newpath = newrole.path;
-        var newext = newrole.ext;
+        var newpath = (newrole) ? newrole.path : "";
+        var newext = (newrole) ? newrole.ext : "";
 
         var projdlg = mainData.elements.projdlg;
 

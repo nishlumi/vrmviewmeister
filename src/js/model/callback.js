@@ -138,12 +138,41 @@ export class UnityCallbackFunctioner {
             }
         }
     }
+    async callVRM_Limitedfunction(mainData, ribbonData) {
+        //---option changed: each loading of VRM: HingeLimited
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetHingeLimited',param:mainData.appconf.confs.model.body_natural_limit ? 1 : 0},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetLimitedBones',param:mainData.appconf.confs.model.interlock_body_pelvis ? "p,1" : "p,0"},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetLimitedBones',param:mainData.appconf.confs.model.interlock_body_arms ? "a,1" : "a,0"},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetLimitedBones',param:mainData.appconf.confs.model.interlock_body_legs ? "l,1" : "l,0"},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+    }
     async historySendObjectInfo (js, options) {
         /**
          * @type {UnityCallbackFunctioner}
          */
         const callback = options.callback;
         var mainData = callback.mainData;
+        var ribbonData = callback.ribbonData;
         var timelineData = callback.timelineData;
         var modelOperator = callback.modelOperator;
 
@@ -163,7 +192,8 @@ export class UnityCallbackFunctioner {
                 mainData.elements.vrminfodlg.showmode = false;
                 mainData.elements.vrminfodlg.show = true;
             }
-            
+            //---call VRM IK limitation
+            callback.callVRM_Limitedfunction(mainData,ribbonData);
 
             //URL.revokeObjectURL(mainData.data.objectUrl.vrm);
         }
@@ -216,17 +246,10 @@ export class UnityCallbackFunctioner {
         mainData.data.preview = null;
         loadingfileHandle = null;
 
-        //---option changed: each loading of VRM: HingeLimited
-        AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'SetHingeLimited',param:mainData.appconf.confs.model.body_natural_limit ? 1 : 0},
-            "",QD_INOUT.toUNITY,
-            null
-        ));
-        AppQueue.add(new queueData(
-            {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
-            "",QD_INOUT.toUNITY,
-            null
-        ));
+
+        //---call VRM IK limitation
+        callback.callVRM_Limitedfunction(mainData,ribbonData);
+
         //AppQueue.start();
         if (mainData.elements.loadingTypePercent) {
             if (mainData.elements.percentLoad.current <= 1.0) {
@@ -1731,22 +1754,27 @@ export class UnityCallbackFunctioner {
         const callback = options.callback;
         const modelOperator = callback.modelOperator;
 
+        var chkerr = false;
         if (val == "") {
             appAlert(callback.t("msg_openmotion_error1"));
-            return;
+            chkerr = true;
         }
         if (val == "typeerr") {
             appAlert(callback.t("msg_openmotion_error2"));
-            return;
+            chkerr = true;
         }
-        /**
-         * @type {VVAnimationFrameActor}
-         */
-        var js = JSON.parse(val);
-        //console.log(js);
+        if (!chkerr) {
+            /**
+             * @type {VVAnimationFrameActor}
+             */
+            var js = JSON.parse(val);
+            //console.log(js);
 
-        //---To apply on HTML
-        modelOperator.SingleApplyToTimelineUI(js, js.targetRole);
+            //---To apply on HTML
+            modelOperator.SingleApplyToTimelineUI(js, js.targetRole);
+        }
+
+        callback.mainData.elements.loading = false;
     }
     async savemotion (val,options) {
         /**
@@ -1758,19 +1786,6 @@ export class UnityCallbackFunctioner {
         var js = JSON.parse(val);
 
         //console.log(js);
-        /*
-        appPrompt(callback.t("msg_motion_save"),(value)=>{
-            var filename = value;
-            
-            if (filename == "") filename = "motion";
-            var bb = new Blob([val], {type : "application/json"});
-            if (refs.lnk_savemotion.value.href) window.URL.revokeObjectURL(refs.lnk_savemotion.value.href);
-            var burl = URL.createObjectURL(bb);
-            refs.lnk_savemotion.value.href = burl;
-            refs.lnk_savemotion.value.download = filename + FILEEXTENSION_MOTION;
-            refs.lnk_savemotion.value.click(); 
-        });
-        */
 
         //---File System Access API
         var vopt = new VFileType();
@@ -1788,19 +1803,6 @@ export class UnityCallbackFunctioner {
                 VFileHelper.saveUsingDialog(val,vf,true);
             },vf.suggestedName);
         }
-        /*
-        if ("showSaveFilePicker" in window) {
-            const savepicker = await window.showSaveFilePicker(FILEOPTION.MOTION);
-            if (savepicker) {
-                const writer = await savepicker.createWritable();
-                writer.write(val);
-                await writer.close();
-            }
-            
-        }else{
-            console.log("Not found window.showSaveFilePicker...");
-        }
-        */
     }
 }
 export const defineUnityCallback = (mainData,ribbonData,objlistData,objpropData,timelineData,unityConfig,refs) => {

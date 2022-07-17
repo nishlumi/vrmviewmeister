@@ -1470,7 +1470,11 @@ export class appModelOperator {
      * @param {Number} newval 
      */
     common_loadFrame (newval){
-        
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'PreparePreviewMarker'},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
         for (var i = 0; i < this.mainData.data.project.casts.length; i++) {
             var item = this.mainData.data.project.casts[i];
             if ((item.avatar != null) && (item.avatar != "")) {
@@ -1527,13 +1531,28 @@ export class appModelOperator {
             this.UnityCallback.getPropertySystemEffect,
             {callback:this.UnityCallback}
         ));
+
+
         this.select_objectItem(this.mainData.states.selectedAvatar.id,true);
         if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
             this.returnBoneTransformReloadBtn({avatarId:this.mainData.states.selectedAvatar.id});
         }
         //AppQueue.start();
     }
-    
+    callVRM_limitedBoneOperation() {
+        var param = [
+            this.mainData.appconf.confs.model.body_natural_limit ? 1 : 0,
+            this.mainData.appconf.confs.model.interlock_body_pelvis ? "p,1" : "p,0",
+            this.mainData.appconf.confs.model.interlock_body_arms ? "a,1" : "a,0", 
+            this.mainData.appconf.confs.model.interlock_body_legs ? "l,1" : "l,0"
+        ]
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'RecoverBoneLimitatonMarker',param:param.join("\t")},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
     //==============================================================
     //
     //  child window functions

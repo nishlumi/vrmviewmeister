@@ -237,6 +237,7 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
                 //---apply object information
                 //console.log(val);
                 //modelOperator.select_objectItem(mainData.states.selectedAvatar.id);
+                modelOperator.callVRM_limitedBoneOperation();
             }
         );
         AppQueue.fixedList["pauseanima_unity2html"] = new queueData(
@@ -282,6 +283,7 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
                         }
                         
                     }
+                    modelOperator.callVRM_limitedBoneOperation();
                 });
                 
             }

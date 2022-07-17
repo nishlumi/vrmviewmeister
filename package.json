@@ -1,6 +1,6 @@
 {
   "name": "vrmviewmeister",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "set NODE_ENV=delevopment&&set PORT=5026&&node ./app.js",
