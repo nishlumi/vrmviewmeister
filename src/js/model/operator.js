@@ -703,11 +703,8 @@ export class appModelOperator {
         const newval = index+1;
         //---Fire watch event
         this.timelineData.states.currentcursor = newval;
+        //-->  timeline.js.wa_frame_current 
         this.timelineData.elements.seekbar = newval;
-        for (var i = 0; i < this.mainData.data.project.casts.length; i++) {
-            var cast = this.mainData.data.project.casts[i];
-
-        }
     }
     /**
      * Select specified timeline by the Role
@@ -1468,8 +1465,9 @@ export class appModelOperator {
     /**
      * load frame contents of all timeline 
      * @param {Number} newval 
+     * @param {Boolean} isSelectObject
      */
-    common_loadFrame (newval){
+    common_loadFrame (newval, isSelectObject = true){
         AppQueue.add(new queueData(
             {target:AppQueue.unity.ManageAnimation,method:'PreparePreviewMarker'},
             "",QD_INOUT.toUNITY,
@@ -1532,10 +1530,11 @@ export class appModelOperator {
             {callback:this.UnityCallback}
         ));
 
-
-        this.select_objectItem(this.mainData.states.selectedAvatar.id,true);
-        if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
-            this.returnBoneTransformReloadBtn({avatarId:this.mainData.states.selectedAvatar.id});
+        if (isSelectObject) {
+            this.select_objectItem(this.mainData.states.selectedAvatar.id,true);
+            if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
+                this.returnBoneTransformReloadBtn({avatarId:this.mainData.states.selectedAvatar.id});
+            }
         }
         //AppQueue.start();
     }
@@ -2051,7 +2050,8 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
         if (
             (newval.type != AF_TARGETTYPE.Stage) &&
             (newval.type != AF_TARGETTYPE.Text) &&
-            (newval.type != AF_TARGETTYPE.UImage) 
+            (newval.type != AF_TARGETTYPE.UImage) &&
+            (newval.type != AF_TARGETTYPE.SystemEffect) 
         ) {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.OperateActiveVRM,method:'ChangeEnableAvatarFromOuter',param:newval.id},

@@ -216,31 +216,13 @@ const app = Vue.createApp({
             opener.postMessage(js);
         }
         const mirrorpose_onclick = () => {
-            var setCell = (x, y, val) => {
-                data.value.elements.spreadsheet.setValueFromCoords(x, y, val);
-            }
             var sdata = data.value.elements.spreadsheet.getData();
             var posx = 1; var posy = 2; var posz = 3; var rotx = 4; var roty = 5; var rotz = 6;
-            
-            //---EyeviewHandle
-            setCell(posx, IKBoneType.EyeViewHandle, sdata[1][posx] * -1);
-            
-            //---Head
-            setCell(posx, IKBoneType.Head, sdata[2][posx] * -1);
-    
-            //---LookAt
-            setCell(posx, IKBoneType.LookAt, sdata[3][posx] * -1);
-    
-            //---Aim
-            setCell(posx, IKBoneType.Aim, sdata[4][posx] * -1);
-    
-            //---Chest
-            setCell(posx, IKBoneType.Chest, sdata[5][posx] * -1);
-    
-            //---Pelvis
-            setCell(posx, IKBoneType.Pelvis, sdata[6][posx] * -1);
-    
-            var mirrorLR = function(tleft, tright)  {
+
+            const setCell = (x, y, val) => {
+                data.value.elements.spreadsheet.setValueFromCoords(x, y, val);
+            }
+            const mirrorLR = (tleft, tright) => {
                 setCell(posx, tleft, sdata[tright][posx] * -1);
                 setCell(posy, tleft, sdata[tright][posy]);
                 setCell(posz, tleft, sdata[tright][posz]);
@@ -248,6 +230,30 @@ const app = Vue.createApp({
                 setCell(roty, tleft, sdata[tright][roty] * -1);
                 setCell(rotz, tleft, sdata[tright][rotz] * -1);
             }
+            
+            //---EyeviewHandle
+            //setCell(posx, IKBoneType.EyeViewHandle, sdata[1][posx] * -1);
+            mirrorLR(IKBoneType.EyeViewHandle, IKBoneType.EyeViewHandle);
+            
+            //---Head
+            //setCell(posx, IKBoneType.Head, sdata[2][posx] * -1);
+            mirrorLR(IKBoneType.Head, IKBoneType.Head);
+    
+            //---LookAt
+            //setCell(posx, IKBoneType.LookAt, sdata[3][posx] * -1);
+            mirrorLR(IKBoneType.LookAt, IKBoneType.LookAt);
+    
+            //---Aim
+            //setCell(posx, IKBoneType.Aim, sdata[4][posx] * -1);
+            mirrorLR(IKBoneType.Aim, IKBoneType.Aim);
+    
+            //---Chest
+            //setCell(posx, IKBoneType.Chest, sdata[5][posx] * -1);
+            mirrorLR(IKBoneType.Chest, IKBoneType.Chest);
+    
+            //---Pelvis
+            //setCell(posx, IKBoneType.Pelvis, sdata[6][posx] * -1);
+            mirrorLR(IKBoneType.Pelvis, IKBoneType.Pelvis);
 
             //---Right Shouloder from Left
             mirrorLR(IKBoneType.LeftShoulder, IKBoneType.RightShoulder);

@@ -29,6 +29,9 @@ class queueData {
     }
 }
 const AppQueue = {
+    /**
+     * @type {Array<queueData>}
+     */
     list : [],
     fixedList : {},
     _current : null,
@@ -111,6 +114,13 @@ const AppQueue = {
         if (this.isExecuting) return;
         this.isExecuting = true;
 
+        var logmes = [];
+        this.list.forEach(item  => {
+            logmes.push(item.unity.target + "-" + item.unity.method);
+        });
+        AppDB.writeLog("cls_appque","info",logmes);
+
+
         //if (!isContinue) this._current = this.list.shift();
 
         try {
@@ -123,6 +133,8 @@ const AppQueue = {
                     //first = this.list.shift();
                     this.next();
                 }
+            }else{
+                this.isExecuting = false;
             }
         }catch(e) {
             console.error("appqueue start error:",e);

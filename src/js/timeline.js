@@ -307,9 +307,14 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             }
             item.selected.currentcursor = true;
             mainData.states.selectedTimeline = item;
+            //-->  timeline.js.wa_selectedTimeline --> operator.js.wa_selectedAvatar
+            
             //---change target frame number
             ribbonData.elements.frame.current = index;
             modelOperator.select_keyframePosition(index-1);
+            Vue.nextTick(() => {
+            });
+            
         }
         
 
