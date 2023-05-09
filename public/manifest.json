@@ -1,0 +1,25 @@
+{
+  "name": "VRM View Meister",
+  "short_name": "vvm",
+  "description" : "Very easy viewer and animation tool for VRM",
+  "icons": [
+    {
+      "src": "/static/img/app_icon.png",
+      "sizes": "640x640",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src" : "/static/img/maskable_icon.png",
+      "sizes": "752x752",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  
+  "start_url": "/",
+  "display": "standalone",
+  "orientation" : "landscape-primary",
+  "background_color": "#000000",
+  "theme_color": "#55A5FF"
+}

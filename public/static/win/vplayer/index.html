@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="same-origin">
+    <meta name="google" content="nositelinkssearchbox">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="msapplication-tilecolor" content="#FFFFFF">
+    <meta name="msapplication-tileimage" content="../../img/app_icon.png">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Video player</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="../../css/index.css">
+    <link id="usercss" ref="stylesheet" href="../../css/dmy_style.css" type="text/css">
+    <style>
+        .fit-video {
+            width : 100%;
+            height: calc(100% - 51px);
+        }
+        .fit-full {
+            width: 100%;
+            height : 100%;
+        }
+        .edit-timeline-box {
+            width: 100%;
+            height: calc(4rem * 5);
+            border: 3px inset;
+            background-color: rgb(248, 248, 248);
+            overflow : auto;
+        }
+        .edit-css-box {
+            width: 100%;
+            height: calc(4rem * 5);
+            border: 3px inset;
+            background-color: rgb(248, 248, 248);
+            overflow : auto;
+        }
+        .z-video {
+            z-index: 100;
+        }
+        .z-canvas {
+            z-index: 1;
+            display: none;
+        }
+        .cur-time-chip {
+            width : 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- example of injection point where you write your app template -->
+    <div id="q-app" style="width:100%;height:100%;"  v-cloak>
+        <q-layout view="hHh lpr FFr" style="width:100%;height:100%;">
+            <q-header elevated class="bg-primary text-white">
+                <q-toolbar class="bg-primary text-white" style="height:48px">
+                    <q-btn
+                        icon="open_in_browser" flat round
+                        @click="open_fromapp"
+                    >
+                        <q-tooltip>
+                            <span>{{ _T("Load video from app") }}</span>
+                        </q-tooltip>
+                    </q-btn>
+                    <q-btn
+                        icon="cloud_upload"  flat round
+                        @click="open_fromlocal"
+                    >
+                        <q-tooltip>
+                            <span>{{ _T("Load a video from local") }}</span>
+                        </q-tooltip>
+                    </q-btn>
+                    <input type="file" ref="hidfile" class="common_ui_off" accept=".webm,.mp4"
+                        @change="hidfile_onchange"
+                    />
+                    
+                    <q-chip
+                        class="full-width"
+                        square
+                    >
+                        <div >
+                            {{ myapp.loadedVideoName }}
+                        </div>
+                
+                        <q-tooltip>
+                            {{ myapp.loadedVideoName }}
+                        </q-tooltip>
+                    </q-chip>
+                    <q-btn icon="edit" round flat @click="panel_clicked">
+                        <q-tooltip>
+                            <span>{{ _T("tlb_edit_caption") }}</span>
+                        </q-tooltip>
+                    </q-btn>
+                </q-toolbar>
+            </q-header>
+            <q-page-container class="fit-video bg-grey-9">
+                <q-page class="fit-full">
+                    <video controls ref="vplayer"
+                        :src="myapp.videourl"
+                        :ratio="myapp.videoratio"
+                        class="fit-full z-video"
+                        @loadeddata="video_loadeddata"
+                        @canplaythrough="video_canplaythrough"
+                        @seeking="video_seeking"
+                        @play="video_played"
+                        @pause="video_paused"
+                        @timeupdate="video_timeupdate"
+                    ></video>
+                    <canvas ref="reccanvas" class="z-canvas"></canvas>
+                    <a href="" ref="lnk_download" download="recmovie.webm" class="common_ui_off"></a>
+                </q-page>
+            </q-page-container>
+            
+            <!-- *** Text Track ****************************************** -->
+            <q-drawer
+                v-model="myapp.rightpanel.show" 
+                side="right" 
+                width="360"
+                bordered
+            >
+                <q-tabs
+                    v-model="myapp.rightpanel.tab"
+                    class="text-primary" dense
+                    no-caps 
+                >
+                    <q-tab name="track" :label="_T('text track')"></q-tab>
+                    <q-tab name="cue" :label="_T('text cue')"></q-tab>
+                    <q-tab name="css" label="CSS"></q-tab>
+                </q-tabs>
+                <q-tab-panels v-model="myapp.rightpanel.tab" animated>
+                    <q-tab-panel name="track" class="q-pa-none">                        
+                        <div class="area-edit-track">
+                            <q-card class="q-ma-xs shadow-3">
+                                <q-card-section>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <q-input v-model="myapp.rightpanel.editTrack.addlabel" type="text" dense :label="_T('label')"></q-input>
+                                        </div>
+                                        <div class="col-6">
+                                            <q-input v-model="myapp.rightpanel.editTrack.addlang" type="text" dense :label="_T('language')"></q-input>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 q-pt-sm">
+                                            <q-select v-model="myapp.rightpanel.editTrack.selkind" 
+                                                :options="myapp.rightpanel.editTrack.kindoptions" 
+                                                :label="_T('track kind')"
+                                                filled
+                                            ></q-select>
+                                        </div>
+                                    </div>
+                                </q-card-section>
+                                <q-card-actions vertical align="right">
+                                    <q-btn icon="playlist_add" flat :label="_T('cons_add')" @click="tlb_track_add"></q-btn>
+                                </q-card-actions>
+                            </q-card>
+                            <q-card class="q-ma-xs shadow-3">
+                                <q-card-section>
+                                    <q-select v-model="myapp.rightpanel.editTrack.seltrack" 
+                                        :options="myapp.rightpanel.editTrack.trackoptions" 
+                                        :label="_T('text track')"
+                                        
+                                        filled
+                                    ></q-select>
+                                    <!-- @update:model-value="track_list_onchange" -->
+                                    <div class="edit-track-contol q-mt-sm">                        
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <q-select v-model="myapp.rightpanel.editTrack.track_mode" 
+                                                    :options="myapp.rightpanel.editTrack.track_options" :label="_T('show mode')" filled
+                                                ></q-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </q-card-section>
+                                <q-card-actions horizontal align="center">
+                                    <!--
+                                    <q-file filled bottom-slots dense 
+                                        v-model="myapp.bottompanel.vttfile" 
+                                        :label="_T('vtt_file')" max-files="1"
+                                        accept=".vtt"
+                                        @update:model-value="vttfile_onchange"
+                                    >
+                                        <template v-slot:before>
+                                            <q-icon name="attachment"></q-icon>
+                                        </template>
+                                
+                                        <template v-slot:append>
+                                            <q-icon v-if="myapp.bottompanel.vttfile !== null" name="close" @click.stop.prevent="myapp.bottompanel.vttfile = null" class="cursor-pointer"></q-icon>
+                                        </template>
+                                    </q-file>-->
+                                    <input type="file" id="fil_vttfile" accept=".vtt,.srt" class="common_ui_off" @change="vttfile_onchange">
+                                    <q-btn icon="attachment" color="primary" :label="_T('open_project')" 
+                                        @click="tlb_track_openvtt"
+                                        :disable="!myapp.rightpanel.editTrack.seltrack"
+                                    >
+                                        <q-tooltip>{{ _T('vtt_file') }}</q-tooltip>
+                                    </q-btn>
+                                    <q-btn icon="playlist_remove" flat :label="_T('cons_delete')" 
+                                        @click="tlb_track_del"
+                                        :disable="!myapp.rightpanel.editTrack.seltrack"
+                                    ></q-btn>
+                                    <q-btn icon="save" color="primary" :label="_T('cons_save')" 
+                                        @click="tlb_track_save"
+                                        :disable="!myapp.rightpanel.editTrack.seltrack"
+                                    ></q-btn>
+                                </q-card-actions>
+                            </q-card>
+                        </div>
+                    </q-tab-panel>
+                    <!-- ================================================ -->
+                    <q-tab-panel name="cue" class="q-pa-none">
+                        <q-toolbar class="bg-primary text-white">
+                            <q-chip square class="cur-time-chip">
+                                <div v-text="myapp.rightpanel.editTimeline.currentTime"></div>
+                            </q-chip>
+                            <q-space></q-space>
+                            <q-btn flat round dense icon="text_decrease" @click="remove_cue"
+                                :disable="!myapp.rightpanel.editTrack.seltrack"
+                            >
+                                <q-tooltip>{{ _T("cons_delete")}}</q-tooltip>
+                            </q-btn>
+                            <q-btn flat round dense icon="text_increase" @click="cue_add_clicked(true)"
+                                :disable="!myapp.rightpanel.editTrack.seltrack"
+                            >
+                                <q-tooltip>{{ _T("cons_add")}}</q-tooltip>
+                            </q-btn>
+                            <q-btn flat round dense icon="edit" @click="cue_add_clicked(false)"
+                                :disable="!myapp.rightpanel.editTrack.seltrack"
+                            >
+                                <q-tooltip>{{ _T("cons_apply")}}</q-tooltip>
+                            </q-btn>
+
+                        </q-toolbar>
+                        <div class="area-edit-timeline">
+                            <div class="edit-timeline-box">
+                                <q-list bordered>
+                                    <q-item clickable v-ripple v-for="(item, index) in myapp.rightpanel.editTimeline.items" :key="index"
+                                        active-class="bg-primary text-white"
+                                        :active="item.isactive"
+                                        @click="select_active_cue(item)"
+                                        @dblclick="teleport_active_cue(item)"
+                                    >
+                                        <q-item-section>
+                                            <q-item-label>{{ item.timestring() }}</q-item-label>
+                                            <q-item-label caption lines="1">{{ item.text }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </div>
+                            <div class="edit-cue-control">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <q-btn color="primary" flat icon="first_page" @click="cue_time_start_clicked"></q-btn>
+                                        <span v-text="myapp.rightpanel.editTimeline.cuestarttime"></span>
+                                    </div>
+                                    <div class="col-5 offset-1">
+                                        <q-btn color="primary" flat icon="last_page" @click="cue_time_end_clicked"></q-btn>
+                                        <span v-text="myapp.rightpanel.editTimeline.cueendtime"></span>
+                                    </div>
+                                </div>
+                                <div class="row q-ma-xs" >
+                                    <div class="col-12">
+                                        <q-input
+                                            v-model="myapp.rightpanel.editTimeline.cueText"
+                                            filled type="text" :label="_T('Text')"
+                                        ></q-input>
+                                    </div>
+                                </div>
+                                <div class="row q-ma-xs">
+                                    <div class="col-5">
+                                        <span>position</span>
+                                        <q-input v-model.number="myapp.rightpanel.editTimeline.cueHorizontalNumber" type="number" :label="_T('horizontal_p')" filled
+                                            :disable="myapp.rightpanel.editTimeline.cueHorizontalAuto"
+                                            :min="0" :max="100" :step="1" dense
+                                        ></q-input>
+                                        <q-toggle v-model="myapp.rightpanel.editTimeline.cueHorizontalAuto" color="primary" :label="_T('Auto')"></q-toggle>
+                                    </div>
+                                    <div class="col-5 offset-1">
+                                        <span>line</span>                                
+                                        <q-input v-model.number="myapp.rightpanel.editTimeline.cueVerticalNumber" type="number" :label="_T('vertical_p')" filled
+                                            :disable="myapp.rightpanel.editTimeline.cueVerticalAuto"
+                                            :min="0" :max="100" :step="1" dense
+                                        ></q-input>
+                                        <q-toggle v-model="myapp.rightpanel.editTimeline.cueVerticalAuto" color="primary" :label="_T('Auto')"></q-toggle>
+                                    </div>
+                                </div>
+                                <div class="row q-ma-xs">
+                                    <!--<div class="col-6">
+                                        <q-select v-model="myapp.rightpanel.editTimeline.positionHorizontalAlign.sel" 
+                                            :options="myapp.rightpanel.editTimeline.positionHorizontalAlign.options" :label="_T('position align')" filled dense 
+                                        ></q-select>
+                                    </div>-->
+                                    <div class="col-5">
+                                        <q-select v-model="myapp.rightpanel.editTimeline.lineVerticalAlign.sel" 
+                                            :options="myapp.rightpanel.editTimeline.lineVerticalAlign.options" :label="_T('line align')" filled dense 
+                                        ></q-select>
+                                    </div>
+                                    <div class="col-5 offset-1">
+                                        <q-input
+                                            v-model="myapp.rightpanel.editTimeline.cueSize"
+                                            filled type="number" :label="_T('caption size')" 
+                                            :min="1" :max="100" :step="1" dense 
+                                        ></q-input>
+                                    </div>
+                                </div>
+                                <div class="row q-ma-xs">
+                                    <div class="col-5">
+                                        <q-select v-model="myapp.rightpanel.editTimeline.cueCSSClass" 
+                                            :options="cmp_css_classlist" :label="_T('css_class_name')" filled dense 
+                                        ></q-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </q-tab-panel>
+                    <q-tab-panel name="css" class="q-pa-none">
+                        <q-toolbar class="bg-primary text-white">
+                            <input type="file" id="fil_cssfile" accept=".css" @change="css_file_onchange" class="common_ui_off">
+                            <q-btn flat round dense icon="upload_file" @click="css_upload_clicked">
+                                <q-tooltip>{{ _T("upload_cssfile")}}</q-tooltip>
+                            </q-btn>
+                            <q-btn flat round dense icon="download" @click="css_download_onclick">
+                                <q-tooltip>{{ _T("cons_download")}}</q-tooltip>
+                            </q-btn>
+                            <q-space></q-space>
+                            <q-btn flat round dense icon="text_decrease" @click="css_del_clicked">
+                                <q-tooltip>{{ _T("cons_delete")}}</q-tooltip>
+                            </q-btn>
+                            <q-btn flat round dense icon="text_increase" @click="css_add_clicked(false)">
+                                <q-tooltip>{{ _T("cons_add")}}</q-tooltip>
+                            </q-btn>
+                            <q-btn flat round dense icon="edit" @click="css_add_clicked(true)">
+                                <q-tooltip>{{ _T("cons_apply")}}</q-tooltip>
+                            </q-btn>
+
+                        </q-toolbar>
+                        <div class="edit-css-box">
+                            <q-list bordered>
+                                <q-item clickable v-ripple v-for="(item, index) in myapp.rightpanel.editCSS.items" :key="index"
+                                    active-class="bg-primary text-white"
+                                    :active="item.isactive"
+                                    @click="select_active_css(item,index)"
+                                >
+                                    <q-item-section>
+                                        <q-item-label>{{ item.classname }}</q-item-label>
+                                        <q-item-label caption lines="1">{{ item.selector }}</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </div>
+                        <div class="edit-css-control">
+                            <div class="row q-ma-xs">
+                                <div class="col-12">
+                                    <q-input
+                                        v-model="myapp.rightpanel.editCSS.cssClassName"
+                                        filled type="text" :label="_T('css_class_name')"
+                                    ></q-input>
+                                </div>
+                            </div>
+                            <div class="row q-ma-xs">
+                                <div class="col-12">
+                                    <q-input v-model="myapp.rightpanel.editCSS.cssContent" 
+                                        type="textarea" label="CSS" filled
+                                    ></q-input>
+                                </div>
+                            </div>
+                        </div>
+                    </q-tab-panel>
+                </q-tab-panels>
+                
+            </q-drawer>
+            <q-footer  bordered class="bg-white text-black">
+                <q-toolbar>
+                    <q-btn flat round dense :icon="myapp.bottompanel.icon_playbtn" :disable="myapp.bottompanel.disabled" @click="ft_play"></q-btn>
+                    <q-btn flat round dense icon="stop" :disable="myapp.bottompanel.disabled" @click="ft_stop"></q-btn>
+                    <!--
+                    <q-btn flat round dense icon="videocam" color="red" :disable="myapp.bottompanel.disabled" @click="ft_record"></q-btn>
+                    <q-btn flat round dense icon="videocam_off" :disable="myapp.bottompanel.disabled" @click="ft_record_stop"></q-btn>
+                    <q-btn flat round dense icon="file_download" :disable="myapp.bottompanel.disabled" @click="ft_record_download"></q-btn>
+                    -->
+                    <q-space></q-space>
+                    
+                </q-toolbar>
+            </q-footer>
+        </q-layout>
+        
+        <q-dialog v-model="myapp.showmsg">
+            <q-card>
+              <q-card-section>
+                <div class="text-h6">VRMViewMeister</div>
+              </q-card-section>
+      
+              <q-card-section class="q-pt-none">
+                {{ myapp.msgcontent }}
+              </q-card-section>
+      
+              <q-card-actions align="right">
+                <q-btn flat label="OK" color="primary" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+    </div>
+
+    <script src="../../lib/vue/vue.global.prod.js"></script>
+    <script src="../../lib/vue/vue-i18n.global.prod.js"></script>
+    <script src="../../lib/quasar/quasar.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/ja.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/eo.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/en-US.umd.prod.js"></script>
+    <script src="../../lib/localforage.min.js"></script>
+
+    <script src="../../js/util.js"></script>
+
+    <script src="../../js/client_cldvplayer.js" type="module"></script>
+</body>
+</html>

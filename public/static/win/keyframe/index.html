@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="same-origin">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Key frame editor</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/jsuites/jspreadsheet.css" rel="stylesheet">
+    <link href="../../lib/jsuites/jsuites.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/index.css">
+    <style>
+        .spr-panel-top {
+            position: absolute;
+            top : 0;
+            left : 0;
+            background-color: #FFFFFF;
+            width : 100%;
+            height : 100%;
+            z-index: 100;
+        }
+        .spr-panel-back {
+            position: absolute;
+            top : 0;
+            left : 0;
+            background-color: #FFFFFF;
+            width : 100%;
+            height : 100%;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="q-app" v-cloak>
+        <!--<div ref="kfdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
+            <div class="row">
+                <div>{{ _T('edit keyframe') }}</div>
+                <q-space></q-space>
+                <q-btn flat round dense size="md" icon="clear" @click="close_onclick"></q-btn>
+            </div>
+        </div>-->
+        <div style="width:100%;height:calc(100% - 0px);" :class="data.elements.panelCSS" class="q-pa-sm">
+            <div class="row">
+                <div class="col-12">
+                    <div v-if="checkAvailableTimeline" class="ellipsis">
+                        <q-avatar>
+                            <img :src="showAvatarImage" alt="avatar">
+                        </q-avatar>
+                        {{ showAvatarName }}
+                    </div>
+                </div>
+                
+            </div>
+            <div class="row q-pt-sm">
+                <div class="col-12">
+                    <span>{{ _T('target_frame') }}</span>
+                </div>
+                <div class="col-5">
+                    <q-input v-model="data.elements.targetFrameIndexBegin" dense filled 
+                        :label="_T('target_begin_frame')" type="number" 
+                        :min="1" :max="data.states.maxframeNumber" :step="1"
+                        @update:model-value="targetframebeginno_onchange"
+                    ></q-input>
+                </div>
+                <div class="col-5 offset-1">
+                    <q-input v-model="data.elements.targetFrameIndexEnd" dense filled 
+                        :label="_T('target_end_frame')" type="number" 
+                        :min="data.elements.targetFrameIndexBegin" :max="data.states.maxframeNumber" :step="1"
+                        @update:model-value="targetframeendno_onchange"
+                    ></q-input>
+                </div>
+            </div>
+            <div class="row q-pt-sm">
+                <div class="col-2">
+                    <q-icon name="east" style="margin-left:25%;margin-top:25%;"></q-icon>
+                </div>
+                <div class="col-6">
+                    <q-input v-model="data.elements.destinationFrameIndex" dense filled 
+                        :label="_T('destination_frame')" type="number"
+                        :min="1" :max="data.states.maxframeNumber" :step="1"
+                        @update:model-value="frameno_onchange"
+                        :disable="data.states.disable"
+                    ></q-input>
+                </div>
+                <div class="col-4 q-pl-md">
+                    <q-btn round icon="move_down" size="md"
+                        @click="editframeno_onclick"
+                        :disable="data.states.disableFrameBtn"
+                    ></q-btn>
+                </div>
+            </div>
+            <q-tabs v-model="data.elements.tab.selection"
+                class="bg-white text-primary" no-caps
+            >
+                <q-tab name="easing" :label="_T('easing')"></q-tab>
+                <q-tab name="duration" :label="_T('duration')"></q-tab>
+                <q-tab name="transform" :label="_T('position')+','+_T('rotation')"></q-tab>
+            </q-tabs>
+            <q-tab-panels v-model="data.elements.tab.selection">
+                <q-tab-panel name="easing">
+                    <div class="row q-mt-md">
+                        <div class="col-12">
+                            <q-select v-model="data.elements.easing.selected"
+                                :options="data.elements.easing.options"
+                                :label="_T('easing')" 
+                                @update:model-value="easing_onchange"
+                                :disable="data.states.disable"
+                            ></q-select>
+                        </div>
+                    </div>
+                </q-tab-panel>
+                <q-tab-panel name="duration">
+                    <div class="row">
+                        <div class="col-8">
+                            <q-input v-model="data.elements.duration" type="number"
+                                :min="0.00000001" :max="999.99999999" :step="0.00000001" 
+                                :label="_T('duration')" filled dense
+                                @update:model-value="duration_onchange"
+                                :disable="data.states.disable"
+                            ></q-input>
+                        </div>
+                        <div class="col-3 offset-1">
+                            <q-btn round icon="restart_alt" size="sm" 
+                                @click="resetduration_onclick"
+                                :disable="data.states.disable"
+                            >
+                                <q-tooltip>{{ _T('reset_duration') }}</q-tooltip>
+                            </q-btn>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 q-pb-sm">
+                            <q-select v-model="data.elements.copySrcVrm.selected"
+                                :options="cmp_vrmlist"
+                                :label="_T('copy_dur_from_avatar')" 
+                                
+                                :disable="data.states.disable"
+                            ></q-select>
+                        </div>
+                        <div class="col-4">
+                            <q-input v-model="data.elements.copySrcVrm.startFrame" type="number"
+                                :min="1" :max="maxframeNumber" :step="1" 
+                                :label="_T('start')" filled dense
+                                :disable="data.states.disable"
+                            ></q-input>
+                        </div>
+                        <div class="col-1">
+                            ~
+                        </div>
+                        <div class="col-4">
+                            <q-input v-model="data.elements.copySrcVrm.endFrame" type="number"
+                                :min="1" :max="maxframeNumber" :step="1" 
+                                :label="_T('end')" filled dense
+                                :disable="data.states.disable"
+                            ></q-input>
+                        </div>
+                        <div class="col-3 q-pl-xs q-pt-xs">
+                            <q-btn round icon="content_copy" size="md"
+                                @click="copysumduration_onclick"
+                                :disable="data.states.disableFrameBtn"
+                            >
+                                <q-tooltip>
+                                    {{ _T('lab_btn_copy_start') }}
+                                </q-tooltip>
+                            </q-btn>
+                        </div>
+                    </div>
+                </q-tab-panel>
+                <q-tab-panel name="transform">
+                    <div class="row">
+                        <div class="col-6">{{ _T('position') }}</div>
+                        <div class="col-6">
+                            <q-checkbox v-model="data.elements.isAbsolutePosition" :label="_T('absolute_speci')"></q-checkbox>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 q-pr-sm">
+                            <q-input v-model.number="data.elements.position.x" @update:model-value="transform_onchange" type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                        </div>
+                        <div class="col-4 q-pr-sm">
+                            <q-input v-model.number="data.elements.position.y" @update:model-value="transform_onchange" type="number" label="Y" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                        </div>
+                        <div class="col-4">
+                            <q-input v-model.number="data.elements.position.z" @update:model-value="transform_onchange" type="number" label="Z" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">{{ _T('rotation') }}</div>
+                        <div class="col-6">
+                            <q-checkbox v-model="data.elements.isAbsoluteRotation" :label="_T('absolute_speci')"></q-checkbox>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 q-pr-sm">
+                            <q-input v-model.number="data.elements.rotation.x" @update:model-value="transform_onchange" type="number" label="X" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                        </div>
+                        <div class="col-4 q-pr-sm">
+                            <q-input v-model.number="data.elements.rotation.y" @update:model-value="transform_onchange" type="number" label="Y" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                        </div>
+                        <div class="col-4">
+                            <q-input v-model.number="data.elements.rotation.z" @update:model-value="transform_onchange" type="number" label="Z" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                        </div>
+                    </div>
+                </q-tab-panel>
+            </q-tab-panels>        
+        </div>
+    </div>
+
+    <script src="../../lib/vue/vue.global.prod.js"></script>
+    <script src="../../lib/vue/vue-i18n.global.prod.js"></script>
+    <script src="../../lib/quasar/quasar.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/ja.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/eo.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/en-US.umd.prod.js"></script>
+    <script src="../../lib/localforage.min.js"></script>
+    <script src="../../lib/jsuites/jspreadsheet.js"></script>
+    <script src="../../lib/jsuites/jsuites.js"></script>
+
+    <script src="../../js/util.js"></script>
+
+    <script src="../../js/client_cldkeyfrm.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="same-origin">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Pose list</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="../../css/index.css">
+    <style>
+        .posedlg-panel {
+            width : 100%;
+            height : 100%;
+        }
+        .pagestyle {
+            height : 600px;
+            overflow: hidden;
+        }
+        .poseliststyle {
+            height : calc(600px - 40px);
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="q-app" v-cloak>
+        <q-layout view="hHh lpR fFf">
+            <q-header v-model="poseapp.header.show" reveal elevated bordered>
+                <q-toolbar class="bg-primary text-white">
+                    <q-btn flat round dense icon="refresh" @click="refresh_onclick">
+                        <q-tooltip v-text="_T('refresh')"></q-tooltip>
+                    </q-btn>
+                    <q-btn flat round dense icon="bookmark_added" :label="_T('apply pose')"
+                        @click="apply_onclick" no-caps
+                    >
+                        <q-tooltip v-text="_T('apply pose')"></q-tooltip>
+                    </q-btn>
+                    <q-btn flat round dense icon="delete" @click="delete_onclick">
+                        <q-tooltip v-text="_T('cons_delete')"></q-tooltip>
+                    </q-btn>
+                    <q-btn flat round dense icon="file_download" @click="download_onclick">
+                        <q-tooltip v-text="_T('download as file')"></q-tooltip>
+                    </q-btn>
+                    <q-btn flat round dense icon="file_upload" @click="upload_onclick">
+                        <q-tooltip v-text="_T('open from file')"></q-tooltip>
+                    </q-btn>
+                </q-toolbar>
+            </q-header>
+            <q-page-container>
+                <q-page class="pagestyle">
+                    <div class="row">
+                        <div class="col-12">
+                            <q-input v-model="poseapp.search_str" 
+                                type="text" label="Search..." dense outlined
+                                @update:model-value="onchange_searchstr"
+                            ></q-input>
+                        </div>
+                    </div>
+                    <div class="row poseliststyle">
+                        <q-list bordered>
+                            <template v-for="(item,index) in poseapp.list.options">
+                                <q-item clickable v-ripple 
+                                    :key="index"
+                                    :active="list_actived(item)"
+                                    active-class="list-item-selected"
+                                    style="height:7rem"
+                                    @click="selectListItem(item)"
+                                    v-if="item.visibility==true"
+                                >
+                                    <q-item-section thumbnail>
+                                        <img :src="item.thumbnail" :alt="item.name">
+                                    </q-item-section>
+                                    <q-item-section>
+                                        <q-item-label>{{ item.name}}</q-item-label>
+                                        <q-item-label caption >
+                                            {{ _T("Sample avatar") + ":" + item.sample }}<br>
+                                            {{ _T("Recommended height") + ":" + listitem_height(item) }}
+                                        </q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </template>
+                        </q-list>
+                    </div>
+                </q-page>
+            </q-page-container>
+        </q-layout>
+    </div>
+
+    <script src="../../lib/vue/vue.global.prod.js"></script>
+    <script src="../../lib/vue/vue-i18n.global.prod.js"></script>
+    <script src="../../lib/quasar/quasar.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/ja.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/eo.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/en-US.umd.prod.js"></script>
+    <script src="../../lib/localforage.min.js"></script>
+
+    <script src="../../js/util.js"></script>
+
+    <script src="../../js/client_cldpose.js" type="module"></script>
+</body>
+</html>

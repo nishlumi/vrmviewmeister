@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="same-origin">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Screenshots</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="../../css/index.css">
+
+</head>
+<body>
+    <div id="q-app" v-cloak>
+        <q-layout view="hHh LpR lff" style="width:inherit;height: inherit;">
+            <q-header v-model="capapp.header.show" reveal elevated bordered>
+                <q-toolbar class="bg-primary text-white">
+                    <q-btn flat round dense icon="refresh" @click="refresh_onclick">
+                        <q-tooltip v-text="_T('refresh')"></q-tooltip>
+                    </q-btn>
+                    <q-btn flat round dense icon="delete" @click="delete_onclick">
+                        <q-tooltip v-text="_T('cons_delete')"></q-tooltip>
+                    </q-btn>
+                    <q-btn flat round dense icon="file_download" @click="download_onclick">
+                        <q-tooltip v-text="_T('download as file')"></q-tooltip>
+                    </q-btn>
+                </q-toolbar>
+                <a href="" ref="lnk_capturedownload" download="pic.png" class="common_ui_off"></a>
+            </q-header>
+            <q-drawer
+                side="left"
+                v-model="capapp.left.show"
+                bordered
+                :width="300"
+                :breakpoint="500"
+            >
+                <div class="row q-ml-xs q-mr-xs">
+                    <q-date v-model="capapp.left.filter_date"
+                        :options="capapp.left.date_options" minimal
+                        @update:model-value="datefilter_onchange"
+                    >
+                        
+                    </q-date>
+                    <!--
+                        <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                        </div>
+
+                    <q-input filled v-model="capapp.left.filter_date" mask="date" :rules="['date']">
+                        <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                            
+                            </q-popup-proxy>
+                        </q-icon>
+                        </template>
+                    </q-input>-->
+                </div>
+                <div style="height:calc(100% - 294px);overflow:auto;">
+                    <q-list bordered>
+                        <q-item clickable v-ripple 
+                                v-for="(item,index) in capapp.left.list.options" :key="index"
+                                :active="list_actived(item)"
+                                active-class="list-item-selected"
+                                @click="selectListItem(item)"
+                            >
+                                <q-item-section>
+                                    <q-item-label>{{ item.text }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-list>
+                </div>
+                
+            </q-drawer>
+            <q-page-container  style="width:inherit;height: inherit;">
+                <q-page padding  style="width:inherit;height: inherit;overflow: auto;">
+                    <div class="row">
+                        <div class="col-12">
+                            <q-img
+                                :src="capapp.imagepanel.src"
+                                :alt="capapp.imagepanel.alt"
+                                spinner-color="primary"
+                                spinner-size="82px"
+                            ></q-img>
+                        </div>
+                    </div>
+                    
+                </q-page>
+            </q-page-container>
+        </q-layout>
+    </div>
+
+    <script src="../../lib/vue/vue.global.prod.js"></script>
+    <script src="../../lib/vue/vue-i18n.global.prod.js"></script>
+    <script src="../../lib/quasar/quasar.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/ja.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/eo.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/en-US.umd.prod.js"></script>
+    <script src="../../lib/localforage.min.js"></script>
+
+    <script src="../../js/util.js"></script>
+
+    <script src="../../js/client_cldcapture.js" type="module"></script>
+</body>
+</html>

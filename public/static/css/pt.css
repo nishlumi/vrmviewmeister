@@ -1,0 +1,343 @@
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.abs {
+    position: absolute;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+a:hover {
+    color: lightblue;
+}
+
+body {
+    bottom: 0;
+    font-family: "Titillium Web", sans-serif;
+    color: white;
+    left: 0;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform-origin: 0px 0px;
+    overflow: hidden;
+}
+
+.container {
+    position: absolute;
+    background-color: #596e73;
+    width: 100%;
+    height : 100%;
+    max-height: 100%;
+    z-index: 10;
+}
+
+.input_video {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.input_video.selfie {
+    transform: scale(-1, 1);
+}
+
+.input_image {
+    position: absolute;
+}
+
+.canvas-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.output_canvas {
+    /*width: 100%;*/
+    display: block;
+    position: relative;
+    left: 0;
+    top: 0;
+}
+.output_canvas_h {
+    height: 100%;
+    display: block;
+    position: relative;
+    left: 0;
+    top: 0;
+    margin-left : auto;
+    margin-right : auto;
+}
+
+.logo {
+    bottom: 10px;
+    right: 20px;
+}
+.logo .title {
+    color: white;
+    font-size: 28px;
+}
+.logo .subtitle {
+    position: relative;
+    color: white;
+    font-size: 10px;
+    left: -30px;
+    top: 20px;
+}
+
+.control-panel {
+    position: relative;
+    left: 10px;
+    top: 10px;
+}
+
+.loading {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    align-items: center;
+    backface-visibility: hidden;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 1s;
+}
+.loading .message {
+    font-size: x-large;
+}
+.loading .spinner {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    animation: spin 1s linear infinite;
+    border: 32px solid #bebebe;
+    border-top: 32px solid #3498db;
+    border-radius: 50%;
+}
+
+.loaded .loading {
+    opacity: 0;
+}
+
+.shoutout {
+    left: 0;
+    right: 0;
+    bottom: 40px;
+    text-align: center;
+    font-size: 24px;
+    position: absolute;
+}
+
+.user-conpane {
+    position: absolute;
+    left: 330px;
+    top: 70px;
+}
+
+/*====================================================
+  common style
+=====================================================*/
+.common_ui_off {
+    display: none !important;
+}
+.common_ui_hidden {
+    visibility: hidden;
+}
+.plain-grid {
+    width : 100%;
+    display : grid;
+    grid-template-columns : repeat(25,4%);
+    margin-bottom: 5px;
+}
+.plain-grid5 {
+    width : 100%;
+    display : grid;
+    grid-template-columns : repeat(5,20%);
+    margin-bottom: 5px;
+}
+.plain-grid10 {
+    width : 100%;
+    display : grid;
+    grid-template-columns : repeat(10,10%);
+    margin-bottom: 5px;
+}
+.plain-grid > div, .plain-grid10 > div, .plain-grid5 > div {
+    margin : 5px;
+}
+.plain-grid .grid-label {
+    padding-top : 0.3rem;
+}
+
+input.extended-normal {
+    border: 0;
+    border-bottom-width: 2px;
+    border-bottom-style: outset;
+    border-bottom-color: #dbedf5;
+    margin-bottom: 2px;
+    font-size: 12pt;
+    text-align: right;
+}
+input.extended-normal2 {
+    border: 0;
+    border-bottom-width: 2px;
+    border-bottom-style: outset;
+    border-bottom-color: #dbedf5;
+    margin-bottom: 2px;
+    font-size: 12pt;
+}
+input.extended-normal.full {
+    width: 100%;
+}
+input.extended-normal:focus {
+    outline: 0;
+    border-bottom-width: 2px;
+    border-bottom-style: outset;
+    border-bottom-color: #96b5c5;
+}
+
+/*================================================================
+original added
+*/
+#tooldialog {
+    position:absolute;
+    top:18px;
+    right:18px;
+    width : 350px;
+    height : max-content;
+    z-index:999;
+}
+#tooldialog details {
+    width : max-content;
+    height : max-content;
+}
+#tooldialog summary {
+    cursor: pointer;
+    list-style : none;
+}
+.menubtn {    
+    color: white;
+}
+
+#btn_leftmenu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+
+}
+.square-box {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 350px;
+    height: 0;
+    padding-top: 33%;
+    z-index: 10;
+}
+
+.landmark-grid-container {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 24px;
+    left: 0;
+    background-color: #99999999;
+}
+.btn-bottombar {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    margin-top : 12px;
+    width : 350px;
+}
+.timer-area {
+    background-color: #00000088;
+    padding-left: 5px;
+    border-radius: 5px;
+}
+.shotbtn {
+    border-radius: 3rem;
+    width: 48px;
+    height: 48px;
+    background-color: #005ccf88;
+    color: white;
+    border-width: 1px;
+    border-color: #00000088;
+}
+.shotbtn:active {
+    background-color: #005ccf55;
+
+}
+.shotbtn i {
+    font-size : 18px;
+}
+.recbtn {
+    border-radius: 3rem;
+    width: 48px;
+    height: 48px;
+    background-color: #ff000088;
+    color: white;
+    border-width: 1px;
+    border-color: #00000088;
+}
+.recbtn:active {
+    background-color: #97353555;
+
+}
+.recbtn i {
+    font-size : 18px;
+}
+
+#shot_loadingIcon {
+    position : absolute;
+    bottom : 100px;
+    right : 50px;
+    z-index : 99;
+    font-size : 4rem;
+}
+.loading-spinner {
+    visibility: visible;
+    animation-name: loopiconspin;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
+}
+@keyframes loopiconspin {
+    0% {
+        transform: rotate(0deg);
+        color : white;
+    }
+    25% {
+        transform: rotate(90deg);
+        color : white;
+    }
+    50% {
+        transform: rotate(180deg);
+        color : white;
+    }
+    75% {
+        transform: rotate(270deg);
+        color : white;
+    }
+    100% {
+        transform: rotate(360deg);
+        color : red;
+    }
+}

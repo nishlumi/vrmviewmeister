@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.2/landmark_grid.css" crossorigin="anonymous">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.3/control_utils_3d.min.css" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.3/control_utils_3d.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/pose.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../css/pt.css">
+<!-- width="1280px" height="720px" -->
+</head>
+
+<body>
+    <div class="container">
+        <video class="input_video"></video>
+        <canvas class="output_canvas"></canvas>
+        <div class="loading">
+            <div class="spinner"></div>
+            <div class="message">
+                Loading
+            </div>
+        </div>
+        <div id="shot_loadingIcon" class="common_ui_off loading-spinner">
+            <span class='mdi mdi-loading'></span>
+        </div>
+        <div class="btn-bottombar">
+            <div class="plain-grid10">
+                <div style="grid-column: 3 / 9;" class="timer-area">
+                    <span>Timer (0 ~ 10s)</span>
+                    <input type="number" id="num_timer" class="extended-normal" min="0" max="10" step="1" value="0">
+    
+                </div>
+                <div style="grid-column: 9 / 10;">
+                    <button id="btn_shot" class="shotbtn" title="save a pose">
+                        <i class="material-icons">screenshot</i>
+                    </button>
+                    <button id="btn_rec" class="recbtn" title="start to apply pose until to stop">
+                        <i class="material-icons">video_camera_front</i>
+                    </button>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+    <div id="tooldialog">
+        <details open>
+            <summary>
+                <div id="btn_leftmenu" class="menubtn">
+                    <i class="material-icons">menu</i>
+                </div>
+            </summary>
+            <div class="control-panel">
+            </div>
+        </details>
+        
+    </div>
+    
+    
+    <div class='square-box'>
+        <!--<div id="btn_rightmenu" class="menubtn">
+            <i class="material-icons">menu</i>
+        </div>-->
+        <div id="lm-grid" class="landmark-grid-container">
+        </div>
+    </div>
+
+    <audio src="../../res/aud01_capture.mp3" id="aud01_capture" class="common_ui_off"></audio>
+
+    <script src="../../lib/localforage.min.js"></script>
+
+    <script src="../../js/util.js"></script>
+
+    <script src="mp.js" type="module"></script>
+
+</html>
