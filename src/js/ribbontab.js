@@ -975,7 +975,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {target:AppQueue.unity.ManageAnimation,method:'RegisterFrameFromOuter',param:JSON.stringify(aro)},
                 "registernowpose",QD_INOUT.returnJS,
                 callback.registernowpose,
-                {callback}
+                {callback, selectedTimeline: tl}
             ));
             AppQueue.start();
             
@@ -1218,7 +1218,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {target:AppQueue.unity.ManageAnimation,method:'RegisterFrameFromOuter',param:JSON.stringify(aro)},
                 "registernowpose",QD_INOUT.returnJS,
                 callback.registernowpose,
-                {callback: callback}
+                {callback: callback, selectedTimeline: tl}
             ));
             AppQueue.start();
             
