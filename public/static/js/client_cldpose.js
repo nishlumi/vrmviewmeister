@@ -45,6 +45,9 @@ const app = Vue.createApp({
                     bodyinfo : value.frameData.bodyHeight,
                     sample : value.sampleavatar,
                     visibility : true,
+                    styleclass : {
+                        "list-item-selected" : false
+                    },
                     data : value
                 });
             }).then(()=>{
@@ -180,6 +183,11 @@ const app = Vue.createApp({
 
         const selectListItem = (item) => {
             poseapp.value.list.selected = item;
+
+            poseapp.value.list.options.forEach(v => {
+                v.styleclass["list-item-selected"] = false;
+            });
+            item.styleclass["list-item-selected"] = true;
         }
         const list_actived = Vue.computed(() => {
             return (item) => {
@@ -241,6 +249,7 @@ const app = Vue.createApp({
         return {
             poseapp,
             //---event---
+            refresh_onclick,
             apply_onclick,delete_onclick,download_onclick,upload_onclick,
             selectListItem,onchange_searchstr,
             //---computed---

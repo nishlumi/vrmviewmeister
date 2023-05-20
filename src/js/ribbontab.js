@@ -619,7 +619,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 //mainData.elements.win_pose.location.reload(true);
             }else{
                 mainData.elements.win_pose = window.open("static/win/pose/index.html","posewindow",
-                    "width=400,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                    "width=780,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
                 );
             }
             

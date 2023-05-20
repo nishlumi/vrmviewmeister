@@ -6,6 +6,7 @@ import { UnityRect, UnityVector3, AvatarPunchEffect,AvatarShakeEffect } from "./
 import { UnityCallbackFunctioner } from "./model/callback.js";
 import { appMainData } from "./prop/appmaindata.js";
 import { appDataObjectProp } from "./prop/appobjpropdata.js";
+import { VFileHelper } from "../../public/static/js/filehelper.js";
 
 /**
  * 
