@@ -69,6 +69,8 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
             (row.name == "SE")
         ) {
             return true;
+        }else{
+            return false;
         }
     }
     //---event--------------------------------------------------------------
