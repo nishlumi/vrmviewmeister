@@ -1430,10 +1430,10 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         base_lightFlareFade_onchange(mainData.states.selectedAvatar.id, val);
     }
     //===Camera=====================================
-    const cameraShowReginster_onchange = (val) => {
+    const cameraShowRegister_onchange = (val) => {
         var param = parseInt(val.value);
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetCameraPlaying',param:param},
+            {target:mainData.states.selectedAvatar.id,method:'SetCameraPlayingFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -2181,7 +2181,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             lightRendermode_onchange,lightColor_onchange,lightPower_onchange,
             lightRange_onchange,lightSpotangle_onchange,
             lightFlareType_onchange,lightFlareColor_onchange,lightFlareBrightness_onchange,lightFlareFade_onchange,
-            cameraShowReginster_onchange,cameraPreview_onclick,cameraPreviewStop_onclick,
+            cameraShowRegister_onchange,cameraPreview_onclick,cameraPreviewStop_onclick,
             cameraFov_onchange,cameraDepth_onchange,cameraViewport_onchange,
             cameraRenderTextureFlag_onchange,cameraRenderTexture_resize,
             cameraRenderTextureEnable_onclick,cameraRenderTextureDisable_onclick,

@@ -1,5 +1,13 @@
 # Updates
 
+## 2023/06/08 : 2.1.4
+
+### Fix
+
+* ボーンの連動オプションの `Leg & LowerLeg` がOnのとき、LeftLowerLegのIKマーカーがX軸に動きすぎるのを修正。
+* SystemEffectのオンオフがキーフレームの登録に正常に反映されなかったのを修正。
+* Effectのアニメ再生、Camera、OtherObjectのアニメ再生のオンオフが同様の問題を起こす事があったのを修正。
+
 ## 2023/05/25 : 2.1.3
 
 ### Fix

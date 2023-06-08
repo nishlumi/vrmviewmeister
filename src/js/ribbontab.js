@@ -1356,6 +1356,15 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         
     },{deep:true});
     */
+    const wa_tabSelectedIndex = Vue.watch(() => ribbonData.elements.tab.selectIndex, (newval) => {
+        if (newval == "effect") {
+
+        }else if (newval == "audio") {
+
+        }else{
+            
+        }
+    });
     const changeStateLnkdownload = (newval) => {
         if (newval == "initial") {
             ribbonData.elements.lnk_download.startEnable = false;
