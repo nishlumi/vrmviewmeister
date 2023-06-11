@@ -11,8 +11,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.1.3",
-            revision : "20230525-01",
+            version : "2.1.4",
+            revision : "20230611-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
