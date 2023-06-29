@@ -159,6 +159,10 @@ details.extended-normal[open] > .details-content {
 .common_ui_off {
     display: none !important;
 }
+/* バージョン限定UI封印用 */
+.sealed_version {
+    display: none !important;
+}
 .common_ui_hidden {
     visibility: hidden;
 }
