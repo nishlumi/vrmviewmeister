@@ -1774,6 +1774,44 @@ export class UnityCallbackFunctioner {
         //---load project material
         modelOperator.listload_materialFile("p",proj.materialManager);
 
+        if (mainData.elements.percentLoad.percent == 0) {
+            //---calculate percent for objects number to load.
+            const inputDatapathFromHistory = async (db, rawpath, objtype) => {
+                var result = await db.getItem(rawpath);
+                if (result) {
+
+                }
+                return result;
+            }
+            const casts = proj.casts;
+            var fullCount = 0;
+            for (var c = 0; c < casts.length; c++) {
+                var INTF = "";
+                if (casts[c].type == AF_TARGETTYPE.VRM) {
+                    INTF = INTERNAL_FILE.VRM;
+                    fullCount++;
+                }else if (casts[c].type == AF_TARGETTYPE.OtherObject) { 
+                    INTF = INTERNAL_FILE.OBJECTS;
+                    var castfile = await inputDatapathFromHistory(AppDB[INTF],casts[c].path,casts[c].type);
+                    if (castfile) {
+                        fullCount++;
+                    }
+                }else if (casts[c].type == AF_TARGETTYPE.Image) {
+                    INTF = INTERNAL_FILE.IMAGES;
+                    fullCount++;
+                }else if (casts[c].type == AF_TARGETTYPE.UImage) {
+                    INTF = INTERNAL_FILE.IMAGES;
+                    fullCount++;
+                }
+            }
+            if (fullCount == 0) {
+                mainData.elements.percentLoad.percent = 0;
+            }else{
+                mainData.elements.percentLoad.percent = (100.0 / parseFloat(fullCount)) / 100;
+            }
+        }
+        
+
         //---apply value to UI
         await modelOperator.LoadAndApplyToTimelineUI(mainData.data.project);
         callback.timelineData.states.currentcursor = 1;
@@ -1782,6 +1820,7 @@ export class UnityCallbackFunctioner {
 
         if (mainData.elements.percentLoad.percent == 0) {
             mainData.elements.loadingTypePercent = false;
+            mainData.elements.loading = false;
             modelOperator.common_loadFrame(1,{childkey:-1});
         }
     }

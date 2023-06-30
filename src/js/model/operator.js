@@ -2501,6 +2501,7 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
     const wa_percentCurrent = Vue.watch(() => mainData.elements.percentLoad.current,(newval)=>{
         if (mainData.elements.percentLoad.current >= 1.0) {
             mainData.elements.loadingTypePercent = false;
+            mainData.elements.loading = false;
             Vue.nextTick(() => {
                 mainData.elements.percentLoad.current = 0;
                 //---load first frame
