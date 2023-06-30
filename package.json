@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "set NODE_ENV=delevopment&&set PORT=5026&&node ./app.js",
     "start": "set NODE_ENV=production&&node ./app.js",
-    "mente:largefile": "node z_commit/build_largefile.js",
-    "mente:upload": "node z_commit/azure-blobup.js",
+    "mainte:largefile": "node z_commit/build_largefile.js",
+    "mainte:upload": "node z_commit/azure-blobup.js",
     "prepare1:ps": "powershell .\\z_mng\\download_largefile.ps1",
     "prepare1:sh": "./z_mng/download_largefile.sh",
     "prepare2:ps": "powershell .\\z_mng\\extract_largefile.ps1",
