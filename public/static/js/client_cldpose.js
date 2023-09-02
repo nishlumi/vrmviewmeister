@@ -98,7 +98,7 @@ const app = Vue.createApp({
 
                 //---for security
                 const tmpjs = JSON.original(poseapp.value.list.selected.data);
-                tmpjs.thumbnail = "";
+                //tmpjs.thumbnail = "";
 
                 if (VFileHelper.checkNativeAPI) {
                     content = JSON.stringify(tmpjs);

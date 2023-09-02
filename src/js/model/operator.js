@@ -2319,6 +2319,7 @@ export class appModelOperator {
             {target:this.mainData.states.selectedAvatar.id,method:'GetIKTransformAll'},
             "alliktransform",QD_INOUT.returnJS,
             (val) => {
+                val = val.replaceAll("NaN","0");
                 var js = JSON.parse(val);
 
                 var clsdata = {

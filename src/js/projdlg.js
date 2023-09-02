@@ -463,6 +463,26 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
 
         
     }
+    const baseDuration_onchange = () => {
+        //---FPS--------------------------------------===== setfps
+        appConfirmWithCancel(t("msg_baseduration_warning"),()=> {
+            var param = parseInt(mainData.elements.projdlg.pinfo.baseDuration);
+            if (isNaN(param)) {
+                mainData.elements.projdlg.pinfo.baseDuration = mainData.elements.projdlg.pinfo.oldbaseDuration;
+                return;
+            }
+
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'ApplyBaseDuration',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+            mainData.elements.projdlg.pinfo.oldbaseDuration = mainData.elements.projdlg.pinfo.baseDuration;
+        },() => {
+            mainData.elements.projdlg.pinfo.baseDuration = mainData.elements.projdlg.pinfo.oldbaseDuration;     
+        });
+    }
     //=========================================================================
     //  role tab
     //=========================================================================
@@ -895,7 +915,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
 
             wa_mat_tabradio,
 
-            fps_onchange,
+            fps_onchange,baseDuration_onchange,
 
             fil_proj_material_onChange,fil_proj_material_btn_clicked,materialNoPreview_onclick,
             materialFileLoad_onclick,materialFileRemove_onclick,

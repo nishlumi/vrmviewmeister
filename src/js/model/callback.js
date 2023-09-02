@@ -2256,8 +2256,8 @@ export class UnityCallbackFunctioner {
             var useHTMLSaving = false;
 
             //---for security
-            if ("thumbnail" in val) val.thumbnail = ""
-            else val["thumbnail"] = "";
+            //if ("thumbnail" in val) val.thumbnail = ""
+            //else val["thumbnail"] = "";
 
             if (VFileHelper.checkNativeAPI) {
                 content = JSON.stringify(val);

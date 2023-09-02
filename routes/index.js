@@ -12,4 +12,14 @@ router.get('/', function(req, res, next) {
   res.render('toppage',opt );
 });
 
+router.get('/redirect', function(req, res, next) {
+  var jsenv = "";
+  
+  if (process.env.NODE_ENV == "production") {
+    jsenv = "prod.";
+  }
+  var opt = { title: 'VRMViewMeister'};
+  res.render('redirect',opt );
+});
+
 module.exports = router;

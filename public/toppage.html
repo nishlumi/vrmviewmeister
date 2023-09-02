@@ -503,6 +503,7 @@
                             <br>
                             <div class="row">
                                 <div class="col-6">
+                                    <!--
                                     <q-input type="number" v-model="ribbonData.elements.frame.baseDuration" 
                                         
                                         :label="$t('frame_duration')" 
@@ -510,6 +511,7 @@
                                         class="animtab-inputbox" 
                                         :min="0.0001" :max="99.9999" :step="0.0001"
                                     ></q-input>
+                                    -->
                                 </div>
                                 <div class="col-6">
                                     <q-checkbox right-label v-model="ribbonData.elements.frame.isloop" @update:model-value="ribbonEvent.setloop_onchange" >
@@ -4540,8 +4542,20 @@
                                         :min="15" :max="90" :step="15" 
                                     ></q-input>
                                 </div>
-                                <div class="col-2 q-pt-md">
+                                <div class="col-2 q-pl-md q-pt-md">
                                     <q-btn color="primary" label="OK" @click="projectdlgEvent.fps_onchange"></q-btn>
+                                </div>
+                                <div class="col-2 offset-md-1">
+                                    <q-input type="number" v-model="mainData.elements.projdlg.pinfo.baseDuration" 
+                                        
+                                        :label="$t('frame_duration')" 
+                                        @update:model-value="ribbonEvent.setbaseduration_onchange"  
+                                        class="animtab-inputbox" 
+                                        :min="0.0001" :max="99.9999" :step="0.0001"
+                                    ></q-input>
+                                </div>
+                                <div class="col-2 q-pl-md q-pt-md">
+                                    <q-btn color="primary" :label="$t('cons_recalc')" @click="projectdlgEvent.baseDuration_onchange"></q-btn>
                                 </div>
                             </div>
                         </q-tab-panel>

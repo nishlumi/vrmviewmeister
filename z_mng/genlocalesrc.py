@@ -82,7 +82,7 @@ def save_file(json: pd.DataFrame, localestr):
     global outdir
     #print(json)
     print(f'{localestr}===>')
-    cnt  = json["resource id"].count()
+    cnt  = json["resource id"].size
     print(f'translation item count={cnt}')
     arr = []
     for i,v in enumerate(range(0,cnt)):

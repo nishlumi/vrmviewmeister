@@ -1511,7 +1511,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     }
     const setbaseduration_onchange = (evt) => {
         RibbonFuncAnimation("setbaseduration",{
-            value: ribbonData.elements.frame.baseDuration
+            value: mainData.elements.projdlg.pinfo.baseDuration //ribbonData.elements.frame.baseDuration
         });
     }
     const setloop_onchange = (evt) => {

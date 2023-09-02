@@ -11,8 +11,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.1.5",
-            revision : "20230630-01",
+            version : "2.1.6",
+            revision : "20230902-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -75,6 +75,7 @@ export class appMainData {
                     fps : 60,
                     oldfps : 60,
                     baseDuration : 0.01,
+                    oldbaseDuration : 0.01,
                 },
                 //---table [editrole]-----------------
                 editroleColumns : [
