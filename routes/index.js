@@ -8,7 +8,14 @@ router.get('/', function(req, res, next) {
   if (process.env.NODE_ENV == "production") {
     jsenv = "prod.";
   }
-  var opt = { title: 'VRMViewMeister', jsenv : jsenv };
+  
+  var opt = { 
+    hostname: req.hostname,
+    title: 'VRMViewMeister', 
+    jsenv : jsenv,
+    csrfToken : req.secret
+  };
+  console.log(opt);
   res.render('toppage',opt );
 });
 
@@ -21,5 +28,7 @@ router.get('/redirect', function(req, res, next) {
   var opt = { title: 'VRMViewMeister'};
   res.render('redirect',opt );
 });
+
+
 
 module.exports = router;

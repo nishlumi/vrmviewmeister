@@ -2,6 +2,7 @@ import { VVAvatar, VVCast,VVAnimationProject, VVTimelineTarget, VVProp, VVTimeli
 import { AppDBMeta, VVAppConfig } from "../appconf.js";
 import { AF_TARGETTYPE, FILEOPTION, INTERNAL_FILE, UserAnimationEase } from "../../res/appconst.js";
 import { VOSFile } from "../../../public/static/js/filehelper.js";
+import { VRoidHubConnector } from "../model/vroidhub.js";
 
 export class appMainData {
     constructor(appName, appDesc) {
@@ -11,11 +12,12 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.1.6",
-            revision : "20230902-01",
+            version : "2.2.0",
+            revision : "20230918-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
+        this.vroidhubapi = new VRoidHubConnector();
         this.elements = {
             header : true,
             appinfodlg : false,
@@ -290,6 +292,12 @@ export class appMainData {
 
             currentEditOperationCount : 0,
             backupEditOperationCount : 0,
+
+            /**
+             * Is enable access token and connect?
+             * @type {Boolean}
+             */
+            vroidhub_api : false,
         };
         this.data = {
             clipboard : {

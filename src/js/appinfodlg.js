@@ -1,3 +1,4 @@
+
 const template = `
     <q-dialog v-model="show" @hide="dialogHide">
         <q-card class="q-dialog-plugin">
@@ -51,8 +52,11 @@ export function defineAppInfoDlg(app,Quasar) {
         setup(props,context) {
             const {modelValue} = Vue.toRefs(props);
 
+            const { t   } = VueI18n.useI18n({ useScope: 'global' });
+
             //---data -----------------------------------------
             const show = Vue.ref(false);
+
             
             //---watch ----------------------------------------
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
@@ -63,11 +67,13 @@ export function defineAppInfoDlg(app,Quasar) {
             const dialogHide = (evt) => {
                 context.emit("update:model-value",show.value);
             }
+
             
             return {
                 show,
                 wa_modelValue,
-                dialogHide
+                dialogHide,
+                
                 
             }
         }

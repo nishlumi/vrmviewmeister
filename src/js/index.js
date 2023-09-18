@@ -30,6 +30,7 @@ import messages from "../locales";
 import { defineChildManager } from "./model/childman.js";
 import { defineMaterialPropertyUI } from "./prop/cls_matprop.js";
 import { defineNavigationDlg } from "./navwin.js";
+import { VRoidHubConnector } from "./model/vroidhub.js";
 
 var loc = localStorage.getItem("appLocale");
 //loc = await AppDB.app.getItem("appLocale");
@@ -128,8 +129,24 @@ const app = Vue.createApp({
             mainData.appconf.load();
 
             ribbonData.elements.language_box.selected = loc;
+
         });
-        Vue.onMounted( () => {
+        Vue.onMounted( async () => {
+            mainData.vroidhubapi.load()
+            .then(res => {
+                mainData.states.vroidhub_api = res === true ? true : false;
+            });
+            var ishit = Quasar.LocalStorage.getItem("callback_code");
+            if (ishit) {
+                var resjs = JSON.parse(ishit);
+                if (resjs["code"]) {
+                    mainData.vroidhubapi.request_token(resjs.code)
+                    .then(res => {
+                        Quasar.LocalStorage.remove("callback_code");
+                        mainData.states.vroidhub_api = true;
+                    });
+                }
+            }
             setupUnity()
             .then(res => {
                 modelLoader.checkSWUpdate();

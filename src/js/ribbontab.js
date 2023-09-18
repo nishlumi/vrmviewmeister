@@ -12,6 +12,7 @@ import { appMainData } from "./prop/appmaindata.js";
 import { appDataTimeline } from "./prop/apptimelinedata.js";
 import { UnityCallbackFunctioner } from "./model/callback.js";
 import { appDataRibbon } from "./prop/appribbondata.js";
+import { VRoidHubConnector } from "./model/vroidhub.js";
 
 /**
  * 
@@ -28,6 +29,8 @@ import { appDataRibbon } from "./prop/appribbondata.js";
  */
 export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,modelLoader,modelOperator,callback,refs) {
     const { t, locale  } = VueI18n.useI18n({ useScope: 'global' });
+
+    const vrhapi = new VRoidHubConnector();
 
     /**
      * 
@@ -701,6 +704,13 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 
             });
 
+        }else if (ename == "connect_vroidhub") {
+            mainData.vroidhubapi.generateAuthLink();
+        }else if (ename == "list_vroidhub") {
+            mainData.vroidhubapi.list_character_models({})
+            .then(res => {
+                console.log(res);
+            })
         }
     }
     //==================================================

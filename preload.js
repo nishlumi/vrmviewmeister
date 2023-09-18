@@ -102,6 +102,16 @@ contextBridge.exposeInMainWorld('elecAPI', {
     },
     focusWindow : async (name) => {
         await ipcRenderer.invoke("focusWindow",name);
+    },
+
+    //==============================================
+    vroidhubAuthorize : async (param) => {
+        const ret = await ipcRenderer.invoke("/vroidhub/authorize",param);
+        return ret;
+    },
+    vroidhubRequestToken : async (param) => {
+        const ret = await ipcRenderer.invoke("/vroidhub/request-token",param);
+        return ret;
     }
 });
 
