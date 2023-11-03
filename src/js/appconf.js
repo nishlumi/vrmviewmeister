@@ -47,6 +47,7 @@ export class VVConfigTemplate {
             /*NOT USE*/play_with_record_movie : false,
             recover_tomax_overframe : true,
             enable_audio_record : false,
+            save_previous_value_in_keyframeregister : false,
         };
         this.aiapis = {
             baseurl : "",

@@ -4,7 +4,7 @@ export class AnimationRegisterOptions
 {
     constructor() {
         this.index = -1;
-        this.duration = 0.1;
+        this.duration = 0;
         this.targetId = "";
         this.targetRole = "";
         this.targetType = AF_TARGETTYPE.Unknown;

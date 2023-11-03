@@ -855,6 +855,10 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else if (ename == "addkeyframe") {
             //modelOperator.addKeyFrame(mainData.states.selectedAvatar, ribbonData.elements.frame.bonelist.selection, ribbonData.elements.frame.keylist.selection, "append");
         }else if (ename == "openkeyframedlg") {
+            if (mainData.appconf.confs.animation.save_previous_value_in_keyframeregister !== true) {
+                ribbonData.elements.frame.keylist.duration = 0;
+                ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[0];
+            }
             ribbonData.elements.frame.showdlg = true;
         }else if (ename == "overwritekeyframe") {
             modelOperator.addKeyFrame(mainData.states.selectedAvatar, ribbonData.elements.frame.bonelist.selection, ribbonData.elements.frame.keylist.selection, "overwrite");
@@ -1716,6 +1720,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     const menu_keyframe_onchange = (val) => {
         if (val === false) {
             ribbonData.elements.frame.showtarget = "";
+        }else{
+            if (mainData.appconf.confs.animation.save_previous_value_in_keyframeregister !== true) {
+                ribbonData.elements.frame.keylist.duration = 0;
+                ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[0];
+            }
         }
     }
 

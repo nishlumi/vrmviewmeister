@@ -533,6 +533,8 @@ export class appModelOperator {
         aro.index = this.timelineData.states.currentcursor;
         aro.registerBoneTypes = bonetypes;
         aro.registerMoveTypes = movetypes;
+        aro.duration = this.ribbonData.elements.frame.keylist.duration;
+        aro.ease = this.ribbonData.elements.frame.keylist.easing.selected.value;
         if (mode == "append") {
             aro.isRegisterAppend = 1;
             aro.addTranslateExecuteIndex = this.timelineData.elements.childKey.val;
@@ -1882,6 +1884,7 @@ export class appModelOperator {
                         "",QD_INOUT.toUNITY,
                         null
                     ));
+                    
                 }
                 
             }
@@ -1924,6 +1927,41 @@ export class appModelOperator {
             if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
                 this.returnBoneTransformReloadBtn({avatarId:this.mainData.states.selectedAvatar.id});
             }
+            //---for appling to UI the duration and easing 
+            var aro = new AnimationRegisterOptions();
+            aro.targetRole = this.mainData.states.selectedCast.roleName;
+            aro.targetType = this.mainData.states.selectedCast.type;
+            aro.index = newval;
+            var js = JSON.stringify(aro);
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'GetEaseFromOuter',param:js},
+                "getease",QD_INOUT.returnJS,
+                (val) => {
+                    if (val > -1) {
+                        var ishit = this.ribbonData.elements.frame.keylist.easing.options.find(ea => {
+                            if (ea.value == val) return true;
+                            return false;
+                        });
+                        if (ishit) {
+                            this.ribbonData.elements.frame.keylist.easing.selected = ishit;
+                        }
+                    }
+                }
+            ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'GetDurationFromOuter',param:js},
+                "getduration",QD_INOUT.returnJS,
+                (val) => {
+                    if (isNaN(val)) {
+                        this.ribbonData.elements.frame.keylist.duration = 0;
+                    }else{
+                        this.ribbonData.elements.frame.keylist.duration = Math.floor(parseFloat(val) * 10000000) / 10000000;
+                    }
+                    
+
+                    //item.getFrameByKey(frameitem).show = true;
+                }
+            ));
         }
         //AppQueue.start();
     }

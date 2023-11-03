@@ -8,11 +8,11 @@ require('dotenv').config()
  */
 const collectHubHeaders = (req) => {
     var ret = {};
-    if ("X-Api-Version" in req.headers) {
-        ret["X-Api-Version"] = req.headers["X-Api-Version"];
+    if ("x-api-version" in req.headers) {
+        ret["X-Api-Version"] = req.headers["x-api-version"];
     }
-    if ("Authorization" in req.headers) {
-        ret["Authorization"] = req.headers["Authorization"];
+    if ("authorization" in req.headers) {
+        ret["Authorization"] = req.headers["authorization"];
     }
     return ret;
 }
@@ -45,20 +45,21 @@ router.post("/request-token",async function(req,res){
     var url = `https://hub.vroid.com/oauth/token`;
     var grant_type = req.query.grant_type;
     var reftoken = "";
-    if (req.body.refresh_token) {
+    if (req.query.refresh_token) {
         reftoken = req.query.refresh_token;
     }
     
     var urlprm = {
         client_id : process.env.VRH_CLIENT_ID,
         client_secret : process.env.VRH_CLIENT_SECRET,
-        redirect_uri : req.body.redirect_uri,
+        redirect_uri : req.query.redirect_uri,
         grant_type : grant_type,
-        code : req.body.code,
+        code : req.query.code,
     };
     if (grant_type == "refresh_token") {
         urlprm[`refresh_token`] = reftoken;
     }
+    console.log("urlprm",urlprm);
     var finalurl = url; //`${url}?${urlprm.join("&")}`;
     console.log(finalurl);
     //res.send({url: url, prm: urlprm, appid: process.env.VRH_CLIENT_ID, cd:0});
@@ -98,8 +99,12 @@ router.get("/account/character_models",async function(req,res){
     if ("publication" in req.query) {
         uparams.append("publication",req.query.publication);
     }
+    console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
+    headers["Content-Type"] = "application/json";
 
+    console.log(finalurl);
+    console.log("paramheader=",headers);
     var url = `https://hub.vroid.com/api/account/character_models`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{

@@ -1,4 +1,4 @@
-import { AF_MOVETYPE, IKBoneType, UserAnimationState } from "../../res/appconst.js";
+import { AF_MOVETYPE, IKBoneType, UserAnimationEase, UserAnimationState } from "../../res/appconst.js";
 
 export class appDataRibbon {
     constructor(t) {
@@ -74,6 +74,11 @@ export class appDataRibbon {
                         {id: AF_MOVETYPE.AllProperties, label: t("key_properties")}
                     ],
                     selection: [AF_MOVETYPE.Translate, AF_MOVETYPE.NormalTransform, AF_MOVETYPE.AllProperties],
+                    duration : 0,
+                    easing : {
+                        options : [],
+                        selected : UserAnimationEase.Unset
+                    }
                 },
                 bonelist : {
                     options : [
@@ -187,6 +192,13 @@ export const defineAppRibbonData = () => {
      */
     const ribbonData = Vue.reactive(new appDataRibbon(t));
 
+    for (var obj in UserAnimationEase) {
+        ribbonData.elements.frame.keylist.easing.options.push({
+            label : GetEnumName(UserAnimationEase, UserAnimationEase[obj]),
+            value : UserAnimationEase[obj]
+        });
+    }
+    ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[0];
 
     const lnk_recdownload = Vue.ref(null);
     const lnk_saveproject = Vue.ref(null);

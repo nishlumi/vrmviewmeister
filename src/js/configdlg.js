@@ -251,6 +251,11 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.animation.enable_audio_record" :label="$t('msg_enable_audio_record')"></q-checkbox>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <q-checkbox v-model="appconf.confs.animation.save_previous_value_in_keyframeregister" :label="$t('msg_save_previous_value_in_keyframeregister')"></q-checkbox>
+                                    </div>
+                                </div>
                             </q-item-section>
                         </q-item>
                     </q-list>

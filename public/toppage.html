@@ -1040,6 +1040,20 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-4">
+                        <q-input v-model="ribbonData.elements.frame.keylist.duration" type="number"
+                            :min="0.00000001" :max="999.99999999" :step="0.00000001" 
+                            :label="_T('duration')" filled 
+                        ></q-input>
+                    </div>
+                    <div class="col-4 offset-sm-2">
+                        <q-select v-model="ribbonData.elements.frame.keylist.easing.selected"
+                            :options="ribbonData.elements.frame.keylist.easing.options"
+                            :label="_T('easing')" filled
+                        ></q-select>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-5">
                         <q-list bordered dense>
                             <q-item-label header>{{ $t("contents_to_register") }}</q-item-label>
@@ -4138,8 +4152,8 @@
                         <q-card-section>
                             <div class="row">
                                 <div class="col-12">
-                                    <q-input v-model="objpropData.elements.textui.text" multi-line
-                                        type="text" :label="$t('Text')"
+                                    <q-input v-model="objpropData.elements.textui.text" 
+                                        type="textarea" :label="$t('Text')"
                                         @update:model-value="objpropEvent.textText_onchange"
                                     ></q-input>
                                 </div>
@@ -4395,6 +4409,7 @@
                                             @pointerenter="timelineEvent.keyframebox_popuptip(item, frameitem)"
                                         ><b>{{ timelineEvent.keyframeHasTranslateCount(item, frameitem) }}</b>
                                             <q-tooltip anchor="top middle" self="bottom left" class="bg-secondary text-dark text-body1">
+                                                <b style="font-size:12pt">{{ (frameindex+1) }}</b><br>
                                                 <span>{{ $t("duration") }}: {{ timelineData.states.popup.duration }}</span><br>
                                                 <span>{{ $t("easing") }}: {{ timelineData.states.popup.easing }}</span><br>
                                                 <span>{{ $t("contents_to_register") }} /IK-Marker :</span>

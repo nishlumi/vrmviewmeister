@@ -100,8 +100,8 @@ export class VRoidHubConnector {
                     }
                 });
             }else{
-                var csrf = await fetch("/csrf-token");
-                var jscsrf = await csrf.json();
+                //var csrf = await fetch("/csrf-token");
+                //var jscsrf = await csrf.json();
 
                 var uparams = new URLSearchParams();
                 uparams.append("redirect_uri",location.origin + "/redirect");
@@ -113,12 +113,13 @@ export class VRoidHubConnector {
                     finalheaders[obj] = this.headers[obj];
                 }
                 finalheaders["Content-Type"] = "application/json";
-                finalheaders["x-csrf-token"] = jscsrf.token;
+                finalheaders["x-csrf-token"] = document.getElementById("_csrf").value; // jscsrf.token;
     
                 var finalurl = `/vroidhub/request-token?${uparams.toString()}`;
                 //---generate real url with invisible parameter
                 fetch(finalurl,{
-                    method: "POST"
+                    method: "POST",
+                    headers: finalheaders
                 })
                 .then(async result => {
                     if (result.ok) {
