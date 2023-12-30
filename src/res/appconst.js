@@ -84,6 +84,15 @@ export const FILEOPTION = {
     }
 }
 /**
+ * Storage type
+ */
+export const STORAGE_TYPE = {
+    INTERNAL : "int",
+    LOCAL : "loc",
+    GOOGLEDRIVE : "ggd",
+    APPLICATION : "appggd",
+}
+/**
  * DB name of AppDB
  */
 export const INTERNAL_FILE = {
@@ -93,6 +102,8 @@ export const INTERNAL_FILE = {
     OBJECTS : "obj",
     IMAGES : "image",
     PROJECT : "scene",
+    MOTION : "motion",
+    POSE : "pose",
 }
 
 export const CNS_BODYBONES = {
@@ -209,12 +220,10 @@ export const  IKBoneType =
     LeftLeg : 14,
     RightLowerLeg : 15,
     RightLeg : 16,
-    LeftHandPose : 17,
-    RightHandPose : 18,
-    BlendShape : 19,
-
-    Unknown : 25,
-    UseHumanBodyBones : 99
+    //LeftHandPose : 17,
+    //RightHandPose : 18,
+    //BlendShape : 19,
+    Unknown : 25
 };
 export const CameraClearFlags = {
     Skybox : 1,
@@ -362,3 +371,6 @@ export const EFFECTLIST = {
         "WaterWake"
     ]
 };
+
+export const SAMPLEKEY = "fFk3r430awp";
+export const SAMPLEURL = "https://script.google.com/macros/s/AKfycbygqD5g0BGFy-d1A6Xf0y5e9uXGZvr4HlDVMsGQSQ3IwDa1m-HsT1icTWXnPrsau5XXmg/exec";

@@ -102,7 +102,7 @@ const app = Vue.createApp({
             scroll_header_x,scroll_namebox_y,scroll_keyframe_xy,grid_scrollx,grid_scrolly
         });
         const {projectdlgEvent, fil_animation, lnk_savemotion} = defineProjectDialog(app, Quasar, mainData, timelineData, modelOperator,UnityCallback);
-        const { projectSelectorEvent,fil_projselector } = defineProjectSelector(app, Quasar, mainData, modelOperator, UnityCallback, {
+        const { projectSelectorEvent,fil_projselector,cmp_projectSelectorStorageGDrive } = defineProjectSelector(app, Quasar, mainData, modelLoader, modelOperator, UnityCallback, {
             lnk_saveproject
         });
 
@@ -130,6 +130,11 @@ const app = Vue.createApp({
 
             ribbonData.elements.language_box.selected = loc;
 
+            if (mainData.appconf.confs.fileloader.gdrive.enabled && (mainData.appconf.confs.fileloader.gdrive.url != "")) {
+                mainData.states.googledrive_gas = true;
+            }else{
+                mainData.states.googledrive_gas = false;
+            }
         });
         Vue.onMounted( async () => {
             mainData.vroidhubapi.load()
@@ -150,7 +155,7 @@ const app = Vue.createApp({
             setupUnity()
             .then(res => {
                 modelLoader.checkSWUpdate();
-                setupFixUnityEvent(modelOperator);
+                setupFixUnityEvent(modelOperator,UnityCallback);
                 Vue.nextTick(async () => {
                     //---firstly set config to Unity, after each initial set up
                     mainData.appconf.applyUnity(false);
@@ -198,7 +203,16 @@ const app = Vue.createApp({
                     var w = evt.currentTarget;
                     calcUnitySize(w.innerWidth, w.innerHeight);
                 });
-
+                if (!window.elecAPI) {
+                    window.addEventListener("beforeunload",(evt) => {
+                        if (this.mainData.states.currentEditOperationCount > 0) {
+                            evt.preventDefault();
+                            evt.returnValue = "End VRMViewMeister ?";
+                        }
+                        
+                    });
+                }
+                
                 window.addEventListener("unload",(evt) => {
                     if (mainData.elements.win_bonetransform) mainData.elements.win_bonetransform.close();
                     if (mainData.elements.win_mediapipe) mainData.elements.win_mediapipe.close();
@@ -207,6 +221,7 @@ const app = Vue.createApp({
                     if (mainData.elements.win_vplayer) mainData.elements.win_vplayer.close();
                     if (mainData.elements.win_keyframe) mainData.elements.win_keyframe.close();
                 });
+
 
                 return true;
             })
@@ -267,12 +282,16 @@ const app = Vue.createApp({
             modelLoader, modelOperator, dnd,UnityCallback, childman,
             wa_selectedAvatar,wa_percentCurrent,
             cmp_percentLoad,
+            cmp_projectSelectorStorageGDrive,
 
             mat_realtoon,UIMaterials
         }
     }
 })
-window["_REFAPP"] = app;
+window["_REFAPP"] = {
+    original : app,
+    childreturner : {},
+}
 
 
 const i18n = VueI18n.createI18n({

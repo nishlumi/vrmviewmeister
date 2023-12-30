@@ -1,6 +1,7 @@
 import { defineSetupLang } from "./setuplang.js";
 import { ChildReturner } from "./cls_childreturner.js";
 import { VFileHelper,VFileOptions } from "./filehelper.js";
+import { SAMPLEURL, SAMPLEKEY } from "../res/appconst.js";
 
 //import messages from "/static/locales";
 
@@ -11,20 +12,43 @@ const app = Vue.createApp({
     setup() {
         const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
+        var cns_list_origin = [
+            {label:t("Internal Storage"),value:"mystorage"},
+        ];
         const poseapp = Vue.ref({
             header : {
                 show : true,
+                loading : false,
                 download : "pose.json",
-                url : null
+                url : null,
+                list_origin : cns_list_origin,
+                list_selected : cns_list_origin[0],
             },
             appconf : {
                 set_name : "_vvie_aco",
+                /**
+                 * @type {VVConfigTemplate}
+                 */
                 confs : {},
             },
             search_str: "",
             list : {
                 options : [],
-                selected : null
+                selected : null,
+                tbl : {
+                    columns : [
+                        {name:"frameCount",label:t("framecount"), field:"frameCount"},
+                        {name:"startFrame",label:t("target_begin_frame"), field:"startFrame"},
+                        {name:"endFrame",label:t("target_end_frame"), field:"endFrame"},
+                    ]
+                }
+            },
+            states : {
+                item_mode : "pose", //pose, motion
+            },
+            constant : {
+                poseurl : "1cJkuegzP0FBVJ0XE4uyhu4qF32WZAME7",
+                motionurl : "11Atv_WPyrh892VKZL7o0ZZgulvFQ1ECq"
             }
         });
         const fileoption = {
@@ -37,22 +61,47 @@ const app = Vue.createApp({
         };
 
         const loadData = () => {
+            poseapp.value.header.loading = true;
             poseapp.value.list.options.splice(0, poseapp.value.list.options.length);
-            AppDB.pose.iterate((value,key,index)=>{
-                poseapp.value.list.options.push({
-                    thumbnail : value.thumbnail,
-                    name : key,
-                    bodyinfo : value.frameData.bodyHeight,
-                    sample : value.sampleavatar,
-                    visibility : true,
-                    styleclass : {
-                        "list-item-selected" : false
-                    },
-                    data : value
+            if (poseapp.value.states.item_mode == "pose") {
+                AppDB.pose.iterate((value,key,index)=>{
+                    poseapp.value.list.options.push({
+                        thumbnail : value.thumbnail,
+                        name : key,
+                        bodyinfo : value.frameData.bodyHeight,
+                        sample : value.sampleavatar,
+                        visibility : true,
+                        styleclass : {
+                            "list-item-selected" : false
+                        },
+                        data : value
+                    });
+                }).then(()=>{
+                    //console.log(opener._REFMYAPP.states.selectedAvatar);
+                    poseapp.value.header.loading = false;
                 });
-            }).then(()=>{
-                //console.log(opener._REFMYAPP.states.selectedAvatar);
-            });
+            }else if (poseapp.value.states.item_mode == "motion") {
+                AppDB.motion.iterate((value,key,index)=>{
+                    poseapp.value.list.options.push({
+                        name: key,
+                        type: value.targetType,
+                        version : value.version,
+                        
+                        frameCount : value.frames.length,
+                        startFrame : value.frames[0].index,
+                        endFrame : value.frames[value.frames.length-1].index,
+                          
+                        visibility : true,
+                        styleclass : {
+                            "list-item-selected" : false
+                        },
+                        data: value
+                    });
+                }).then(()=>{
+                    poseapp.value.header.loading = false;
+                });
+            }
+            
         }
         const loadSetting = () => {
             var textdata = localStorage.getItem(poseapp.value.appconf.set_name);
@@ -63,35 +112,55 @@ const app = Vue.createApp({
         }
         //---event---------------------------------------------
         const refresh_onclick = () => {
-            loadData();
+            listorigin_onchange(poseapp.value.header.list_selected);
         }
         const apply_onclick = () => {
             if (poseapp.value.list.selected) {
-                if (poseapp.value.list.selected) {
-                    //opener._REFMYAPP.returnPoseDialogValue(sel.data);
-                    var js = new ChildReturner();
-                    js.origin = location.origin;
-                    js.windowName = "pose";
+                
+                //opener._REFMYAPP.returnPoseDialogValue(sel.data);
+                var js = new ChildReturner();
+                js.origin = location.origin;
+                js.windowName = "pose";
+                if (poseapp.value.states.item_mode == "pose") {
                     js.funcName = "apply_pose";
-                    js.data = JSON.stringify(poseapp.value.list.selected.data);
-                    opener.postMessage(js);
+                }else if (poseapp.value.states.item_mode == "motion") {
+                    js.funcName = "apply_motion";
                 }
+                
+                js.data = JSON.stringify(poseapp.value.list.selected.data);
+                opener.postMessage(js);
+                
             }
         }
         const delete_onclick = () => {
-            appConfirm(_T("msg_pose_delconfirm"),()=>{
-                if (poseapp.value.list.selected) {
-                    AppDB.pose.removeItem(poseapp.value.list.selected.name).then(result=>{
-                        refresh_onclick();
-                    });
-                }
-            });
+            if (poseapp.value.states.item_mode == "pose") {
+                appConfirm(_T("msg_pose_delconfirm"),()=>{
+                    if (poseapp.value.list.selected) {
+                        AppDB.pose.removeItem(poseapp.value.list.selected.name).then(result=>{
+                            refresh_onclick();
+                        });
+                    }
+                });
+            }else if (poseapp.value.states.item_mode == "motion") {
+                appConfirm(_T("msg_motion_delconfirm"),()=>{
+                    if (poseapp.value.list.selected) {
+                        AppDB.motion.removeItem(poseapp.value.list.selected.name).then(result=>{
+                            refresh_onclick();
+                        });
+                    }
+                });
+            }
         }
         const download_onclick = async () => {
             if (poseapp.value.list.selected) {
                 var opt = new VFileOptions();
                 opt.types = fileoption.types;
-                opt.suggestedName = poseapp.value.list.selected.name + ".vvmpose";
+                if (poseapp.value.states.item_mode == "pose") {
+                    opt.suggestedName = poseapp.value.list.selected.name + ".vvmpose";
+                }else if (poseapp.value.states.item_mode == "motion") {
+                    opt.suggestedName = poseapp.value.list.selected.name + ".vvmmot";
+                }
+                
 
                 var content = null;
                 var useHTMLSaving = false;
@@ -156,19 +225,34 @@ const app = Vue.createApp({
                     }
                     if (data) {
                         var js = JSON.parse(data);
-                        if ((!js) || 
-                            !("frameData" in js)
-                        ) {
-                            appAlert(_T("msg_pose_erroropen"));
-                            return;
-                        }
-                        //---for security
-                        if ("thumbnail" in js) js.thumbnail = ""
-                        else js["thumbnail"] = "";
+                        if (poseapp.value.states.item_mode == "pose") {
+                            if ((!js) || 
+                                !("frameData" in js)
+                            ) {
+                                appAlert(_T("msg_pose_erroropen"));
+                                return;
+                            }
+                            //---for security
+                            if ("thumbnail" in js) js.thumbnail = ""
+                            else js["thumbnail"] = "";
 
+                        }else if (poseapp.value.states.item_mode == "motion") {
+                            if ((!js) || 
+                                !("movingData" in js)
+                            ) {
+                                appAlert(_T("msg_motion_erroropen"));
+                                return;
+                            }
+                        }
+                        
                         var filename = files[0].name.split(".")[0];
-                        AppDB.pose.setItem(filename,js)
-                        .then(data => {
+                        var reff = null;
+                        if (poseapp.value.states.item_mode == "pose") {
+                            reff = AppDB.pose.setItem(filename,js);
+                        }else if (poseapp.value.states.item_mode == "motion") {
+                            reff = AppDB.motion.setItem(filename,js);
+                        }
+                        reff.then(data => {
                             //console.log(data);
                             refresh_onclick();
                         })
@@ -189,6 +273,11 @@ const app = Vue.createApp({
             });
             item.styleclass["list-item-selected"] = true;
         }
+        const modetab_change = (val) => {
+            refresh_onclick();
+        }
+
+        //---computed---------------------------------------------
         const list_actived = Vue.computed(() => {
             return (item) => {
                 if (!poseapp.value.list.selected) return false;
@@ -200,6 +289,13 @@ const app = Vue.createApp({
                 return Math.round(parseFloat(item.bodyinfo[1]) * 100);
             }
         });
+        const targetTypeName = (targetType) => {
+            const TYPENAME = ["VRM","OtherObject","Light","Camera",
+                "Text","Image","UImage","Audio","Effect","SystemEffect","Stage"
+            ];
+
+            return TYPENAME[targetType];
+        }
 
         const onchange_searchstr = (val) => {
             const cval = val.toLowerCase();
@@ -216,6 +312,162 @@ const app = Vue.createApp({
                 
             }
             
+        }
+
+        const listorigin_onchange = (val) =>  {
+            var remoteload = (url) => {
+                fetch(url)
+                .then(async ret => {
+                    if (ret.ok) {
+                        var js = await ret.json();
+                        if (js.cd == 0) {
+                            for (var obj of js.data) {
+                                let posedata = (typeof obj.data == "string" ? JSON.parse(obj.data) : obj.data);
+                                if (poseapp.value.states.item_mode == "pose") {
+                                    poseapp.value.list.options.push({
+                                        thumbnail : posedata.thumbnail,
+                                        name : obj.name,
+                                        bodyinfo : posedata.frameData.bodyHeight,
+                                        sample : posedata.sampleavatar,
+                                        visibility : true,
+                                        styleclass : {
+                                            "list-item-selected" : false
+                                        },
+                                        data : posedata
+                                    });
+                                }else if (poseapp.value.states.item_mode == "motion") {
+                                    poseapp.value.list.options.push({
+                                        name: obj.name,
+                                        type: posedata.targetType,
+                                        version : posedata.version,
+                                        
+                                        frameCount : posedata.frames.length,
+                                        startFrame : posedata.frames[0].index,
+                                        endFrame : posedata.frames[posedata.frames.length-1].index,
+                                          
+                                        visibility : true,
+                                        styleclass : {
+                                            "list-item-selected" : false
+                                        },
+                                        data: posedata
+                                    });
+                                }
+                                
+                            }
+                        }else{
+                            alert(js.msg);
+                        }
+                    }
+                })
+                .finally(() => {
+                    poseapp.value.header.loading = false;
+                });
+            }
+            console.log(val);
+            if (
+                (val.value == "appserver") ||
+                (val.value == "gdrive")
+            ) {
+                var baseurl = poseapp.value.appconf.confs.fileloader.gdrive.url;
+                var apikey = poseapp.value.appconf.confs.fileloader.gdrive.apikey;
+                var urlparams = new URLSearchParams();
+
+                //---decide URL
+                if (val.value == "appserver") {
+                    baseurl = SAMPLEURL;
+                    apikey = SAMPLEKEY;
+                }
+                
+                /*if (baseurl.indexOf("https://script.google.com/macros/s/") < 0) {
+                    baseurl = "https://script.google.com/macros/s/" + baseurl;
+                }
+                if (baseurl.lastIndexOf("/exec") < 0) {
+                    baseurl = baseurl + "/exec";
+                }*/            
+                
+                //---setting URL parameters
+                urlparams.append("mode","enumdir");
+                urlparams.append("apikey",apikey);
+                urlparams.append("withdata","1");
+
+                if (poseapp.value.states.item_mode == "pose") {
+                    urlparams.append("extension","vvmpose");
+
+                    //extension = "vvmpose";
+                    if (val.value == "appserver") {
+                        //---app server id
+                        urlparams.append("enumtype","pose");
+                    }else if (val.value == "gdrive") {
+                        //---user folder id
+                        urlparams.append("dirid",poseapp.value.appconf.confs.fileloader.gdrive.user.pose);
+                    }
+                }else if (poseapp.value.states.item_mode == "motion") {
+                    urlparams.append("extension","vvmmot");
+
+                    //extension = "vvmmot";
+                    if (val.value == "appserver") {
+                        //---app server id
+                        urlparams.append("enumtype","motion");
+                    }else if (val.value == "gdrive") {
+                        //---user folder id
+                        urlparams.append("dirid", poseapp.value.appconf.confs.fileloader.gdrive.user.motion);
+                    }
+                }
+
+                poseapp.value.header.loading = true;
+                poseapp.value.list.options.splice(0, poseapp.value.list.options.length);
+                //---application google drive
+                //var finalurl = `${baseurl}?mode=enumdir&apikey=${apikey}&extension=${extension}&withdata=1`;
+                var finalurl = baseurl;
+                finalurl += "?" + urlparams.toString();
+                /*if  (dirid != "") {
+                    //---specified google drive id
+                    finalurl += `&dirid=${dirid}`;
+                }*/
+                remoteload(finalurl);
+
+            }else if (val.value == "mystorage") {
+                loadData();
+            }
+        }
+        const checkSelectVRMObject = () => {
+            var sinfo = opener._REFAPP.childreturner["select_info"];
+            if (sinfo) {
+                console.log(sinfo);
+                if (sinfo.type == 0) {
+                    return false;
+                }else{
+                    return true;
+                }
+            }else{
+                return true;
+            }
+        }
+        const btn_savebvhmotion_onclick = () => {
+            
+            var js = new ChildReturner();
+            js.origin = location.origin;
+            js.windowName = "pose";
+            js.funcName = "savebvhmotion";
+            
+            
+            js.data = JSON.stringify(poseapp.value.list.selected.data);
+            opener.postMessage(js);
+        }
+        const btn_saveanimmotion_onclick = () => {
+            var sinfo = opener._REFAPP.childreturner["select_info"];
+            if (sinfo) {
+                console.log(sinfo);
+                return;
+            }
+            var js = new ChildReturner();
+            js.origin = location.origin;
+            js.windowName = "pose";
+            js.funcName = "saveanimmotion";
+            
+            
+            js.data = JSON.stringify(poseapp.value.list.selected.data);
+            opener.postMessage(js);
         }
         
         Vue.onBeforeMount(() => {
@@ -242,6 +494,13 @@ const app = Vue.createApp({
 
             loadData();
             loadSetting();
+
+            if (poseapp.value.appconf.confs.fileloader.gdrive.enabled && 
+                (poseapp.value.appconf.confs.fileloader.gdrive.url != "")
+            ) {
+                poseapp.value.header.list_origin.push({label:t("Google Drive"),value:"gdrive"});
+            }
+            poseapp.value.header.list_origin.push({label:t("Application"),value:"appserver"});
             //console.log(opener);
             //VFileHelper.flags.isEnableFSAA = false;
         });
@@ -252,8 +511,10 @@ const app = Vue.createApp({
             refresh_onclick,
             apply_onclick,delete_onclick,download_onclick,upload_onclick,
             selectListItem,onchange_searchstr,
+            listorigin_onchange,modetab_change,
+            btn_savebvhmotion_onclick,btn_saveanimmotion_onclick,checkSelectVRMObject,
             //---computed---
-            list_actived,listitem_height,
+            list_actived,listitem_height,targetTypeName,
             //---other method---
             loadData,loadSetting,
         };

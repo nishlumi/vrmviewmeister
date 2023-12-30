@@ -5,7 +5,8 @@ import { FILEEXTENSION_AUDIO,AF_TARGETTYPE, AF_MOVETYPE, FILEEXTENSION_VRM, FILE
     FILEEXTENSION_ANIMATION, 
     INTERNAL_FILE,
     FILEOPTION,
-    IKBoneType
+    IKBoneType,
+    STORAGE_TYPE
 } from "../res/appconst.js";
 import { VFileHelper,VFileOptions } from "../../public/static/js/filehelper.js" 
 import { appMainData } from "./prop/appmaindata.js";
@@ -31,6 +32,8 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     const { t, locale  } = VueI18n.useI18n({ useScope: 'global' });
 
     const vrhapi = new VRoidHubConnector();
+
+    VFileHelper.setAppConf(mainData.appconf);
 
     /**
      * 
@@ -231,6 +234,9 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             return false;
         }
     });
+    const chkEnableVRAR = Vue.computed(() => {
+        return (!ribbonData.elements.vrar.disable.vr || !ribbonData.elements.vrar.disable.ar);
+    });
     //===============================================================
     //  Main events judge
     //===============================================================
@@ -290,27 +296,93 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             Sub_vrminfo();
         }else if (ename == "openvrm") {
             Sub_openfile("v","VRM");
+        }else if (ename == "openvrm_gdrive_direct") {
+            appPrompt(t("msg1_open_gdrive"),(val) => {
+                mainData.elements.loading = true;
+                VFileHelper.openFromGoogleDrive(val, "vrm")
+                .then(file => {
+                    if (file) {
+                        file.encoding = "binary";
+                        mainData.elements.loadingTypePercent = false;
+                        modelLoader.OnChange_Common_AppFile(file,FILEOPTION["VRM"]);
+                    }else{
+                        appNotifyWarning("Load error of Google Drive...",{timeout:5000});
+                    }
+                    
+                });
+            });
+        }else if (ename == "openvrm_gdrive") {
+            mainData.elements.loading = true;
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
+            mainData.elements.projectSelector.selectTypeName = FILEOPTION.VRM.types[0].description;
+            mainData.elements.projectSelector.selectDB = INTERNAL_FILE.VRM;
+            mainData.elements.projectSelector.selectType = FILEOPTION.VRM.types;
+            modelOperator.enumerateFilesToProjectSelector("VRM");
+            mainData.elements.projectSelector.show = true;
+        }else if (ename == "openvrm_appsample") {
+            mainData.elements.loading = true;
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.APPLICATION;
+            mainData.elements.projectSelector.selectTypeName = FILEOPTION.VRM.types[0].description;
+            mainData.elements.projectSelector.selectDB = INTERNAL_FILE.VRM;
+            mainData.elements.projectSelector.selectType = FILEOPTION.VRM.types;
+            modelOperator.enumerateFilesToProjectSelector("VRM");
+            mainData.elements.projectSelector.show = true;
         }else if (ename == "openobject") {
             Sub_openfile("o","OBJECTS");
+        }else if (ename == "openobject_gdrive_direct") {
+            appPrompt(t("msg1_open_gdrive"),(val) => {
+                mainData.elements.loading = true;
+                VFileHelper.openFromGoogleDrive(val, "obj") //representative extension
+                .then(file => {
+                    if (file) {
+                        file.encoding = "binary";
+                        mainData.elements.loadingTypePercent = false;
+                        modelLoader.OnChange_Common_AppFile(file,FILEOPTION["OBJECTS"]);
+                    }else{
+                        appNotifyWarning("Load error of Google Drive...",{timeout:5000});
+                    }
+                    
+                });
+            });
+        }else if (ename == "openobject_gdrive") {
+            mainData.elements.loading = true;
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
+            mainData.elements.projectSelector.selectTypeName = FILEOPTION.OBJECTS.types[0].description;
+            mainData.elements.projectSelector.selectDB = INTERNAL_FILE.OBJECTS;
+            mainData.elements.projectSelector.selectType = FILEOPTION.OBJECTS.types;
+            modelOperator.enumerateFilesToProjectSelector("OBJECTS");
+            mainData.elements.projectSelector.show = true;
+        }else if (ename == "openobject_appsample") {
+            mainData.elements.loading = true;
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.APPLICATION;
+            mainData.elements.projectSelector.selectTypeName = FILEOPTION.OBJECTS.types[0].description;
+            mainData.elements.projectSelector.selectDB = INTERNAL_FILE.OBJECTS;
+            mainData.elements.projectSelector.selectType = FILEOPTION.OBJECTS.types;
+            modelOperator.enumerateFilesToProjectSelector("OBJECTS");
+            mainData.elements.projectSelector.show = true;
         }else if (ename == "recentvrm") {
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
             mainData.elements.projectSelector.selectTypeName = FILEOPTION.VRM.types[0].description;
             mainData.elements.projectSelector.selectDB = INTERNAL_FILE.VRM;
             mainData.elements.projectSelector.selectType = FILEOPTION.VRM.types;
             modelOperator.enumerateFilesToProjectSelector("VRM");
             mainData.elements.projectSelector.show = true;
         }else if (ename == "recentobj") {
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
             mainData.elements.projectSelector.selectTypeName = FILEOPTION.OBJECTS.types[0].description;
             mainData.elements.projectSelector.selectDB = INTERNAL_FILE.OBJECTS;
             mainData.elements.projectSelector.selectType = FILEOPTION.OBJECTS.types;
             modelOperator.enumerateFilesToProjectSelector("OBJECTS");
             mainData.elements.projectSelector.show = true;
         }else if (ename == "recentimg") {
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
             mainData.elements.projectSelector.selectTypeName = FILEOPTION.IMAGES.types[0].description;
             mainData.elements.projectSelector.selectDB = INTERNAL_FILE.IMAGES;
             mainData.elements.projectSelector.selectType = FILEOPTION.IMAGES.types;
             modelOperator.enumerateFilesToProjectSelector("IMAGES");
             mainData.elements.projectSelector.show = true;
         }else if (ename == "recentuimg") {
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
             mainData.elements.projectSelector.selectTypeName = FILEOPTION.IMAGES.types[0].description;
             mainData.elements.projectSelector.selectDB = INTERNAL_FILE.IMAGES;
             mainData.elements.projectSelector.selectType = FILEOPTION.IMAGES.types;
@@ -328,6 +400,22 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.navigationdlg.webglw = mainData.elements.canvas.width;
             mainData.elements.navigationdlg.webglh = mainData.elements.canvas.height;
 
+        }else if (ename == "enter_vr") {
+            //AppQueue.canvas.Module.WebXR.toggleVR();
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'EnterVR'},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        }else if (ename == "enter_ar") {
+            //AppQueue.canvas.Module.WebXR.toggleAR();
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'EnterAR'},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
         }
     }
     //==================================================
@@ -566,6 +654,37 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             Sub_openfile("o","OBJECTS");
         }else if (ename == "openimage") {
             Sub_openfile("img","IMAGES");
+        }else if (ename == "openimage_gdrive_direct") {
+            appPrompt(t("msg1_open_gdrive"),(val) => {
+                mainData.elements.loading = true;
+                VFileHelper.openFromGoogleDrive(val, FILEEXTENSION_IMAGE.join(","))
+                .then(file => {
+                    if (file) {
+                        file.encoding = "binary";
+                        mainData.elements.loadingTypePercent = false;
+                        modelLoader.OnChange_Common_AppFile(file,FILEOPTION["IMAGES"]);
+                    }else{
+                        appNotifyWarning("Load error of Google Drive...",{timeout:5000});
+                    }
+                    
+                });
+            });
+        }else if (ename == "openimage_gdrive") {
+            mainData.elements.loading = true;
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
+            mainData.elements.projectSelector.selectTypeName = FILEOPTION.IMAGES.types[0].description;
+            mainData.elements.projectSelector.selectDB = INTERNAL_FILE.IMAGES;
+            mainData.elements.projectSelector.selectType = FILEOPTION.IMAGES.types;
+            modelOperator.enumerateFilesToProjectSelector("IMAGES");
+            mainData.elements.projectSelector.show = true;
+        }else if (ename == "openimage_appsample") {
+            mainData.elements.loading = true;
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.APPLICATION;
+            mainData.elements.projectSelector.selectTypeName = FILEOPTION.IMAGES.types[0].description;
+            mainData.elements.projectSelector.selectDB = INTERNAL_FILE.IMAGES;
+            mainData.elements.projectSelector.selectType = FILEOPTION.IMAGES.types;
+            modelOperator.enumerateFilesToProjectSelector("IMAGES");
+            mainData.elements.projectSelector.show = true;
         }else if (ename == "vrminfo") {
             Sub_vrminfo();
         }else if (ename == "savepose") {
@@ -599,7 +718,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:"vrm"},
                     "backupnowpose",QD_INOUT.returnJS,
                     callback.savepose,
-                    {callback, filename: "posename", mode:"d"}
+                    {callback, filename: "posename", mode:"f"}
                 ));
                 AppQueue.start();
             }else{
@@ -608,13 +727,30 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                         {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:"vrm"},
                         "backupnowpose",QD_INOUT.returnJS,
                         callback.savepose,
-                        {callback, filename: keyname, mode:"d"}
+                        {callback, filename: keyname, mode:"f"}
                     ));
                     AppQueue.start();
                 },"");
             }
             
+        }else if (ename == "savepose_drive") {
+            if (mainData.states.selectedAvatar == null) return;
+            
+            if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
+                var msg = t("msg_pose_save_check1");
+                appAlert(msg);
+                return;
+            }
 
+            appPrompt(t("msg_pose_sav"),(keyname)=>{
+                AppQueue.add(new queueData(
+                    {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:"vrm"},
+                    "backupnowpose",QD_INOUT.returnJS,
+                    callback.savepose,
+                    {callback, filename: keyname, mode:"g"}
+                ));
+                AppQueue.start();
+            },"");
         }else if (ename == "poselist") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
             
@@ -730,6 +866,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             if (options.type == "f") {
                 Sub_openfile("ap","PROJECT");
             }else if (options.type == "i") {
+                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
                 mainData.elements.projectSelector.selectTypeName = FILEOPTION.PROJECT.types[0].description;
                 mainData.elements.projectSelector.selectDB = INTERNAL_FILE.PROJECT;
                 mainData.elements.projectSelector.selectType = FILEOPTION.PROJECT.types;
@@ -749,6 +886,14 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 .then(res => {
                     //mainData.elements.projectSelector.selected = mainData.elements.projectSelector.files[0];
                 });*/
+                mainData.elements.projectSelector.show = true;
+            }else if (options.type == "g") {
+                mainData.elements.loading = true;
+                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
+                mainData.elements.projectSelector.selectTypeName = FILEOPTION.PROJECT.types[0].description;
+                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.PROJECT;
+                mainData.elements.projectSelector.selectType = FILEOPTION.PROJECT.types;
+                modelOperator.enumerateFilesToProjectSelector("PROJECT");
                 mainData.elements.projectSelector.show = true;
             }
         }else if (ename == "saveproject") {
@@ -961,6 +1106,36 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 modelOperator.removeKeyframe(mainData.states.selectedAvatar, timelineData.states.currentcursor, AF_MOVETYPE.AllProperties);
             });
         }else if (ename == "delemptyline") {
+        }else if (ename == "openmotion") {
+            if (options.type == "f") {
+                Sub_openfile("ap","MOTION");
+            }else if (options.type == "i") {
+                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
+                mainData.elements.projectSelector.selectTypeName = FILEOPTION.MOTION.types[0].description;
+                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.MOTION;
+                mainData.elements.projectSelector.selectType = FILEOPTION.MOTION.types;
+                modelOperator.enumerateFilesToProjectSelector("MOTION");
+                
+                mainData.elements.projectSelector.show = true;
+            }else if (options.type == "g") {
+                mainData.elements.loading = true;
+                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
+                mainData.elements.projectSelector.selectTypeName = FILEOPTION.MOTION.types[0].description;
+                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.MOTION;
+                mainData.elements.projectSelector.selectType = FILEOPTION.MOTION.types;
+                modelOperator.enumerateFilesToProjectSelector("MOTION");
+                mainData.elements.projectSelector.show = true;
+            }
+        }else if (ename == "savemotion") {
+            var tmpcast = modelOperator.getRole(mainData.states.selectedCast.roleName,"role");
+            var param = tmpcast.roleName + "," + tmpcast.type;
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'SaveSingleMotion', param:param},
+                "savemotion",QD_INOUT.returnJS,
+                callback.savemotion,
+                {callback, disktype : options.type, savetype : "overwrite"}
+            ));
+            AppQueue.start();
         }
     }
     //==================================================
@@ -1497,6 +1672,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             type : "i"
         });
     }
+    const openproject_gdrive_onclick = (evt) => {
+        RibbonFuncAnimation('openproject',{
+            type : "g"
+        });
+    }
     const saveproject_file_onclick = (evt) => {
         RibbonFuncAnimation('saveproject',{
             type : "f"
@@ -1507,6 +1687,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             type : "i"
         });
     }
+    const saveproject_gdrive_onclick = (evt) => {
+        RibbonFuncAnimation('saveproject',{
+            type : "g"
+        });
+    }
     const saveasproject_file_onclick = (evt) => {
         RibbonFuncAnimation('saveasproject',{
             type : "f"
@@ -1515,6 +1700,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     const saveasproject_internal_onclick = (evt) => {
         RibbonFuncAnimation('saveasproject',{
             type : "i"
+        });
+    }
+    const saveasproject_gdrive_onclick = (evt) => {
+        RibbonFuncAnimation('saveasproject',{
+            type : "g"
         });
     }
 
@@ -1536,6 +1726,36 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     const setcurrentframe_onchange = (evt) => {
         RibbonFuncAnimation("setcurrentframe",{
             value: ribbonData.elements.frame.current
+        });
+    }
+    const openmotion_file_onclick = (evt) => {
+        RibbonFuncAnimation('openmotion',{
+            type : "f"
+        });
+    }
+    const openmotion_internal_onclick = (evt) => {
+        RibbonFuncAnimation('openmotion',{
+            type : "i"
+        });
+    }
+    const openmotion_gdrive_onclick = (evt) => {
+        RibbonFuncAnimation('openmotion',{
+            type : "g"
+        });
+    }
+    const savemotion_file_onclick = (evt) => {
+        RibbonFuncAnimation('savemotion',{
+            type : "f"
+        });
+    }
+    const savemotion_internal_onclick = (evt) => {
+        RibbonFuncAnimation('savemotion',{
+            type : "i"
+        });
+    }
+    const savemotion_gdrive_onclick = (evt) => {
+        RibbonFuncAnimation('savemotion',{
+            type : "g"
         });
     }
     //--System effect-----------------------------------
@@ -1753,9 +1973,12 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
 
         basicshape_onclick,
         
-        openproject_file_onclick,openproject_internal_onclick,
-        saveproject_file_onclick,saveproject_internal_onclick,saveasproject_file_onclick,saveasproject_internal_onclick,
+        openproject_file_onclick,openproject_internal_onclick,openproject_gdrive_onclick,
+        saveproject_file_onclick,saveproject_internal_onclick,saveproject_gdrive_onclick,
+        saveasproject_file_onclick,saveasproject_internal_onclick,saveasproject_gdrive_onclick,
         setmaxframe_onchange,setbaseduration_onchange,setloop_onchange,setcurrentframe_onchange,
+        openmotion_file_onclick,openmotion_internal_onclick,openmotion_gdrive_onclick,
+        savemotion_file_onclick,savemotion_internal_onclick, savemotion_gdrive_onclick,
 
         bloom_checked_onchange, bloom_intensity_onchange,
         chroma_checked_onchange, chroma_intensity_onchange, 
@@ -1768,6 +1991,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         operationtype_onchange,
         bgmselect_onchange, bgmplayflag_onchange, bgmseek_onchange, bgmloop_onchange, bgmvol_onchange, bgmpitch_onchange,
             
-        chkbgmenable, chkseenable
+        chkbgmenable, chkseenable,
+        chkEnableVRAR
     })
 }

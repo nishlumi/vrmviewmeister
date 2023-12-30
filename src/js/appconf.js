@@ -17,7 +17,10 @@ export class VVConfigTemplate {
             use_fsaa_for_history : false,
             not_autoload_over_mb : 50,
             enable_backup : true,
-            backup_project_interval : 1
+            backup_project_interval : 1,
+            is_externalwin_keyframe : false,
+            vpad_rotaterate : 0.1,
+            vpad_translaterate : 1,
         };
         this.model = {
             use_animation_generic_when_otherobject :false,
@@ -33,6 +36,8 @@ export class VVConfigTemplate {
             interlock_body_pelvis : true,
             interlock_body_arms : false,
             interlock_body_legs : true,
+            vrarctrl_panel_left : 1,
+            vrarctrl_panel_right : 0,
         };
         this.animation = {
             initial_framecount : 60,
@@ -49,6 +54,26 @@ export class VVConfigTemplate {
             enable_audio_record : false,
             save_previous_value_in_keyframeregister : false,
         };
+        this.fileloader = {
+            gdrive : {
+                url: "",
+                apikey: "",
+                enabled : true,
+                server : {
+                    pose : "1cJkuegzP0FBVJ0XE4uyhu4qF32WZAME7",
+                    motion : "11Atv_WPyrh892VKZL7o0ZZgulvFQ1ECq",
+                    project : "16umkEygK1mkD_g1tisDzpTjoIOCsbmbe",
+                },
+                user : {
+                    pose : "",
+                    motion : "",
+                    project : "",
+                    vrm : "",
+                    other : "",
+                    image : "",
+                }
+            }
+        }
         this.aiapis = {
             baseurl : "",
             txt2img : {
@@ -171,6 +196,9 @@ export class VVAppConfig{
         for (var obj in this.confs.animation) {
             cp.confs.animation[obj] = this.confs.animation[obj]
         }
+        for (var obj in this.confs.fileloader) {
+            cp.confs.fileloader[obj] = this.confs.fileloader[obj]
+        }
         for (var obj in this.confs.aiapis) {
             cp.confs.aiapis[obj] = this.confs.aiapis[obj]
         }
@@ -191,14 +219,20 @@ export class VVAppConfig{
             //---config (probably add after)
             for (var obj in this.confs) { //---category
                 var category = this.confs[obj];
+                var rawcat = Vue.toRaw(this.confs[obj]);
                 if (obj in tmp) { //---has saved category ?
                     var fileCategory = tmp[obj];
+                    var merged = this.mergeObjects(rawcat, fileCategory);
+                    this.confs[obj] = merged;
+
+                    /*
                     for (var setone in fileCategory) {
                         var so = fileCategory[setone];  //each config in the category
                         if (setone in category) {
                             category[setone] = so;
                         }
                     }
+                    */
                 }
             }
             //this.data = tmp;
@@ -214,12 +248,68 @@ export class VVAppConfig{
             }
         }
     }
+    mergeObjects(a, b) {
+        if (a === null || a === undefined) {
+            return b;
+        }
+    
+        if (b === null || b === undefined) {
+            return a;
+        }
+    
+        const result = {};
+        for (const key in a) {
+            const valueA = a[key];
+            const valueB = b[key];
+        
+            if (typeof valueA === "object" && typeof valueB === "object") {
+                result[key] = this.mergeObjects(valueA, valueB);
+            } else if (typeof valueA === "object" || typeof valueB === "object") {
+                if (valueB === undefined) {
+                    result[key] = valueA;
+                }else{
+                    // プリミティブな値とオブジェクトが混在している場合
+                    if (valueA === valueB) {
+                    // 値が同じ場合は、そのままマージする
+                        result[key] = valueA;
+                    } else {
+                    // 値が異なる場合は、bの値を上書きする
+                        result[key] = valueB;
+                    }
+                }
+                
+            } else {
+                // プリミティブな値の場合
+                if (valueA === valueB) {
+                // 値が同じ場合は、そのままマージする
+                    result[key] = valueA;
+                }else if (valueB === undefined) {
+                    result[key] = valueA;
+                } else {
+                // 値が異なる場合は、bの値を上書きする
+                    result[key] = valueB;
+                }
+            }
+        }
+    
+        for (const key in b) {
+            const valueB = b[key];
+        
+            if (!result.hasOwnProperty(key)) {
+                // bにのみ存在するキーの場合
+                result[key] = valueB;
+            }
+        }
+    
+        return result;
+    }
     applyUnity(isOperationFromDialog = true) {
         //---Apply to Unity
         /*
            bool - bool is int in Unity.
            send value as int to Unity.
         */
+        
         //---Application tab
         AppQueue.add(new queueData(
             {target:AppQueue.unity.Camera,method:'SetZoomSpeed',param:parseFloat(this.confs.application.MouseWheelSpeed)},
@@ -342,6 +432,20 @@ export class VVAppConfig{
             "",QD_INOUT.toUNITY,
             null
         ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetValFromOuter',param:
+                `int,${"vrarctrl_panel_left"},${this.confs.model.vrarctrl_panel_left}`
+            },
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetValFromOuter',param:
+                `int,${"vrarctrl_panel_right"},${this.confs.model.vrarctrl_panel_right}`
+            },
+            "",QD_INOUT.toUNITY,
+            null
+        ));
 
         //---Animation tab
         AppQueue.add(new queueData(
@@ -371,37 +475,42 @@ export class VVAppConfig{
 export class AppDBMeta {
     /**
      * 
-     * @param {String} f fullname
-     * @param {String} n name
-     * @param {Number} s size
-     * @param {String} t type
-     * @param {Date} c created date
-     * @param {Date} u updated date
+     * @param {String} fullname fullname
+     * @param {String} name name
+     * @param {Number} size size
+     * @param {String} type type
+     * @param {Date} createdate created date
+     * @param {Date} updatedate updated date
      */
-    constructor(f, n, s, t, c, u) {
+    constructor(fullname, name, size, type, createdate, updatedate) {
         /**
-         * @type {String}
+         * @type {String} file name or file path
          */
-        this.fullname = f || "";
+        this.fullname = fullname || "";
         /**
-         * @type {String}
+         * @type {String} file name
          */
-        this.name = n || "";
+        this.name = name || "";
         /**
          * @type {Number}
          */
-        this.size = s || 0;
+        this.size = size || 0;
         /**
          * @type {String}
          */
-        this.type = t || "";
+        this.type = type || "";
         /**
          * @type {Date}
          */
-        this.createdDate = c || new Date();
+        this.createdDate = createdate || new Date();
         /**
          * @type {Date}
          */
-        this.updatedDate = u || new Date();
+        this.updatedDate = updatedate || new Date();
+
+        /**
+         * @type {String} service id
+         */
+        this.id = "";
     }
 }

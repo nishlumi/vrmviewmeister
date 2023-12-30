@@ -413,28 +413,30 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
 
     }
     const keyframebox_ondblclick = async (item, frameitem) => {
-        //mainData.elements.keyframedlg.show =  true;
+        if (mainData.appconf.confs.application.is_externalwin_keyframe) {
+            if (mainData.elements.win_keyframe && !mainData.elements.win_keyframe.closed) {
         
-        if (mainData.elements.win_keyframe && !mainData.elements.win_keyframe.closed) {
-        
+            }else{
+                mainData.elements.win_keyframe = window.open("./static/win/keyframe/index.html",
+                    "keyframe",
+                    "width=350,height=480,alwaysRaised=yes,resizable=false,autoHideMenuBar=true"
+                );
+            }
+            
+            
+            if (VFileHelper.checkNativeAPI) { 
+                var title = mainData.elements.win_keyframe.document.title
+                await window.elecAPI.focusWindow(title);
+            }else{
+                mainData.elements.win_keyframe.blur();
+                window.focus();
+                window.blur();
+                mainData.elements.win_keyframe.focus();
+            }
         }else{
-            mainData.elements.win_keyframe = window.open("./static/win/keyframe/index.html",
-                "keyframe",
-                "width=350,height=480,alwaysRaised=yes,resizable=false,autoHideMenuBar=true"
-            );
+            mainData.elements.keyframedlg.show =  true;
         }
-        
-        
-        if (VFileHelper.checkNativeAPI) { 
-            var title = mainData.elements.win_keyframe.document.title
-            await window.elecAPI.focusWindow(title);
-        }else{
-            mainData.elements.win_keyframe.blur();
-            window.focus();
-            window.blur();
-            mainData.elements.win_keyframe.focus();
-        }
-        
+
     }
 
     /**

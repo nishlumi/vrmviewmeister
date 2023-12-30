@@ -56,6 +56,8 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     mainData.states.currentProjectFilepath = tmpfile.path;
                     mainData.states.currentProjectHandle = mainData.states.loadingfileHandle;
                     mainData.states.currentProjectFromFile = true;
+                    mainData.states.currentProjectFromStorageType = "f";
+                    
                     //---Secondary load for Visual only.
                     AppQueue.add(new queueData(
                         {target:AppQueue.unity.ManageAnimation,method:'LoadProject',param:data},
@@ -638,19 +640,25 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
      * On click OK-button for VRM info dialog
      */
     const OnOk_VrminfoDlg = async (evt) => {
-        //---save to recently history
-        if (mainData.appconf.confs.application.stock_opened_file_history === true) {
-            await saveToInternalStorage("VRM", mainData.states.loadingfileHandle);            
+        var ischeck = modelOperator.getVRMFromTitle(mainData.elements.vrminfodlg.selectedAvatar.title);
+        if (ischeck == null) {
+            //---save to recently history
+            if (mainData.appconf.confs.application.stock_opened_file_history === true) {
+                await saveToInternalStorage("VRM", mainData.states.loadingfileHandle);            
+            }
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
+                "firstload_vrm",QD_INOUT.returnJS,
+                callback.firstload_vrm,
+                {callback,filename:mainData.states.loadingfile,
+                    fileloadtype: "v",
+                    loadingfileHandle : mainData.states.loadingfileHandle}
+            ));
+            AppQueue.start();
+        }else{
+            appAlert(t("msg_already_added_collider"));
         }
-        AppQueue.add(new queueData(
-            {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
-            "firstload_vrm",QD_INOUT.returnJS,
-            callback.firstload_vrm,
-            {callback,filename:mainData.states.loadingfile,
-                fileloadtype: "v",
-                loadingfileHandle : mainData.states.loadingfileHandle}
-        ));
-        AppQueue.start();
+        
     }
     const onclick_imageSelectorImage = async (evt) => {
         mainData.states.fileloadtype = "img";
@@ -725,6 +733,12 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         mainData.appconf.save();
 
         modelOperator.setDarkMode(mainData.appconf.confs.application.UseDarkTheme);
+
+        if (mainData.appconf.confs.fileloader.gdrive.enabled && (mainData.appconf.confs.fileloader.gdrive.url != "")) {
+            mainData.states.googledrive_gas = true;
+        }else{
+            mainData.states.googledrive_gas = false;
+        }
 
         //---backup functions
         schedulingBackup();
@@ -817,8 +831,8 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             checkSWUpdate,
             downloadAddressableAssetBundles,
             //load_materialFile,destroy_materialFile,
-            canvasdiv_scroll,navigationdlg_onmovecursor
-            
+            canvasdiv_scroll,navigationdlg_onmovecursor,
+            saveToInternalStorage
         },
         dnd : {
             drop_evt,dragleave_evt,dragenter_evt,dragover_evt

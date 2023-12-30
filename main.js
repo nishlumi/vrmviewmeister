@@ -238,6 +238,7 @@ ipcMain.handle("saveDirect", async (event, param) => {
         return 0;
     }
 });
+
 ipcMain.on("ondragstart",(evt, filepath) => {
     evt.sender.startDrag({
         file: path.join(__dirname,filepath),

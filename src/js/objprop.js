@@ -640,7 +640,23 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         }
         
     }
+    /**
+     * On change blendshape isChanged
+     * @param {Boolean} value 
+     * @param {VVBlendShape} evt 
+     */
+    const OnChange_BlendShape_Checked = (value, evt) => {
+        mainData.states.selectedAvatar.setBlendShape(evt.id, evt.value, value);
+    }
+    /**
+     * On change blendshape slider
+     * @param {Number} value 
+     * @param {VVBlendShape} evt 
+     * @returns 
+     */
     const OnChange_BlendShape = (value,evt) => {
+        //---if changed slider, always states "CHANGED".
+        evt.isChanged = true;
         var bs = parseFloat(value);
         if (isNaN(bs)) return;
 
@@ -656,7 +672,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             null
         ));
         AppQueue.start();
-        mainData.states.selectedAvatar.setBlendShape(evt.id, value);
+        mainData.states.selectedAvatar.setBlendShape(evt.id, value, evt.isChanged);
     }
     //------Blink---
     const OnChange_Blink_enable = (val) => {
@@ -782,7 +798,22 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     //===OtherObject=====================================
     const objectMaterial_onselected = (val) => {
         //console.log(val);
-        
+        var ishit = objpropData.elements.objectui.materialnames.findIndex(m => {
+            if (m == val) return true;
+            return false;
+        });
+        if (ishit > -1) {
+            objpropData.elements.objectui.matopt.isChanged = objpropData.elements.objectui.materialIsChanges[ishit];
+        }
+    }
+    const objectMaterialIsChange_onchanged = (val) => {
+        var ishit = objpropData.elements.objectui.materialnames.findIndex(m => {
+            if (m == objpropData.elements.objectui.materialnameSelected) return true;
+            return false;
+        });
+        if (ishit > -1) {
+            objpropData.elements.objectui.materialIsChanges[ishit] = val;
+        }
     }
     /**
      * Watch for materialNameSelected event 
@@ -819,6 +850,14 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         if (objpropData.elements.objectui.is_apply_allparts) {
             for (var i = 0; i < objpropData.elements.objectui.materialnames.length; i++) {
                 var matobj = objpropData.elements.objectui.materialnames[i];
+                
+                var ishit = objpropData.elements.objectui.materialnames.findIndex(m => {
+                    if (m == matobj) return true;
+                    return false;
+                });
+                if (ishit > -1) {
+                    objpropData.elements.objectui.materialIsChanges[ishit] = true;
+                }
 
                 var newparam = [
                     matobj,
@@ -833,6 +872,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             }
             AppQueue.start();
         }else{
+            objectMaterialIsChange_onchanged(true);
+            objpropData.elements.objectui.matopt.isChanged = true;
             AppQueue.add(new queueData(
                 {target:mainData.states.selectedAvatar.id,method:'SetUserMaterialFromOuter', param:param.join(",")},
                 "",QD_INOUT.toUNITY,
@@ -2149,13 +2190,13 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             OnChange_JumpNum,OnChange_JumpPower,OnChange_PunchColumn,OnChange_ShakeColumn,
             wa_propVRMMoveMode,OnClicked_editIKPosition,OnClicked_editGravity,
             OnChange_LeftHand,OnChange_RightHand,OnChange_FingerStretch,
-            onchange_expression_searchstr,onchange_bs_searchstr,OnChange_BlendShape,
+            onchange_expression_searchstr,onchange_bs_searchstr,OnChange_BlendShape, OnChange_BlendShape_Checked,
             OnChange_Blink_enable,OnChange_Blink_interval,OnChange_Blink_opening,OnChange_Blink_closing,OnChange_Blink_closeTime,
             equiptarget_addbox_onclick,equipparts_onclicked,equipDialog_OK_OnClick,equipDialog_Cancel_OnClick,
             OnChanged_IKHandleSelected,OnChanged_IKHandleAssigning,OnClick_IKHandleReset,
             OnChange_HeadLock,
             
-            objectMaterial_onselected,
+            objectMaterial_onselected,objectMaterialIsChange_onchanged,
             objectShader_onchange,objectShaderColor_onchange,objectCullmode_onchange,objectCutOff_onchange,objectBlendmode_onchange,
             objectMetallic_onchange,objectGlossiness_onchange,objectEmissionColor_onchange,objectShadetexColor_onchange,
             objectShadingToony_onchange,objectShadingShift_onchange,objectReceiveShadow_onchange,objectShadingGrade_onchange,objectLightColorAttenuation_onchange,

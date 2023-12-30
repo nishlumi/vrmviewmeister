@@ -27,6 +27,12 @@ export class appDataRibbon {
                 options : langlist,
                 selected : langlist[0]
             },
+            vrar : {
+                disable : {
+                    vr : false,
+                    ar : false
+                }
+            },
             //---Screen
             scr_size : {
                 width : 0,

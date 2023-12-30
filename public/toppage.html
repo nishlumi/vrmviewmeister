@@ -74,13 +74,13 @@
                                 <q-btn flat no-caps dense icon="cached" :label="$t('ribbon_clearcache')+'...'" ><!-- @click="ribbonEvent.RibbonFuncHome('clearcache')" -->
                                     <q-menu>
                                         <q-list>
-                                            <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcachewebgl')">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcachewebgl')">
                                                 <q-item-section>{{ $t('clearcache_webgl')}}</q-item-section>
                                             </q-item>                                        
-                                            <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcachetemp')">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcachetemp')">
                                                 <q-item-section>{{ $t('clearcache_temp')}}</q-item-section>
                                             </q-item>
-                                            <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcacheconf')">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('clearcacheconf')">
                                                 <q-item-section>{{ $t('clearcache_config')}}</q-item-section>
                                             </q-item>
                                         </q-list>
@@ -114,12 +114,66 @@
                         <div class="ribbon-group-sep"></div>
                         <div class="ribbon-group">
 
-                            <q-btn flat dense icon="person" :label="$t('ribbon_loadVRM')" no-caps align="left" style="width:10rem;"
-                                @click="ribbonEvent.RibbonFuncHome('openvrm')"
-                            ></q-btn><br>
-                            <q-btn flat dense icon="rectangle" :label="$t('ribbon_loadObj')" no-caps align="left" style="width:10rem;"
-                                @click="ribbonEvent.RibbonFuncHome('openobject')"
-                            ></q-btn>
+                            <q-btn flat dense icon="person" :label="$t('ribbon_loadVRM') + '...'" no-caps align="left"
+                                
+                            >
+                                <q-menu>
+                                    <q-list style="min-width: 100px">
+                                        <q-item clickable  v-close-popup 
+                                            @click="ribbonEvent.RibbonFuncHome('openvrm')"
+                                        >
+                                            <q-item-section>{{ $t('from disk')}}</q-item-section>
+                                        </q-item>
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openvrm_gdrive_direct')"
+                                            >
+                                                <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openvrm_gdrive')"
+                                            >
+                                                <q-item-section>{{ $t('from gdrive')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openvrm_appsample')"
+                                            >
+                                                <q-item-section>{{ $t('cons_sample')}}</q-item-section>
+                                            </q-item>
+                                        </template>
+                                    </q-list>
+                                </q-menu>
+                            </q-btn><br>
+                            <q-btn flat dense icon="rectangle" :label="$t('ribbon_loadObj') + '...'" no-caps align="left" 
+                                
+                            >
+                                <q-menu>
+                                    <q-list style="min-width: 100px">
+                                        <q-item clickable  v-close-popup 
+                                            @click="ribbonEvent.RibbonFuncHome('openobject')"
+                                        >
+                                            <q-item-section>{{ $t('from disk')}}</q-item-section>
+                                        </q-item>
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openobject_gdrive_direct')"
+                                            >
+                                                <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openobject_gdrive')"
+                                            >
+                                                <q-item-section>{{ $t('from gdrive')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openobject_appsample')"
+                                            >
+                                                <q-item-section>{{ $t('cons_sample')}}</q-item-section>
+                                            </q-item>
+                                        </template>
+                                    </q-list>
+                                </q-menu>
+                            </q-btn>
 
                             <div class="ribbon-group-title">Load</div>
                         </div>
@@ -129,12 +183,17 @@
                             >
                                 <q-menu>
                                     <q-list>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.openproject_file_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.openproject_file_onclick">
                                             <q-item-section>{{ $t('from disk')}}</q-item-section>
                                         </q-item>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.openproject_internal_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.openproject_internal_onclick">
                                             <q-item-section>{{$t('from internal storage')}}</q-item-section>
                                         </q-item>
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.openproject_gdrive_onclick">
+                                                <q-item-section>{{$t('from gdrive')}}</q-item-section>
+                                            </q-item>
+                                        </template>
                                     </q-list>
                                 </q-menu>
                             </q-btn>
@@ -147,22 +206,32 @@
                                         <template v-if="ribbonEvent.chkAppIsOSApp">
                                             <q-item-label>{{ $t('Disk') }}</q-item-label>
                                             <q-separator></q-separator>
-                                            <q-item clickable dense v-close-popup @click="ribbonEvent.saveproject_file_onclick">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.saveproject_file_onclick">
                                                 <q-item-section>{{ $t('save_proj')}}</q-item-section>
                                             </q-item>
-                                            <q-item clickable dense v-close-popup @click="ribbonEvent.saveasproject_file_onclick">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.saveasproject_file_onclick">
                                                 <q-item-section>{{ $t('save as')}}</q-item-section>
                                             </q-item>
                                             <q-separator></q-separator>
                                         </template>
                                         <q-item-label class="q-pa-xs">{{ $t('Internal Storage') }}</q-item-label>
                                         <q-separator></q-separator>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.saveproject_internal_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.saveproject_internal_onclick">
                                             <q-item-section>{{ $t('save_proj')}}</q-item-section>
                                         </q-item>                                        
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.saveasproject_internal_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.saveasproject_internal_onclick">
                                             <q-item-section>{{ $t('save as')}}</q-item-section>
                                         </q-item>
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item-label class="q-pa-xs">Google Drive</q-item-label>
+                                            <q-separator></q-separator>
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.saveproject_gdrive_onclick">
+                                                <q-item-section>{{ $t('save_proj')}}</q-item-section>
+                                            </q-item>                                        
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.saveasproject_gdrive_onclick">
+                                                <q-item-section>{{ $t('save as')}}</q-item-section>
+                                            </q-item>
+                                        </template>
                                     </q-list>
                                 </q-menu>
                             </q-btn>
@@ -175,20 +244,20 @@
                             >
                                 <q-menu>
                                     <q-list style="min-width: 100px">
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('recentvrm')">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentvrm')">
                                             <q-item-section>VRM</q-item-section>
                                         </q-item>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('recentobj')">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentobj')">
                                             <q-item-section>{{ $t('ribbon_loadObj') }}</q-item-section>
                                         </q-item>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('recentimg')">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentimg')">
                                             <q-item-section>{{ $t('Image') }}</q-item-section>
                                         </q-item>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncHome('recentuimg')">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentuimg')">
                                             <q-item-section>{{ $t('UImage') }}</q-item-section>
                                         </q-item>
                                         <!--
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.openproject_internal_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.openproject_internal_onclick">
                                             <q-item-section>Project</q-item-section>
                                         </q-item>
                                         -->
@@ -211,7 +280,19 @@
                                 @click="ribbonEvent.RibbonFuncHome('vpad')"
                             ></q-btn>
                         </div>
-                        
+                        <div class="ribbon-group-sep"></div>
+                        <div class="ribbon-group">
+                            <div class="ribbon-toolbar">
+                                <q-btn flat dense icon="vrpano" label="VR" 
+                                    :disable="ribbonData.elements.vrar.disable.vr"
+                                    @click="ribbonEvent.RibbonFuncHome('enter_vr')" no-caps
+                                ></q-btn><br>
+                                <q-btn flat dense icon="view_in_ar" label="AR" 
+                                    :disable="ribbonData.elements.vrar.disable.ar"
+                                    @click="ribbonEvent.RibbonFuncHome('enter_ar')" no-caps 
+                                ></q-btn>
+                            </div>
+                        </div>
                     </div>
                     
                 </q-tab-panel>
@@ -355,17 +436,97 @@
                     <div class="ribbon-group-sep"></div>
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
-                            <q-btn flat dense icon="person" :label="$t('ribbon_loadVRM')" no-caps 
-                                @click="ribbonEvent.RibbonFuncModel('openvrm')"
-                            ></q-btn><br>
-                            <q-btn flat dense  icon="rectangle" :label="$t('ribbon_loadObj')" no-caps 
-                                @click="ribbonEvent.RibbonFuncModel('openobject')"
-                            ></q-btn>
+                            <q-btn flat dense icon="person" :label="$t('ribbon_loadVRM') + '...'" no-caps 
+                                
+                            >
+                                <q-menu>
+                                    <q-list style="min-width: 100px">
+                                        <q-item clickable  v-close-popup 
+                                            @click="ribbonEvent.RibbonFuncModel('openvrm')"
+                                        >
+                                            <q-item-section>{{ $t('from disk')}}</q-item-section>
+                                        </q-item>
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openvrm_gdrive_direct')"
+                                            >
+                                                <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openvrm_gdrive')"
+                                            >
+                                                <q-item-section>{{ $t('from gdrive')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openvrm_appsample')"
+                                            >
+                                                <q-item-section>{{ $t('cons_sample')}}</q-item-section>
+                                            </q-item>
+                                        </template>
+                                    </q-list>
+                                </q-menu>
+                            </q-btn><br>
+                            <q-btn flat dense  icon="rectangle" :label="$t('ribbon_loadObj') + '...'" no-caps 
+                            >
+                                <q-menu>
+                                    <q-list style="min-width: 100px">
+                                        <q-item clickable  v-close-popup 
+                                        @click="ribbonEvent.RibbonFuncModel('openobject')"
+                                        >
+                                            <q-item-section>{{ $t('from disk')}}</q-item-section>
+                                        </q-item>
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openobject_gdrive_direct')"
+                                            >
+                                                <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openobject_gdrive')"
+                                            >
+                                                <q-item-section>{{ $t('from gdrive')}}</q-item-section>
+                                            </q-item>
+                                            <q-item clickable  v-close-popup 
+                                                @click="ribbonEvent.RibbonFuncHome('openobject_appsample')"
+                                            >
+                                                <q-item-section>{{ $t('cons_sample')}}</q-item-section>
+                                            </q-item>
+                                        </template>
+                                    </q-list>
+                                </q-menu>
+                            </q-btn>
                         </div>
                         <div class="ribbon-toolbar">
-                            <q-btn flat dense  icon="insert_photo" :label="$t('Image')" no-caps 
-                                @click="ribbonEvent.RibbonFuncModel('openimage')"
-                            ></q-btn>
+                            <q-btn flat dense  icon="insert_photo" :label="$t('Image') + '...'" no-caps 
+                                
+                            >
+                            <q-menu>
+                                <q-list style="min-width: 100px">
+                                    <q-item clickable  v-close-popup 
+                                        @click="ribbonEvent.RibbonFuncModel('openimage')"
+                                    >
+                                        <q-item-section>{{ $t('from disk')}}</q-item-section>
+                                    </q-item>
+                                    <template v-if="mainData.states.googledrive_gas">
+                                        <q-item clickable  v-close-popup 
+                                            @click="ribbonEvent.RibbonFuncModel('openimage_gdrive_direct')"
+                                        >
+                                            <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
+                                        </q-item>
+                                        <q-item clickable  v-close-popup 
+                                            @click="ribbonEvent.RibbonFuncModel('openimage_gdrive')"
+                                        >
+                                            <q-item-section>{{ $t('from gdrive')}}</q-item-section>
+                                        </q-item>
+                                        <q-item clickable  v-close-popup 
+                                            @click="ribbonEvent.RibbonFuncModel('openimage_appsample')"
+                                        >
+                                            <q-item-section>{{ $t('cons_sample')}}</q-item-section>
+                                        </q-item>
+                                    </template>
+                                </q-list>
+                            </q-menu>
+                            </q-btn>
                         </div>
                         <div class="ribbon-group-title">Load</div>
                     </div>
@@ -378,25 +539,47 @@
                     <div class="ribbon-group-sep"></div>
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
-                            <q-btn flat dense icon="bookmark_add" :label="$t('ribbon_pose_save')+'...'" no-caps 
+                            <q-btn flat icon="bookmark_add" :label="$t('cons_save')+'...'" no-caps 
                             >
                                 <q-menu>
                                     <q-list>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_direct')">
+                                        <q-item-label><b>{{ $t('ribbon_pose_save') }}</b></q-item-label>
+                                        <q-separator></q-separator>
+                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_direct')">
                                             <q-item-section>{{ $t('Disk')}}</q-item-section>
                                         </q-item>                                        
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose')">
+                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose')">
                                             <q-item-section>{{ $t('Internal Storage')}}</q-item-section>
                                         </q-item>
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_drive')">
+                                                <q-item-section>Google Drive</q-item-section>
+                                            </q-item>
+                                        </template>
+                                        <q-separator></q-separator>
+                                        <q-item-label><b>{{ $t('ribbon_motion_save') }}</b></q-item-label>
+                                        <q-separator></q-separator>
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_file_onclick">
+                                            <q-item-section>{{ $t('Disk') }}</q-item-section>
+                                        </q-item>                                    
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_internal_onclick">
+                                            <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
+                                        </q-item>
+
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_gdrive_onclick">
+                                                <q-item-section>Google Drive</q-item-section>
+                                            </q-item>
+                                        </template>
                                     </q-list>
                                 </q-menu>
-                            </q-btn>
+                            </q-btn>                            
                             <br>
                             <q-btn flat dense icon="dashboard" :label="$t('ribbon_pose_list')" no-caps 
                                 @click="ribbonEvent.RibbonFuncModel('poselist')"
                             ></q-btn>
                         </div>
-                        <div class="ribbon-group-title">Pose</div>
+                        <div class="ribbon-group-title">Pose/Motion</div>
                     </div>
                     <div class="ribbon-group-sep"></div>
                     <div class="ribbon-group">
@@ -420,12 +603,14 @@
                         </div>
                         <div class="ribbon-group-title">Reset</div>
                     </div>
-                    <div class="ribbon-group-sep"></div>
-                    <div class="ribbon-group">
-                        <q-btn flat icon="view_in_ar" :label="$t('MediaPipe')" class="qbtn-fullheight" stack no-caps stretch 
-                            @click="ribbonEvent.RibbonFuncModel('mediapipe')"
-                        ></q-btn>
-                    </div>
+                    <template v-if="ribbonEvent.chkEnableVRAR == false">
+                        <div class="ribbon-group-sep"></div>
+                        <div class="ribbon-group">
+                            <q-btn flat icon="view_in_ar" :label="$t('MediaPipe')" class="qbtn-fullheight" stack no-caps stretch 
+                                @click="ribbonEvent.RibbonFuncModel('mediapipe')"
+                            ></q-btn>
+                        </div>
+                    </template>
                     <div class="ribbon-group-sep"></div>
                     <div class="ribbon-group common_ui_off">
                         <div class="ribbon-toolbar">
@@ -458,12 +643,17 @@
                                     -->
                                 <q-menu>
                                     <q-list>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.openproject_file_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.openproject_file_onclick">
                                             <q-item-section>{{ $t('from disk')}}</q-item-section>
                                         </q-item>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.openproject_internal_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.openproject_internal_onclick">
                                             <q-item-section>{{$t('from internal storage')}}</q-item-section>
                                         </q-item>
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.openproject_gdrive_onclick">
+                                                <q-item-section>{{$t('from gdrive')}}</q-item-section>
+                                            </q-item>
+                                        </template>
                                     </q-list>
                                 </q-menu>
                             </q-btn>
@@ -477,22 +667,34 @@
                                         <template v-if="ribbonEvent.chkAppIsOSApp">
                                             <q-item-label>{{ $t('Disk') }}</q-item-label>
                                             <q-separator></q-separator>
-                                            <q-item clickable dense v-close-popup @click="ribbonEvent.saveproject_file_onclick">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.saveproject_file_onclick">
                                                 <q-item-section>{{ $t('save_proj')}}</q-item-section>
                                             </q-item>
-                                            <q-item clickable dense v-close-popup @click="ribbonEvent.saveasproject_file_onclick">
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.saveasproject_file_onclick">
                                                 <q-item-section>{{ $t('save as')}}</q-item-section>
                                             </q-item>
                                             <q-separator></q-separator>
                                         </template>
+
                                         <q-item-label class="q-pa-xs">{{ $t('Internal Storage') }}</q-item-label>
                                         <q-separator></q-separator>
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.saveproject_internal_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.saveproject_internal_onclick">
                                             <q-item-section>{{ $t('save_proj')}}</q-item-section>
                                         </q-item>                                        
-                                        <q-item clickable dense v-close-popup @click="ribbonEvent.saveasproject_internal_onclick">
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.saveasproject_internal_onclick">
                                             <q-item-section>{{ $t('save as')}}</q-item-section>
                                         </q-item>
+
+                                        <template v-if="mainData.states.googledrive_gas">
+                                            <q-item-label class="q-pa-xs">Google Drive</q-item-label>
+                                            <q-separator></q-separator>
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.saveproject_gdrive_onclick">
+                                                <q-item-section>{{ $t('save_proj')}}</q-item-section>
+                                            </q-item>                                        
+                                            <q-item clickable  v-close-popup @click="ribbonEvent.saveasproject_gdrive_onclick">
+                                                <q-item-section>{{ $t('save as')}}</q-item-section>
+                                            </q-item>
+                                        </template>
                                     </q-list>
                                 </q-menu>
                             </q-btn>
@@ -1974,7 +2176,7 @@
 
                     </template>
                     <q-card>
-                        <q-card-section>
+                        <q-card-section style="padding:2px;">
                             <div class="row">
                                 <div class="col-9">
                                     <q-checkbox left-label v-model="objpropData.elements.vrmui.blink.enable" :label="$t('blink_enable')" 
@@ -2025,10 +2227,15 @@
                                             </div>
                                         </div>
                                         <div class="row shaperow" v-for="(item,index) in objpropData.elements.vrmui.blendshapes" :key="index">
-                                            <div class="col-8"  v-if="item.visibility === true">
+                                            <div class="col-12"  v-if="item.visibility === true">
                                                 {{ item["title"] }}
                                             </div>
-                                            <div class="offset-3 col-7"  v-if="item.visibility === true">
+                                            <div class="col-3" v-if="item.visibility === true">
+                                                <q-checkbox v-model="item.isChanged"
+                                                @update:model-value="objpropEvent.OnChange_BlendShape_Checked($event,item)"
+                                                ></q-checkbox>
+                                            </div>
+                                            <div class="col-7"  v-if="item.visibility === true">
                                                 <q-slider
                                                     v-model="item.value"
                                                     :min="0" :max="100" :step="1"
@@ -2050,10 +2257,15 @@
                                         <div class="row shaperow" v-for="(item,index) in objpropData.elements.vrmui.proxyBlendshapes" 
                                             :key="index"
                                         >
-                                            <div class="col-8" v-if="item.visibility === true">
+                                            <div class="col-12" v-if="item.visibility === true">
                                                 {{ item["title"] }}
                                             </div>
-                                            <div class="offset-3 col-7" v-if="item.visibility === true">
+                                            <div class="col-3" v-if="item.visibility === true">
+                                                <q-checkbox v-model="item.isChanged"
+                                                    @update:model-value="objpropEvent.OnChange_BlendShape_Checked($event,item)"
+                                                ></q-checkbox>
+                                            </div>
+                                            <div class="col-7" v-if="item.visibility === true">
                                                 <q-slider
                                                     v-model="item.value"
                                                     :min="0" :max="100" :step="1"
@@ -2568,10 +2780,18 @@
                                                 <span v-text="$t('Material name')"></span>
                                             </div> 
                                             <div class="offset-2 col-10">
-                                                <span  class="ellipsis">
+                                                <div  class="ellipsis">
                                                     {{ objpropData.elements.objectui.matopt.matname }}
                                                     <q-tooltip v-text="objpropData.elements.objectui.matopt.matname"></q-tooltip>
-                                                </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <q-checkbox v-model="objpropData.elements.objectui.matopt.isChanged" 
+                                                    :label="$t('cons_modify')"
+                                                    @update:model-value="objpropEvent.objectMaterialIsChange_onchanged"
+                                                ></q-checkbox>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -4458,7 +4678,7 @@
             </div>
         </q-footer>
 <!--[] Dialog etc  ================================================================================= -->
-        <q-dialog v-model="mainData.elements.loading">
+        <q-dialog v-model="mainData.elements.loading" persistent style="z-index:4001;">
             <q-card class="my-card">
                 <q-card-section>
                     <q-circular-progress
@@ -4514,6 +4734,7 @@
                         <q-btn flat round dense icon="refresh" @click="projectdlgEvent.btn_refresh_onclick"><q-tooltip v-text="$t('refresh')"></q-tooltip></q-btn>
                         <q-btn flat round dense icon="delete" :disable="projectdlgEvent.checkSelectFixedObject" @click="projectdlgEvent.btn_delRole_onclick"><q-tooltip v-text="$t('delete role')"></q-tooltip></q-btn>
                         <q-btn flat round dense icon="clear" :disable="projectdlgEvent.checkSelectFixedObject" @click="projectdlgEvent.btn_delAllRole_onclick"><q-tooltip v-text="$t('remove_emptytimeline')"></q-tooltip></q-btn>
+                        <!--
                         <q-btn flat round dense icon="emoji_people" @click="projectdlgEvent.btn_loadsinglemotion_onclick('projdlg')"><q-tooltip v-text="$t('open single motion')"></q-tooltip></q-btn>
                         <q-btn flat round dense icon="save" @click="projectdlgEvent.btn_savesinglemotion_onclick"><q-tooltip v-text="$t('save single motion')"></q-tooltip></q-btn>
                         <q-btn flat round dense icon="directions_run" :disable="projectdlgEvent.checkSelectVRMObject" >
@@ -4530,6 +4751,7 @@
                                 </q-list>
                             </q-menu>
                         </q-btn>
+                        -->
                     </template>
                     <q-space></q-space>
                     <q-btn flat round dense icon="close" @click="mainData.elements.projdlg.show = false"></q-btn>
@@ -4886,6 +5108,8 @@
         >
         </config-dlg>
         <vpad-dlg v-model="mainData.elements.vpaddlg.show"
+            :rotate-rate="mainData.appconf.confs.application.vpad_rotaterate"
+            :translate-rate="mainData.appconf.confs.application.vpad_translaterate"
             @resetcamera="ribbonEvent.RibbonFuncScreen('resetcamera')"
         ></vpad-dlg>
         <keyframe-dlg v-model="mainData.elements.keyframedlg.show"
@@ -4906,7 +5130,7 @@
             @resetcamera="ribbonEvent.RibbonFuncScreen('resetcamera')"
         ></navigation-dlg>
         
-        <q-dialog
+        <q-dialog style="z-index:2000;"
             v-model="mainData.elements.projectSelector.show"
             :maximized="mainData.elements.projectSelector.maximized"
             :full-width="mainData.elements.projectSelector.fullwidth"
@@ -4917,27 +5141,33 @@
                     <q-btn flat round dense icon="refresh" 
                         @click="projectSelectorEvent.onclick_refresh_projectSelector"
                     ><q-tooltip v-text="$t('refresh')"></q-tooltip></q-btn>
-                    <q-btn flat round icon="delete" :disable="mainData.elements.projectSelector.selected == ''"
-                        @click="projectSelectorEvent.onclick_delete_projectSelector"
-                    >
-                        <q-tooltip>{{$t('cons_delete')}}</q-tooltip>
-                    </q-btn>
-                    <template v-if="mainData.elements.projectSelector.selectDB == 'scene'">
-                        <q-btn flat round icon="drive_file_rename_outline" :disable="mainData.elements.projectSelector.selected == ''"
-                            @click="projectSelectorEvent.onclick_rename_projectSelector"
+                    <template v-if="!cmp_projectSelectorStorageGDrive">
+                        <q-btn flat round icon="delete" :disable="mainData.elements.projectSelector.selected == ''"
+                            @click="projectSelectorEvent.onclick_delete_projectSelector"
                         >
-                            <q-tooltip>{{$t('rename')}}</q-tooltip>
+                            <q-tooltip>{{$t('cons_delete')}}</q-tooltip>
                         </q-btn>
+                    </template>
+                    <template v-if="mainData.elements.projectSelector.selectDB == 'scene'">
+                        <template v-if="!cmp_projectSelectorStorageGDrive">
+                            <q-btn flat round icon="drive_file_rename_outline" :disable="mainData.elements.projectSelector.selected == ''"
+                                @click="projectSelectorEvent.onclick_rename_projectSelector"
+                            >
+                                <q-tooltip>{{$t('rename')}}</q-tooltip>
+                            </q-btn>
+                        </template>
                         <q-btn flat round icon="file_download" :disable="mainData.elements.projectSelector.selected == ''"
                             @click="projectSelectorEvent.onclick_download_projectSelector"
                         >
                             <q-tooltip v-text="$t('download as file')"></q-tooltip>
                         </q-btn>
-                        <q-btn flat round icon="file_upload"
-                            @click="projectSelectorEvent.onclick_upload_projectSelector"
-                        >
-                            <q-tooltip v-text="$t('open from file')"></q-tooltip>
-                        </q-btn>
+                        <template v-if="!cmp_projectSelectorStorageGDrive">
+                            <q-btn flat round icon="file_upload"
+                                @click="projectSelectorEvent.onclick_upload_projectSelector"
+                            >
+                                <q-tooltip v-text="$t('open from file')"></q-tooltip>
+                            </q-btn>
+                        </template>
                     </template>
                     
                     <q-toolbar-title>{{ mainData.elements.projectSelector.selectTypeName }}</q-toolbar-title>
@@ -4996,6 +5226,7 @@
     <input type="file" ref="file_audio" accept=".wav,.ogg,.mp3" class="common_ui_off">
     <input type="file" ref="fil_animmotion" accept=".json,.vvmmot" class="common_ui_off">
     <audio src="static/res/aud01_capture.mp3" ref="aud01_capture" class="common_ui_off"></audio>
+
 
 </div>
     <input type="hidden" id="UnityBuildPath" value="Build">

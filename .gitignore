@@ -96,3 +96,6 @@ z_commit/
 
 largef.zip
 largef/
+
+*.bak
+*.tmp

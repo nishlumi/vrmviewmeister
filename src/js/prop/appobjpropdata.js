@@ -138,9 +138,14 @@ export class appDataObjectProp {
                 materialnames : [],
                 materialnameSelected : null,
                 old_materialnameSelected : null,
+                /**
+                 * @type {Boolean[]}
+                 */
+                materialIsChanges : [],
                 is_apply_allparts : false,
                 matopt : {
                     matname : "",
+                    isChanged : false,
                     shader : [
                         {label : "Standard", value:"Standard"},
                         {label : "VRM/MToon", value:"VRM/MToon"},

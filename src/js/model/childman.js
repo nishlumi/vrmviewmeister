@@ -38,6 +38,16 @@ export class ChildManager {
             if (data.funcName == "apply_pose") {
                 var js = JSON.parse(data.data);
                 this.returnPoseDialogValue(js);
+            }else if (data.funcName == "apply_motion") {
+                var js = JSON.parse(data.data);
+                this.returnMotionDialogValue(js);
+            }else if (data.funcName == "savebvhmotion") {
+                var js = JSON.parse(data.data);
+                this.saveBVHMotion(js);
+            }
+            else if (data.funcName == "saveanimmotion") {
+                var js = JSON.parse(data.data);
+                this.saveAnimMotion(js);
             }
         }else if (data.windowName == "mediapipe") {
             if (data.funcName == "apply_pose") {
@@ -86,6 +96,86 @@ export class ChildManager {
             {target:this.mainData.states.selectedAvatar.id,method:'AnimateAvatarTransform',param:JSON.stringify(pose)},
             "",QD_INOUT.toUNITY,
             null
+        ));
+        AppQueue.start();
+        this.mainData.states.currentEditOperationCount++;
+    }
+    /**
+     * 
+     * @param {*} motion motion data
+     * @returns 
+     */
+    returnMotionDialogValue(motion) {
+        if (this.mainData.states.selectedAvatar.type != motion.targetType) {
+            appAlert(this._t("msg_openmotion_error2"));
+            return;
+        }
+        var tmpcast = this.mainData.states.selectedCast;
+        var motiondata = JSON.stringify(motion);
+
+        //---Firstly, set target.
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetLoadTargetSingleMotion',param:tmpcast.roleName},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        //---Second load a motion data.
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'LoadSingleMotionDirect',param:motiondata},
+            "openmotionresult",QD_INOUT.returnJS,
+            this.UnityCallback.openmotionresult,
+            {callback:this.UnityCallback}
+        ));
+        {
+            var param = new AnimationParsingOptions();
+            param.index = 1;
+            param.isCameraPreviewing = 0;
+            
+            param.isExecuteForDOTween = 1;
+            param.targetRole = tmpcast.roleName;
+            param.targetType = tmpcast.type.toString();
+
+            var js = JSON.stringify(param);
+
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'PreviewSingleFrame',param:js},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        AppQueue.start();
+        this.mainData.states.currentEditOperationCount++;
+    }
+    saveBVHMotion (data) {
+        if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
+            appAlert(t("msg_error_mediapipe1"));
+            return;
+        }
+        var tmpcast = this.mainData.states.selectedCast;
+
+        var param = tmpcast.roleName + "," + tmpcast.type + ",m";
+        //AppQueue.unity.ManageAnimation
+        AppQueue.add(new queueData(
+            {target:tmpcast.avatar.id,method:'ExportRecordedBVH'},
+            "savebvhmotion",QD_INOUT.returnJS,
+            this.UnityCallback.savebvhmotion,
+            {callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle}
+        ));
+        AppQueue.start();
+    }
+    saveAnimMotion (data) {
+        if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
+            appAlert(t("msg_error_mediapipe1"));
+            return;
+        }
+        var tmpcast = this.mainData.states.selectedCast;
+        var param = tmpcast.roleName + "," + tmpcast.type + ",m";
+        //AppQueue.unity.ManageAnimation
+        AppQueue.add(new queueData(
+            {target:tmpcast.avatar.id,method:'GenerateAnimationCurve'},
+            "savebvhmotion",QD_INOUT.returnJS,
+            this.UnityCallback.saveanimmotion,
+            {callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle}
         ));
         AppQueue.start();
     }

@@ -428,6 +428,7 @@ function appNotify(message,options) {
 		message : message
 	};
 	if (options["position"]) param["position"] = options["position"];
+	if (options["timeout"]) param["timeout"] = options["timeout"];
 	_appNotify(param);
 }
 function appNotifySuccess(message,options) {
@@ -436,6 +437,7 @@ function appNotifySuccess(message,options) {
 		type : "positive"
 	};
 	if (options["position"]) param["position"] = options["position"];
+	if (options["timeout"]) param["timeout"] = options["timeout"];
 	_appNotify(param);
 }
 function appNotifyWarning(message,options) {
@@ -444,6 +446,7 @@ function appNotifyWarning(message,options) {
 		type : "warning"
 	};
 	if (options["position"]) param["position"] = options["position"];
+	if (options["timeout"]) param["timeout"] = options["timeout"];
 	_appNotify(param);
 }
 
@@ -469,7 +472,21 @@ function ch2seh(data) {
 	.replace(/_\$</g,"&lt;").replace(/>\$_/g,"&gt;");
 
 }
-
+const toBlob = (base64) => {
+    const decodedData = atob(base64.replace(/^.*,/, ""));
+    const buffers = new Uint8Array(decodedData.length);
+    for (let i = 0; i < decodedData.length; i++) {
+      buffers[i] = decodedData.charCodeAt(i);
+    }
+    try {
+      const blob = new Blob([buffers.buffer], {
+        type: "image/png",
+      });
+      return blob;
+    } catch (e) {
+      return null;
+    }
+  };
 
 Date.prototype.toFullText = function(){
 	var a = this.toLocaleDateString(navigator.language,{year:"numeric", month: "2-digit", day : "2-digit"});
@@ -572,6 +589,7 @@ const AppDB = {
 	loglst : [],
 
 	pose : null,
+	motion : null,
 	scene_meta : null,
 	scene : null,
 
@@ -618,6 +636,11 @@ const AppDB = {
             name : "origfile",
             driver : localforage.INDEXEDDB,
             storeName : "pose"
+        });
+		this.motion = localforage.createInstance({
+            name : "origfile",
+            driver : localforage.INDEXEDDB,
+            storeName : "motion"
         });
 		this.scene_meta = localforage.createInstance({
             name : "origfile",

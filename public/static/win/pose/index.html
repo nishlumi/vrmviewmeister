@@ -7,7 +7,7 @@
     <meta name="referrer" content="same-origin">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>Pose list</title>
+    <title>Pose / Motion</title>
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
@@ -85,24 +85,64 @@
                     <q-btn flat round dense icon="refresh" @click="refresh_onclick">
                         <q-tooltip v-text="_T('refresh')"></q-tooltip>
                     </q-btn>
-                    <q-btn flat round dense icon="bookmark_added" :label="_T('apply pose')"
+                    <q-btn flat round dense icon="bookmark_added" :label="_T('cons_apply')"
                         @click="apply_onclick" no-caps
                     >
-                        <q-tooltip v-text="_T('apply pose')"></q-tooltip>
+                        <q-tooltip v-text="_T('cons_apply')"></q-tooltip>
                     </q-btn>
-                    <q-btn flat round dense icon="delete" @click="delete_onclick">
+                    <q-btn flat round dense icon="delete" 
+                        @click="delete_onclick"
+                        :disable="poseapp.header.list_selected.value == 'mystorage' ? false : true"
+                    >
                         <q-tooltip v-text="_T('cons_delete')"></q-tooltip>
                     </q-btn>
                     <q-btn flat round dense icon="file_download" @click="download_onclick">
                         <q-tooltip v-text="_T('download as file')"></q-tooltip>
                     </q-btn>
-                    <q-btn flat round dense icon="file_upload" @click="upload_onclick">
+                    <q-btn flat round dense icon="file_upload" @click="upload_onclick"
+                        :disable="poseapp.header.list_selected.value == 'mystorage' ? false : true"
+                    >
                         <q-tooltip v-text="_T('open from file')"></q-tooltip>
                     </q-btn>
+                    <template v-if="poseapp.states.item_mode == 'motion'">
+                        <q-btn flat round dense icon="directions_run" :disable="checkSelectVRMObject()" >
+                            <q-tooltip v-text="_T('export anim file')" anchor="top right"></q-tooltip>
+                            <q-menu>
+                                <q-list>
+                                    <q-item clickable v-close-popup disable @click="btn_savebvhmotion_onclick">
+                                        <q-item-section>BVH</q-item-section>
+                                    </q-item>
+                                    <q-separator></q-separator>
+                                    <q-item clickable v-close-popup @click="btn_saveanimmotion_onclick">
+                                        <q-item-section>.anim</q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </q-menu>
+                        </q-btn>
+                    </template>
+                    <q-spinner v-if="poseapp.header.loading"
+                        color="secondary"
+                        size="3em"
+                    ></q-spinner>
+
+                    <q-select v-model="poseapp.header.list_selected" 
+                        :options="poseapp.header.list_origin" 
+                         filled style="margin-left:1.5rem;background-color:#FFF;" dense
+                         @update:model-value="listorigin_onchange"
+                    ></q-select>
+                    <q-space></q-space>
+                    <q-tabs inline-label no-caps
+                        v-model="poseapp.states.item_mode"
+                        @update:model-value="modetab_change"
+                    >   
+                        <q-tab name="pose" icon="directions_walk" label="Pose"></q-tab>
+                        <q-tab name="motion" icon="animation" label="Motion"></q-tab>
+                    </q-tabs>
                 </q-toolbar>
             </q-header>
             <q-page-container>
                 <q-page class="pagestyle">
+                    
                     <div class="row">
                         <div class="col-12">
                             <q-input v-model="poseapp.search_str" 
@@ -115,26 +155,93 @@
                         <div class="posecard-grid fit-width">
                             <template v-for="(item,index) in poseapp.list.options">
                                 
+                                
                                 <div class="posecard-itembase"
                                     :key="index"
                                     v-if="item.visibility==true"
                                     
                                 >
                                     <q-card v-ripple :class="item.styleclass" @click.stop="selectListItem(item)">
-                                        <q-card-section horizontal>
-                                            <img :src="item.thumbnail" height="128" :alt="item.name">
+                                        <template v-if="poseapp.states.item_mode == 'pose'">
+                                            <q-card-section horizontal>
+                                                <img :src="item.thumbnail" height="128" :alt="item.name">
+                                                <q-card-section>
+                                                    <div class="text-h6">{{ item.name}}</div>
+                                                    <div class="row">
+                                                        <div class="col-12 text-subtitle1">
+                                                            <b>{{ _T("Sample avatar") }}:</b>
+                                                        </div>
+                                                        <div class="col-11 offset-1 text-subtitle1">
+                                                            {{ item.sample }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6 text-subtitle1">
+                                                            <b>{{ _T("Recommended height") }}:</b>
+                                                        </div>
+                                                        <div class="col-6 text-subtitle1">
+                                                            {{ listitem_height(item) }}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </q-card-section>
+                                                
+                                            </q-card-section>
+                                        </template>
+                                        <template v-else-if="poseapp.states.item_mode == 'motion'">
                                             <q-card-section>
-                                                <div class="text-h6">{{ item.name}}</div>
-                                                <div class="text-subtitle2">
-                                                    {{ _T("Sample avatar") + ":" + item.sample }}<br>
-                                                    {{ _T("Recommended height") + ":" + listitem_height(item) }}
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <b class="text-h5">{{ item.name}}</b>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6 offset-1">
+                                                        <b>{{ _T("obj_kind") }}:</b>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        {{ targetTypeName(item.type) }}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6 offset-1">
+                                                        <b>{{ _T("fileformatver") }}:</b>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        {{ item.version }}
+                                                    </div>
+                                                </div>
+                                                <div class="row q-mt-sm">
+
+                                                    <div class="col-4">
+                                                        <b>{{ _T("framecount") }}</b>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <b>{{ _T("target_begin_frame") }}</b>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <b>{{ _T("target_end_frame") }}</b>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        {{ item.frameCount }}
+                                                    </div>
+                                                    <div class="col-4">
+                                                        {{ item.startFrame }}
+                                                    </div>
+                                                    <div class="col-4">
+                                                        {{ item.endFrame }}
+                                                    </div>
                                                 </div>
                                             </q-card-section>
-                                            
-                                        </q-card-section>
+                                        </template>
+                                        
                                         
                                     </q-card>
                                 </div>
+                            
+                                
                             </template>
                         </div>
                         <!--

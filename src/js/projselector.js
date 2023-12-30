@@ -1,6 +1,6 @@
 import { appModelOperator } from "./model/operator.js";
 import { UnityCallbackFunctioner } from "./model/callback.js";
-import { FILEEXTENSION_ANIMATION, FILEOPTION, INTERNAL_FILE, AF_TARGETTYPE } from "../res/appconst.js";
+import { FILEEXTENSION_ANIMATION, FILEOPTION, INTERNAL_FILE, AF_TARGETTYPE, STORAGE_TYPE, SAMPLEURL, SAMPLEKEY } from "../res/appconst.js";
 import { VVAnimationProject } from "./prop/cls_vvavatar.js";
 import { AppDBMeta } from "./appconf.js";
 import { VFileHelper, VFileOptions, VFileType, VOSFile } from "../../public/static/js/filehelper.js";
@@ -11,17 +11,26 @@ import { appMainData } from "./prop/appmaindata.js";
  * @param {*} app 
  * @param {*} Quasar 
  * @param {appMainData} mainData 
+ * @param {defineModelLoader.modelLoader} modelLoader
  * @param {appModelOperator} modelOperator
  * @param {UnityCallbackFunctioner} callback 
  * @returns 
  */
-export function defineProjectSelector(app, Quasar, mainData, modelOperator, callback, refs) {
+export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelOperator, callback, refs) {
     const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
+    //===watch-----------------------------------------
     const wa_projectSelector_show = Vue.watch( () => mainData.elements.projectSelector.show, (newval) => {
         mainData.elements.projectSelector.searchstr = "";
     });
 
+    //===computed--------------------------------------
+    const cmp_projectSelectorStorageGDrive = Vue.computed(() => {
+        return mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE;
+    });
+
+
+    //===event=-------------------------------------------
     /**
      * recover data path from history DB
      * @param {object} db
@@ -35,22 +44,117 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
         }
         return result;
     }
+    /**
+     * Push OK(decide) from internal storage/Google Drive/internal history
+     * @returns 
+     */
     const onclick_ok_projectSelector = async () => {
         var datadb = AppDB[mainData.elements.projectSelector.selectDB];
         const DBname = mainData.elements.projectSelector.selectDBName;
 
         try {            
-            var originalresult = await datadb.getItem(mainData.elements.projectSelector.selected)
+            var originalresult = null;
+            mainData.elements.loading = true;
+            //---load by each storage type
+            if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.INTERNAL) {
+                originalresult = await datadb.getItem(mainData.elements.projectSelector.selected);
+                mainData.states.currentProjectFromStorageType = "i";
+            }else if (
+                (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) ||
+                (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION)
+            ) {
+                mainData.states.currentProjectFromStorageType = "g";
+
+                const filegd = mainData.appconf.confs.fileloader.gdrive;
+                var baseurl = filegd.url;
+                var apikey = filegd.apikey;
+                var urlparams = new URLSearchParams();
+
+                if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+                    baseurl = SAMPLEURL;
+                    apikey = SAMPLEKEY;
+                }
+
+                var ishit = mainData.elements.projectSelector.files.find(v => {
+                    if (v.id == mainData.elements.projectSelector.selected) return true;
+                    return false;
+                });
+                var finalurl = "";                
+                if (ishit) {
+                    var filenamearr = ishit.fullname.split(".");
+                    var fext = filenamearr[filenamearr.length-1];
+
+                    /*if (baseurl.indexOf("https://script.google.com/macros/s/") < 0) {
+                        baseurl = "https://script.google.com/macros/s/" + baseurl;
+                    }
+                    if (baseurl.lastIndexOf("/exec") < 0) {
+                        baseurl = baseurl + "/exec";
+                    }*/
+
+                    //---setting URL parameters
+                    urlparams.append("mode","load");
+                    urlparams.append("apikey",apikey);
+                    urlparams.append("fileid",mainData.elements.projectSelector.selected);
+                    urlparams.append("extension",fext);
+
+                    //finalurl = `${baseurl}?mode=load&apikey=${apikey}&fileid=${mainData.elements.projectSelector.selected}&extension=${fext}`;
+                    finalurl = baseurl;
+                    finalurl += "?" + urlparams.toString();
+
+                    var fetchret = await fetch(finalurl);
+                    if (fetchret.ok) {
+                        var js = await fetchret.json();
+                        if (
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) ||
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.POSE) ||
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.MOTION)
+                        ) {
+                            originalresult = js.data;
+
+                            modelOperator.newProject(false);
+                            mainData.states.currentProjectFileID = js.id;
+                            mainData.states.currentProjectFilename = js.name;
+                            mainData.states.currentProjectFilepath = js.name;
+                            mainData.states.currentProjectHandle = js.name;
+
+                        }else{
+                            if (js.cd != 0) {
+                                throw new Exception(js.msg);
+                            }
+                            var retfile = new VOSFile({});
+                            retfile.name = js.name;
+                            retfile.path = js.name;
+                            retfile.id = js.id;
+                            retfile.size = js.size;
+                            retfile.type = js.mimeType;
+                            retfile.encoding = "binary";
+                            retfile.storageType = "ggd";
+
+                            var barr = new Uint8Array(js.data);
+                            var bb = new Blob([barr.buffer]); //,"application/octet-stream"
+                            retfile.data = new File([bb], js.name);
+
+                            originalresult = retfile;
+                        }
+                    }
+                }
+                
+
+            }
+            
+            //---main body to load
             if (originalresult) {
                 var options = {
                     mode : "read"
                 };
                 if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) {
-                    modelOperator.newProject(false);
 
-                    mainData.states.currentProjectFilename = mainData.elements.projectSelector.selected;
-                    mainData.states.currentProjectFilepath = mainData.elements.projectSelector.selected;
-                    mainData.states.currentProjectHandle = mainData.elements.projectSelector.selected;
+                    if (mainData.elements.projectSelector.selectStorageType != STORAGE_TYPE.GOOGLEDRIVE) {
+                        modelOperator.newProject(false);
+                        mainData.states.currentProjectFilename = mainData.elements.projectSelector.selected;
+                        mainData.states.currentProjectFilepath = mainData.elements.projectSelector.selected;
+                        mainData.states.currentProjectHandle = mainData.elements.projectSelector.selected;
+                    }
                     mainData.states.currentProjectFromFile = false;
 
                     //mainData.elements.loading = true;
@@ -110,11 +214,13 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                     //if (await modelOperator.verifyFileHandlePermission(result,options) === true) {
                     if (isJudge) {
                         var originalvos = new VOSFile(originalresult);
+                        originalvos.storageType = originalresult.storageType || "";
 
                         var result = null;
                         if (VFileHelper.flags.isHistoryFSAA) {
                             result = await originalresult.getFile();
                         }else if (VFileHelper.flags.isElectron) {
+                            //---For Electron build
                             /**
                              * @type {VOSFile}
                              */
@@ -127,21 +233,47 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                                 originalvos.encoding = VFileHelper.checkEncoding(originalresult.type);
                             }else{
                                 //---new version is VOSFile.data
-                                var chk = await VFileHelper.checkFilepath(vos.path);
-                                if (chk === true) {
-                                    var files = await VFileHelper.openFromPath(vos.path,{
-                                        isBinary : true,
-                                        mimetype : mimetype
-                                    });
-                                    if (files.length > 0) {
-                                        result = new Blob([files[0].data]);
-
-                                        originalvos = files[0];
-                                    }
+                                if (
+                                    (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) ||
+                                    (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION)
+                                 ) {
+                                    //---from google drive (already loaded)
+                                    result = originalresult.data;
                                 }else{
-                                    appAlert(t("msg_error_allfile"));
-                                    return;
+                                    //---from local disk
+                                    var ishit_local = false;
+                                    if (vos["storageType"]) {
+                                        if (vos.storageType == STORAGE_TYPE.LOCAL) {
+                                            ishit_local = true;
+                                        }else if (vos.storageType == STORAGE_TYPE.INTERNAL) {
+                                            ishit_local = false;
+                                        }
+                                    }else{
+                                        ishit_local = true;
+                                    }
+                                    if (ishit_local) {
+                                        var chk = await VFileHelper.checkFilepath(vos.path,vos.storageType);
+                                        if (chk === true) {
+                                            var files = await VFileHelper.openFromPath(vos.path,{
+                                                isBinary : true,
+                                                mimetype : mimetype
+                                            });
+                                            if (files.length > 0) {
+                                                result = new Blob([files[0].data]);
+        
+                                                originalvos = files[0];
+                                            }
+                                        }else{
+                                            appAlert(t("msg_error_allfile"));
+                                            throw new Error(t("msg_error_allfile"));
+                                        }
+                                    }else{
+                                        result = vos.data;
+                                        originalresult = vos;
+                                    }
+                                    
                                 }
+                                
                             }
                             
                             
@@ -157,7 +289,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                                 result = originalresult.data;
                             }
                         }
-                        mainData.elements.loading = true;
+                        
                         mainData.elements.loadingTypePercent = false;
                         if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.VRM) {
                             var f = result; //await result.getFile();
@@ -166,22 +298,34 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                             mainData.states.fileloadname = originalresult.name;
                             mainData.states.fileloadtype = "v";
                             mainData.states.loadingfileHandle = originalvos;
-                            AppQueue.add(new queueData(
-                                {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
-                                "firstload_vrm",QD_INOUT.returnJS,
-                                callback.historySendObjectInfo,
-                                {callback,objectURL:fdata}
-                            ));
-                            if (mainData.appconf.confs.application.shortcut_vrminfo_from_history) {
+                            if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
                                 AppQueue.add(new queueData(
-                                    {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
-                                    "accept_vrm",QD_INOUT.returnJS,
-                                    callback.firstload_vrm,
-                                    {callback,filename:originalresult.name,
-                                        fileloadtype: "v",
-                                        loadingfileHandle : originalvos}
+                                    {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
+                                    "firstload_vrm",QD_INOUT.returnJS,
+                                    callback.sendObjectInfo,
+                                    {callback,objectURL:fdata,filename:originalresult.name,
+                                        fileloadtype: mainData.states.fileloadtype,
+                                        loadingfileHandle : originalresult}
                                 ));
+                            }else{
+                                AppQueue.add(new queueData(
+                                    {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
+                                    "firstload_vrm",QD_INOUT.returnJS,
+                                    callback.historySendObjectInfo,
+                                    {callback,objectURL:fdata}
+                                ));
+                                if (mainData.appconf.confs.application.shortcut_vrminfo_from_history) {
+                                    AppQueue.add(new queueData(
+                                        {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
+                                        "accept_vrm",QD_INOUT.returnJS,
+                                        callback.firstload_vrm,
+                                        {callback,filename:originalresult.name,
+                                            fileloadtype: "v",
+                                            loadingfileHandle : originalvos}
+                                    ));
+                                }
                             }
+                            
                         }else if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.OBJECTS) {
                             //---For VBX, Obj, etc...
                             var f = result; //await result.getFile();
@@ -218,12 +362,29 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
                         
                         AppQueue.start();
                         mainData.elements.projectSelector.show = false;
+
+                        //---save to recently history
+                        if (mainData.appconf.confs.application.stock_opened_file_history === true) {
+                            //---This timing is PROJECT,OBJECTS only (VRM and IMAGES is after)
+                            if (
+                                (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.OBJECTS) ||
+                                (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.IMAGES)
+                            ) {
+                                var histdbtype = "";
+                                if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.OBJECTS) histdbtype = "OBJECTS";
+                                if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.IMAGES) histdbtype = "IMAGES";
+                                modelLoader.saveToInternalStorage(histdbtype, originalvos);
+                            }
+                            
+                        }
                     }
                 }
                 
             }
         }catch(e) {
+            appNotifyWarning(e,{timeout:3000});
             console.error(e);
+            mainData.elements.loading = false;
         }
         
         
@@ -292,70 +453,124 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
         
     }
     const onclick_download_projectSelector = async () => {
-        var metaDB = mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT ? AppDB.scene_meta : AppDB.avatar_meta;
-        var dataDB = AppDB[mainData.elements.projectSelector.selectDB];
+        if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
 
-        dataDB.getItem(mainData.elements.projectSelector.selected)
-        .then(async v => {
-            var fullname = mainData.elements.projectSelector.selected;
-            if (fullname.indexOf(FILEEXTENSION_ANIMATION) == -1) {
-                fullname = mainData.elements.projectSelector.selected + FILEEXTENSION_ANIMATION;
-            }
+            const filegd = mainData.appconf.confs.fileloader.gdrive;
+            var apikey = filegd.apikey;
+            var ishit = mainData.elements.projectSelector.files.find(v => {
+                if (v.id == mainData.elements.projectSelector.selected) return true;
+                return false;
+            });
+            var finalurl = "";                
+            if (ishit) {
+                var filenamearr = ishit.fullname.split(".");
+                var fext = filenamearr[filenamearr.length-1];
+                finalurl = `${filegd.url}?mode=load&apikey=${apikey}&fileid=${mainData.elements.projectSelector.selected}&extension=${fext}`;
+                var fetchret = await fetch(finalurl);
+                if (fetchret.ok) {
+                    var js = await fetchret.json();
+                    if (
+                        (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT)
+                    ) {
+                        var fullname = js.name;
+                        if (fullname.indexOf(FILEEXTENSION_ANIMATION) == -1) {
+                            fullname = mainData.elements.projectSelector.selected + FILEEXTENSION_ANIMATION;
+                        }
+                        var vopt = new VFileType();
+                        vopt.accept = FILEOPTION.PROJECT.types[0].accept;
+                        vopt.description = FILEOPTION.PROJECT.types[0].description;
+                        var vf = new VFileOptions();
+                        vf.types.push(vopt);
+                        vf.suggestedName = fullname;
+                        
 
-            var vopt = new VFileType();
-            vopt.accept = FILEOPTION.PROJECT.types[0].accept;
-            vopt.description = FILEOPTION.PROJECT.types[0].description;
-            var vf = new VFileOptions();
-            vf.types.push(vopt);
-            vf.suggestedName = fullname;
-            
-
-            if (VFileHelper.flags.isElectron) {
-                VFileHelper.saveUsingDialog(JSON.stringify(v),vf,true);
-            }else{
-                var acckey = "";
-                var accval = "";
-                for (var obj in vopt.accept) {
-                    acckey = obj;
-                    accval = vopt.accept[obj];
-                    break;
-                }
-                var content = new Blob([JSON.stringify(v)], {type : acckey});
-                var burl = URL.createObjectURL(content);
-                VFileHelper.saveUsingDialog(burl,vf,true)
-                .then(ret => {
-                    URL.revokeObjectURL(burl);
-                });
-            }
-            /*
-            var bb = new Blob([JSON.stringify(v)], {type : "application/json"});
-            if (refs.lnk_saveproject.value.href) window.URL.revokeObjectURL(refs.lnk_saveproject.value.href);
-            var burl = URL.createObjectURL(bb);
-            refs.lnk_saveproject.value.href = burl;
-            refs.lnk_saveproject.value.download = fullname;
-            refs.lnk_saveproject.value.click(); 
-            */
-            /*
-            //File System Access API
-            if ("showSaveFilePicker" in window) {
-                const savepicker = await window.showSaveFilePicker({
-                    suggestedName : mainData.elements.projectSelector.selected,
-                    types: mainData.elements.projectSelector.selectType
-                });
-                if (savepicker) {
-                    const writer = await savepicker.createWritable();
-                    if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) {
-                        writer.write(JSON.stringify(v));
-                    }else{
-                        writer.write(v);
+                        if (VFileHelper.flags.isElectron) {
+                            VFileHelper.saveUsingDialog(JSON.stringify(v),vf,true);
+                        }else{
+                            var acckey = "";
+                            var accval = "";
+                            for (var obj in vopt.accept) {
+                                acckey = obj;
+                                accval = vopt.accept[obj];
+                                break;
+                            }
+                            var content = new Blob([JSON.stringify(js.data)], {type : acckey});
+                            var burl = URL.createObjectURL(content);
+                            VFileHelper.saveUsingDialog(burl,vf,true)
+                            .then(ret => {
+                                URL.revokeObjectURL(burl);
+                            });
+                        }
                     }
-                    await writer.close();
                 }
-            }else{
-                console.log("Not found window.showSaveFilePicker...");
             }
-            */
-        });
+        }else if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.INTERNAL) {
+            var metaDB = mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT ? AppDB.scene_meta : AppDB.avatar_meta;
+            var dataDB = AppDB[mainData.elements.projectSelector.selectDB];
+
+            dataDB.getItem(mainData.elements.projectSelector.selected)
+            .then(async v => {
+                var fullname = mainData.elements.projectSelector.selected;
+                if (fullname.indexOf(FILEEXTENSION_ANIMATION) == -1) {
+                    fullname = mainData.elements.projectSelector.selected + FILEEXTENSION_ANIMATION;
+                }
+
+                var vopt = new VFileType();
+                vopt.accept = FILEOPTION.PROJECT.types[0].accept;
+                vopt.description = FILEOPTION.PROJECT.types[0].description;
+                var vf = new VFileOptions();
+                vf.types.push(vopt);
+                vf.suggestedName = fullname;
+                
+
+                if (VFileHelper.flags.isElectron) {
+                    VFileHelper.saveUsingDialog(JSON.stringify(v),vf,true);
+                }else{
+                    var acckey = "";
+                    var accval = "";
+                    for (var obj in vopt.accept) {
+                        acckey = obj;
+                        accval = vopt.accept[obj];
+                        break;
+                    }
+                    var content = new Blob([JSON.stringify(v)], {type : acckey});
+                    var burl = URL.createObjectURL(content);
+                    VFileHelper.saveUsingDialog(burl,vf,true)
+                    .then(ret => {
+                        URL.revokeObjectURL(burl);
+                    });
+                }
+                /*
+                var bb = new Blob([JSON.stringify(v)], {type : "application/json"});
+                if (refs.lnk_saveproject.value.href) window.URL.revokeObjectURL(refs.lnk_saveproject.value.href);
+                var burl = URL.createObjectURL(bb);
+                refs.lnk_saveproject.value.href = burl;
+                refs.lnk_saveproject.value.download = fullname;
+                refs.lnk_saveproject.value.click(); 
+                */
+                /*
+                //File System Access API
+                if ("showSaveFilePicker" in window) {
+                    const savepicker = await window.showSaveFilePicker({
+                        suggestedName : mainData.elements.projectSelector.selected,
+                        types: mainData.elements.projectSelector.selectType
+                    });
+                    if (savepicker) {
+                        const writer = await savepicker.createWritable();
+                        if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) {
+                            writer.write(JSON.stringify(v));
+                        }else{
+                            writer.write(v);
+                        }
+                        await writer.close();
+                    }
+                }else{
+                    console.log("Not found window.showSaveFilePicker...");
+                }
+                */
+            });
+        }
+        
     }
     /**
      * change event for opening vvmproj-file (input-element)
@@ -447,10 +662,18 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
         */
     }
     const onchange_searchstr = (val) => {
-        modelOperator.enumerateFilesToProjectSelector(
+        var arr = [];
+        for (var i = 0; i < mainData.elements.projectSelector.searchedFiles.length; i++) {
+            var v = mainData.elements.projectSelector.searchedFiles[i];
+            if (v.fullname.toLowerCase().indexOf(val.toLowerCase()) > -1)  {
+                arr.push(v);
+            }
+        }
+        mainData.elements.projectSelector.files = arr;
+        /*modelOperator.enumerateFilesToProjectSelector(
             mainData.elements.projectSelector.selectDBName,
             val
-        );
+        );*/
     }
 
     const fil_projselector = Vue.ref(null);
@@ -463,6 +686,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelOperator, call
             onchange_fil_projselector,onchange_searchstr
         }),
         wa_projectSelector_show,
+        cmp_projectSelectorStorageGDrive,
         fil_projselector
     }
 }

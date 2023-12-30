@@ -2,6 +2,7 @@
 import { VVAvatar, VVCast, VVTimelineTarget } from './prop/cls_vvavatar.js';
 import { StageType, DEFAULTMEM } from '../res/appconst.js';
 import { appModelOperator } from './model/operator.js';
+import { UnityCallbackFunctioner } from './model/callback.js';
 
 
 /**
@@ -114,6 +115,16 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
             };
             document.body.appendChild(script);
             //resolve(true);
+            document.addEventListener('onARSupportedCheck', (event) => {
+                console.log("onARSupportedCheck=",event);
+                ribbonData.elements.vrar.disable.ar = !event.detail.supported;
+            }, false);
+            document.addEventListener('onVRSupportedCheck', (event) => {
+                console.log("onVRSupportedCheck=",event);
+                ribbonData.elements.vrar.disable.vr = !event.detail.supported;
+                
+            }, false);
+
         });
         return prom;
         
@@ -122,8 +133,9 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
     /**
      * 
      * @param {appModelOperator} modelOperator 
+     * @param {UnityCallbackFunctioner} callback
      */
-    const setupFixUnityEvent = async (modelOperator) => {
+    const setupFixUnityEvent = async (modelOperator,callback) => {
         //---fixed setting for Unity call
         AppQueue.fixedList["selectavatar_unity2html"] = new queueData(
             null,
@@ -313,6 +325,12 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
             (val) => {
                 mainData.elements.percentLoad.current = val;
             }
+        );
+        AppQueue.fixedList["endingVRAR_unity2html"] = new queueData(
+            null,
+            "endingVRAR_unity2html",QD_INOUT.returnJS,
+            callback.endingVRAR,
+            {callback}
         );
     }
     /*

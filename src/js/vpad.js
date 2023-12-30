@@ -110,6 +110,14 @@ export function defineVpadDlg(app, Quasar) {
         template : template,
         props : {
             modelValue : Boolean,
+            rotateRate : {
+                type: Number,
+                default : 0.1
+            },
+            translateRate : {
+                type: Number,
+                default : 1
+            },
         },
         emits : [
             "update:model-value",
@@ -118,7 +126,7 @@ export function defineVpadDlg(app, Quasar) {
         setup(props, context) {
             const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
-            const {modelValue } = Vue.toRefs(props);
+            const {modelValue, rotateRate, translateRate } = Vue.toRefs(props);
             const data = Vue.ref({
                 elements : {
                     win : {
@@ -238,8 +246,8 @@ export function defineVpadDlg(app, Quasar) {
                 //data.value.elements.rotation.power = newInfo.duration;
 
                 var moveVal = newInfo.offset;
-                moveVal.x = moveVal.x * 0.1;
-                moveVal.y = moveVal.y * 0.1;
+                moveVal.x = moveVal.x * rotateRate.value;
+                moveVal.y = moveVal.y * rotateRate.value;
                 //data.value.elements.rotation.current.x = 0;
                 //data.value.elements.rotation.current.y = 0;
                 var relpos = {x: 0, y: 0};
@@ -247,19 +255,19 @@ export function defineVpadDlg(app, Quasar) {
                 if (newInfo.direction == "up") {
                     data.value.elements.rotation.icon = "arrow_upward";
                     data.value.elements.rotation.current.y -= moveVal.y;
-                    relpos.y = -0.5;
+                    //relpos.y = -0.5;
                 }else if (newInfo.direction == "down") {
                     data.value.elements.rotation.icon = "arrow_downward";
                     data.value.elements.rotation.current.y += moveVal.y;
-                    relpos.y = 0.5;
+                    //relpos.y = 0.5;
                 }else if (newInfo.direction == "left") {
                     data.value.elements.rotation.icon = "arrow_back";
                     data.value.elements.rotation.current.x -= moveVal.x;
-                    relpos.x = 0.5;
+                    //relpos.x = 0.5;
                 }else if (newInfo.direction == "right") {
                     data.value.elements.rotation.icon = "arrow_forward";
                     data.value.elements.rotation.current.x += moveVal.x;
-                    relpos.x = -0.5;
+                    //relpos.x = -0.5;
                 }else{
                     data.value.elements.rotation.icon = "radio_button_unchecked";
                 }
@@ -290,11 +298,11 @@ export function defineVpadDlg(app, Quasar) {
                 if (newInfo.direction == "up") {
                     data.value.elements.progress.icon = "arrow_downward";
                     data.value.elements.progress.current.z += moveVal.y;
-                    relpos.z = -1;
+                    relpos.z = -1 * translateRate.value;
                 }else if (newInfo.direction == "down") {
                     data.value.elements.progress.icon = "arrow_upward";
                     data.value.elements.progress.current.z -= moveVal.y;
-                    relpos.z = 1;
+                    relpos.z = 1 * translateRate.value;
                 }else{
                     data.value.elements.progress.icon = "radio_button_unchecked";
                 }
@@ -323,19 +331,19 @@ export function defineVpadDlg(app, Quasar) {
                 if (newInfo.direction == "up") {
                     data.value.elements.translation.icon = "arrow_downward";
                     data.value.elements.translation.current.y += moveVal.y;
-                    relpos.y = -1;
+                    relpos.y = -1 * translateRate.value;
                 }else if (newInfo.direction == "down") {
                     data.value.elements.translation.icon = "arrow_upward";
                     data.value.elements.translation.current.y -= moveVal.y;
-                    relpos.y = 1;
+                    relpos.y = 1 * translateRate.value;
                 }else if (newInfo.direction == "left") {
                     data.value.elements.translation.icon = "arrow_forward";
                     data.value.elements.translation.current.x -= moveVal.x;
-                    relpos.x = 1;
+                    relpos.x = 1 * translateRate.value;
                 }else if (newInfo.direction == "right") {
                     data.value.elements.translation.icon = "arrow_back";
                     data.value.elements.translation.current.x += moveVal.x;
-                    relpos.x = -1;
+                    relpos.x = -1 * translateRate.value;
                 }else{
                     data.value.elements.translation.icon = "radio_button_unchecked";
                 }

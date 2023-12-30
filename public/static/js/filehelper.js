@@ -1,4 +1,5 @@
 
+
 export class VFileType {
     constructor() {
         this.description = "";
@@ -14,6 +15,10 @@ export class VOSFile {
          * @type {String} file path
          */
         this.path = obj.path || "";
+        /**
+         * @type {String} any cloud service file id etc...
+         */
+        this.id = obj.id || "";
         /**
          * @type {String}
          */
@@ -38,6 +43,12 @@ export class VOSFile {
          * @type {String|Blob}
          */
         this.data = obj.data || null;
+
+        /**
+         * @type {String} int - Internal Storage, loc - Local, 
+         * ggd - Google Drive, appggd - Application
+         */
+        this.storageType = "";
     }
 }
 export class VFileOptions {
@@ -114,6 +125,10 @@ export class VFileOperator {
             open : null,
             save : null
         };
+        /**
+         * VVAppConfig
+         */
+        this.appconf = null;
 
         this.elements.uploader = document.createElement("input");
         this.elements.uploader.type = "file";
@@ -126,6 +141,13 @@ export class VFileOperator {
         if (window.elecAPI) {
             this.flags.isElectron = true;
         }
+    }
+    /**
+     * refer to application config data
+     * @param {VVAppConfig} conf 
+     */
+    setAppConf(conf) {
+        this.appconf = conf;
     }
     //==========================================================================
     // Open functions
@@ -240,6 +262,199 @@ export class VFileOperator {
     async _onchange_uploader(evt) {
         if (evt.target.files) this.common_open(evt.target.files);
     }
+    async openFromGoogleDrive(id,ext){
+        var retfile = null;
+        if ((this.appconf.confs.fileloader.gdrive.url != "") &&
+            (this.appconf.confs.fileloader.gdrive.enabled === true)
+        ) {
+            var baseurl = this.appconf.confs.fileloader.gdrive.url;
+            var apikey = this.appconf.confs.fileloader.gdrive.apikey;
+            var urlparams = new URLSearchParams();
+
+            /*
+            //---if base parts of url not found, append its.
+            if (baseurl.indexOf("https://script.google.com/macros/s/") < 0) {
+                baseurl = "https://script.google.com/macros/s/" + baseurl;
+            }
+            if (baseurl.lastIndexOf("/exec") < 0) {
+                baseurl = baseurl + "/exec";
+            }*/
+            //---setup param
+            urlparams.append("mode","load");
+            urlparams.append("apikey",apikey);
+            urlparams.append("fileid",id);
+            urlparams.append("extension",ext);
+
+            var finalurl = baseurl; //`${baseurl}?mode=load&apikey=${apikey}&fileid=${id}&extension=${ext}`;
+            finalurl += "?" + urlparams.toString();
+            try {
+                var ret = await fetch(finalurl);
+                if (ret.ok) {
+                    var js = await ret.json();
+                    retfile = new VOSFile({});
+                    retfile.name = js.name;
+                    retfile.path = js.name;
+                    retfile.size = js.size;
+                    retfile.type = js.mimeType;
+                    retfile.storageType = "ggd";
+
+                    var barr = new Uint8Array(js.data);
+                    var bb = new Blob([barr.buffer]); //,"application/octet-stream"
+                    retfile.data = new File([bb], js.name);
+                }
+            }catch(e) {
+                console.error(e);
+                retfile = null;
+            }
+            
+        }
+        
+        return retfile;
+    }
+    /**
+     * To save any data to Google Drive
+     * @param {bool} is_saveas flag is saveAs ? 
+     * @param {{id:"",name:"",extension:"",destination:"", nameoverwrite:bool}} meta file information
+     * @param {*} data data to save (not stringify)
+     */
+    async saveToGoogleDrive(is_saveas, meta, data) {
+        var def = new Promise((resolve, reject) => {
+            var retfile = null;
+            if ((this.appconf.confs.fileloader.gdrive.url != "") &&
+                (this.appconf.confs.fileloader.gdrive.enabled === true)
+            ) {
+                var baseurl = this.appconf.confs.fileloader.gdrive.url;
+                var apikey = this.appconf.confs.fileloader.gdrive.apikey;
+                var urlparams = new URLSearchParams();
+
+                //---if base parts of url not found, append its.
+                /*if (baseurl.indexOf("https://script.google.com/macros/s/") < 0) {
+                    baseurl = "https://script.google.com/macros/s/" + baseurl;
+                }
+                if (baseurl.lastIndexOf("/exec") < 0) {
+                    baseurl = baseurl + "/exec";
+                }*/
+                //---setup param
+                urlparams.append("mode",is_saveas ? "saveas" : "save");
+                urlparams.append("apikey",apikey);
+
+                var finalurl = baseurl; // `${baseurl}?mode=${is_saveas ? "saveas" : "save"}&apikey=${apikey}`;
+                if (meta["nameoverwrite"] && (meta["nameoverwrite"] === true)) {
+                    //finalurl += "&nameoverwrite=1";
+                    urlparams.append("nameoverwrite",1);
+                }
+                var headers = new Headers();
+                //headers.append("Content-Type","application/x-www-form-urlencoded");
+                headers.append("Content-Type","application/json");
+                var postdata = {name: "", id:"", destination:"", data:null};
+                if ("id" in meta) postdata["id"] = meta.id;
+                if ("name" in meta) postdata["name"] = meta.name;
+                if ("destination" in meta) postdata["destination"] = meta.destination;
+                postdata["data"] = data;
+                
+                var req = new Request(finalurl + "?" + urlparams.toString(),{
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: headers,
+                    body: JSON.stringify(postdata)
+                });
+                fetch(req)
+                .then(ret => {
+                    if (ret.ok) {
+                        /**
+                         * { 
+                         *   @type {String} name - file name on Google Drive
+                         *   @type {String} id - file id
+                         *   @type {Number} size - file size
+                         *   @type {String} mimeType - file mimeType
+                         * }
+                         */
+                        /*ret.json()
+                        .then(js => {
+                            resolve(js);
+                        });*/
+                        ret.text()
+                        .then(txt => {
+                            console.log(txt);
+                        });
+                    }else{
+                        resolve({cd:-1});
+                    }
+                })
+                .catch(err => {
+                    console.error(e);
+                    reject(e.toString());
+                    retfile = null;
+                });
+                    
+                
+            }
+        });
+
+        
+        return def;
+    }
+    /**
+     * Countermeasures for not being able to return results to the client using doPost
+     * @param {{id:"",name:"",extension:"",destination:""}} meta file information
+     * @param {*} aftertime 
+     * @returns 
+     */
+    async confirmGoogleDriveLastSavedFile(meta) {
+        var def = new Promise((resolve, reject) => {
+
+            var baseurl = this.appconf.confs.fileloader.gdrive.url;
+            var apikey = this.appconf.confs.fileloader.gdrive.apikey;
+            //---if base parts of url not found, append its.
+            if (baseurl.indexOf("https://script.google.com/macros/s/") < 0) {
+                baseurl = "https://script.google.com/macros/s/" + baseurl;
+            }
+            if (baseurl.lastIndexOf("/exec") < 0) {
+                baseurl = baseurl + "/exec";
+            }
+            
+            var adate = new Date().valueOf();
+            var base2url = `${baseurl}?mode=confirmlast&apikey=${apikey}&name=${meta.name}&extension=${meta.extension}&afterdate=${adate}`;
+            fetch(base2url,{
+                method:"GET"
+            })
+            .then(ret2 => {
+                if (ret2.ok) {
+                    ret2.json()
+                    .then(js2 => {
+                        if (js2.data) {
+                            /**
+                             * {
+                             *   cd: Number,
+                             *   msg: String,
+                             *   data: [
+                             *     {
+                             *       name:String,
+                             *       id:String,
+                             *       mimeType:String,
+                             *       ...
+                             *     }
+                             *   ]
+                             *   
+                             * }
+                             */
+                            console.log(js2);
+                            //var maxm = Math.max(...js2.data.map(obj => obj.createDate));
+                            var resoret = js2.data; //js2.data.find(obj => obj.createDate === maxm);
+                            
+                            resolve(resoret);
+                        }else{
+                            reject("saved file not found.")
+                        }
+                        
+                    });
+                }else{
+                    reject("confirmlast error");
+                }
+            });
+        });
+        return def;
+    }
     /**
      * Common function to open a file
      * @param {Array<File> | Array(FileSystemFileHandle)} files 
@@ -258,7 +473,9 @@ export class VFileOperator {
             }
         }else if (this.flags.isElectron) {
             for (var i = 0; i < files.length; i++) {
-                ret.push(new VOSFile(files[i]));
+                var vfl = new VOSFile(files[i]);
+                vfl.storageType = "loc";
+                ret.push(vfl);
             }
         }else{
             //---web (File)
@@ -279,6 +496,7 @@ export class VFileOperator {
                 fl.type = f.type;
                 fl.size = f.size;
                 fl.data = f;
+                fl.storageType = "int";
                 ret.push(fl);
             }
         }
@@ -499,7 +717,7 @@ export class VFileOperator {
             return true;
         }
     }
-    async checkFilepath (path) {
+    async checkFilepath (path, storageType = "loc") {
         return await elecAPI.fileExist({path});
     }
     checkEncoding (type) {

@@ -233,6 +233,7 @@ export class UnityCallbackFunctioner {
         var ribbonData = callback.ribbonData;
         var timelineData = callback.timelineData;
         var modelOperator = callback.modelOperator;
+        var modelLoader = callback.modelLoader;
 
         // option paramater
         /*
@@ -248,6 +249,16 @@ export class UnityCallbackFunctioner {
          * @type {VOSFile}
          */
         var loadingfileHandle = options.loadingfileHandle || null;
+
+
+        var ischeck = modelOperator.getVRMFromTitle(mainData.data.preview.title);
+        if (ischeck) {
+            appAlert(callback.t("msg_already_added_collider"));
+            mainData.data.preview = null;
+            loadingfileHandle = null;
+    
+            return;
+        }
 
         var arr = js.split(",");
         var role = modelOperator.addVRM(AF_TARGETTYPE.VRM,mainData.data.preview,arr);
@@ -728,12 +739,15 @@ export class UnityCallbackFunctioner {
             mainData.states.selectedAvatar.materials = [];
             el.objectui.materialnames.splice(0, el.objectui.materialnames.length);
             el.objectui.materials.splice(0,el.objectui.materials.length);
+            el.objectui.materialIsChanges.splice(0, el.objectui.materialIsChanges.length);
+            el.objectui.matopt.isChanged = false;
             lst.forEach(item => {
                 if (item != "") {
                     var itemarr = item.split("=");
                     mainData.states.selectedAvatar.materials.push(itemarr);
                     el.objectui.materials.push(itemarr);
                     el.objectui.materialnames.push(itemarr[0]);
+                    el.objectui.materialIsChanges.push(false);
                 }
             });
             if (mainData.states.selectedAvatar.id != mainData.states.old_selectedAvatar.id) {
@@ -1770,6 +1784,7 @@ export class UnityCallbackFunctioner {
         mainData.elements.projdlg.pinfo.description = proj.meta.description;
         mainData.elements.projdlg.pinfo.license = proj.meta.license;
         mainData.elements.projdlg.pinfo.url = proj.meta.referurl;
+        mainData.elements.projdlg.pinfo.baseDuration = proj.baseDuration;
 
         //---load project material
         modelOperator.listload_materialFile("p",proj.materialManager);
@@ -1901,12 +1916,18 @@ export class UnityCallbackFunctioner {
         //---default is parameter savetype
         var cond = savetype;
         if (savetype == "overwrite") {
-            
-            if ((disktype == "i") && (mainData.states.currentProjectFromFile === true)) {
+            //---From file or Google Drive to internal
+            if ((disktype == "i") && (mainData.states.currentProjectFromStorageType != "i")) {
                 //---save from disk to internal storage
                 cond = "as";
             }
-            if (disktype == "f" && (mainData.states.currentProjectFromFile === false)) {
+            //---From internal or Google Drive to File
+            if ((disktype == "f") && (mainData.states.currentProjectFromStorageType != "f")) {
+                //---save from internal storage to disk
+                cond = "as";
+            }
+            //---From internal or file to Google Drive
+            if ((disktype == "g") && (mainData.states.currentProjectFromStorageType != "g")) {
                 //---save from internal storage to disk
                 cond = "as";
             }
@@ -1928,6 +1949,7 @@ export class UnityCallbackFunctioner {
                     mainData.states.currentProjectFilepath = filename;
                     mainData.states.currentProjectHandle = filename;
                     mainData.states.currentProjectFromFile = false;
+                    mainData.states.currentProjectFromStorageType = "i";
                     modelOperator.setTitle(mainData.states.currentProjectFilename);
                 });
             }
@@ -1990,6 +2012,7 @@ export class UnityCallbackFunctioner {
                         mainData.states.currentProjectHandle = ret.name;
                         mainData.states.currentProjectFilepath = ret.path;
                         mainData.states.currentProjectFromFile = true;
+                        mainData.states.currentProjectFromStorageType = "f";
                         modelOperator.setTitle(mainData.states.currentProjectFilename);
                         notify();
                     }else if (ret.cd == 1) {
@@ -2007,7 +2030,51 @@ export class UnityCallbackFunctioner {
                 }else{
                     appAlert(ret.err.message);
                 }
-            }            
+            }
+        }else if (disktype == "g") {
+            //---To Google Drive
+            var googlemeta = {extension:"vvmproj"}
+            var is_saveas = true;
+            if (cond == "overwrite") {
+                is_saveas = false;
+            }
+            const enterSave = (value) => {
+                googlemeta["name"] = value + (value.indexOf(FILEEXTENSION_ANIMATION) == -1 ? FILEEXTENSION_ANIMATION : "");
+                googlemeta["nameoverwrite"] = true;
+                VFileHelper.saveToGoogleDrive(is_saveas,googlemeta,proj)
+                .then(retdum => {
+                    //---confirm latest saved file
+                    return VFileHelper.confirmGoogleDriveLastSavedFile(googlemeta);
+                })
+                .then(retjs => {
+                    notify();
+                    mainData.states.currentProjectFilename = retjs.name;
+                    mainData.states.currentProjectFilepath = retjs.name;
+                    mainData.states.currentProjectHandle = retjs.name;
+                    mainData.states.currentProjectFileID = retjs.id;
+                    mainData.states.currentProjectFromFile = false;
+                    mainData.states.currentProjectFromStorageType = "g";
+                    modelOperator.setTitle(mainData.states.currentProjectFilename);
+                })
+                .catch(err => {
+                    Quasar.Notify.create({
+                        message : "Google Drive save error" + err.toString(), 
+                        position : "top-right",
+                        color : "error",
+                        textColor : "white",
+                        timeout : 3000, 
+                        multiLine : true
+                    });
+                });
+            }
+            if (cond == "as") {
+                appPrompt(callback.t("msg_project_save"),enterSave,mainData.states.currentProjectFilename);
+            }else{
+                googlemeta["id"] = mainData.states.currentProjectFileID;
+                enterSave(mainData.states.currentProjectFilename);
+            }
+            
+            
         }else if (disktype == "bkup") {
             const funcbody = (filename,cmeta,cproj) => {
                 AppDB.scene_meta.setItem(cmeta.fullname,cmeta);
@@ -2094,47 +2161,115 @@ export class UnityCallbackFunctioner {
         }
 
         callback.mainData.elements.loading = false;
+        callback.mainData.states.currentEditOperationCount++;
     }
     async savemotion (val,options) {
         /**
          * @type {UnityCallbackFunctioner}
          */
         const callback = options.callback;
+        const mainData = callback.mainData;
+        const modelOperator = callback.modelOperator;
         const refs = callback.refs;
-        
+        const disktype = options.disktype;
+        const savetype = options.savetype;
+        const notify = () => {
+            Quasar.Notify.create({
+                message : callback.t("cons_save_complete"), 
+                position : "top-right",
+                color : "info",
+                textColor : "black",
+                timeout : 3000, 
+                multiLine : true
+            });
+        }
+
         var js = JSON.parse(val);
 
         //console.log(js);
+        //---default is parameter savetype
 
-        //---File System Access API
-        var vopt = new VFileType();
-        vopt = FILEOPTION.MOTION.types[0];
-        var vf = new VFileOptions();
-        vf.suggestedName = "motion.vvmmot";
-        
-        if (VFileHelper.flags.isElectron) {
-            vf.types.push(vopt);
-            VFileHelper.saveUsingDialog(val,vf,true);
-        }else{
+        if (disktype == "i") {
+            //---To internal storage
             appPrompt(callback.t("msg_motion_save"),(fname)=>{
-                vf.types.push(vopt);
-                vf.suggestedName = fname;
-                var acckey = "";
-                var accval = "";
-                for (var obj in vopt.accept) {
-                    acckey = obj;
-                    accval = vopt.accept[obj];
-                    break;
-                }
-                var content = new Blob([val], {type : acckey});
-                var burl = URL.createObjectURL(content);
-                VFileHelper.saveUsingDialog(burl,vf,true)
+                AppDB.motion.setItem(fname, js)
                 .then(ret => {
-                    URL.revokeObjectURL(burl);
+                    notify();
                 });
-                
-            },vf.suggestedName);
+            });
+        }else if (disktype == "f") {
+            //---To local disk
+            //---File System Access API
+            var vopt = new VFileType();
+            vopt = FILEOPTION.MOTION.types[0];
+            var vf = new VFileOptions();
+            vf.suggestedName = "motion.vvmmot";
+            
+            if (VFileHelper.flags.isElectron) {
+                vf.types.push(vopt);
+                VFileHelper.saveUsingDialog(val,vf,true);
+                notify();
+            }else{
+                appPrompt(callback.t("msg_motion_save"),(fname)=>{
+                    vf.types.push(vopt);
+                    vf.suggestedName = fname;
+                    if (vf.suggestedName.indexOf(FILEEXTENSION_MOTION) == -1) {
+                        vf.suggestedName + FILEEXTENSION_MOTION;
+                    }
+                    var acckey = "";
+                    var accval = "";
+                    for (var obj in vopt.accept) {
+                        acckey = obj;
+                        accval = vopt.accept[obj];
+                        break;
+                    }
+                    var content = new Blob([val], {type : acckey});
+                    var burl = URL.createObjectURL(content);
+                    VFileHelper.saveUsingDialog(burl,vf,true)
+                    .then(ret => {
+                        URL.revokeObjectURL(burl);
+                        notify();
+                    });
+                    
+                },vf.suggestedName);
+            }
+        }else if (disktype == "g") {
+            //---To Google drive
+            var googlemeta = {
+                extension:FILEEXTENSION_MOTION,
+                nameoverwrite : true //always overwrite saving
+            }
+            
+            const enterSave = (value) => {
+                VFileHelper.saveToGoogleDrive(false,googlemeta,value)
+                .then(retdum => {
+                    //---confirm latest saved file
+                    return VFileHelper.confirmGoogleDriveLastSavedFile(googlemeta);
+                })
+                .then(retjs => {
+                    notify();
+                    
+                })
+                .catch(err => {
+                    Quasar.Notify.create({
+                        message : "Google Drive save error" + err.toString(), 
+                        position : "top-right",
+                        color : "error",
+                        textColor : "white",
+                        timeout : 3000, 
+                        multiLine : true
+                    });
+                });
+            }
+            
+
+            appPrompt(callback.t("msg_motion_save"),(fname)=>{
+                googlemeta["name"] = fname + (fname.indexOf(FILEEXTENSION_MOTION) > -1 ? "" : FILEEXTENSION_MOTION)
+                enterSave(val);
+            });
         }
+
+        
     }
     async saveanimmotion (val, options) {
         /**
@@ -2238,7 +2373,17 @@ export class UnityCallbackFunctioner {
          */
         const callback = options.callback;
         const filename = options.filename;
-        const mode = options.mode;
+        const mode = options.mode; 
+        const notify = () => {
+            Quasar.Notify.create({
+                message : callback.t("cons_save_complete"), 
+                position : "top-right",
+                color : "info",
+                textColor : "black",
+                timeout : 3000, 
+                multiLine : true
+            });
+        }
 
         if (mode == "i") { 
             //---internal storage
@@ -2246,11 +2391,11 @@ export class UnityCallbackFunctioner {
             var pose = new VVPoseConfig(-1,js);
             pose.name = filename;
             AppDB.pose.setItem(filename,js);
-        }else if (mode == "d") {
+        }else if (mode == "f") {
             //---to disk directly
             var opt = new VFileOptions();
             opt.types = FILEOPTION.POSE.types;
-            opt.suggestedName = filename + ".vvmpose";
+            opt.suggestedName = filename + FILEEXTENSION_POSE;
 
             var content = null;
             var useHTMLSaving = false;
@@ -2294,7 +2439,84 @@ export class UnityCallbackFunctioner {
             
             }
          
+        }else if (mode == "g") {
+            //--Google Drive
+            var googlemeta = {
+                name : filename + (filename.indexOf(FILEEXTENSION_POSE) > -1 ? "" : FILEEXTENSION_POSE),
+                extension:FILEEXTENSION_POSE,
+                nameoverwrite : true //always overwrite saving
+            }
+            
+            var tmpcontent = (val);
+            const enterSave = (value) => {
+                VFileHelper.saveToGoogleDrive(false,googlemeta,value)
+                .then(retdum => {
+                    //---confirm latest saved file
+                    return VFileHelper.confirmGoogleDriveLastSavedFile(googlemeta);
+                })
+                .then(retjs => {
+                    notify();
+                    
+                })
+                .catch(err => {
+                    Quasar.Notify.create({
+                        message : "Google Drive save error" + err.toString(), 
+                        position : "top-right",
+                        color : "error",
+                        textColor : "white",
+                        timeout : 3000, 
+                        multiLine : true
+                    });
+                });
+            }
+            enterSave(tmpcontent);
         }
+    }
+    async endingVRAR (val, options) {
+        /**
+         * @type {UnityCallbackFunctioner}
+         */
+        const callback = options.callback;
+        const mainData = callback.mainData;
+        const timelineData = callback.timelineData;
+        const modelOperator = callback.modelOperator;
+
+        var js = JSON.parse(val);
+        console.log("endingVRAR=",js);
+
+        var proj = new VVAnimationProject(js);
+
+        //---Scan all objects to apply keyframe changes.
+        for (var i = 0; i < proj.timeline.characters.length; i++) {
+            /**
+             * @type {VVAnimationFrameActor}
+             */
+            var chara = proj.timeline.characters[i];
+            /**
+             * @type {VVTimelineTarget}
+             */
+            var tl = modelOperator.getTimeline(chara.targetRole);
+            if (tl) {
+                if (chara.targetType in [
+                    AF_TARGETTYPE.VRM,AF_TARGETTYPE.OtherObject,
+                    AF_TARGETTYPE.Camera,AF_TARGETTYPE.Light,
+                    AF_TARGETTYPE.Effect,AF_TARGETTYPE.Image
+                ]) {
+                    for (var f = 0; f < chara.frames.length; f++) {
+                        var fdata = chara.frames[f];
+                        //---this time key of Unity side is "index"
+                        //   HTML side is "key".
+                        var hitkeyframe = tl.getFrameByKey(fdata.index);
+                        if (!hitkeyframe) {
+                            var vf = new VVTimelineFrameData(fdata.index, fdata);
+                            vf.data["translateMoving"] = modelOperator.analyzeTranslateMoving(fdata);
+                            tl.insertFrame(fdata.index,vf);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
 export const defineUnityCallback = (mainData,ribbonData,objlistData,objpropData,timelineData,unityConfig,refs) => {

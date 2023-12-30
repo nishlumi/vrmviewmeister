@@ -7,6 +7,7 @@ export class VVBlendShape {
         this.title = title || "";
         this.value = value || 0;
         this.visibility = true;
+        this.isChanged = false;
     }
 }
 export class VVAudio {
@@ -207,9 +208,10 @@ export class VVAvatar {
         }
         return ret;
     }
-    setBlendShape(name,value) {
+    setBlendShape(name,value,enabled = true) {
         var bs = this.getBlendShape(name);
         bs.value = value;
+        bs.isChanged = enabled;
     }
     /**
      * Equip an Other Object
@@ -775,12 +777,19 @@ export class VVTimelineTarget {
                 this.frames.splice(ishit,1);
             }else if (cleartype == AF_MOVETYPE.AllProperties) {
                 //---remove properties ONLY
-                var ishitprop = this.frames[ishit].data.MovingTypes.findIndex(v => {
-                    if (v == AF_MOVETYPE.AllProperties) return true;
+                var ishitprop = this.frames[ishit].data.movingData.findIndex(v => {
+                    if (
+                        (v.indexOf("position") == -1) &&
+                        (v.indexOf("rotation") == -1) &&
+                        (v.indexOf("scale") == -1) &&
+                        (v.indexOf("normaltransform") == -1)
+                    ) {
+                        return true;
+                    }
                     return false;
                 });
                 if (ishitprop > -1) {
-                    this.frames[ishit].data.MovingTypes.splice(ishitprop,1);
+                    this.frames[ishit].data.movingData.splice(ishitprop,1);
                 }
             }
             

@@ -1,4 +1,4 @@
-import { AF_TARGETTYPE, AF_MOVETYPE, CNS_BODYBONES, IKBoneType, INTERNAL_FILE, FILEEXTENSION_ANIMATION, FILEOPTION} from "../../res/appconst.js"
+import { AF_TARGETTYPE, AF_MOVETYPE, CNS_BODYBONES, IKBoneType, INTERNAL_FILE, FILEEXTENSION_ANIMATION, FILEOPTION, STORAGE_TYPE, SAMPLEURL, SAMPLEKEY} from "../../res/appconst.js"
 import { VVAnimationProject, VVAvatar, VVCast, VVSelectedObjectItem,  VVBlendShape, VVAvatarEquipSaveClass, VVTimelineTarget, VVTimelineFrameData, VVAnimationFrameActor, VVAnimationProjectMaterialPackage, VVAnimationFrame } from '../prop/cls_vvavatar.js';
 import { AnimationParsingOptions, AnimationRegisterOptions, BvhData, BvhNode, UnityVector3 } from "../prop/cls_unityrel.js";
 import { ChildReturner } from "../../../public/static/js/cls_childreturner.js";
@@ -264,6 +264,13 @@ export class appModelOperator {
         }
         return ret;
     }
+    getVRMFromTitle(title) {
+        var ishit = this.mainData.data.vrms.findIndex(v => {
+            if (v.title == title) return true;
+            return false;
+        });
+        return ishit == -1 ? null : this.mainData.data.vrms[ishit];
+    }
     /**
      * Get Avatar object from role name
      * @param {String} role role name in project
@@ -329,11 +336,18 @@ export class appModelOperator {
      * @returns {VVTimelineTarget}
      */
     getTimeline (roleName) {
-        return this.timelineData.data.timelines.find(item  => {
-            if (!item.target) return false;
-            if (item.target.roleName == roleName) return true;
-            return false;
-        });
+        var ret = null;
+        for (var i = 0; i < this.timelineData.data.timelines.length; i++) {
+            var item = this.timelineData.data.timelines[i];
+            if (item.target) {
+                if (item.target.roleName == roleName)  {
+                    ret = item;
+                    break;
+                }
+            }
+            
+        }
+        return ret;
     }
     /**
      * 
@@ -511,7 +525,7 @@ export class appModelOperator {
         return it;
     }
     /**
-     * 
+     * register motion data to new/existed keyframe 
      * @param {VVAvatar} avatar 
      * @param {Array<IKBoneType>} bonetypes
      * @param {Array<AF_MOVETYPE>} movetypes
@@ -553,6 +567,21 @@ export class appModelOperator {
         
         aro.isRotate360 = this.objpropData.elements.common.fastRotate360 ? "1" : "0";
         
+        if (avatar.type == AF_TARGETTYPE.VRM) {
+            for (var i = 0; i < avatar.blendShapeList.length; i++) {
+                var bb = avatar.blendShapeList[i];
+                aro.registerExpressions.push({
+                    text : bb.id,
+                    value : bb.isChanged ? 1 : 0
+                });
+            }
+            for (var i = 0; i < this.objpropData.elements.objectui.materialIsChanges.length; i++) {
+                aro.registerMaterials.push({
+                    text : this.objpropData.elements.objectui.materialnames[i],
+                    value : this.objpropData.elements.objectui.materialIsChanges[i] === true ? 1 : 0
+                });
+            }
+        }
 
         //---timeline ui
         var fdata = new VVTimelineFrameData(aro.index,{
@@ -579,6 +608,8 @@ export class appModelOperator {
             {callback : this.UnityCallback, selectedTimeline: tl}
         ));
         AppQueue.start();
+
+        this.mainData.states.currentEditOperationCount++;
     }
     /**
      * Remove a keyframe of specified index
@@ -645,41 +676,160 @@ export class appModelOperator {
      * @param {String}  searchname file name to search
      */
     enumerateFilesToProjectSelector(dbname, searchname = "") {
-        var db = AppDB[INTERNAL_FILE[dbname]];
-        if (db) {
-            var metadb = (INTERNAL_FILE[dbname] == INTERNAL_FILE.PROJECT) ? AppDB.scene_meta : AppDB.avatar_meta;
+        if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.INTERNAL) {
+            var db = AppDB[INTERNAL_FILE[dbname]];
+            if (db) {
+                var metadb = (INTERNAL_FILE[dbname] == INTERNAL_FILE.PROJECT) ? AppDB.scene_meta : AppDB.avatar_meta;
 
-            this.mainData.elements.projectSelector.selectDBName = dbname;
-            this.mainData.elements.projectSelector.files.splice(0,this.mainData.elements.projectSelector.files.length);
+                this.mainData.elements.projectSelector.selectDBName = dbname;
+                this.mainData.elements.projectSelector.searchedFiles.splice(0,this.mainData.elements.projectSelector.searchedFiles.length);
+                this.mainData.elements.projectSelector.files.splice(0,this.mainData.elements.projectSelector.files.length);
 
-            var csearchname = searchname.toLowerCase();
-            metadb.iterate((value,key,num)=> {
-                if (value.type == dbname) {
-                    var ishit = false;
-                    if (csearchname == "") {
-                        ishit = true;
-                    }else{
-                        ishit = value.fullname.toLowerCase().indexOf(csearchname) > -1;
+                var csearchname = searchname.toLowerCase();
+                metadb.iterate((value,key,num)=> {
+                    if (value.type == dbname) {
+                        var ishit = false;
+                        if (csearchname == "") {
+                            ishit = true;
+                        }else{
+                            ishit = value.fullname.toLowerCase().indexOf(csearchname) > -1;
+                        }
+                        if (ishit === true) {
+                            var tmpname = value.fullname.split(".");
+                            var meta = new AppDBMeta(value.fullname,
+                                (VFileHelper.flags.isElectron ? value.name : value.fullname),
+                                value.size,
+                                value.type,
+                                value.createdDate.toLocaleString(),
+                                value.updatedDate.toLocaleString()
+                            );
+                            this.mainData.elements.projectSelector.files.push(meta);
+                            this.mainData.elements.projectSelector.searchedFiles.push(meta);
+                        }   
                     }
-                    if (ishit === true) {
-                        var tmpname = value.fullname.split(".");
-                        var meta = new AppDBMeta(value.fullname,
-                            (VFileHelper.flags.isElectron ? value.name : value.fullname),
-                            value.size,
-                            value.type,
-                            value.createdDate.toLocaleString(),
-                            value.updatedDate.toLocaleString()
-                        );
-                        this.mainData.elements.projectSelector.files.push(meta);
-                    }   
+                })
+                .finally(() => {
+                    if (this.mainData.elements.projectSelector.files.length == 0) {
+                        this.mainData.elements.projectSelector.selected = "";
+                    }
+                });
+            }
+        }else if (
+            (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) ||
+            (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION)
+        ) {
+            this.mainData.elements.projectSelector.selectDBName = dbname;
+            this.mainData.elements.projectSelector.searchedFiles.splice(0,this.mainData.elements.projectSelector.searchedFiles.length);
+            this.mainData.elements.projectSelector.files.splice(0,this.mainData.elements.projectSelector.files.length);
+            const filegd = this.mainData.appconf.confs.fileloader.gdrive;
+            if ((filegd.url != "") &&
+                (filegd.enabled === true)
+            ) {
+                var baseurl = this.mainData.appconf.confs.fileloader.gdrive.url;
+                var apikey = this.mainData.appconf.confs.fileloader.gdrive.apikey;
+                var urlparams = new URLSearchParams();
+
+                if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+                    baseurl = SAMPLEURL;
+                    apikey = SAMPLEKEY;
                 }
-            })
-            .finally(() => {
-                if (this.mainData.elements.projectSelector.files.length == 0) {
-                    this.mainData.elements.projectSelector.selected = "";
+
+                //---if base parts of url not found, append its.
+                /*if (baseurl.indexOf("https://script.google.com/macros/s/") < 0) {
+                    baseurl = "https://script.google.com/macros/s/" + baseurl;
                 }
-            });
+                if (baseurl.lastIndexOf("/exec") < 0) {
+                    baseurl = baseurl + "/exec";
+                }*/
+                
+                //---setting URL parameters
+                urlparams.append("mode","enumdir");
+                urlparams.append("apikey",apikey);
+
+                var fopt = FILEOPTION[dbname];
+                var facept = fopt.types[0].accept;
+                var fext = "";
+                
+                if (dbname == "OBJECTS") {
+                    for (var obj in facept) {
+                        var arr = facept[obj];
+                        fext = arr.join(",").replaceAll(".","");
+                    }
+                    fext = fext.replace(",zip","");
+                }else if (dbname == "IMAGES") {
+                    for (var obj in facept) {
+                        var arr = facept[obj];
+                        fext = arr.join(",").replaceAll(".","");
+                    }
+                }else{
+                    for (var obj in facept) {
+                        fext = facept[obj][0].replaceAll(".","");
+                    }
+                }
+                urlparams.append("extension",fext);
+
+                var db2conf = {
+                    PROJECT : "project",
+                    VRM : "vrm",
+                    OBJECTS : "other",
+                    IMAGES : "image",
+                }
+                if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
+                    if (db2conf[dbname]) {
+                        var confID = this.mainData.appconf.confs.fileloader.gdrive.user[db2conf[dbname]];
+                        if (confID != "") {
+                            urlparams.append("dirid",confID);
+                        }
+                    }
+                }else if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+                    var tmpdbconf = db2conf[dbname];
+                    if (dbname == "OBJECTS") tmpdbconf = "3dmodel";
+                    urlparams.append("enumtype",tmpdbconf);
+                }
+
+                //---specify user folder ID
+                //var finalurl = `${baseurl}?mode=enumdir&apikey=${apikey}&extension=${fext}`;
+                var finalurl = baseurl;
+                finalurl += "?" + urlparams.toString();
+                
+                
+                try {
+                    fetch(finalurl)
+                    .then(async ret => {
+                        if (ret.ok) {
+                            var js = await ret.json();
+                            if (js.cd == 0) {
+                                for (var obj of js.data) {
+                                    var meta = new AppDBMeta(
+                                        obj.dir.name + "/" + obj.name,
+                                        obj.id,
+                                        obj.size,
+                                        dbname,
+                                        new Date(obj.createDate).toLocaleString(),
+                                        new Date(obj.updatedDate).toLocaleString()
+                                    );
+                                    meta.id = obj.id;
+                                    this.mainData.elements.projectSelector.files.push(meta);
+                                    this.mainData.elements.projectSelector.searchedFiles.push(meta);
+                                }
+                            }else{
+                                appNotifyWarning(js.msg,{timeout:3000});
+                            }
+                        }
+                        this.mainData.elements.loading = false;
+                    })
+                    .finally(() => {
+                        if (this.mainData.elements.projectSelector.files.length == 0) {
+                            this.mainData.elements.projectSelector.selected = "";
+                        }
+                    });
+                }catch(e) {
+                    console.error(e);
+                    retfile = null;
+                }
+            }
         }
+        
     }
     /**
      * 
@@ -978,6 +1128,12 @@ export class appModelOperator {
             this.ribbonData.elements.frame.bonelist.options = this.enumerateTargetBones(selected.avatar.type);
             this.selectInitialTargetBones(selected.avatar.type);
             this.objpropData.elements.common.fastRotate360 = false;
+
+            window._REFAPP.childreturner["select_info"] = {
+                id: selected.avatar.id,
+                type : selected.avatar.type,
+                title : selected.avatar.title
+            };
 
             //===========================================================================================
             // Common properties
@@ -1520,21 +1676,36 @@ export class appModelOperator {
             for (var obj in FILEOPTION[ftype].types[0].accept) {
                 mimetype = obj;
             }
-            //---new version is VOSFile.data
-            var chk = await VFileHelper.checkFilepath(vos.path);
-            if (chk === true) {
-                var files = await VFileHelper.openFromPath(vos.path,{
-                    isBinary : true,
-                    mimetype : mimetype
-                });
-                if (files.length > 0) {
-                    if (files[0].encoding === "binary") {
-                        result = new Blob([files[0].data]);
-                    }else{
-                        result = files[0].data;
+            var ishit_local = false;
+            if (vos["storageType"]) {
+                if (vos.storageType == STORAGE_TYPE.LOCAL) {
+                    ishit_local = true;
+                }else if (vos.storageType == STORAGE_TYPE.INTERNAL) {
+                    ishit_local = false;
+                }
+            }else{
+                ishit_local = true;
+            }
+            if (ishit_local) {
+                //---new version is VOSFile.data
+                var chk = await VFileHelper.checkFilepath(vos.path, vos.storageType);
+                if (chk === true) {
+                    var files = await VFileHelper.openFromPath(vos.path,{
+                        isBinary : true,
+                        mimetype : mimetype
+                    });
+                    if (files.length > 0) {
+                        if (files[0].encoding === "binary") {
+                            result = new Blob([files[0].data]);
+                        }else{
+                            result = files[0].data;
+                        }
                     }
                 }
+            }else{
+                result = vos.data;
             }
+            
             return result;
         }
 
@@ -1774,25 +1945,26 @@ export class appModelOperator {
         */
     }
     /**
+         * 
+         * @param {VVAnimationFrame} frame 
+         * @returns {Number} count of translate registration
+         */
+    analyzeTranslateMoving  (frame) {
+        var chkikparent = "0"; //for check only
+        var ret = frame.movingData.filter(m => {
+            var marr = m.split(",");
+            if ((marr[0] == chkikparent) && (marr[2] == "position")) return true;
+            return false;
+        });
+        return ret.length;
+    }
+    /**
      * 
      * @param {VVAnimationFrameActor} timelineElement targeted frame actor object on the Unity
      * @param {String} role target role's roleName
      */
     SingleApplyToTimelineUI(timelineElement, role) {
-        /**
-         * 
-         * @param {VVAnimationFrame} frame 
-         * @returns {Number} count of translate registration
-         */
-        const analyzeTranslateMoving = (frame) => {
-            var chkikparent = "0"; //for check only
-            var ret = frame.movingData.filter(m => {
-                var marr = m.split(",");
-                if ((marr[0] == chkikparent) && (marr[2] == "position")) return true;
-                return false;
-            });
-            return ret.length;
-        }
+        
         var av = this.getAvatarFromRole(role);
         if (av) {
             var tl = this.timelineData.data.timelines.find(item => {
@@ -1804,7 +1976,7 @@ export class appModelOperator {
                 //---enumurate and insert frames of the Avatar
                 timelineElement.frames.forEach(frame => {
                     var fdata = new VVTimelineFrameData(frame.index,frame);
-                    fdata.data["translateMoving"] = analyzeTranslateMoving(frame);
+                    fdata.data["translateMoving"] = this.analyzeTranslateMoving(frame);
                     tl.insertFrame(frame.index,fdata);
                     
                 });
@@ -1828,7 +2000,7 @@ export class appModelOperator {
                     //---enumurate and insert frames of the Avatar
                     timelineElement.frames.forEach(frame => {
                         var fdata = new VVTimelineFrameData(frame.index,frame);
-                        fdata.data["translateMoving"] = analyzeTranslateMoving(frame);
+                        fdata.data["translateMoving"] = this.analyzeTranslateMoving(frame);
                         tl.insertFrame(frame.index,fdata);
                         
                     });
@@ -2505,6 +2677,8 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
     //---watches--------------------------------------
     const wa_selectedAvatar = Vue.watch(() => mainData.states.selectedAvatar, (newval, oldval) => {
         //console.log(newval, oldval);
+
+        //#####select an avatar on Unity
         if (
             (newval.type != AF_TARGETTYPE.Stage) &&
             (newval.type != AF_TARGETTYPE.Text) &&
@@ -2525,6 +2699,7 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
             }
         }
         mainData.states.old_selectedAvatar = oldval;
+        //#####select an avatar on HTML
         modelOperator.select_objectItem(newval.id);
 
         AppDB.temp.setItem("bonetran_avatar_id",newval.id);

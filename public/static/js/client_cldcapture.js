@@ -100,6 +100,7 @@ const app = Vue.createApp({
             if (textdata) {
                 var tmp = JSON.parse(textdata);
                 capapp.value.appconf.confs = tmp;
+                VFileHelper.setAppConf(capapp.value.appconf);
             }
         }
         //---event---------------------------------------------
@@ -153,6 +154,33 @@ const app = Vue.createApp({
                 lnk_capturedownload.value.click();
             }
         }
+        const share_onclick = async (evt) => {
+            try {
+                if (capapp.value.left.list.selected) { 
+                    
+                    var bb = toBlob(capapp.value.imagepanel.src);
+                    /*var arb = await bb.arrayBuffer();
+                    var bytes = capapp.value.imagepanel.src; //new Uint8Array(arb);
+                    VFileHelper.saveToGoogleDrive(true,{
+                        name: new Date(parseInt(capapp.value.left.list.selected.key)).toFullText() + ".png",
+                        extension : "png"
+                    },bytes);
+                    */
+
+                    //----
+                    var shares = {
+                        title: new Date(parseInt(capapp.value.left.list.selected.key)).toFullText() + ".png",
+                        files : [
+                            new File([bb],new Date(parseInt(capapp.value.left.list.selected.key)).toFullText() + ".png",{type:"image/png"})
+                        ],
+                    }
+                    await navigator.share(shares);
+                }
+            }catch(e) {
+                console.error(e);
+                appNotifyWarning(e,{timeout:3000});
+            }
+        }
 
         const selectListItem = (item) => {
             capapp.value.left.list.selected = item;
@@ -200,7 +228,7 @@ const app = Vue.createApp({
             capapp,
             lnk_capturedownload,
             //---event---
-            refresh_onclick,delete_onclick,download_onclick,
+            refresh_onclick,delete_onclick,download_onclick,share_onclick,
             selectListItem,
             datefilter_onchange,
             //---computed---

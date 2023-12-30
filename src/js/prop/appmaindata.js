@@ -1,6 +1,6 @@
 import { VVAvatar, VVCast,VVAnimationProject, VVTimelineTarget, VVProp, VVTimelineFrameData } from "./cls_vvavatar.js"
 import { AppDBMeta, VVAppConfig } from "../appconf.js";
-import { AF_TARGETTYPE, FILEOPTION, INTERNAL_FILE, UserAnimationEase } from "../../res/appconst.js";
+import { AF_TARGETTYPE, FILEOPTION, INTERNAL_FILE, STORAGE_TYPE, UserAnimationEase } from "../../res/appconst.js";
 import { VOSFile } from "../../../public/static/js/filehelper.js";
 import { VRoidHubConnector } from "../model/vroidhub.js";
 
@@ -12,8 +12,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.2.1",
-            revision : "20231103-01",
+            version : "2.3.0",
+            revision : "20231230-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -61,6 +61,9 @@ export class appMainData {
             vrminfodlg : {
                 show : false,
                 showmode : false,
+                /**
+                 * @type {VVAvatar}
+                 */
                 selectedAvatar : null
             },
             projdlg : {
@@ -197,6 +200,7 @@ export class appMainData {
                 maximized : false,
                 fullwidth : false,
                 fullheight : false,
+                selectStorageType : STORAGE_TYPE.INTERNAL,
                 /**
                  * @type {FILEOPTION.*.types}
                  */
@@ -222,11 +226,20 @@ export class appMainData {
                 pagenation : {
                     rowsPerPage : 20
                 },
+                /**
+                 * Internal, File - name
+                 * Google Drive - file ID
+                 * @type {String}
+                 */
                 selected : "",
                 /**
-                 * @type {AppDBMeta}
+                 * @type {AppDBMeta[]}
                  */
                 files : [],
+                /**
+                 * @type {AppDBMeta[]}
+                 */
+                searchedFiles : [],
                 searchstr : "",
             },
             win_screenshot : null,
@@ -283,8 +296,10 @@ export class appMainData {
             //avoidSetEvent : false,
             animationPlaying : false,
             currentProjectFromFile : true,
+            currentProjectFromStorageType : "i", // internal, file, googleDrive,
             currentProjectFilename : "project",
             currentProjectFilepath : "project",
+            currentProjectFileID : "",
             /**
              * @type {FileSystemFileHandle or String}
              */
@@ -298,6 +313,8 @@ export class appMainData {
              * @type {Boolean}
              */
             vroidhub_api : false,
+
+            googledrive_gas : false,
         };
         this.data = {
             clipboard : {

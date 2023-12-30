@@ -14,6 +14,7 @@ const template = `
                 <q-tab name="files" :label="$t('File')"></q-tab>
                 <q-tab name="model"  :label="$t('Model')"></q-tab>
                 <q-tab name="animation" :label="$t('Animation')"></q-tab>
+                <q-tab name="fileloader" :label="$t('File loader')"></q-tab>
                 <q-tab name="aiapis" label="AI APIs" class="common_ui_off"></q-tab>
             </q-tabs>
             <q-tab-panels v-model="tabIndex" animated style="height:auto">
@@ -84,7 +85,28 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.application.UseDarkTheme" :label="$t('msg_UseDarkTheme')"></q-checkbox>
                                     </div>
                                 </div>
-                                
+                                <div class="row">
+                                    <div class="col-12">
+                                        <q-checkbox v-model="appconf.confs.application.is_externalwin_keyframe" :label="$t('msg_is_externalwin_keyframe')"></q-checkbox>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <b>V-Pad</b>
+                                    </div>
+                                    <div class="col-3 offset-1 q-pt-sm">
+                                        <span class="">{{ $t('msg_vpad_rotaterate')}}</span>
+                                    </div>
+                                    <div class="col-2">
+                                        <q-input v-model="appconf.confs.application.vpad_rotaterate" type="number" :min="0.01" :max="0.1" :step="0.01" dense></q-input>
+                                    </div>
+                                    <div class="col-3 offset-1 q-pt-sm">
+                                        <span class="">{{ $t('msg_vpad_translaterate')}}</span>
+                                    </div>
+                                    <div class="col-2">
+                                        <q-input v-model="appconf.confs.application.vpad_translaterate" type="number" :min="0.1" :max="2" :step="0.01" dense></q-input>
+                                    </div>
+                                </div>
                             </q-item-section>
                         </q-item>
                     </q-list>
@@ -176,6 +198,31 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.model.interlock_body_legs" :label="$t('msg_interlock_body_legs')"></q-checkbox>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <strong>VR/AR</strong>
+                                    </div>
+                                    <!--
+                                    <div class="col-4 offset-xs-1">
+                                        <span>{{ $t('rightpanel_lefthand') }}</span>
+                                    </div>
+                                    <div class="col-7">
+                                        <q-select v-model="elements.model.vrarctrl_left.selected"
+                                            :options="elements.model.vrarctrl_left.options"
+                                            @update:model-value="vrarctrl_panel_left_onchange"
+                                        ></q-select>
+                                    </div>
+                                    <div class="col-4 offset-xs-1">
+                                        <span>{{ $t('rightpanel_righthand') }}</span>
+                                    </div>
+                                    <div class="col-7">
+                                        <q-select v-model="elements.model.vrarctrl_right.selected"
+                                            :options="elements.model.vrarctrl_right.options"
+                                            @update:model-value="vrarctrl_panel_right_onchange"
+                                        ></q-select>
+                                    </div>
+                                    -->
+                                </div>
                             </q-item-section>
                         </q-item>
                     </q-list>
@@ -254,6 +301,74 @@ const template = `
                                 <div class="row">
                                     <div class="col-12">
                                         <q-checkbox v-model="appconf.confs.animation.save_previous_value_in_keyframeregister" :label="$t('msg_save_previous_value_in_keyframeregister')"></q-checkbox>
+                                    </div>
+                                </div>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-tab-panel>
+                <q-tab-panel name="fileloader">
+                    <q-list>
+                        <q-item>
+                            <q-item-section>
+                                <div class="row">
+                                    <div class="col-12 q-pt-sm">
+                                        <span>{{ $t('gdrive_loader_url') }}</span>
+                                        <q-checkbox v-model="appconf.confs.fileloader.gdrive.enabled"></q-checkbox>
+                                    </div>
+                                    <div class="col-11 offset-1">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.url" type="text" dense></q-input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-2 q-pt-sm">
+                                        <span>APIKEY</span>
+                                    </div>
+                                    <div class="col-10">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.apikey" type="text" dense></q-input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        {{ $t('gdrive_userfolder') }}
+                                    </div>
+                                </div>
+                                <div class="row q-pl-md">
+                                    <div class="col-2">
+                                        Project
+                                    </div>
+                                    <div class="col-10">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.project" type="text" dense></q-input>
+                                    </div>
+                                    <div class="col-2">
+                                        Motion
+                                    </div>
+                                    <div class="col-10">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.motion" type="text" dense></q-input>
+                                    </div>
+                                    <div class="col-2">
+                                        Pose
+                                    </div>
+                                    <div class="col-10">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.pose" type="text" dense></q-input>
+                                    </div>
+                                    <div class="col-2">
+                                        VRM
+                                    </div>
+                                    <div class="col-10">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.vrm" type="text" dense></q-input>
+                                    </div>
+                                    <div class="col-2">
+                                        OtherObject
+                                    </div>
+                                    <div class="col-10">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.other" type="text" dense></q-input>
+                                    </div>
+                                    <div class="col-2">
+                                        Image
+                                    </div>
+                                    <div class="col-10">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.image" type="text" dense></q-input>
                                     </div>
                                 </div>
                             </q-item-section>
@@ -506,12 +621,27 @@ export function defineConfigDlg(app, Quasar) {
             const {modelValue, appconfig } = Vue.toRefs(props);
             const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
+            const cns_vrarctrllist = [
+                {label:t("vrarctrl_panel_0"), value:1},
+                {label:t("vrarctrl_panel_1"), value:0},
+            ];
+
             const show = Vue.ref(false);
             const tabIndex = Vue.ref("application");
             const appconf = Vue.ref(null);
             const elements = Vue.ref({
                 application : {
                     preview_memory : new Number(DEFAULTMEM)
+                },
+                model : {
+                    vrarctrl_left : {
+                        options : cns_vrarctrllist,
+                        selected : cns_vrarctrllist[0],
+                    },
+                    vrarctrl_right : {
+                        options : cns_vrarctrllist,
+                        selected : cns_vrarctrllist[1],
+                    }
                 },
                 aiapis : {
                     tabIndex: "txt2img",
@@ -540,6 +670,9 @@ export function defineConfigDlg(app, Quasar) {
 
                     elements.value.application.preview_memory = 
                         (DEFAULTMEM * appconf.value.confs.application.UseMemory) / 1024 / 1024;
+                    
+                    elements.value.model.vrarctrl_left.selected = cns_vrarctrllist[appconf.value.confs.model.vrarctrl_panel_left];
+                    elements.value.model.vrarctrl_right.selected = cns_vrarctrllist[appconf.value.confs.model.vrarctrl_panel_right];
                 }
             });
 
@@ -563,6 +696,14 @@ export function defineConfigDlg(app, Quasar) {
                 show.value = false;
                 context.emit("update:model-value",show.value);
             }
+            const vrarctrl_panel_left_onchange = (val) => {
+                console.log(val);
+                appconf.value.confs.model.vrarctrl_panel_left = val.value;
+            }
+            const vrarctrl_panel_right_onchange = (val) => {
+                console.log(val);
+                appconf.value.confs.model.vrarctrl_panel_right = val.value;
+            }
 
             return {
                 show, tabIndex, appconf, elements,
@@ -572,6 +713,7 @@ export function defineConfigDlg(app, Quasar) {
                 showPreviewMemory,
                 //---method---
                 ok_onclick,cancel_onclick,historyClear_onclick,
+                vrarctrl_panel_left_onchange,vrarctrl_panel_right_onchange,
             }
         }
     });

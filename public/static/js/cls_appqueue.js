@@ -44,6 +44,7 @@ const AppQueue = {
         DLight : "Directional Light",
         Windzone : "WindZone",
         Camera : "Main Camera",
+        XR : "WebXRCameraSet",
         Stage : "Stage",
         FileMenuCommands : "AnimateArea",
         OperateAvatarIK : "IKHandleParent",

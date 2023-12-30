@@ -1,5 +1,5 @@
 /*!
- * Quasar Framework v2.9.2
+ * Quasar Framework v2.14.2
  * (c) 2015-present Razvan Stoenescu
  * Released under the MIT License.
  */
@@ -318,8 +318,8 @@
         // the rest of the props; we also avoid
         // hydration errors
         opts.onSSRHydrated.push(() => {
-          isRuntimeSsrPreHydration.value = false;
           Object.assign($q.platform, client);
+          isRuntimeSsrPreHydration.value = false;
           iosCorrection = void 0;
         });
 
@@ -557,27 +557,30 @@
   };
 
   function debounce (fn, wait = 250, immediate) {
-    let timeout;
+    let timer = null;
 
     function debounced (/* ...args */) {
       const args = arguments;
 
       const later = () => {
-        timeout = void 0;
+        timer = null;
         if (immediate !== true) {
           fn.apply(this, args);
         }
       };
 
-      clearTimeout(timeout);
-      if (immediate === true && timeout === void 0) {
+      if (timer !== null) {
+        clearTimeout(timer);
+      }
+      else if (immediate === true) {
         fn.apply(this, args);
       }
-      timeout = setTimeout(later, wait);
+
+      timer = setTimeout(later, wait);
     }
 
     debounced.cancel = () => {
-      clearTimeout(timeout);
+      timer !== null && clearTimeout(timer);
     };
 
     return debounced
@@ -737,7 +740,7 @@
 
         this.setDebounce(updateDebounce);
 
-        if (Object.keys(updateSizes).length > 0) {
+        if (Object.keys(updateSizes).length !== 0) {
           this.setSizes(updateSizes);
           updateSizes = void 0; // free up memory
         }
@@ -1041,7 +1044,7 @@
 
   function getLocale () {
 
-    const val = Array.isArray(navigator.languages) === true && navigator.languages.length > 0
+    const val = Array.isArray(navigator.languages) === true && navigator.languages.length !== 0
       ? navigator.languages[ 0 ]
       : navigator.language;
 
@@ -1071,11 +1074,13 @@
       };
 
       {
-        const el = document.documentElement;
-        el.setAttribute('dir', lang.rtl === true ? 'rtl' : 'ltr');
-        el.setAttribute('lang', lang.isoName);
-
         lang.set = Plugin$8.set;
+
+        if (Plugin$8.__langConfig === void 0 || Plugin$8.__langConfig.noHtmlAttrs !== true) {
+          const el = document.documentElement;
+          el.setAttribute('dir', lang.rtl === true ? 'rtl' : 'ltr');
+          el.setAttribute('lang', lang.isoName);
+        }
 
         Object.assign(Plugin$8.__langPack, lang);
 
@@ -1088,6 +1093,7 @@
     install ({ $q, lang, ssrContext }) {
       {
         $q.lang = Plugin$8.__langPack;
+        Plugin$8.__langConfig = $q.config.lang;
 
         if (this.__installed === true) {
           lang !== void 0 && this.set(lang);
@@ -1174,20 +1180,50 @@
   }
 
   function applyClientSsrCorrections () {
+    const { is } = client;
     const classes = document.body.className;
-    let newCls = classes;
+
+    const classList = new Set(classes.replace(/ {2}/g, ' ').split(' '));
 
     if (iosCorrection !== void 0) {
-      newCls = newCls.replace('desktop', 'platform-ios mobile');
+      classList.delete('desktop');
+      classList.add('platform-ios');
+      classList.add('mobile');
+    }
+    // else: is it SSG?
+    else if (is.nativeMobile !== true && is.electron !== true && is.bex !== true) {
+      if (is.desktop === true) {
+        classList.delete('mobile');
+        classList.delete('platform-ios');
+        classList.delete('platform-android');
+        classList.add('desktop');
+      }
+      else if (is.mobile === true) {
+        classList.delete('desktop');
+        classList.add('mobile');
+
+        const mobile = getMobilePlatform(is);
+        if (mobile !== void 0) {
+          classList.add(`platform-${ mobile }`);
+          classList.delete(`platform-${ mobile === 'ios' ? 'android' : 'ios' }`);
+        }
+        else {
+          classList.delete('platform-ios');
+          classList.delete('platform-android');
+        }
+      }
     }
 
     if (client.has.touch === true) {
-      newCls = newCls.replace('no-touch', 'touch');
+      classList.delete('no-touch');
+      classList.add('touch');
     }
 
     if (client.within.iframe === true) {
-      newCls += ' within-iframe';
+      classList.add('within-iframe');
     }
+
+    const newCls = Array.from(classList).join(' ');
 
     if (classes !== newCls) {
       document.body.className = newCls;
@@ -1398,6 +1434,8 @@
   const tabsKey = '_q_tabs_';
   const uploaderKey = '_q_u_';
 
+  const emptyRenderFn = () => {};
+
   const globalConfig = {};
   let globalConfigIsFrozen = false;
 
@@ -1438,20 +1476,23 @@
           return false
         }
 
-        i = a.entries().next();
+        let iter = a.entries();
+
+        i = iter.next();
         while (i.done !== true) {
           if (b.has(i.value[ 0 ]) !== true) {
             return false
           }
-          i = i.next();
+          i = iter.next();
         }
 
-        i = a.entries().next();
+        iter = a.entries();
+        i = iter.next();
         while (i.done !== true) {
           if (isDeepEqual(i.value[ 1 ], b.get(i.value[ 0 ])) !== true) {
             return false
           }
-          i = i.next();
+          i = iter.next();
         }
 
         return true
@@ -1462,12 +1503,14 @@
           return false
         }
 
-        i = a.entries().next();
+        const iter = a.entries();
+
+        i = iter.next();
         while (i.done !== true) {
           if (b.has(i.value[ 0 ]) !== true) {
             return false
           }
-          i = i.next();
+          i = iter.next();
         }
 
         return true
@@ -1610,7 +1653,7 @@
   }
 
   var installQuasar = function (parentApp, opts = {}) {
-      const $q = { version: '2.9.2' };
+      const $q = { version: '2.14.2' };
 
       if (globalConfigIsFrozen === false) {
         if (opts.config !== void 0) {
@@ -1809,7 +1852,7 @@
       const onScreen = vue.ref(false);
       const animate = vue.ref(true);
 
-      let sessions = 0, timer, speed;
+      let sessions = 0, timer = null, speed;
 
       const classes = vue.computed(() =>
         `q-loading-bar q-loading-bar--${ props.position }`
@@ -1861,19 +1904,21 @@
           if (oldSpeed === 0 && newSpeed > 0) {
             planNextStep();
           }
-          else if (oldSpeed > 0 && newSpeed <= 0) {
+          else if (timer !== null && oldSpeed > 0 && newSpeed <= 0) {
             clearTimeout(timer);
+            timer = null;
           }
 
           return sessions
         }
 
-        clearTimeout(timer);
+        timer !== null && clearTimeout(timer);
         emit('start');
 
         progress.value = 0;
 
         timer = setTimeout(() => {
+          timer = null;
           animate.value = true;
           newSpeed > 0 && planNextStep();
         }, onScreen.value === true ? 500 : 1);
@@ -1900,13 +1945,18 @@
           return sessions
         }
 
-        clearTimeout(timer);
+        if (timer !== null) {
+          clearTimeout(timer);
+          timer = null;
+        }
+
         emit('stop');
 
         const end = () => {
           animate.value = true;
           progress.value = 100;
           timer = setTimeout(() => {
+            timer = null;
             onScreen.value = false;
           }, 1000);
         };
@@ -1924,6 +1974,7 @@
       function planNextStep () {
         if (progress.value < 100) {
           timer = setTimeout(() => {
+            timer = null;
             increment();
             planNextStep();
           }, speed);
@@ -1944,7 +1995,7 @@
       });
 
       vue.onBeforeUnmount(() => {
-        clearTimeout(timer);
+        timer !== null && clearTimeout(timer);
         hijacked === true && restoreAjax(start);
       });
 
@@ -2079,7 +2130,7 @@
   const imgRE = /^img:/;
   const svgUseRE = /^svguse:/;
   const ionRE = /^ion-/;
-  const faRE = /^(fa-(solid|regular|light|brands|duotone|thin)|[lf]a[srlbdk]?) /;
+  const faRE = /^(fa-(sharp|solid|regular|light|brands|duotone|thin)|[lf]a[srlbdk]?) /;
 
   var QIcon = createComponent({
     name: 'QIcon',
@@ -2369,7 +2420,7 @@
       return () => vue.h('div', {
         class: classes.value,
         style: style.value,
-        role: 'alert',
+        role: 'status',
         'aria-label': props.label
       }, hMergeSlot(slots.default, props.label !== void 0 ? [ props.label ] : []))
     }
@@ -3300,7 +3351,7 @@
       }
   );
 
-  const padding = {
+  const btnPadding = {
     none: 0,
     xs: 4,
     sm: 8,
@@ -3320,6 +3371,21 @@
   const formTypes = [ 'button', 'submit', 'reset' ];
   const mediaTypeRE = /[^\s]\/[^\s]/;
 
+  const btnDesignOptions = [ 'flat', 'outline', 'push', 'unelevated' ];
+  const getBtnDesign = (props, defaultValue) => {
+    if (props.flat === true) return 'flat'
+    if (props.outline === true) return 'outline'
+    if (props.push === true) return 'push'
+    if (props.unelevated === true) return 'unelevated'
+    return defaultValue
+  };
+  const getBtnDesignAttr = props => {
+    const design = getBtnDesign(props);
+    return design !== void 0
+      ? { [ design ]: true }
+      : {}
+  };
+
   const useBtnProps = {
     ...useSizeProps,
     ...useRouterLinkProps,
@@ -3333,13 +3399,14 @@
     icon: String,
     iconRight: String,
 
-    round: Boolean,
+    ...btnDesignOptions.reduce(
+      (acc, val) => (acc[ val ] = Boolean) && acc,
+      {}
+    ),
+
     square: Boolean,
-    outline: Boolean,
-    flat: Boolean,
-    unelevated: Boolean,
+    round: Boolean,
     rounded: Boolean,
-    push: Boolean,
     glossy: Boolean,
 
     size: String,
@@ -3389,7 +3456,7 @@
         ? Object.assign({}, obj, {
           padding: props.padding
             .split(/\s+/)
-            .map(v => (v in padding ? padding[ v ] + 'px' : v))
+            .map(v => (v in btnPadding ? btnPadding[ v ] + 'px' : v))
             .join(' '),
           minWidth: '0',
           minHeight: '0'
@@ -3409,13 +3476,7 @@
       isActionable.value === true ? props.tabindex || 0 : -1
     ));
 
-    const design = vue.computed(() => {
-      if (props.flat === true) return 'flat'
-      if (props.outline === true) return 'outline'
-      if (props.push === true) return 'push'
-      if (props.unelevated === true) return 'unelevated'
-      return 'standard'
-    });
+    const design = vue.computed(() => getBtnDesign(props, 'standard'));
 
     const attributes = vue.computed(() => {
       const acc = { tabindex: tabIndex.value };
@@ -3538,7 +3599,7 @@
       const rootRef = vue.ref(null);
       const blurTargetRef = vue.ref(null);
 
-      let localTouchTargetEl = null, avoidMouseRipple, mouseTimer;
+      let localTouchTargetEl = null, avoidMouseRipple, mouseTimer = null;
 
       const hasLabel = vue.computed(() =>
         props.label !== void 0 && props.label !== null && props.label !== ''
@@ -3684,8 +3745,9 @@
         // avoid duplicated mousedown event
         // triggering another early ripple
         avoidMouseRipple = true;
-        clearTimeout(mouseTimer);
+        mouseTimer !== null && clearTimeout(mouseTimer);
         mouseTimer = setTimeout(() => {
+          mouseTimer = null;
           avoidMouseRipple = false;
         }, 200);
       }
@@ -3788,7 +3850,7 @@
         props.icon !== void 0 && inner.push(
           vue.h(QIcon, {
             name: props.icon,
-            left: props.stack === false && hasLabel.value === true,
+            left: props.stack !== true && hasLabel.value === true,
             role: 'img',
             'aria-hidden': 'true'
           })
@@ -3804,7 +3866,7 @@
           inner.push(
             vue.h(QIcon, {
               name: props.iconRight,
-              right: props.stack === false && hasLabel.value === true,
+              right: props.stack !== true && hasLabel.value === true,
               role: 'img',
               'aria-hidden': 'true'
             })
@@ -3890,7 +3952,7 @@
           .filter(t => props[ t ] === true)
           .map(t => `q-btn-group--${ t }`).join(' ');
 
-        return `q-btn-group row no-wrap${ cls.length > 0 ? ' ' + cls : '' }`
+        return `q-btn-group row no-wrap${ cls.length !== 0 ? ' ' + cls : '' }`
           + (props.spread === true ? ' q-btn-group--spread' : ' inline')
       });
 
@@ -3931,7 +3993,7 @@
 
     const anchorEl = vue.ref(null);
 
-    let touchTimer;
+    let touchTimer = null;
 
     function canShow (evt) {
       // abort with no parent configured or on multi-touch
@@ -3990,6 +4052,7 @@
           ]);
 
           touchTimer = setTimeout(() => {
+            touchTimer = null;
             proxy.show(evt);
             evt.qAnchorHandled = true;
           }, 300);
@@ -3997,7 +4060,11 @@
 
         mobileCleanup (evt) {
           anchorEl.value.classList.remove('non-selectable');
-          clearTimeout(touchTimer);
+
+          if (touchTimer !== null) {
+            clearTimeout(touchTimer);
+            touchTimer = null;
+          }
 
           if (showing.value === true && evt !== void 0) {
             clearSelection();
@@ -4111,7 +4178,7 @@
     });
 
     vue.onBeforeUnmount(() => {
-      clearTimeout(touchTimer);
+      touchTimer !== null && clearTimeout(touchTimer);
       unconfigureAnchorEl();
     });
 
@@ -4175,7 +4242,7 @@
   };
 
   const useModelToggleEmits = [
-    'before-show', 'show', 'before-hide', 'hide'
+    'beforeShow', 'show', 'beforeHide', 'hide'
   ];
 
   // handleShow/handleHide -> removeTick(), self (& emit show)
@@ -4235,7 +4302,7 @@
 
       showing.value = true;
 
-      emit('before-show', evt);
+      emit('beforeShow', evt);
 
       if (handleShow !== void 0) {
         handleShow(evt);
@@ -4274,7 +4341,7 @@
 
       showing.value = false;
 
-      emit('before-hide', evt);
+      emit('beforeHide', evt);
 
       if (handleHide !== void 0) {
         handleHide(evt);
@@ -4332,7 +4399,7 @@
   function removeFocusWaitFlag (flag) {
     clearFlag(flag);
 
-    if (waitFlags.length === 0 && queue.length > 0) {
+    if (waitFlags.length === 0 && queue.length !== 0) {
       // only call last focus handler (can't focus multiple things at once)
       queue[ queue.length - 1 ]();
       queue = [];
@@ -4352,15 +4419,18 @@
     queue = queue.filter(entry => entry !== fn);
   }
 
-  const globalNodes = [];
+  const nodesList = [];
+  const portalTypeList = [];
+
+  let portalIndex = 1;
   let target = document.body;
 
-  function createGlobalNode (id) {
+  function createGlobalNode (id, portalType) {
     const el = document.createElement('div');
 
-    if (id !== void 0) {
-      el.id = id;
-    }
+    el.id = portalType !== void 0
+      ? `q-portal--${ portalType }--${ portalIndex++ }`
+      : id;
 
     if (globalConfig.globalNodes !== void 0) {
       const cls = globalConfig.globalNodes.class;
@@ -4370,25 +4440,53 @@
     }
 
     target.appendChild(el);
-    globalNodes.push(el);
+    nodesList.push(el);
+    portalTypeList.push(portalType);
 
     return el
   }
 
   function removeGlobalNode (el) {
-    globalNodes.splice(globalNodes.indexOf(el), 1);
+    const nodeIndex = nodesList.indexOf(el);
+
+    nodesList.splice(nodeIndex, 1);
+    portalTypeList.splice(nodeIndex, 1);
+
     el.remove();
   }
 
-  function changeGlobalNodesTarget (el) {
-    if (el !== target) {
-      target = el;
+  function changeGlobalNodesTarget (newTarget) {
+    if (newTarget === target) {
+      return
+    }
 
-      globalNodes.forEach(el => {
-        if (el.contains(target) === false) {
-          target.appendChild(el);
+    target = newTarget;
+
+    if (
+      target === document.body
+      // or we have less than 2 dialogs:
+      || portalTypeList.reduce((acc, type) => (type === 'dialog' ? acc + 1 : acc), 0) < 2
+    ) {
+      nodesList.forEach(node => {
+        if (node.contains(target) === false) {
+          target.appendChild(node);
         }
       });
+
+      return
+    }
+
+    const lastDialogIndex = portalTypeList.lastIndexOf('dialog');
+
+    for (let i = 0; i < nodesList.length; i++) {
+      const el = nodesList[ i ];
+
+      if (
+        (i === lastDialogIndex || portalTypeList[ i ] !== 'dialog')
+        && el.contains(target) === false
+      ) {
+        target.appendChild(el);
+      }
     }
   }
 
@@ -4396,8 +4494,8 @@
 
   function getPortalProxy (el) {
     return portalProxyList.find(proxy =>
-      proxy.__qPortalInnerRef.value !== null
-      && proxy.__qPortalInnerRef.value.contains(el)
+      proxy.contentEl !== null
+      && proxy.contentEl.contains(el)
     )
   }
 
@@ -4411,7 +4509,7 @@
           return getParentProxy(proxy)
         }
       }
-      else if (proxy.__qPortalInnerRef !== void 0) {
+      else if (proxy.__qPortal === true) {
         // treat it as point of separation if parent is QPopupProxy
         // (so mobile matches desktop behavior)
         // and hide it too
@@ -4432,7 +4530,7 @@
 
   function closePortals (proxy, evt, depth) {
     while (depth !== 0 && proxy !== void 0 && proxy !== null) {
-      if (proxy.__qPortalInnerRef !== void 0) {
+      if (proxy.__qPortal === true) {
         depth--;
 
         if (proxy.$options.name === 'QMenu') {
@@ -4467,7 +4565,7 @@
   // Warning!
   // You MUST specify "inheritAttrs: false" in your component
 
-  function usePortal (vm, innerRef, renderPortalContent, checkGlobalDialog) {
+  function usePortal (vm, innerRef, renderPortalContent, type) {
     // showing, including while in show/hide transition
     const portalIsActive = vue.ref(false);
 
@@ -4476,7 +4574,7 @@
 
     let portalEl = null;
     const focusObj = {};
-    const onGlobalDialog = checkGlobalDialog === true && isOnGlobalDialog(vm);
+    const onGlobalDialog = type === 'dialog' && isOnGlobalDialog(vm);
 
     function showPortal (isReady) {
       if (isReady === true) {
@@ -4489,7 +4587,7 @@
 
       if (portalIsActive.value === false) {
         if (onGlobalDialog === false && portalEl === null) {
-          portalEl = createGlobalNode();
+          portalEl = createGlobalNode(false, type);
         }
 
         portalIsActive.value = true;
@@ -4524,7 +4622,10 @@
     vue.onUnmounted(() => { hidePortal(true); });
 
     // needed for portal vm detection
-    vm.proxy.__qPortalInnerRef = innerRef;
+    vm.proxy.__qPortal = true;
+
+    // public way of accessing the rendered content
+    injectProp(vm.proxy, 'contentEl', () => innerRef.value);
 
     return {
       showPortal,
@@ -4562,18 +4663,24 @@
     }
   };
 
-  function useTransition (props, showing) {
-    const transitionState = vue.ref(showing.value);
-
-    vue.watch(showing, val => {
-      vue.nextTick(() => { transitionState.value = val; });
-    });
-
-    // return transition
+  function useTransition (props, defaultShowFn = () => {}, defaultHideFn = () => {}) {
     return {
-      transition: vue.computed(() => 'q-transition--' + (
-        transitionState.value === true ? props.transitionHide : props.transitionShow
-      )),
+      transitionProps: vue.computed(() => {
+        const show = `q-transition--${ props.transitionShow || defaultShowFn() }`;
+        const hide = `q-transition--${ props.transitionHide || defaultHideFn() }`;
+
+        return {
+          appear: true,
+
+          enterFromClass: `${ show }-enter-from`,
+          enterActiveClass: `${ show }-enter-active`,
+          enterToClass: `${ show }-enter-to`,
+
+          leaveFromClass: `${ hide }-leave-from`,
+          leaveActiveClass: `${ hide }-leave-active`,
+          leaveToClass: `${ hide }-leave-to`
+        }
+      }),
 
       transitionStyle: vue.computed(() => `--q-transition-duration: ${ props.transitionDuration }ms`)
     }
@@ -4621,11 +4728,14 @@
    */
 
   function useTimeout () {
-    let timer;
+    let timer = null;
     const vm = vue.getCurrentInstance();
 
     function removeTimeout () {
-      clearTimeout(timer);
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
     }
 
     vue.onDeactivated(removeTimeout);
@@ -4635,7 +4745,7 @@
       removeTimeout,
 
       registerTimeout (fn, delay) {
-        clearTimeout(timer);
+        removeTimeout();
 
         if (vmIsDestroyed(vm) === false) {
           timer = setTimeout(fn, delay);
@@ -4917,14 +5027,11 @@
     }
   }
 
-  let timer;
-
   const
     { notPassiveCapture } = listenOpts,
     registeredList = [];
 
   function globalHandler (evt) {
-    clearTimeout(timer);
 
     const target = evt.target;
 
@@ -4942,6 +5049,12 @@
 
     while (portalIndex >= 0) {
       const proxy = portalProxyList[ portalIndex ].$;
+
+      // skip QTooltip portals
+      if (proxy.type.name === 'QTooltip') {
+        portalIndex--;
+        continue
+      }
 
       if (proxy.type.name !== 'QDialog') {
         break
@@ -4997,7 +5110,7 @@
       registeredList.splice(index, 1);
 
       if (registeredList.length === 0) {
-        clearTimeout(timer);
+
         document.removeEventListener('mousedown', globalHandler, notPassiveCapture);
         document.removeEventListener('touchstart', globalHandler, notPassiveCapture);
       }
@@ -5065,30 +5178,81 @@
     }
 
     return {
-      top,
-      left,
-      right,
-      bottom,
-      width,
-      height,
+      top, bottom, height,
+      left, right, width,
       middle: left + (right - left) / 2,
       center: top + (bottom - top) / 2
     }
   }
 
-  function getTargetProps (el) {
+  function getAbsoluteAnchorProps (el, absoluteOffset, offset) {
+    let { top, left } = el.getBoundingClientRect();
+
+    top += absoluteOffset.top;
+    left += absoluteOffset.left;
+
+    if (offset !== void 0) {
+      top += offset[ 1 ];
+      left += offset[ 0 ];
+    }
+
     return {
-      top: 0,
-      center: el.offsetHeight / 2,
-      bottom: el.offsetHeight,
-      left: 0,
-      middle: el.offsetWidth / 2,
-      right: el.offsetWidth
+      top, bottom: top + 1, height: 1,
+      left, right: left + 1, width: 1,
+      middle: left,
+      center: top
     }
   }
 
-  // cfg: { el, anchorEl, anchorOrigin, selfOrigin, offset, absoluteOffset, cover, fit, maxHeight, maxWidth }
-  function setPosition (cfg) {
+  function getTargetProps (width, height) {
+    return {
+      top: 0,
+      center: height / 2,
+      bottom: height,
+      left: 0,
+      middle: width / 2,
+      right: width
+    }
+  }
+
+  function getTopLeftProps (anchorProps, targetProps, anchorOrigin, selfOrigin) {
+    return {
+      top: anchorProps[ anchorOrigin.vertical ] - targetProps[ selfOrigin.vertical ],
+      left: anchorProps[ anchorOrigin.horizontal ] - targetProps[ selfOrigin.horizontal ]
+    }
+  }
+
+  function setPosition (cfg, retryNumber = 0) {
+    if (
+      cfg.targetEl === null
+      || cfg.anchorEl === null
+      || retryNumber > 5 // we should try only a few times
+    ) {
+      return
+    }
+
+    // some browsers report zero height or width because
+    // we are trying too early to get these dimensions
+    if (cfg.targetEl.offsetHeight === 0 || cfg.targetEl.offsetWidth === 0) {
+      setTimeout(() => {
+        setPosition(cfg, retryNumber + 1);
+      }, 10);
+      return
+    }
+
+    const {
+      targetEl,
+      offset,
+      anchorEl,
+      anchorOrigin,
+      selfOrigin,
+      absoluteOffset,
+      fit,
+      cover,
+      maxHeight,
+      maxWidth
+    } = cfg;
+
     if (client.is.ios === true && window.visualViewport !== void 0) {
       // uses the q-position-engine CSS class
 
@@ -5105,49 +5269,82 @@
       }
     }
 
-    let anchorProps;
-
     // scroll position might change
     // if max-height/-width changes, so we
     // need to restore it after we calculate
     // the new positioning
-    const { scrollLeft, scrollTop } = cfg.el;
+    const { scrollLeft, scrollTop } = targetEl;
 
-    if (cfg.absoluteOffset === void 0) {
-      anchorProps = getAnchorProps(cfg.anchorEl, cfg.cover === true ? [ 0, 0 ] : cfg.offset);
-    }
-    else {
-      const
-        { top: anchorTop, left: anchorLeft } = cfg.anchorEl.getBoundingClientRect(),
-        top = anchorTop + cfg.absoluteOffset.top,
-        left = anchorLeft + cfg.absoluteOffset.left;
+    const anchorProps = absoluteOffset === void 0
+      ? getAnchorProps(anchorEl, cover === true ? [ 0, 0 ] : offset)
+      : getAbsoluteAnchorProps(anchorEl, absoluteOffset, offset);
 
-      anchorProps = { top, left, width: 1, height: 1, right: left + 1, center: top, middle: left, bottom: top + 1 };
-    }
-
-    let elStyle = {
-      maxHeight: cfg.maxHeight,
-      maxWidth: cfg.maxWidth,
+    // we "reset" the critical CSS properties
+    // so we can take an accurate measurement
+    Object.assign(targetEl.style, {
+      top: 0,
+      left: 0,
+      minWidth: null,
+      minHeight: null,
+      maxWidth: maxWidth || '100vw',
+      maxHeight: maxHeight || '100vh',
       visibility: 'visible'
-    };
+    });
 
-    if (cfg.fit === true || cfg.cover === true) {
+    const { offsetWidth: origElWidth, offsetHeight: origElHeight } = targetEl;
+    const { elWidth, elHeight } = fit === true || cover === true
+      ? { elWidth: Math.max(anchorProps.width, origElWidth), elHeight: cover === true ? Math.max(anchorProps.height, origElHeight) : origElHeight }
+      : { elWidth: origElWidth, elHeight: origElHeight };
+
+    let elStyle = { maxWidth, maxHeight };
+
+    if (fit === true || cover === true) {
       elStyle.minWidth = anchorProps.width + 'px';
-      if (cfg.cover === true) {
+      if (cover === true) {
         elStyle.minHeight = anchorProps.height + 'px';
       }
     }
 
-    Object.assign(cfg.el.style, elStyle);
+    Object.assign(targetEl.style, elStyle);
 
-    const
-      targetProps = getTargetProps(cfg.el),
-      props = {
-        top: anchorProps[ cfg.anchorOrigin.vertical ] - targetProps[ cfg.selfOrigin.vertical ],
-        left: anchorProps[ cfg.anchorOrigin.horizontal ] - targetProps[ cfg.selfOrigin.horizontal ]
-      };
+    const targetProps = getTargetProps(elWidth, elHeight);
+    let props = getTopLeftProps(anchorProps, targetProps, anchorOrigin, selfOrigin);
 
-    applyBoundaries(props, anchorProps, targetProps, cfg.anchorOrigin, cfg.selfOrigin);
+    if (absoluteOffset === void 0 || offset === void 0) {
+      applyBoundaries(props, anchorProps, targetProps, anchorOrigin, selfOrigin);
+    }
+    else { // we have touch position or context menu with offset
+      const { top, left } = props; // cache initial values
+
+      // apply initial boundaries
+      applyBoundaries(props, anchorProps, targetProps, anchorOrigin, selfOrigin);
+
+      let hasChanged = false;
+
+      // did it flip vertically?
+      if (props.top !== top) {
+        hasChanged = true;
+        const offsetY = 2 * offset[ 1 ];
+        anchorProps.center = anchorProps.top -= offsetY;
+        anchorProps.bottom -= offsetY + 2;
+      }
+
+      // did it flip horizontally?
+      if (props.left !== left) {
+        hasChanged = true;
+        const offsetX = 2 * offset[ 0 ];
+        anchorProps.middle = anchorProps.left -= offsetX;
+        anchorProps.right -= offsetX + 2;
+      }
+
+      if (hasChanged === true) {
+        // re-calculate props with the new anchor
+        props = getTopLeftProps(anchorProps, targetProps, anchorOrigin, selfOrigin);
+
+        // and re-apply boundaries
+        applyBoundaries(props, anchorProps, targetProps, anchorOrigin, selfOrigin);
+      }
+    }
 
     elStyle = {
       top: props.top + 'px',
@@ -5169,14 +5366,14 @@
       }
     }
 
-    Object.assign(cfg.el.style, elStyle);
+    Object.assign(targetEl.style, elStyle);
 
     // restore scroll position
-    if (cfg.el.scrollTop !== scrollTop) {
-      cfg.el.scrollTop = scrollTop;
+    if (targetEl.scrollTop !== scrollTop) {
+      targetEl.scrollTop = scrollTop;
     }
-    if (cfg.el.scrollLeft !== scrollLeft) {
-      cfg.el.scrollLeft = scrollLeft;
+    if (targetEl.scrollLeft !== scrollLeft) {
+      targetEl.scrollLeft = scrollLeft;
     }
   }
 
@@ -5296,7 +5493,7 @@
 
     emits: [
       ...useModelToggleEmits,
-      'click', 'escape-key'
+      'click', 'escapeKey'
     ],
 
     setup (props, { slots, emit, attrs }) {
@@ -5317,7 +5514,7 @@
       const isDark = useDark(props, $q);
       const { registerTick, removeTick } = useTick();
       const { registerTimeout } = useTimeout();
-      const { transition, transitionStyle } = useTransition(props, showing);
+      const { transitionProps, transitionStyle } = useTransition(props);
       const { localScrollTarget, changeScrollEvent, unconfigureScrollTarget } = useScrollTarget(props, configureScrollTarget);
 
       const { anchorEl, canShow } = useAnchor({ showing });
@@ -5328,7 +5525,7 @@
         processOnMount: true
       });
 
-      const { showPortal, hidePortal, renderPortal } = usePortal(vm, innerRef, renderPortalContent);
+      const { showPortal, hidePortal, renderPortal } = usePortal(vm, innerRef, renderPortalContent, 'menu');
 
       const clickOutsideProps = {
         anchorEl,
@@ -5397,7 +5594,10 @@
           let node = innerRef.value;
 
           if (node && node.contains(document.activeElement) !== true) {
-            node = node.querySelector('[autofocus], [data-autofocus]') || node;
+            node = node.querySelector('[autofocus][tabindex], [data-autofocus][tabindex]')
+              || node.querySelector('[autofocus] [tabindex], [data-autofocus] [tabindex]')
+              || node.querySelector('[autofocus], [data-autofocus]')
+              || node;
             node.focus({ preventScroll: true });
           }
         });
@@ -5472,7 +5672,10 @@
             || evt.qClickOutside !== true
           )
         ) {
-          refocusTarget.focus();
+          ((evt && evt.type.indexOf('key') === 0
+            ? refocusTarget.closest('[tabindex]:not([tabindex^="-"])')
+            : void 0
+          ) || refocusTarget).focus();
           refocusTarget = null;
         }
 
@@ -5534,19 +5737,13 @@
       }
 
       function onEscapeKey (evt) {
-        emit('escape-key');
+        emit('escapeKey');
         hide(evt);
       }
 
       function updatePosition () {
-        const el = innerRef.value;
-
-        if (el === null || anchorEl.value === null) {
-          return
-        }
-
         setPosition({
-          el,
+          targetEl: innerRef.value,
           offset: props.offset,
           anchorEl: anchorEl.value,
           anchorOrigin: anchorOrigin.value,
@@ -5562,7 +5759,7 @@
       function renderPortalContent () {
         return vue.h(
           vue.Transition,
-          { name: transition.value, appear: true },
+          transitionProps.value,
           () => (
             showing.value === true
               ? vue.h('div', {
@@ -5667,11 +5864,25 @@
       + hexBytes[ b[ 14 ] ] + hexBytes[ b[ 15 ] ]
   }
 
+  const btnPropsList = Object.keys(useBtnProps);
+
+  const passBtnProps = props => btnPropsList.reduce(
+    (acc, key) => {
+      const val = props[ key ];
+      if (val !== void 0) {
+        acc[ key ] = val;
+      }
+      return acc
+    },
+    {}
+  );
+
   var QBtnDropdown = createComponent({
     name: 'QBtnDropdown',
 
     props: {
       ...useBtnProps,
+      ...useTransitionProps,
 
       modelValue: Boolean,
       split: Boolean,
@@ -5703,7 +5914,7 @@
       toggleAriaLabel: String
     },
 
-    emits: [ 'update:modelValue', 'click', 'before-show', 'show', 'before-hide', 'hide' ],
+    emits: [ 'update:modelValue', 'click', 'beforeShow', 'show', 'beforeHide', 'hide' ],
 
     setup (props, { slots, emit }) {
       const { proxy } = vue.getCurrentInstance();
@@ -5712,12 +5923,11 @@
       const menuRef = vue.ref(null);
       const targetUid = uid$3();
 
-      const attributes = vue.computed(() => {
+      const ariaAttrs = vue.computed(() => {
         const acc = {
           'aria-expanded': showing.value === true ? 'true' : 'false',
           'aria-haspopup': 'true',
           'aria-controls': targetUid,
-          'aria-owns': targetUid,
           'aria-label': props.toggleAriaLabel || proxy.$q.lang.label[ showing.value === true ? 'collapse' : 'expand' ](props.label)
         };
 
@@ -5740,6 +5950,9 @@
         + (props.split === false ? ' q-btn-dropdown__arrow-container' : '')
       );
 
+      const btnDesignAttr = vue.computed(() => getBtnDesignAttr(props));
+      const btnProps = vue.computed(() => passBtnProps(props));
+
       vue.watch(() => props.modelValue, val => {
         menuRef.value !== null && menuRef.value[ val ? 'show' : 'hide' ]();
       });
@@ -5748,7 +5961,7 @@
 
       function onBeforeShow (e) {
         showing.value = true;
-        emit('before-show', e);
+        emit('beforeShow', e);
       }
 
       function onShow (e) {
@@ -5758,7 +5971,7 @@
 
       function onBeforeHide (e) {
         showing.value = false;
-        emit('before-hide', e);
+        emit('beforeHide', e);
       }
 
       function onHide (e) {
@@ -5820,6 +6033,9 @@
             self: props.menuSelf,
             offset: props.menuOffset,
             separateClosePopup: true,
+            transitionShow: props.transitionShow,
+            transitionHide: props.transitionHide,
+            transitionDuration: props.transitionDuration,
             onBeforeShow,
             onShow,
             onBeforeHide,
@@ -5830,11 +6046,11 @@
         if (props.split === false) {
           return vue.h(QBtn, {
             class: 'q-btn-dropdown q-btn-dropdown--simple',
-            ...props,
+            ...btnProps.value,
+            ...ariaAttrs.value,
             disable: props.disable === true || props.disableMainBtn === true,
             noWrap: true,
             round: false,
-            ...attributes.value,
             onClick
           }, {
             default: () => hSlot(slots.label, []).concat(Arrow),
@@ -5844,21 +6060,17 @@
 
         return vue.h(QBtnGroup, {
           class: 'q-btn-dropdown q-btn-dropdown--split no-wrap q-btn-item',
-          outline: props.outline,
-          flat: props.flat,
           rounded: props.rounded,
           square: props.square,
-          push: props.push,
-          unelevated: props.unelevated,
+          ...btnDesignAttr.value,
           glossy: props.glossy,
           stretch: props.stretch
         }, () => [
           vue.h(QBtn, {
             class: 'q-btn-dropdown--current',
-            ...props,
+            ...btnProps.value,
             disable: props.disable === true || props.disableMainBtn === true,
             noWrap: true,
-            iconRight: props.iconRight,
             round: false,
             onClick: onClickHide
           }, {
@@ -5868,16 +6080,15 @@
 
           vue.h(QBtn, {
             class: 'q-btn-dropdown__arrow-container q-anchor--skip',
-            ...attributes.value,
+            ...ariaAttrs.value,
+            ...btnDesignAttr.value,
             disable: props.disable === true || props.disableDropdown === true,
-            outline: props.outline,
-            flat: props.flat,
             rounded: props.rounded,
-            push: props.push,
-            size: props.size,
             color: props.color,
             textColor: props.textColor,
             dense: props.dense,
+            size: props.size,
+            padding: props.padding,
             ripple: props.ripple
           }, () => Arrow)
         ])
@@ -5984,6 +6195,14 @@
 
       const injectFormInput = useFormInject(formAttrs);
 
+      const btnDesignAttr = vue.computed(() => getBtnDesignAttr(props));
+
+      const btnOptionDesign = vue.computed(() => ({
+        rounded: props.rounded,
+        dense: props.dense,
+        ...btnDesignAttr.value
+      }));
+
       const btnOptions = vue.computed(() => props.options.map((item, i) => {
         const { attrs, value, slot, ...opt } = item;
 
@@ -5991,19 +6210,11 @@
           slot,
           props: {
             key: i,
-            onClick (e) { set(value, item, e); },
 
             'aria-pressed': value === props.modelValue ? 'true' : 'false',
-
             ...attrs,
             ...opt,
-
-            outline: props.outline,
-            flat: props.flat,
-            rounded: props.rounded,
-            push: props.push,
-            unelevated: props.unelevated,
-            dense: props.dense,
+            ...btnOptionDesign.value,
 
             disable: props.disable === true || opt.disable === true,
 
@@ -6021,7 +6232,9 @@
             padding: mergeOpt(opt, 'padding'),
             ripple: mergeOpt(opt, 'ripple'),
             stack: mergeOpt(opt, 'stack') === true,
-            stretch: mergeOpt(opt, 'stretch') === true
+            stretch: mergeOpt(opt, 'stretch') === true,
+
+            onClick (e) { set(value, item, e); }
           }
         }
       }));
@@ -6060,12 +6273,9 @@
 
       return () => vue.h(QBtnGroup, {
         class: 'q-btn-toggle',
-        outline: props.outline,
-        flat: props.flat,
+        ...btnDesignAttr.value,
         rounded: props.rounded,
-        push: props.push,
         stretch: props.stretch,
-        unelevated: props.unelevated,
         glossy: props.glossy,
         spread: props.spread
       }, getContent)
@@ -6193,12 +6403,19 @@
     return dir
   }
 
+  // This is especially important (not the main reason, but important)
+  // for TouchSwipe directive running on Firefox
+  // because text selection on such elements cannot be determined
+  // without additional work (on top of getSelection() API)
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=85686
+  const avoidNodeNamesList = [ 'INPUT', 'TEXTAREA' ];
+
   function shouldStart (evt, ctx) {
     return ctx.event === void 0
       && evt.target !== void 0
       && evt.target.draggable !== true
       && typeof ctx.handler === 'function'
-      && evt.target.nodeName.toUpperCase() !== 'INPUT'
+      && avoidNodeNamesList.includes(evt.target.nodeName.toUpperCase()) === false
       && (evt.qClonedBy === void 0 || evt.qClonedBy.indexOf(ctx.uid) === -1)
   }
 
@@ -6300,6 +6517,13 @@
                   ctx.end(evt);
                   return
                 }
+              }
+              // is user trying to select text?
+              // if so, then something should be reported here
+              // (previous selection, if any, was discarded when swipe started)
+              else if (window.getSelection().toString() !== '') {
+                ctx.end(evt);
+                return
               }
               else if (absX < ctx.sensitivity[ 2 ] && absY < ctx.sensitivity[ 2 ]) {
                 return
@@ -6523,7 +6747,7 @@
     keepAliveMax: Number
   };
 
-  const usePanelEmits = [ 'update:modelValue', 'before-transition', 'transition' ];
+  const usePanelEmits = [ 'update:modelValue', 'beforeTransition', 'transition' ];
 
   function usePanel () {
     const { props, emit, proxy } = vue.getCurrentInstance();
@@ -6595,7 +6819,7 @@
 
       if (panelIndex.value !== index) {
         panelIndex.value = index;
-        emit('before-transition', newVal, oldVal);
+        emit('beforeTransition', newVal, oldVal);
         vue.nextTick(() => {
           emit('transition', newVal, oldVal);
         });
@@ -6661,7 +6885,7 @@
         index += direction;
       }
 
-      if (props.infinite === true && panels.length > 0 && startIndex !== -1 && startIndex !== panels.length) {
+      if (props.infinite === true && panels.length !== 0 && startIndex !== -1 && startIndex !== panels.length) {
         goToPanelByOffset(direction, direction === -1 ? panels.length : -1);
       }
     }
@@ -6926,7 +7150,7 @@
 
       const isDark = useDark(props, $q);
 
-      let timer, panelsLen;
+      let timer = null, panelsLen;
 
       const {
         updatePanelsList, getPanelContent,
@@ -6980,7 +7204,6 @@
 
       vue.watch(() => props.modelValue, () => {
         if (props.autoplay) {
-          clearInterval(timer);
           startTimer();
         }
       });
@@ -6989,20 +7212,28 @@
         if (val) {
           startTimer();
         }
-        else {
-          clearInterval(timer);
+        else if (timer !== null) {
+          clearTimeout(timer);
+          timer = null;
         }
       });
 
       function startTimer () {
         const duration = isNumber(props.autoplay) === true
-          ? props.autoplay
+          ? Math.abs(props.autoplay)
           : 5000;
 
-        timer = setTimeout(
-          duration >= 0 ? nextPanel : previousPanel,
-          Math.abs(duration)
-        );
+        timer !== null && clearTimeout(timer);
+        timer = setTimeout(() => {
+          timer = null;
+
+          if (duration >= 0) {
+            nextPanel();
+          }
+          else {
+            previousPanel();
+          }
+        }, duration);
       }
 
       vue.onMounted(() => {
@@ -7010,7 +7241,7 @@
       });
 
       vue.onBeforeUnmount(() => {
-        clearInterval(timer);
+        timer !== null && clearTimeout(timer);
       });
 
       function getNavigationContainer (type, mapping) {
@@ -7491,6 +7722,8 @@
       const prop = { type: 'checkbox' };
 
       props.name !== void 0 && Object.assign(prop, {
+        // see https://vuejs.org/guide/extras/render-function.html#creating-vnodes (.prop)
+        '.checked': isTrue.value,
         '^checked': isTrue.value === true ? 'checked' : void 0,
         name: props.name,
         value: modelIsArray.value === true
@@ -7506,7 +7739,7 @@
     const attributes = vue.computed(() => {
       const attrs = {
         tabindex: tabindex.value,
-        role: 'checkbox',
+        role: type === 'toggle' ? 'switch' : 'checkbox',
         'aria-label': props.label,
         'aria-checked': isIndeterminate.value === true
           ? 'mixed'
@@ -7771,16 +8004,19 @@
           + (isDark.value === true ? ' q-chip--dark q-dark' : '')
       });
 
-      const attributes = vue.computed(() => (
-        props.disable === true
+      const attributes = vue.computed(() => {
+        const chip = props.disable === true
           ? { tabindex: -1, 'aria-disabled': 'true' }
-          : {
-              tabindex: props.tabindex || 0,
-              role: 'button',
-              'aria-hidden': 'false',
-              'aria-label': props.removeAriaLabel || $q.lang.label.remove
-            }
-      ));
+          : { tabindex: props.tabindex || 0 };
+        const remove = {
+          ...chip,
+          role: 'button',
+          'aria-hidden': 'false',
+          'aria-label': props.removeAriaLabel || $q.lang.label.remove
+        };
+
+        return { chip, remove }
+      });
 
       function onKeyup (e) {
         e.keyCode === 13 /* ENTER */ && onClick(e);
@@ -7838,7 +8074,7 @@
           vue.h(QIcon, {
             class: 'q-chip__icon q-chip__icon--remove cursor-pointer',
             name: removeIcon.value,
-            ...attributes.value,
+            ...attributes.value.remove,
             onClick: onRemove,
             onKeyup: onRemove
           })
@@ -7857,7 +8093,7 @@
 
         isClickable.value === true && Object.assign(
           data,
-          attributes.value,
+          attributes.value.chip,
           { onClick, onKeyup }
         );
 
@@ -7964,11 +8200,16 @@
 
       const normalized = vue.computed(() => between(props.value, props.min, props.max));
 
-      const strokeDashOffset = vue.computed(() => circumference * (
-        1 - (normalized.value - props.min) / (props.max - props.min)
-      ));
-
+      const range = vue.computed(() => props.max - props.min);
       const strokeWidth = vue.computed(() => props.thickness / 2 * viewBox.value);
+      const strokeDashOffset = vue.computed(() => {
+        const dashRatio = (props.max - normalized.value) / range.value;
+        const dashGap = props.rounded === true && normalized.value < props.max && dashRatio < 0.25
+          ? strokeWidth.value / 2 * (1 - dashRatio / 0.25)
+          : 0;
+
+        return circumference * dashRatio + dashGap
+      });
 
       function getCircle ({ thickness, offset, color, cls, rounded }) {
         return vue.h('circle', {
@@ -8596,8 +8837,16 @@
       && innerMin.value < innerMax.value
     ));
 
-    const decimals = vue.computed(() => (String(props.step).trim().split('.')[ 1 ] || '').length);
-    const step = vue.computed(() => (props.step === 0 ? 1 : props.step));
+    const roundValueFn = vue.computed(() => {
+      if (props.step === 0) {
+        return v => v
+      }
+
+      const decimals = (String(props.step).trim().split('.')[ 1 ] || '').length;
+      return v => parseFloat(v.toFixed(decimals))
+    });
+
+    const keyStep = vue.computed(() => (props.step === 0 ? 1 : props.step));
     const tabindex = vue.computed(() => (editable.value === true ? props.tabindex || 0 : -1));
 
     const trackLen = vue.computed(() => props.max - props.min);
@@ -8687,9 +8936,12 @@
       + (props.innerTrackColor !== void 0 ? ` bg-${ props.innerTrackColor }` : '')
     );
     const innerBarStyle = vue.computed(() => {
+      const innerDiff = innerMaxRatio.value - innerMinRatio.value;
       const acc = {
         [ positionProp.value ]: `${ 100 * innerMinRatio.value }%`,
-        [ sizeProp.value ]: `${ 100 * (innerMaxRatio.value - innerMinRatio.value) }%`
+        [ sizeProp.value ]: innerDiff === 0
+          ? '2px'
+          : `${ 100 * innerDiff }%`
       };
       if (props.innerTrackImg !== void 0) {
         acc.backgroundImage = `url(${ props.innerTrackImg }) !important`;
@@ -8702,13 +8954,11 @@
       let model = min + ratio * (max - min);
 
       if (step > 0) {
-        const modulo = (model - min) % step;
+        const modulo = (model - innerMin.value) % step;
         model += (Math.abs(modulo) >= step / 2 ? (modulo < 0 ? -1 : 1) * step : 0) - modulo;
       }
 
-      if (decimals.value > 0) {
-        model = parseFloat(model.toFixed(decimals.value));
-      }
+      model = roundValueFn.value(model);
 
       return between(model, innerMin.value, innerMax.value)
     }
@@ -8734,7 +8984,7 @@
     }
 
     const markerStep = vue.computed(() => (
-      isNumber(props.markers) === true ? props.markers : step.value)
+      isNumber(props.markers) === true ? props.markers : keyStep.value)
     );
 
     const markerTicks = vue.computed(() => {
@@ -8783,18 +9033,16 @@
     }));
 
     const markerStyle = vue.computed(() => {
-      if (innerBarLen.value !== 0) {
-        const size = 100 * markerStep.value / innerBarLen.value;
+      const size = innerBarLen.value === 0
+        ? '2px'
+        : 100 * markerStep.value / innerBarLen.value;
 
-        return {
-          ...innerBarStyle.value,
-          backgroundSize: props.vertical === true
-            ? `2px ${ size }%`
-            : `${ size }% 2px`
-        }
+      return {
+        ...innerBarStyle.value,
+        backgroundSize: props.vertical === true
+          ? `2px ${ size }%`
+          : `${ size }% 2px`
       }
-
-      return null
     });
 
     function getMarkerList (def) {
@@ -9096,8 +9344,8 @@
         tabindex,
         attributes,
 
-        step,
-        decimals,
+        roundValueFn,
+        keyStep,
         trackLen,
         innerMin,
         innerMinRatio,
@@ -9243,7 +9491,7 @@
         stopAndPrevent(evt);
 
         const
-          stepVal = ([ 34, 33 ].includes(evt.keyCode) ? 10 : 1) * state.step.value,
+          stepVal = ([ 34, 33 ].includes(evt.keyCode) ? 10 : 1) * state.keyStep.value,
           offset = (
             ([ 34, 37, 40 ].includes(evt.keyCode) ? -1 : 1)
             * (state.isReversed.value === true ? -1 : 1)
@@ -9251,7 +9499,7 @@
           );
 
         model.value = between(
-          parseFloat((model.value + offset).toFixed(state.decimals.value)),
+          state.roundValueFn.value(model.value + offset),
           state.innerMin.value,
           state.innerMax.value
         );
@@ -9323,8 +9571,10 @@
       }
 
       function emitEvent () {
-        clearTimeout(timer);
-        timer = null;
+        if (timer !== null) {
+          clearTimeout(timer);
+          timer = null;
+        }
 
         if (targetEl) {
           const { offsetWidth: width, offsetHeight: height } = targetEl;
@@ -9338,23 +9588,30 @@
 
       const { proxy } = vue.getCurrentInstance();
 
+      // expose public method
+      proxy.trigger = trigger;
+
       if (hasObserver === true) {
         let observer;
 
-        vue.onMounted(() => {
-          vue.nextTick(() => {
-            targetEl = proxy.$el.parentNode;
+        // initialize as soon as possible
+        const init = stop => {
+          targetEl = proxy.$el.parentNode;
 
-            if (targetEl) {
-              observer = new ResizeObserver(trigger);
-              observer.observe(targetEl);
-              emitEvent();
-            }
-          });
-        });
+          if (targetEl) {
+            observer = new ResizeObserver(trigger);
+            observer.observe(targetEl);
+            emitEvent();
+          }
+          else if (stop !== true) {
+            vue.nextTick(() => { init(true); });
+          }
+        };
+
+        vue.onMounted(() => { init(); });
 
         vue.onBeforeUnmount(() => {
-          clearTimeout(timer);
+          timer !== null && clearTimeout(timer);
 
           if (observer !== void 0) {
             if (observer.disconnect !== void 0) {
@@ -9374,7 +9631,10 @@
         let curDocView;
 
         function cleanup () {
-          clearTimeout(timer);
+          if (timer !== null) {
+            clearTimeout(timer);
+            timer = null;
+          }
 
           if (curDocView !== void 0) {
             // iOS is fuzzy, need to check it first
@@ -9403,9 +9663,6 @@
         });
 
         vue.onBeforeUnmount(cleanup);
-
-        // expose public method
-        proxy.trigger = trigger;
 
         return () => {
           if (canRender.value === true) {
@@ -9523,18 +9780,11 @@
       const rightArrow = vue.ref(false);
       const justify = vue.ref(false);
 
-      const arrowsEnabled = vue.computed(() =>
-        $q.platform.is.desktop === true || props.mobileArrows === true
-      );
-
       const tabDataList = [];
       const tabDataListLen = vue.ref(0);
       const hasFocus = vue.ref(false);
 
-      let animateTimer, scrollTimer, unwatchRoute;
-      let localUpdateArrows = arrowsEnabled.value === true
-        ? updateArrowsFn
-        : noop;
+      let animateTimer = null, scrollTimer = null, unwatchRoute;
 
       const tabProps = vue.computed(() => ({
         activeClass: props.activeClass,
@@ -9575,17 +9825,17 @@
         'q-tabs row no-wrap items-center'
         + ` q-tabs--${ scrollable.value === true ? '' : 'not-' }scrollable`
         + ` q-tabs--${ props.vertical === true ? 'vertical' : 'horizontal' }`
-        + ` q-tabs__arrows--${ arrowsEnabled.value === true && props.outsideArrows === true ? 'outside' : 'inside' }`
+        + ` q-tabs__arrows--${ props.outsideArrows === true ? 'outside' : 'inside' }`
+        + ` q-tabs--mobile-with${ props.mobileArrows === true ? '' : 'out' }-arrows`
         + (props.dense === true ? ' q-tabs--dense' : '')
         + (props.shrink === true ? ' col-shrink' : '')
         + (props.stretch === true ? ' self-stretch' : '')
       );
 
       const innerClass = vue.computed(() =>
-        'q-tabs__content row no-wrap items-center self-stretch hide-scrollbar relative-position '
+        'q-tabs__content scroll--mobile row no-wrap items-center self-stretch hide-scrollbar relative-position '
         + alignClass.value
         + (props.contentClass !== void 0 ? ` ${ props.contentClass }` : '')
-        + ($q.platform.is.mobile === true ? ' scroll' : '')
       );
 
       const domProps = vue.computed(() => (
@@ -9597,25 +9847,15 @@
       const isRTL = vue.computed(() => props.vertical !== true && $q.lang.rtl === true);
       const rtlPosCorrection = vue.computed(() => rtlHasScrollBug === false && isRTL.value === true);
 
-      vue.watch(isRTL, localUpdateArrows);
+      vue.watch(isRTL, updateArrows);
 
       vue.watch(() => props.modelValue, name => {
         updateModel({ name, setCurrent: true, skipEmit: true });
       });
 
-      vue.watch(() => props.outsideArrows, () => {
-        recalculateScroll();
-      });
+      vue.watch(() => props.outsideArrows, recalculateScroll);
 
-      vue.watch(arrowsEnabled, v => {
-        localUpdateArrows = v === true
-          ? updateArrowsFn
-          : noop;
-
-        recalculateScroll();
-      });
-
-      function updateModel ({ name, setCurrent, skipEmit, fromRoute }) {
+      function updateModel ({ name, setCurrent, skipEmit }) {
         if (currentModel.value !== name) {
           if (skipEmit !== true && props[ 'onUpdate:modelValue' ] !== void 0) {
             emit('update:modelValue', name);
@@ -9661,7 +9901,7 @@
         scrollable.value = scroll;
 
         // Arrows need to be updated even if the scroll status was already true
-        scroll === true && registerUpdateArrowsTick(localUpdateArrows);
+        scroll === true && registerUpdateArrowsTick(updateArrows);
 
         justify.value = size < parseInt(props.breakpoint, 10);
       }
@@ -9680,7 +9920,10 @@
             oldEl = oldTab.tabIndicatorRef.value,
             newEl = newTab.tabIndicatorRef.value;
 
-          clearTimeout(animateTimer);
+          if (animateTimer !== null) {
+            clearTimeout(animateTimer);
+            animateTimer = null;
+          }
 
           oldEl.style.transition = 'none';
           oldEl.style.transform = 'none';
@@ -9698,6 +9941,7 @@
           // allow scope updates to kick in (QRouteTab needs more time)
           registerAnimateTick(() => {
             animateTimer = setTimeout(() => {
+              animateTimer = null;
               newEl.style.transition = 'transform .25s cubic-bezier(.4, 0, .2, 1)';
               newEl.style.transform = 'none';
             }, 70);
@@ -9718,39 +9962,39 @@
 
         if (offset < 0) {
           contentRef.value[ props.vertical === true ? 'scrollTop' : 'scrollLeft' ] += Math.floor(offset);
-          localUpdateArrows();
+          updateArrows();
           return
         }
 
         offset += props.vertical === true ? newPos.height - height : newPos.width - width;
         if (offset > 0) {
           contentRef.value[ props.vertical === true ? 'scrollTop' : 'scrollLeft' ] += Math.ceil(offset);
-          localUpdateArrows();
+          updateArrows();
         }
       }
 
-      function updateArrowsFn () {
+      function updateArrows () {
         const content = contentRef.value;
-        if (content !== null) {
-          const
-            rect = content.getBoundingClientRect(),
-            pos = props.vertical === true ? content.scrollTop : Math.abs(content.scrollLeft);
+        if (content === null) { return }
 
-          if (isRTL.value === true) {
-            leftArrow.value = Math.ceil(pos + rect.width) < content.scrollWidth - 1;
-            rightArrow.value = pos > 0;
-          }
-          else {
-            leftArrow.value = pos > 0;
-            rightArrow.value = props.vertical === true
-              ? Math.ceil(pos + rect.height) < content.scrollHeight
-              : Math.ceil(pos + rect.width) < content.scrollWidth;
-          }
+        const
+          rect = content.getBoundingClientRect(),
+          pos = props.vertical === true ? content.scrollTop : Math.abs(content.scrollLeft);
+
+        if (isRTL.value === true) {
+          leftArrow.value = Math.ceil(pos + rect.width) < content.scrollWidth - 1;
+          rightArrow.value = pos > 0;
+        }
+        else {
+          leftArrow.value = pos > 0;
+          rightArrow.value = props.vertical === true
+            ? Math.ceil(pos + rect.height) < content.scrollHeight
+            : Math.ceil(pos + rect.width) < content.scrollWidth;
         }
       }
 
       function animScrollTo (value) {
-        stopAnimScroll();
+        scrollTimer !== null && clearInterval(scrollTimer);
         scrollTimer = setInterval(() => {
           if (scrollTowards(value) === true) {
             stopAnimScroll();
@@ -9767,7 +10011,10 @@
       }
 
       function stopAnimScroll () {
-        clearInterval(scrollTimer);
+        if (scrollTimer !== null) {
+          clearInterval(scrollTimer);
+          scrollTimer = null;
+        }
       }
 
       function onKbdNavigate (keyCode, fromEl) {
@@ -9847,7 +10094,7 @@
         }
 
         set(content, pos);
-        localUpdateArrows();
+        updateArrows();
 
         return done
       }
@@ -10035,13 +10282,6 @@
         }
       }
 
-      /*
-       * Vue has an aggressive diff (in-place replacement) so we cannot
-       * ensure that the instance getting destroyed is the actual tab
-       * reported here. As a result, we cannot use its name or check
-       * if it's a route one to make the necessary updates. We need to
-       * always check the existing list again and infer the changes.
-       */
       function unregisterTab (tabData) {
         tabDataList.splice(tabDataList.indexOf(tabData), 1);
         tabDataListLen.value--;
@@ -10078,7 +10318,7 @@
       vue.provide(tabsKey, $tabs);
 
       function cleanup () {
-        clearTimeout(animateTimer);
+        animateTimer !== null && clearTimeout(animateTimer);
         stopAnimScroll();
         unwatchRoute !== void 0 && unwatchRoute();
       }
@@ -10098,17 +10338,21 @@
       });
 
       return () => {
-        const child = [
+        return vue.h('div', {
+          ref: rootRef,
+          class: classes.value,
+          role: 'tablist',
+          onFocusin,
+          onFocusout
+        }, [
           vue.h(QResizeObserver, { onResize: updateContainer }),
 
           vue.h('div', {
             ref: contentRef,
             class: innerClass.value,
-            onScroll: localUpdateArrows
-          }, hSlot(slots.default))
-        ];
+            onScroll: updateArrows
+          }, hSlot(slots.default)),
 
-        arrowsEnabled.value === true && child.push(
           vue.h(QIcon, {
             class: 'q-tabs__arrow q-tabs__arrow--left absolute q-tab__icon'
               + (leftArrow.value === true ? '' : ' q-tabs__arrow--faded'),
@@ -10130,15 +10374,7 @@
             onMouseleavePassive: stopAnimScroll,
             onTouchendPassive: stopAnimScroll
           })
-        );
-
-        return vue.h('div', {
-          ref: rootRef,
-          class: classes.value,
-          role: 'tablist',
-          onFocusin,
-          onFocusout
-        }, child)
+        ])
       }
     }
   });
@@ -10173,9 +10409,11 @@
   };
 
   function useTab (props, slots, emit, routeData) {
-    const $tabs = vue.inject(tabsKey, () => {
+    const $tabs = vue.inject(tabsKey, emptyRenderFn);
+    if ($tabs === emptyRenderFn) {
       console.error('QTab/QRouteTab component needs to be child of QTabs');
-    });
+      return emptyRenderFn
+    }
 
     const { proxy } = vue.getCurrentInstance();
 
@@ -10451,7 +10689,7 @@
     props: usePanelChildProps,
 
     setup (_, { slots }) {
-      return () => vue.h('div', { class: 'q-tab-panel' }, hSlot(slots.default))
+      return () => vue.h('div', { class: 'q-tab-panel', role: 'tabpanel' }, hSlot(slots.default))
     }
   });
 
@@ -10933,7 +11171,7 @@
       }));
 
       const computedPalette = vue.computed(() => (
-        props.palette !== void 0 && props.palette.length > 0
+        props.palette !== void 0 && props.palette.length !== 0
           ? props.palette
           : palette
       ));
@@ -10947,15 +11185,11 @@
         + (isDark.value === true ? ' q-color-picker--dark q-dark' : '')
       );
 
-      const attributes = vue.computed(() => {
-        if (props.disable === true) {
-          return { 'aria-disabled': 'true' }
-        }
-        if (props.readonly === true) {
-          return { 'aria-readonly': 'true' }
-        }
-        return {}
-      });
+      const attributes = vue.computed(() => (
+        props.disable === true
+          ? { 'aria-disabled': 'true' }
+          : {}
+      ));
 
       const spectrumDirective = vue.computed(() => {
         // if editable.value === true
@@ -11935,7 +12169,7 @@
     });
 
     const tabindex = vue.computed(() => {
-      return props.editable === true ? 0 : -1
+      return editable.value === true ? 0 : -1
     });
 
     const headerClass = vue.computed(() => {
@@ -13053,7 +13287,7 @@
 
     emits: [
       ...useDatetimeEmits,
-      'range-start', 'range-end', 'navigation'
+      'rangeStart', 'rangeEnd', 'navigation'
     ],
 
     setup (props, { slots, emit }) {
@@ -13181,7 +13415,7 @@
       );
 
       const headerTitle = vue.computed(() => {
-        if (props.title !== void 0 && props.title !== null && props.title.length > 0) {
+        if (props.title !== void 0 && props.title !== null && props.title.length !== 0) {
           return props.title
         }
 
@@ -13233,7 +13467,7 @@
       });
 
       const headerSubtitle = vue.computed(() => {
-        if (props.subtitle !== void 0 && props.subtitle !== null && props.subtitle.length > 0) {
+        if (props.subtitle !== void 0 && props.subtitle !== null && props.subtitle.length !== 0) {
           return props.subtitle
         }
 
@@ -13665,7 +13899,7 @@
       const attributes = vue.computed(() => (
         props.disable === true
           ? { 'aria-disabled': 'true' }
-          : (props.readonly === true ? { 'aria-readonly': 'true' } : {})
+          : {}
       ));
 
       vue.watch(() => props.modelValue, v => {
@@ -13673,21 +13907,19 @@
           lastEmitValue = 0;
         }
         else {
-          const { year, month } = getViewModel(innerMask.value, innerLocale.value);
-          updateViewModel(year, month);
+          const model = getViewModel(innerMask.value, innerLocale.value);
+          updateViewModel(model.year, model.month, model);
         }
       });
 
       vue.watch(view, () => {
-        blurTargetRef.value !== null && blurTargetRef.value.focus();
+        if (blurTargetRef.value !== null && proxy.$el.contains(document.activeElement) === true) {
+          blurTargetRef.value.focus();
+        }
       });
 
-      vue.watch(() => viewModel.value.year, year => {
-        emit('navigation', { year, month: viewModel.value.month });
-      });
-
-      vue.watch(() => viewModel.value.month, month => {
-        emit('navigation', { year: viewModel.value.year, month });
+      vue.watch(() => viewModel.value.year + '|' + viewModel.value.month, () => {
+        emit('navigation', { year: viewModel.value.year, month: viewModel.value.month });
       });
 
       vue.watch(mask, val => {
@@ -13701,10 +13933,22 @@
       });
 
       function setToday () {
-        const date = today.value;
-        const month = daysMap.value[ getMonthHash(date) ];
+        const { year, month, day } = today.value;
 
-        if (month === void 0 || month.includes(date.day) === false) {
+        const date = {
+          // contains more props than needed (hour, minute, second, millisecond)
+          // but those aren't used in the processing of this "date" variable
+          ...viewModel.value,
+
+          // overwriting with today's date
+          year,
+          month,
+          day
+        };
+
+        const monthMap = daysMap.value[ getMonthHash(date) ];
+
+        if (monthMap === void 0 || monthMap.includes(date.day) === false) {
           addToModel(date);
         }
 
@@ -13869,19 +14113,24 @@
         return { year: date.year, month: date.month, day: date.day }
       }
 
-      function updateViewModel (year, month) {
+      function updateViewModel (year, month, time) {
         if (minNav.value !== null && year <= minNav.value.year) {
-          year = minNav.value.year;
-          if (month < minNav.value.month) {
+          if (month < minNav.value.month || year < minNav.value.year) {
             month = minNav.value.month;
           }
+          year = minNav.value.year;
         }
 
         if (maxNav.value !== null && year >= maxNav.value.year) {
-          year = maxNav.value.year;
-          if (month > maxNav.value.month) {
+          if (month > maxNav.value.month || year > maxNav.value.year) {
             month = maxNav.value.month;
           }
+          year = maxNav.value.year;
+        }
+
+        if (time !== void 0) {
+          const { hour, minute, second, millisecond, timezoneOffset, timeHash } = time;
+          Object.assign(viewModel.value, { hour, minute, second, millisecond, timezoneOffset, timeHash });
         }
 
         const newHash = year + '/' + pad(month) + '/01';
@@ -14362,7 +14611,7 @@
             finalHash: initHash
           };
 
-          emit('range-start', getShortDate(day));
+          emit('rangeStart', getShortDate(day));
         }
         else {
           const
@@ -14375,7 +14624,7 @@
           editRange.value = null;
           addToModel(initHash === finalHash ? day : { target: day, ...payload });
 
-          emit('range-end', {
+          emit('rangeEnd', {
             from: getShortDate(payload.from),
             to: getShortDate(payload.to)
           });
@@ -14470,7 +14719,8 @@
     vpPendingUpdate = false,
     bodyLeft,
     bodyTop,
-    closeTimer;
+    href,
+    closeTimer = null;
 
   function onWheel (e) {
     if (shouldPreventScroll(e)) {
@@ -14556,6 +14806,8 @@
       bodyLeft = body.style.left;
       bodyTop = body.style.top;
 
+      href = window.location.href;
+
       body.style.left = `-${ scrollPositionX }px`;
       body.style.top = `-${ scrollPositionY }px`;
 
@@ -14568,6 +14820,7 @@
 
       body.classList.add('q-body--prevent-scroll');
       document.qScrollPrevented = true;
+
       if (client.is.ios === true) {
         if (hasViewport === true) {
           window.scrollTo(0, 0);
@@ -14606,7 +14859,11 @@
       body.style.left = bodyLeft;
       body.style.top = bodyTop;
 
-      window.scrollTo(scrollPositionX, scrollPositionY);
+      // scroll back only if route has not changed
+      if (window.location.href === href) {
+        window.scrollTo(scrollPositionX, scrollPositionY);
+      }
+
       maxScrollTop = void 0;
     }
   }
@@ -14617,9 +14874,9 @@
     if (state === true) {
       registered++;
 
-      if (closeTimer !== void 0) {
+      if (closeTimer !== null) {
         clearTimeout(closeTimer);
-        closeTimer = void 0;
+        closeTimer = null;
         return
       }
 
@@ -14641,11 +14898,10 @@
       action = 'remove';
 
       if (client.is.ios === true && client.is.nativeMobile === true) {
-        clearTimeout(closeTimer);
-
+        closeTimer !== null && clearTimeout(closeTimer);
         closeTimer = setTimeout(() => {
           apply$1(action);
-          closeTimer = void 0;
+          closeTimer = null;
         }, 100);
         return
       }
@@ -14680,7 +14936,7 @@
     left: 'fixed-left items-center'
   };
 
-  const transitions = {
+  const defaultTransitions = {
     standard: [ 'scale', 'scale' ],
     top: [ 'slide-down', 'slide-up' ],
     bottom: [ 'slide-up', 'slide-down' ],
@@ -14697,8 +14953,8 @@
       ...useModelToggleProps,
       ...useTransitionProps,
 
-      transitionShow: String,
-      transitionHide: String,
+      transitionShow: String, // override useTransitionProps
+      transitionHide: String, // override useTransitionProps
 
       persistent: Boolean,
       autoClose: Boolean,
@@ -14729,7 +14985,7 @@
 
     emits: [
       ...useModelToggleEmits,
-      'shake', 'click', 'escape-key'
+      'shake', 'click', 'escapeKey'
     ],
 
     setup (props, { slots, emit, attrs }) {
@@ -14737,10 +14993,9 @@
 
       const innerRef = vue.ref(null);
       const showing = vue.ref(false);
-      const transitionState = vue.ref(false);
       const animating = vue.ref(false);
 
-      let shakeTimeout, refocusTarget = null, isMaximized, avoidAutoClose;
+      let shakeTimeout = null, refocusTarget = null, isMaximized, avoidAutoClose;
 
       const hideOnRouteChange = vue.computed(() =>
         props.persistent !== true
@@ -14752,8 +15007,14 @@
       const { registerTimeout } = useTimeout();
       const { registerTick, removeTick } = useTick();
 
+      const { transitionProps, transitionStyle } = useTransition(
+        props,
+        () => defaultTransitions[ props.position ][ 0 ],
+        () => defaultTransitions[ props.position ][ 1 ]
+      );
+
       const { showPortal, hidePortal, portalIsAccessible, renderPortal } = usePortal(
-        vm, innerRef, renderPortalContent, /* pls do check if on a global dialog */ true
+        vm, innerRef, renderPortalContent, 'dialog'
       );
 
       const { hide } = useModelToggle({
@@ -14776,26 +15037,6 @@
         + (props.square === true ? ' q-dialog__inner--square' : '')
       );
 
-      const transitionShow = vue.computed(() =>
-        'q-transition--'
-        + (props.transitionShow === void 0 ? transitions[ props.position ][ 0 ] : props.transitionShow)
-      );
-
-      const transitionHide = vue.computed(() =>
-        'q-transition--'
-        + (props.transitionHide === void 0 ? transitions[ props.position ][ 1 ] : props.transitionHide)
-      );
-
-      const transition = vue.computed(() => (
-        transitionState.value === true
-          ? transitionHide.value
-          : transitionShow.value
-      ));
-
-      const transitionStyle = vue.computed(
-        () => `--q-transition-duration: ${ props.transitionDuration }ms`
-      );
-
       const useBackdrop = vue.computed(() => showing.value === true && props.seamless !== true);
 
       const onEvents = vue.computed(() => (
@@ -14809,12 +15050,6 @@
           + `q-dialog--${ useBackdrop.value === true ? 'modal' : 'seamless' }`,
         attrs.class
       ]);
-
-      vue.watch(showing, val => {
-        vue.nextTick(() => {
-          transitionState.value = val;
-        });
-      });
 
       vue.watch(() => props.maximized, state => {
         showing.value === true && updateMaximized(state);
@@ -14895,7 +15130,10 @@
         hidePortal();
 
         if (refocusTarget !== null) {
-          refocusTarget.focus();
+          ((evt && evt.type.indexOf('key') === 0
+            ? refocusTarget.closest('[tabindex]:not([tabindex^="-"])')
+            : void 0
+          ) || refocusTarget).focus();
           refocusTarget = null;
         }
 
@@ -14915,13 +15153,23 @@
             return
           }
 
-          node = node.querySelector(selector || '[autofocus], [data-autofocus]') || node;
+          node = (selector !== '' ? node.querySelector(selector) : null)
+            || node.querySelector('[autofocus][tabindex], [data-autofocus][tabindex]')
+            || node.querySelector('[autofocus] [tabindex], [data-autofocus] [tabindex]')
+            || node.querySelector('[autofocus], [data-autofocus]')
+            || node;
           node.focus({ preventScroll: true });
         });
       }
 
-      function shake () {
-        focus();
+      function shake (focusTarget) {
+        if (focusTarget && typeof focusTarget.focus === 'function') {
+          focusTarget.focus({ preventScroll: true });
+        }
+        else {
+          focus();
+        }
+
         emit('shake');
 
         const node = innerRef.value;
@@ -14929,8 +15177,9 @@
         if (node !== null) {
           node.classList.remove('q-animate--scale');
           node.classList.add('q-animate--scale');
-          clearTimeout(shakeTimeout);
+          shakeTimeout !== null && clearTimeout(shakeTimeout);
           shakeTimeout = setTimeout(() => {
+            shakeTimeout = null;
             if (innerRef.value !== null) {
               node.classList.remove('q-animate--scale');
               // some platforms (like desktop Chrome)
@@ -14947,14 +15196,17 @@
             props.maximized !== true && props.noShake !== true && shake();
           }
           else {
-            emit('escape-key');
+            emit('escapeKey');
             hide();
           }
         }
       }
 
       function cleanup (hiding) {
-        clearTimeout(shakeTimeout);
+        if (shakeTimeout !== null) {
+          clearTimeout(shakeTimeout);
+          shakeTimeout = null;
+        }
 
         if (hiding === true || showing.value === true) {
           updateMaximized(false);
@@ -15031,7 +15283,8 @@
 
       function renderPortalContent () {
         return vue.h('div', {
-          'aria-modal': 'true',
+          role: 'dialog',
+          'aria-modal': useBackdrop.value === true ? 'true' : 'false',
           ...attrs,
           class: rootClasses.value
         }, [
@@ -15044,14 +15297,15 @@
                 class: 'q-dialog__backdrop fixed-full',
                 style: transitionStyle.value,
                 'aria-hidden': 'true',
-                onMousedown: onBackdropClick
+                tabindex: -1,
+                onClick: onBackdropClick
               })
               : null
           )),
 
           vue.h(
             vue.Transition,
-            { name: transition.value, appear: true },
+            transitionProps.value,
             () => (
               showing.value === true
                 ? vue.h('div', {
@@ -15099,6 +15353,7 @@
         type: Number,
         default: 57
       },
+      noMiniAnimation: Boolean,
 
       breakpoint: {
         type: Number,
@@ -15124,7 +15379,7 @@
 
     emits: [
       ...useModelToggleEmits,
-      'on-layout', 'mini-state'
+      'onLayout', 'miniState'
     ],
 
     setup (props, { slots, emit, attrs }) {
@@ -15135,11 +15390,13 @@
       const { preventBodyScroll } = usePreventScroll();
       const { registerTimeout, removeTimeout } = useTimeout();
 
-      const $layout = vue.inject(layoutKey, () => {
+      const $layout = vue.inject(layoutKey, emptyRenderFn);
+      if ($layout === emptyRenderFn) {
         console.error('QDrawer needs to be child of QLayout');
-      });
+        return emptyRenderFn
+      }
 
-      let lastDesktopState, timerMini, layoutTotalWidthWatcher;
+      let lastDesktopState, timerMini = null, layoutTotalWidthWatcher;
 
       const belowBreakpoint = vue.ref(
         props.behavior === 'mobile'
@@ -15455,7 +15712,7 @@
       vue.watch(offset, val => { updateLayout('offset', val); });
 
       vue.watch(onLayout, val => {
-        emit('on-layout', val);
+        emit('onLayout', val);
         updateLayout('space', val);
       });
 
@@ -15473,13 +15730,14 @@
       vue.watch(() => $q.lang.rtl, () => { applyPosition(); });
 
       vue.watch(() => props.mini, () => {
+        if (props.noMiniAnimation) return
         if (props.modelValue === true) {
           animateMini();
           $layout.animate();
         }
       });
 
-      vue.watch(isMini, val => { emit('mini-state', val); });
+      vue.watch(isMini, val => { emit('miniState', val); });
 
       function applyPosition (position) {
         if (position === void 0) {
@@ -15514,7 +15772,7 @@
       }
 
       function animateMini () {
-        clearTimeout(timerMini);
+        timerMini !== null && clearTimeout(timerMini);
 
         if (vm.proxy && vm.proxy.$el) {
           // need to speed it up and apply it immediately,
@@ -15524,6 +15782,7 @@
 
         flagMiniAnimate.value = true;
         timerMini = setTimeout(() => {
+          timerMini = null;
           flagMiniAnimate.value = false;
           if (vm && vm.proxy && vm.proxy.$el) {
             vm.proxy.$el.classList.remove('q-drawer--mini-animate');
@@ -15644,8 +15903,8 @@
       }
 
       vue.onMounted(() => {
-        emit('on-layout', onLayout.value);
-        emit('mini-state', isMini.value);
+        emit('onLayout', onLayout.value);
+        emit('miniState', isMini.value);
 
         lastDesktopState = props.showIfAbove === true;
 
@@ -15676,7 +15935,11 @@
 
       vue.onBeforeUnmount(() => {
         layoutTotalWidthWatcher !== void 0 && layoutTotalWidthWatcher();
-        clearTimeout(timerMini);
+
+        if (timerMini !== null) {
+          clearTimeout(timerMini);
+          timerMini = null;
+        }
 
         showing.value === true && cleanup();
 
@@ -15844,7 +16107,7 @@
 
     get hasSelection () {
       return this.selection !== null
-        ? this.selection.toString().length > 0
+        ? this.selection.toString().length !== 0
         : false
     }
 
@@ -16198,7 +16461,7 @@
 
       const { registerTick, removeTick } = useTick();
       const { registerTimeout } = useTimeout();
-      const { transition, transitionStyle } = useTransition(props, showing);
+      const { transitionProps, transitionStyle } = useTransition(props);
       const { localScrollTarget, changeScrollEvent, unconfigureScrollTarget } = useScrollTarget(props, configureScrollTarget);
 
       const { anchorEl, canShow, anchorEvents } = useAnchor({ showing, configureAnchorEl });
@@ -16211,7 +16474,7 @@
 
       Object.assign(anchorEvents, { delayShow, delayHide });
 
-      const { showPortal, hidePortal, renderPortal } = usePortal(vm, innerRef, renderPortalContent);
+      const { showPortal, hidePortal, renderPortal } = usePortal(vm, innerRef, renderPortalContent, 'tooltip');
 
       // if we're on mobile, let's improve the experience
       // by closing it when user taps outside of it
@@ -16304,14 +16567,8 @@
       }
 
       function updatePosition () {
-        const el = innerRef.value;
-
-        if (anchorEl.value === null || !el) {
-          return
-        }
-
         setPosition({
-          el,
+          targetEl: innerRef.value,
           offset: props.offset,
           anchorEl: anchorEl.value,
           anchorOrigin: anchorOrigin.value,
@@ -16389,16 +16646,13 @@
               attrs.style,
               transitionStyle.value
             ],
-            role: 'complementary'
+            role: 'tooltip'
           }, hSlot(slots.default))
           : null
       }
 
       function renderPortalContent () {
-        return vue.h(vue.Transition, {
-          name: transition.value,
-          appear: true
-        }, getTooltipContent)
+        return vue.h(vue.Transition, transitionProps.value, getTooltipContent)
       }
 
       vue.onBeforeUnmount(anchorCleanup);
@@ -16508,7 +16762,7 @@
       }
 
       function onKeyup (e) {
-        if (isClickable.value === true && isKeyCode(e, 13) === true) {
+        if (isClickable.value === true && isKeyCode(e, [ 13, 32 ]) === true) {
           stopAndPrevent(e);
 
           // for ripple
@@ -16538,6 +16792,7 @@
           ref: rootRef,
           class: classes.value,
           style: style.value,
+          role: 'listitem',
           onClick,
           onKeyup
         };
@@ -16729,7 +16984,11 @@
       textColor: highlight && !eVm.props.toolbarPush ? null : eVm.props.toolbarTextColor,
       label: btn.fixedLabel ? btn.label : label,
       icon: btn.fixedIcon ? (btn.icon !== null ? btn.icon : void 0) : icon,
-      contentClass
+      contentClass,
+      onShow: evt => eVm.emit('dropdownShow', evt),
+      onHide: evt => eVm.emit('dropdownHide', evt),
+      onBeforeShow: evt => eVm.emit('dropdownBeforeShow', evt),
+      onBeforeHide: evt => eVm.emit('dropdownBeforeHide', evt)
     }, () => Items);
 
     return Dropdown
@@ -17041,7 +17300,13 @@
       ...useFullscreenEmits,
       'update:modelValue',
       'keydown', 'click', 'mouseup', 'keyup', 'touchend',
-      'focus', 'blur'
+      'focus', 'blur',
+      'dropdownShow',
+      'dropdownHide',
+      'dropdownBeforeShow',
+      'dropdownBeforeHide',
+      'linkShow',
+      'linkHide'
     ],
 
     setup (props, { slots, emit, attrs }) {
@@ -17061,7 +17326,7 @@
       const editable = vue.computed(() => !props.readonly && !props.disable);
 
       let defaultFont, offsetBottom;
-      let lastEmit = props.modelValue; // eslint-disable-line
+      let lastEmit = props.modelValue;
 
       {
         document.execCommand('defaultParagraphSeparator', false, props.paragraphTag);
@@ -17198,6 +17463,7 @@
         $q,
         props,
         slots,
+        emit,
         // caret (will get injected after mount)
         inFullscreen,
         toggleFullscreen,
@@ -17218,7 +17484,11 @@
         }
       });
 
-      const hasToolbar = vue.computed(() => props.toolbar && props.toolbar.length > 0);
+      vue.watch(editLinkUrl, v => {
+        emit(`link${ v ? 'Show' : 'Hide' }`);
+      });
+
+      const hasToolbar = vue.computed(() => props.toolbar && props.toolbar.length !== 0);
 
       const keys = vue.computed(() => {
         const
@@ -17277,7 +17547,7 @@
       const attributes = vue.computed(() => (
         props.disable === true
           ? { 'aria-disabled': 'true' }
-          : (props.readonly === true ? { 'aria-readonly': 'true' } : {})
+          : {}
       ));
 
       function onInput () {
@@ -17548,21 +17818,29 @@
 
     setup (props, { slots, emit }) {
       let animating = false, doneFn, element;
-      let timer, timerFallback, animListener, lastEvent;
+      let timer = null, timerFallback = null, animListener, lastEvent;
 
       function cleanup () {
         doneFn && doneFn();
         doneFn = null;
         animating = false;
 
-        clearTimeout(timer);
-        clearTimeout(timerFallback);
+        if (timer !== null) {
+          clearTimeout(timer);
+          timer = null;
+        }
+
+        if (timerFallback !== null) {
+          clearTimeout(timerFallback);
+          timerFallback = null;
+        }
+
         element !== void 0 && element.removeEventListener('transitionend', animListener);
         animListener = null;
       }
 
       function begin (el, height, done) {
-        el.style.overflowY = 'hidden';
+        // here overflowY is 'hidden'
         if (height !== void 0) {
           el.style.height = `${ height }px`;
         }
@@ -17584,19 +17862,24 @@
         let pos = 0;
         element = el;
 
+        // if animationg overflowY is already 'hidden'
         if (animating === true) {
           cleanup();
           pos = el.offsetHeight === el.scrollHeight ? 0 : void 0;
         }
         else {
           lastEvent = 'hide';
+          el.style.overflowY = 'hidden';
         }
 
         begin(el, pos, done);
 
         timer = setTimeout(() => {
+          timer = null;
           el.style.height = `${ el.scrollHeight }px`;
           animListener = evt => {
+            timerFallback = null;
+
             if (Object(evt) !== evt || evt.target === el) {
               end(el, 'show');
             }
@@ -17615,14 +17898,20 @@
         }
         else {
           lastEvent = 'show';
+          // we need to set overflowY 'hidden' before calculating the height
+          // or else we get small differences
+          el.style.overflowY = 'hidden';
           pos = el.scrollHeight;
         }
 
         begin(el, pos, done);
 
         timer = setTimeout(() => {
+          timer = null;
           el.style.height = 0;
           animListener = evt => {
+            timerFallback = null;
+
             if (Object(evt) !== evt || evt.target === el) {
               end(el, 'hide');
             }
@@ -17771,7 +18060,7 @@
 
     emits: [
       ...useModelToggleEmits,
-      'click', 'after-show', 'after-hide'
+      'click', 'afterShow', 'afterHide'
     ],
 
     setup (props, { slots, emit }) {
@@ -17853,7 +18142,6 @@
         return {
           role: 'button',
           'aria-expanded': showing.value === true ? 'true' : 'false',
-          'aria-owns': targetUid,
           'aria-controls': targetUid,
           'aria-label': toggleAriaLabel
         }
@@ -17880,11 +18168,11 @@
       }
 
       function onShow () {
-        emit('after-show');
+        emit('afterShow');
       }
 
       function onHide () {
-        emit('after-hide');
+        emit('afterHide');
       }
 
       function enterGroup () {
@@ -18234,13 +18522,11 @@
 
       const actionAttrs = vue.computed(() => {
         const attrs = {
-          id: targetUid
+          id: targetUid,
+          role: 'menu'
         };
 
-        if (showing.value === true) {
-          attrs.role = 'menu';
-        }
-        else {
+        if (showing.value !== true) {
           attrs[ 'aria-hidden' ] = 'true';
         }
 
@@ -18309,7 +18595,6 @@
           'aria-expanded': showing.value === true ? 'true' : 'false',
           'aria-haspopup': 'true',
           'aria-controls': targetUid,
-          'aria-owns': targetUid,
           onClick: toggle
         }, getTriggerContent),
 
@@ -18461,6 +18746,7 @@
     reactiveRules: Boolean,
     lazyRules: {
       type: [ Boolean, String ],
+      default: false, // statement unneeded but avoids future vue implementation changes
       validator: v => lazyRulesValues.includes(v)
     }
   };
@@ -18479,34 +18765,52 @@
     const hasRules = vue.computed(() =>
       props.rules !== void 0
       && props.rules !== null
-      && props.rules.length > 0
+      && props.rules.length !== 0
     );
 
-    const hasActiveRules = vue.computed(() =>
+    const canDebounceValidate = vue.computed(() => (
       props.disable !== true
       && hasRules.value === true
-    );
+      // Should not have a validation in progress already;
+      // It might mean that focus switched to submit btn and
+      // QForm's submit() has been called already (ENTER key)
+      && innerLoading.value === false
+    ));
 
     const hasError = vue.computed(() =>
       props.error === true || innerError.value === true
     );
 
     const errorMessage = vue.computed(() => (
-      typeof props.errorMessage === 'string' && props.errorMessage.length > 0
+      typeof props.errorMessage === 'string' && props.errorMessage.length !== 0
         ? props.errorMessage
         : innerErrorMessage.value
     ));
 
     vue.watch(() => props.modelValue, () => {
-      validateIfNeeded();
+      isDirtyModel.value = true;
+
+      if (
+        canDebounceValidate.value === true
+        // trigger validation if not using any kind of lazy-rules
+        && props.lazyRules === false
+      ) {
+        debouncedValidate();
+      }
     });
 
     vue.watch(() => props.reactiveRules, val => {
       if (val === true) {
         if (unwatchRules === void 0) {
           unwatchRules = vue.watch(() => props.rules, () => {
-            validateIfNeeded(true);
-          });
+            if (
+              canDebounceValidate.value === true
+              && isDirtyModel.value === true
+              && props.lazyRules !== 'ondemand'
+            ) {
+              debouncedValidate();
+            }
+          }, { immediate: true });
         }
       }
       else if (unwatchRules !== void 0) {
@@ -18515,25 +18819,32 @@
       }
     }, { immediate: true });
 
+    vue.watch(() => props.lazyRules, val => {
+      if (
+        val === false
+        && canDebounceValidate.value === true
+        && isDirtyModel.value === true
+      ) {
+        debouncedValidate();
+      }
+    });
+
     vue.watch(focused, val => {
       if (val === true) {
         if (isDirtyModel.value === null) {
-          isDirtyModel.value = false;
+          isDirtyModel.value = props.lazyRules === true;
         }
       }
-      else if (isDirtyModel.value === false) {
-        isDirtyModel.value = true;
-
-        if (
-          hasActiveRules.value === true
-          && props.lazyRules !== 'ondemand'
-          // Don't re-trigger if it's already in progress;
-          // It might mean that focus switched to submit btn and
-          // QForm's submit() has been called already (ENTER key)
-          && innerLoading.value === false
-        ) {
-          debouncedValidate();
-        }
+      else if (
+        canDebounceValidate.value === true
+        && (
+          // props.lazyRules can also be 'ondemand',
+          // hence the following form:
+          props.lazyRules === false
+          || (props.lazyRules === true && isDirtyModel.value === true)
+        )
+      ) {
+        debouncedValidate();
       }
     });
 
@@ -18553,7 +18864,10 @@
      *   - Promise (pending async validation)
      */
     function validate (val = props.modelValue) {
-      if (hasActiveRules.value !== true) {
+      if (
+        props.disable === true
+        || hasRules.value === false
+      ) {
         return true
       }
 
@@ -18622,16 +18936,6 @@
       )
     }
 
-    function validateIfNeeded (changedRules) {
-      if (
-        hasActiveRules.value === true
-        && props.lazyRules !== 'ondemand'
-        && (isDirtyModel.value === true || (props.lazyRules !== true && changedRules !== true))
-      ) {
-        debouncedValidate();
-      }
-    }
-
     const debouncedValidate = debounce(validate, 0);
 
     vue.onBeforeUnmount(() => {
@@ -18654,14 +18958,16 @@
     }
   }
 
-  function getTargetUid (val) {
-    return val === void 0 ? `f_${ uid$3() }` : val
+  function getTargetUid (val, requiredForAttr) {
+    return val === void 0
+      ? (requiredForAttr === true ? `f_${ uid$3() }` : void 0)
+      : val
   }
 
   function fieldValueIsFilled (val) {
     return val !== void 0
       && val !== null
-      && ('' + val).length > 0
+      && ('' + val).length !== 0
   }
 
   const useFieldProps = {
@@ -18712,14 +19018,19 @@
     maxlength: [ Number, String ]
   };
 
-  const useFieldEmits = [ 'update:modelValue', 'clear', 'focus', 'blur', 'popup-show', 'popup-hide' ];
+  const useFieldEmits = [ 'update:modelValue', 'clear', 'focus', 'blur', 'popupShow', 'popupHide' ];
 
-  function useFieldState () {
+  function useFieldState ({ requiredForAttr = true, tagProp } = {}) {
     const { props, attrs, proxy, vnode } = vue.getCurrentInstance();
 
     const isDark = useDark(props, proxy.$q);
 
     return {
+      requiredForAttr,
+      tag: tagProp === true
+        ? vue.computed(() => props.tag)
+        : { value: 'label' },
+
       isDark,
 
       editable: vue.computed(() =>
@@ -18731,7 +19042,9 @@
       hasPopupOpen: false,
 
       splitAttrs: useSplitAttrs(attrs, vnode),
-      targetUid: vue.ref(getTargetUid(props.for)),
+      targetUid: vue.ref(
+        getTargetUid(props.for, requiredForAttr)
+      ),
 
       rootRef: vue.ref(null),
       targetRef: vue.ref(null),
@@ -18762,7 +19075,7 @@
     const { props, emit, slots, attrs, proxy } = vue.getCurrentInstance();
     const { $q } = proxy;
 
-    let focusoutTimer;
+    let focusoutTimer = null;
 
     if (state.hasValue === void 0) {
       state.hasValue = vue.computed(() => fieldValueIsFilled(props.modelValue));
@@ -18857,7 +19170,7 @@
         hasError.value === true
           ? ' text-negative'
           : (
-              typeof props.standout === 'string' && props.standout.length > 0 && state.focused.value === true
+              typeof props.standout === 'string' && props.standout.length !== 0 && state.focused.value === true
                 ? ` ${ props.standout }`
                 : (props.color !== void 0 ? ` text-${ props.color }` : '')
             )
@@ -18890,9 +19203,6 @@
       if (props.disable === true) {
         acc[ 'aria-disabled' ] = 'true';
       }
-      else if (props.readonly === true) {
-        acc[ 'aria-readonly' ] = 'true';
-      }
 
       return acc
     });
@@ -18900,7 +19210,7 @@
     vue.watch(() => props.for, val => {
       // don't transform targetUid into a computed
       // prop as it will break SSR
-      state.targetUid.value = getTargetUid(val);
+      state.targetUid.value = getTargetUid(val, state.requiredForAttr);
     });
 
     function focusHandler () {
@@ -18928,7 +19238,11 @@
     }
 
     function onControlFocusin (e) {
-      clearTimeout(focusoutTimer);
+      if (focusoutTimer !== null) {
+        clearTimeout(focusoutTimer);
+        focusoutTimer = null;
+      }
+
       if (state.editable.value === true && state.focused.value === false) {
         state.focused.value = true;
         emit('focus', e);
@@ -18936,8 +19250,10 @@
     }
 
     function onControlFocusout (e, then) {
-      clearTimeout(focusoutTimer);
+      focusoutTimer !== null && clearTimeout(focusoutTimer);
       focusoutTimer = setTimeout(() => {
+        focusoutTimer = null;
+
         if (
           document.hasFocus() === true && (
             state.hasPopupOpen === true
@@ -19179,15 +19495,19 @@
     });
 
     vue.onMounted(() => {
-      if (isRuntimeSsrPreHydration.value === true && props.for === void 0) {
-        state.targetUid.value = getTargetUid();
+      if (
+        isRuntimeSsrPreHydration.value === true
+        && state.requiredForAttr === true
+        && props.for === void 0
+      ) {
+        state.targetUid.value = `f_${ uid$3() }`; // getTargetUid(void 0, true)
       }
 
       props.autofocus === true && proxy.focus();
     });
 
     vue.onBeforeUnmount(() => {
-      clearTimeout(focusoutTimer);
+      focusoutTimer !== null && clearTimeout(focusoutTimer);
     });
 
     // expose public methods
@@ -19202,7 +19522,7 @@
           }
         : attributes.value;
 
-      return vue.h('label', {
+      return vue.h(state.tag.value, {
         ref: state.rootRef,
         class: [
           classes.value,
@@ -19248,12 +19568,24 @@
 
     inheritAttrs: false,
 
-    props: useFieldProps,
+    props: {
+      ...useFieldProps,
+
+      tag: {
+        type: String,
+        default: 'label'
+      }
+    },
 
     emits: useFieldEmits,
 
     setup () {
-      return useField(useFieldState())
+      return useField(
+        useFieldState({
+          requiredForAttr: false,
+          tagProp: true
+        })
+      )
     }
   });
 
@@ -19345,7 +19677,7 @@
       const rejectedFiles = [];
 
       const done = () => {
-        if (rejectedFiles.length > 0) {
+        if (rejectedFiles.length !== 0) {
           emit('rejected', rejectedFiles);
         }
       };
@@ -19375,7 +19707,7 @@
       // Cordova/iOS allows selecting multiple files even when the
       // multiple attribute is not specified. We also normalize drag'n'dropped
       // files here:
-      if (props.multiple !== true && files.length > 0) {
+      if (props.multiple !== true && files.length !== 0) {
         files = [ files[ 0 ] ];
       }
 
@@ -19430,7 +19762,7 @@
 
       done();
 
-      if (files.length > 0) {
+      if (files.length !== 0) {
         return files
       }
     }
@@ -19442,14 +19774,21 @@
 
     function onDragleave (e) {
       stopAndPrevent(e);
-      e.relatedTarget !== dndRef.value && (dnd.value = false);
+
+      // Safari bug: relatedTarget is null for over 10 years
+      // https://bugs.webkit.org/show_bug.cgi?id=66547
+      const gone = e.relatedTarget !== null || client.is.safari !== true
+        ? e.relatedTarget !== dndRef.value
+        : document.elementsFromPoint(e.clientX, e.clientY).includes(dndRef.value) === false;
+
+      gone === true && (dnd.value = false);
     }
 
     function onDrop (e) {
       stopAndPreventDrag(e);
       const files = e.dataTransfer.files;
 
-      if (files.length > 0) {
+      if (files.length !== 0) {
         addFilesToQueue(null, files);
       }
 
@@ -19476,6 +19815,7 @@
       pickFiles,
       addFiles,
       onDragover,
+      onDragleave,
       processFiles,
       getDndNode,
 
@@ -19633,7 +19973,7 @@
       }
 
       function removeFile (file) {
-        const index = innerValue.value.findIndex(file);
+        const index = innerValue.value.indexOf(file);
         if (index > -1) {
           removeAtIndex(index);
         }
@@ -19731,7 +20071,7 @@
           ? props.displayValue
           : selectedString.value;
 
-        return textContent.length > 0
+        return textContent.length !== 0
           ? [
               vue.h('div', {
                 class: props.inputClass,
@@ -19799,8 +20139,10 @@
       Object.assign(proxy, {
         removeAtIndex,
         removeFile,
-        getNativeElement: () => inputRef.value
+        getNativeElement: () => inputRef.value // deprecated
       });
+
+      injectProp(proxy, 'nativeEl', () => inputRef.value);
 
       return useField(state)
     }
@@ -19829,9 +20171,11 @@
     setup (props, { slots, emit }) {
       const { proxy: { $q } } = vue.getCurrentInstance();
 
-      const $layout = vue.inject(layoutKey, () => {
+      const $layout = vue.inject(layoutKey, emptyRenderFn);
+      if ($layout === emptyRenderFn) {
         console.error('QFooter needs to be child of QLayout');
-      });
+        return emptyRenderFn
+      }
 
       const size = vue.ref(parseInt(props.heightHint, 10));
       const revealed = vue.ref(true);
@@ -20010,7 +20354,7 @@
       onSubmit: Function
     },
 
-    emits: [ 'reset', 'validation-success', 'validation-error' ],
+    emits: [ 'reset', 'validationSuccess', 'validationError' ],
 
     setup (props, { slots, emit }) {
       const vm = vue.getCurrentInstance();
@@ -20027,7 +20371,7 @@
         const index = ++validateIndex;
 
         const emitEvent = (res, ref) => {
-          emit('validation-' + (res === true ? 'success' : 'error'), ref);
+          emit('validation' + (res === true ? 'Success' : 'Error'), ref);
         };
 
         const validateComponent = comp => {
@@ -20129,7 +20473,9 @@
         addFocusFn(() => {
           if (rootRef.value === null) { return }
 
-          const target = rootRef.value.querySelector('[autofocus], [data-autofocus]')
+          const target = rootRef.value.querySelector('[autofocus][tabindex], [data-autofocus][tabindex]')
+            || rootRef.value.querySelector('[autofocus] [tabindex], [data-autofocus] [tabindex]')
+            || rootRef.value.querySelector('[autofocus], [data-autofocus]')
             || Array.prototype.find.call(rootRef.value.querySelectorAll('[tabindex]'), el => el.tabIndex > -1);
 
           target !== null && target !== void 0 && target.focus({ preventScroll: true });
@@ -20249,9 +20595,11 @@
     setup (props, { slots, emit }) {
       const { proxy: { $q } } = vue.getCurrentInstance();
 
-      const $layout = vue.inject(layoutKey, () => {
+      const $layout = vue.inject(layoutKey, emptyRenderFn);
+      if ($layout === emptyRenderFn) {
         console.error('QHeader needs to be child of QLayout');
-      });
+        return emptyRenderFn
+      }
 
       const size = vue.ref(parseInt(props.heightHint, 10));
       const revealed = vue.ref(true);
@@ -20474,11 +20822,11 @@
       const naturalRatio = vue.ref(props.initialRatio);
       const ratioStyle = useRatio(props, naturalRatio);
 
-      let loadTimer;
+      let loadTimer = null, isDestroyed = false;
 
       const images = [
         vue.ref(null),
-        vue.ref(props.placeholderSrc !== void 0 ? { src: props.placeholderSrc } : null)
+        vue.ref(getPlaceholderSrc())
       ];
 
       const position = vue.ref(0);
@@ -20518,26 +20866,38 @@
           : null
       }
 
+      function getPlaceholderSrc () {
+        return props.placeholderSrc !== void 0
+          ? { src: props.placeholderSrc }
+          : null
+      }
+
       function addImage (imgProps) {
-        clearTimeout(loadTimer);
+        if (loadTimer !== null) {
+          clearTimeout(loadTimer);
+          loadTimer = null;
+        }
+
         hasError.value = false;
 
         if (imgProps === null) {
           isLoading.value = false;
-          images[ 0 ].value = null;
-          images[ 1 ].value = null;
-          return
+          images[ position.value ^ 1 ].value = getPlaceholderSrc();
+        }
+        else {
+          isLoading.value = true;
         }
 
-        isLoading.value = true;
         images[ position.value ].value = imgProps;
       }
 
       function onLoad ({ target }) {
-        // if component has been already destroyed
-        if (loadTimer === null) { return }
+        if (isDestroyed === true) { return }
 
-        clearTimeout(loadTimer);
+        if (loadTimer !== null) {
+          clearTimeout(loadTimer);
+          loadTimer = null;
+        }
 
         naturalRatio.value = target.naturalHeight === 0
           ? 0.5
@@ -20548,23 +20908,23 @@
 
       function waitForCompleteness (target, count) {
         // protect against running forever
-        if (loadTimer === null || count === 1000) { return }
+        if (isDestroyed === true || count === 1000) { return }
 
         if (target.complete === true) {
           onReady(target);
         }
         else {
           loadTimer = setTimeout(() => {
+            loadTimer = null;
             waitForCompleteness(target, count + 1);
           }, 50);
         }
       }
 
       function onReady (img) {
-        // if component has been already destroyed
-        if (loadTimer === null) { return }
+        if (isDestroyed === true) { return }
 
-        position.value = position.value === 1 ? 0 : 1;
+        position.value = position.value ^ 1;
         images[ position.value ].value = null;
         isLoading.value = false;
         hasError.value = false;
@@ -20572,20 +20932,16 @@
       }
 
       function onError (err) {
-        clearTimeout(loadTimer);
+        if (loadTimer !== null) {
+          clearTimeout(loadTimer);
+          loadTimer = null;
+        }
+
         isLoading.value = false;
         hasError.value = true;
-        images[ 0 ].value = null;
-        images[ 1 ].value = null;
+        images[ position.value ].value = null;
+        images[ position.value ^ 1 ].value = getPlaceholderSrc();
         emit('error', err);
-      }
-
-      function getContainer (key, child) {
-        return vue.h(
-          'div',
-          { class: 'q-img__container absolute-full', key },
-          child
-        )
       }
 
       function getImage (index) {
@@ -20615,7 +20971,11 @@
           data.class += ' q-img__image--loaded';
         }
 
-        return getContainer('img' + index, vue.h('img', data))
+        return vue.h(
+          'div',
+          { class: 'q-img__container absolute-full', key: 'img' + index },
+          vue.h('img', data)
+        )
       }
 
       function getContent () {
@@ -20651,8 +21011,12 @@
         }
 
         vue.onBeforeUnmount(() => {
-          clearTimeout(loadTimer);
-          loadTimer = null;
+          isDestroyed = true;
+
+          if (loadTimer !== null) {
+            clearTimeout(loadTimer);
+            loadTimer = null;
+          }
         });
       }
 
@@ -20721,6 +21085,7 @@
       const isFetching = vue.ref(false);
       const isWorking = vue.ref(true);
       const rootRef = vue.ref(null);
+      const loadingRef = vue.ref(null);
 
       let index = props.initialIndex || 0;
       let localScrollTarget, poll;
@@ -20852,12 +21217,32 @@
         }
       }
 
+      function updateSvgAnimations (isRetry) {
+        if (renderLoadingSlot.value === true) {
+          if (loadingRef.value === null) {
+            isRetry !== true && vue.nextTick(() => { updateSvgAnimations(true); });
+            return
+          }
+
+          // we need to pause svg animations (if any) when hiding
+          // otherwise the browser will keep on recalculating the style
+          const action = `${ isFetching.value === true ? 'un' : '' }pauseAnimations`;
+          Array.from(loadingRef.value.getElementsByTagName('svg')).forEach(el => {
+            el[ action ]();
+          });
+        }
+      }
+
+      const renderLoadingSlot = vue.computed(() => props.disable !== true && isWorking.value === true);
+
+      vue.watch([ isFetching, renderLoadingSlot ], () => { updateSvgAnimations(); });
+
       vue.watch(() => props.disable, val => {
         if (val === true) { stop(); }
         else { resume(); }
       });
 
-      vue.watch(() => props.reverse, val => {
+      vue.watch(() => props.reverse, () => {
         if (isFetching.value === false && isWorking.value === true) {
           immediatePoll();
         }
@@ -20888,8 +21273,9 @@
 
       vue.onMounted(() => {
         setDebounce(props.debounce);
-
         updateScrollTarget();
+
+        isFetching.value === false && updateSvgAnimations();
       });
 
       // expose public methods
@@ -20902,9 +21288,9 @@
       return () => {
         const child = hUniqueSlot(slots.default, []);
 
-        if (props.disable !== true && isWorking.value === true) {
+        if (renderLoadingSlot.value === true) {
           child[ props.reverse === false ? 'push' : 'unshift' ](
-            vue.h('div', { class: classes.value }, hSlot(slots.loading))
+            vue.h('div', { ref: loadingRef, class: classes.value }, hSlot(slots.loading))
           );
         }
 
@@ -20940,7 +21326,7 @@
       const vm = vue.getCurrentInstance();
       const isDark = useDark(props, vm.proxy.$q);
 
-      const { transition, transitionStyle } = useTransition(props, vue.computed(() => props.showing));
+      const { transitionProps, transitionStyle } = useTransition(props);
 
       const classes = vue.computed(() =>
         'q-inner-loading absolute-full column flex-center'
@@ -20984,10 +21370,7 @@
           : null
       }
 
-      return () => vue.h(vue.Transition, {
-        name: transition.value,
-        appear: true
-      }, getContent)
+      return () => vue.h(vue.Transition, transitionProps.value, getContent)
     }
   });
 
@@ -21033,7 +21416,7 @@
   };
 
   function useMask (props, emit, emitValue, inputRef) {
-    let maskMarked, maskReplaced, computedMask, computedUnmask;
+    let maskMarked, maskReplaced, computedMask, computedUnmask, pastedTextStart, selectionAnchor;
 
     const hasMask = vue.ref(null);
     const innerValue = vue.ref(getInitialMaskedValue());
@@ -21099,7 +21482,7 @@
 
     function updateMaskInternals () {
       hasMask.value = props.mask !== void 0
-        && props.mask.length > 0
+        && props.mask.length !== 0
         && getIsTypeText();
 
       if (hasMask.value === false) {
@@ -21113,7 +21496,7 @@
         localComputedMask = NAMED_MASKS[ props.mask ] === void 0
           ? props.mask
           : NAMED_MASKS[ props.mask ],
-        fillChar = typeof props.fillMask === 'string' && props.fillMask.length > 0
+        fillChar = typeof props.fillMask === 'string' && props.fillMask.length !== 0
           ? props.fillMask.slice(0, 1)
           : '_',
         fillCharEscaped = fillChar.replace(escRegex, '\\$&'),
@@ -21155,7 +21538,7 @@
           '^'
           + unmask.join('')
           + '(' + (unmaskChar === '' ? '.' : '[^' + unmaskChar + ']') + '+)?'
-          + '[' + unmaskChar + ']*$'
+          + (unmaskChar === '' ? '' : '[' + unmaskChar + ']*') + '$'
         ),
         extractLast = extract.length - 1,
         extractMatcher = extract.map((re, index) => {
@@ -21175,7 +21558,7 @@
 
       computedMask = mask;
       computedUnmask = val => {
-        const unmaskMatch = unmaskMatcher.exec(val);
+        const unmaskMatch = unmaskMatcher.exec(props.reverseFillMask === true ? val : val.slice(0, mask.length + 1));
         if (unmaskMatch !== null) {
           val = unmaskMatch.slice(1).join('');
         }
@@ -21194,7 +21577,7 @@
           str = str.slice(m.shift().length);
           extractMatch.push(...m);
         }
-        if (extractMatch.length > 0) {
+        if (extractMatch.length !== 0) {
           return extractMatch.join('')
         }
 
@@ -21235,8 +21618,15 @@
         }
 
         if (inputType === 'insertFromPaste' && props.reverseFillMask !== true) {
-          const cursor = end - 1;
-          moveCursor.right(inp, cursor, cursor);
+          const maxEnd = inp.selectionEnd;
+          let cursor = end - 1;
+          // each non-marker char means we move once to right
+          for (let i = pastedTextStart; i <= cursor && i < maxEnd; i++) {
+            if (maskMarked[ i ] !== MARKER) {
+              cursor++;
+            }
+          }
+          moveCursor.right(inp, cursor);
 
           return
         }
@@ -21262,7 +21652,7 @@
               inp.setSelectionRange(cursor, cursor, 'forward');
             }
             else {
-              moveCursor.rightReverse(inp, cursor, cursor);
+              moveCursor.rightReverse(inp, cursor);
             }
           }
           else {
@@ -21273,11 +21663,11 @@
         else {
           if (changed === true) {
             const cursor = Math.max(0, maskMarked.indexOf(MARKER), Math.min(preMasked.length, end) - 1);
-            moveCursor.right(inp, cursor, cursor);
+            moveCursor.right(inp, cursor);
           }
           else {
             const cursor = end - 1;
-            moveCursor.right(inp, cursor, cursor);
+            moveCursor.right(inp, cursor);
           }
         }
       });
@@ -21286,81 +21676,84 @@
         ? unmaskValue(masked)
         : masked;
 
-      String(props.modelValue) !== val && emitValue(val, true);
+      if (
+        String(props.modelValue) !== val
+        && (props.modelValue !== null || val !== '')
+      ) {
+        emitValue(val, true);
+      }
     }
 
     function moveCursorForPaste (inp, start, end) {
       const preMasked = maskValue(unmaskValue(inp.value));
 
       start = Math.max(0, maskMarked.indexOf(MARKER), Math.min(preMasked.length, start));
+      pastedTextStart = start;
 
       inp.setSelectionRange(start, end, 'forward');
     }
 
     const moveCursor = {
-      left (inp, start, end, selection) {
-        const noMarkBefore = maskMarked.slice(start - 1).indexOf(MARKER) === -1;
-        let i = Math.max(0, start - 1);
+      left (inp, cursor) {
+        const noMarkBefore = maskMarked.slice(cursor - 1).indexOf(MARKER) === -1;
+        let i = Math.max(0, cursor - 1);
 
         for (; i >= 0; i--) {
           if (maskMarked[ i ] === MARKER) {
-            start = i;
-            noMarkBefore === true && start++;
+            cursor = i;
+            noMarkBefore === true && cursor++;
             break
           }
         }
 
         if (
           i < 0
-          && maskMarked[ start ] !== void 0
-          && maskMarked[ start ] !== MARKER
+          && maskMarked[ cursor ] !== void 0
+          && maskMarked[ cursor ] !== MARKER
         ) {
-          return moveCursor.right(inp, 0, 0)
+          return moveCursor.right(inp, 0)
         }
 
-        start >= 0 && inp.setSelectionRange(
-          start,
-          selection === true ? end : start, 'backward'
-        );
+        cursor >= 0 && inp.setSelectionRange(cursor, cursor, 'backward');
       },
 
-      right (inp, start, end, selection) {
+      right (inp, cursor) {
         const limit = inp.value.length;
-        let i = Math.min(limit, end + 1);
+        let i = Math.min(limit, cursor + 1);
 
         for (; i <= limit; i++) {
           if (maskMarked[ i ] === MARKER) {
-            end = i;
+            cursor = i;
             break
           }
           else if (maskMarked[ i - 1 ] === MARKER) {
-            end = i;
+            cursor = i;
           }
         }
 
         if (
           i > limit
-          && maskMarked[ end - 1 ] !== void 0
-          && maskMarked[ end - 1 ] !== MARKER
+          && maskMarked[ cursor - 1 ] !== void 0
+          && maskMarked[ cursor - 1 ] !== MARKER
         ) {
-          return moveCursor.left(inp, limit, limit)
+          return moveCursor.left(inp, limit)
         }
 
-        inp.setSelectionRange(selection ? start : end, end, 'forward');
+        inp.setSelectionRange(cursor, cursor, 'forward');
       },
 
-      leftReverse (inp, start, end, selection) {
+      leftReverse (inp, cursor) {
         const
           localMaskMarked = getPaddedMaskMarked(inp.value.length);
-        let i = Math.max(0, start - 1);
+        let i = Math.max(0, cursor - 1);
 
         for (; i >= 0; i--) {
           if (localMaskMarked[ i - 1 ] === MARKER) {
-            start = i;
+            cursor = i;
             break
           }
           else if (localMaskMarked[ i ] === MARKER) {
-            start = i;
+            cursor = i;
             if (i === 0) {
               break
             }
@@ -21369,47 +21762,55 @@
 
         if (
           i < 0
-          && localMaskMarked[ start ] !== void 0
-          && localMaskMarked[ start ] !== MARKER
+          && localMaskMarked[ cursor ] !== void 0
+          && localMaskMarked[ cursor ] !== MARKER
         ) {
-          return moveCursor.rightReverse(inp, 0, 0)
+          return moveCursor.rightReverse(inp, 0)
         }
 
-        start >= 0 && inp.setSelectionRange(
-          start,
-          selection === true ? end : start, 'backward'
-        );
+        cursor >= 0 && inp.setSelectionRange(cursor, cursor, 'backward');
       },
 
-      rightReverse (inp, start, end, selection) {
+      rightReverse (inp, cursor) {
         const
           limit = inp.value.length,
           localMaskMarked = getPaddedMaskMarked(limit),
-          noMarkBefore = localMaskMarked.slice(0, end + 1).indexOf(MARKER) === -1;
-        let i = Math.min(limit, end + 1);
+          noMarkBefore = localMaskMarked.slice(0, cursor + 1).indexOf(MARKER) === -1;
+        let i = Math.min(limit, cursor + 1);
 
         for (; i <= limit; i++) {
           if (localMaskMarked[ i - 1 ] === MARKER) {
-            end = i;
-            end > 0 && noMarkBefore === true && end--;
+            cursor = i;
+            cursor > 0 && noMarkBefore === true && cursor--;
             break
           }
         }
 
         if (
           i > limit
-          && localMaskMarked[ end - 1 ] !== void 0
-          && localMaskMarked[ end - 1 ] !== MARKER
+          && localMaskMarked[ cursor - 1 ] !== void 0
+          && localMaskMarked[ cursor - 1 ] !== MARKER
         ) {
-          return moveCursor.leftReverse(inp, limit, limit)
+          return moveCursor.leftReverse(inp, limit)
         }
 
-        inp.setSelectionRange(selection === true ? start : end, end, 'forward');
+        inp.setSelectionRange(cursor, cursor, 'forward');
       }
     };
 
+    function onMaskedClick (e) {
+      emit('click', e);
+
+      selectionAnchor = void 0;
+    }
+
     function onMaskedKeydown (e) {
-      if (shouldIgnoreKey(e) === true) {
+      emit('keydown', e);
+
+      if (
+        shouldIgnoreKey(e) === true
+        || e.altKey === true // let browser handle these
+      ) {
         return
       }
 
@@ -21418,25 +21819,40 @@
         start = inp.selectionStart,
         end = inp.selectionEnd;
 
+      if (!e.shiftKey) {
+        selectionAnchor = void 0;
+      }
+
       if (e.keyCode === 37 || e.keyCode === 39) { // Left / Right
+        if (e.shiftKey && selectionAnchor === void 0) {
+          selectionAnchor = inp.selectionDirection === 'forward' ? start : end;
+        }
+
         const fn = moveCursor[ (e.keyCode === 39 ? 'right' : 'left') + (props.reverseFillMask === true ? 'Reverse' : '') ];
 
         e.preventDefault();
-        fn(inp, start, end, e.shiftKey);
+        fn(inp, selectionAnchor === start ? end : start);
+
+        if (e.shiftKey) {
+          const cursor = inp.selectionStart;
+          inp.setSelectionRange(Math.min(selectionAnchor, cursor), Math.max(selectionAnchor, cursor), 'forward');
+        }
       }
       else if (
         e.keyCode === 8 // Backspace
         && props.reverseFillMask !== true
         && start === end
       ) {
-        moveCursor.left(inp, start, end, true);
+        moveCursor.left(inp, start);
+        inp.setSelectionRange(inp.selectionStart, end, 'backward');
       }
       else if (
         e.keyCode === 46 // Delete
         && props.reverseFillMask === true
         && start === end
       ) {
-        moveCursor.rightReverse(inp, start, end, true);
+        moveCursor.rightReverse(inp, end);
+        inp.setSelectionRange(start, inp.selectionEnd, 'forward');
       }
     }
 
@@ -21517,7 +21933,7 @@
         return val
       }
 
-      return props.reverseFillMask === true && val.length > 0
+      return props.reverseFillMask === true && val.length !== 0
         ? maskReplaced.slice(0, -val.length) + val
         : val + maskReplaced.slice(val.length)
     }
@@ -21527,7 +21943,8 @@
       hasMask,
       moveCursorForPaste,
       updateMaskValue,
-      onMaskedKeydown
+      onMaskedKeydown,
+      onMaskedClick
     }
   }
 
@@ -21588,7 +22005,8 @@
 
     emits: [
       ...useFieldEmits,
-      'paste', 'change'
+      'paste', 'change',
+      'keydown', 'click', 'animationend'
     ],
 
     setup (props, { emit, attrs }) {
@@ -21596,7 +22014,7 @@
       const { $q } = proxy;
 
       const temp = {};
-      let emitCachedValue = NaN, typedNumber, stopValueWatcher, emitTimer, emitValueFn;
+      let emitCachedValue = NaN, typedNumber, stopValueWatcher, emitTimer = null, emitValueFn;
 
       const inputRef = vue.ref(null);
       const nameProp = useFormInputNameAttr(props);
@@ -21606,7 +22024,8 @@
         hasMask,
         moveCursorForPaste,
         updateMaskValue,
-        onMaskedKeydown
+        onMaskedKeydown,
+        onMaskedClick
       } = useMask(props, emit, emitValue, inputRef);
 
       const formDomProps = useFileFormDomProps(props, /* type guard */ true);
@@ -21643,10 +22062,12 @@
 
         if (hasMask.value === true) {
           evt.onKeydown = onMaskedKeydown;
+          // reset selection anchor on pointer selection
+          evt.onClick = onMaskedClick;
         }
 
         if (props.autogrow === true) {
-          evt.onAnimationend = adjustHeight;
+          evt.onAnimationend = onAnimationend;
         }
 
         return evt
@@ -21801,8 +22222,15 @@
         props.autogrow === true && adjustHeight();
       }
 
+      function onAnimationend (e) {
+        emit('animationend', e);
+        adjustHeight();
+      }
+
       function emitValue (val, stopWatcher) {
         emitValueFn = () => {
+          emitTimer = null;
+
           if (
             props.type !== 'number'
             && temp.hasOwnProperty('value') === true
@@ -21830,7 +22258,7 @@
         }
 
         if (props.debounce !== void 0) {
-          clearTimeout(emitTimer);
+          emitTimer !== null && clearTimeout(emitTimer);
           temp.value = val;
           emitTimer = setTimeout(emitValueFn, props.debounce);
         }
@@ -21845,18 +22273,29 @@
           const inp = inputRef.value;
           if (inp !== null) {
             const parentStyle = inp.parentNode.style;
-            const { overflow } = inp.style;
+            // chrome does not keep scroll #15498
+            const { scrollTop } = inp;
+            // chrome calculates a smaller scrollHeight when in a .column container
+            const { overflowY, maxHeight } = $q.platform.is.firefox === true
+              ? {}
+              : window.getComputedStyle(inp);
+            // on firefox or if overflowY is specified as scroll #14263, #14344
+            // we don't touch overflow
+            // firefox is not so bad in the end
+            const changeOverflow = overflowY !== void 0 && overflowY !== 'scroll';
 
             // reset height of textarea to a small size to detect the real height
             // but keep the total control size the same
-            // Firefox rulez #14263, #14344
-            $q.platform.is.firefox !== true && (inp.style.overflow = 'hidden');
-            inp.style.height = '1px';
+            changeOverflow === true && (inp.style.overflowY = 'hidden');
             parentStyle.marginBottom = (inp.scrollHeight - 1) + 'px';
+            inp.style.height = '1px';
 
             inp.style.height = inp.scrollHeight + 'px';
-            inp.style.overflow = overflow;
+            // we should allow scrollbars only
+            // if there is maxHeight and content is taller than maxHeight
+            changeOverflow === true && (inp.style.overflowY = parseInt(maxHeight, 10) < inp.scrollHeight ? 'auto' : 'hidden');
             parentStyle.marginBottom = '';
+            inp.scrollTop = scrollTop;
           }
         });
       }
@@ -21864,7 +22303,11 @@
       function onChange (e) {
         onComposition(e);
 
-        clearTimeout(emitTimer);
+        if (emitTimer !== null) {
+          clearTimeout(emitTimer);
+          emitTimer = null;
+        }
+
         emitValueFn !== void 0 && emitValueFn();
 
         emit('change', e.target.value);
@@ -21873,7 +22316,11 @@
       function onFinishEditing (e) {
         e !== void 0 && stop(e);
 
-        clearTimeout(emitTimer);
+        if (emitTimer !== null) {
+          clearTimeout(emitTimer);
+          emitTimer = null;
+        }
+
         emitValueFn !== void 0 && emitValueFn();
 
         typedNumber = false;
@@ -21915,7 +22362,7 @@
         hasShadow: vue.computed(() =>
           props.type !== 'file'
           && typeof props.shadowText === 'string'
-          && props.shadowText.length > 0
+          && props.shadowText.length !== 0
         ),
 
         inputRef,
@@ -21925,7 +22372,10 @@
         hasValue,
 
         floatingLabel: vue.computed(() =>
-          hasValue.value === true
+          (
+            hasValue.value === true
+            && (props.type !== 'number' || isNaN(innerValue.value) === false)
+          )
           || fieldValueIsFilled(props.displayValue)
         ),
 
@@ -21964,8 +22414,10 @@
       Object.assign(proxy, {
         focus,
         select,
-        getNativeElement: () => inputRef.value
+        getNativeElement: () => inputRef.value // deprecated
       });
+
+      injectProp(proxy, 'nativeEl', () => inputRef.value);
 
       return renderFn
     }
@@ -22130,9 +22582,13 @@
       }
 
       function getContent () {
-        return showing.value === true
-          ? [ vue.h('div', { key: 'content', style: transitionStyle.value }, hSlot(slots.default)) ]
-          : void 0
+        if (showing.value === true) {
+          return [ vue.h('div', { key: 'content', style: transitionStyle.value }, hSlot(slots.default)) ]
+        }
+
+        if (slots.hidden !== void 0) {
+          return [ vue.h('div', { key: 'hidden', style: transitionStyle.value }, slots.hidden()) ]
+        }
       }
 
       return () => {
@@ -22165,7 +22621,12 @@
       bordered: Boolean,
       dense: Boolean,
       separator: Boolean,
-      padding: Boolean
+      padding: Boolean,
+
+      tag: {
+        type: String,
+        default: 'div'
+      }
     },
 
     setup (props, { slots }) {
@@ -22181,7 +22642,7 @@
         + (props.padding === true ? ' q-list--padding' : '')
       );
 
-      return () => vue.h('div', { class: classes.value }, hSlot(slots.default))
+      return () => vue.h(props.tag, { class: classes.value }, hSlot(slots.default))
     }
   });
 
@@ -22219,7 +22680,7 @@
       readonly: Boolean
     },
 
-    emits: [ 'update:modelValue', 'change', 'drag-value' ],
+    emits: [ 'update:modelValue', 'change', 'dragValue' ],
 
     setup (props, { slots, emit }) {
       const { proxy } = vue.getCurrentInstance();
@@ -22266,7 +22727,7 @@
         )
       );
 
-      const decimals = vue.computed(() => (String(props.step).trim('0').split('.')[ 1 ] || '').length);
+      const decimals = vue.computed(() => (String(props.step).trim().split('.')[ 1 ] || '').length);
       const step = vue.computed(() => (props.step === 0 ? 1 : props.step));
       const instantFeedback = vue.computed(() => props.instantFeedback === true || dragging.value === true);
 
@@ -22401,7 +22862,7 @@
 
         newModel = between(newModel, innerMin.value, innerMax.value);
 
-        emit('drag-value', newModel);
+        emit('dragValue', newModel);
 
         if (model.value !== newModel) {
           model.value = newModel;
@@ -22576,6 +23037,8 @@
 
       const { proxy } = vue.getCurrentInstance();
 
+      vue.watch(() => proxy.$q.lang.rtl, emitEvent);
+
       vue.onMounted(() => {
         parentEl = proxy.$el.parentNode;
         configureScrollTarget();
@@ -22676,7 +23139,7 @@
         if (height.value !== newHeight) {
           resized = true;
           height.value = newHeight;
-          props.onScrollHeight !== void 0 && emit('scroll-height', newHeight);
+          props.onScrollHeight !== void 0 && emit('scrollHeight', newHeight);
           updateScrollbarWidth();
         }
         if (width.value !== newWidth) {
@@ -22708,7 +23171,7 @@
         }
       }
 
-      let timer;
+      let animateTimer = null;
 
       const $layout = {
         instances: {},
@@ -22739,16 +23202,16 @@
         scroll,
 
         animate () {
-          if (timer !== void 0) {
-            clearTimeout(timer);
+          if (animateTimer !== null) {
+            clearTimeout(animateTimer);
           }
           else {
             document.body.classList.add('q-body--layout-animate');
           }
 
-          timer = setTimeout(() => {
+          animateTimer = setTimeout(() => {
+            animateTimer = null;
             document.body.classList.remove('q-body--layout-animate');
-            timer = void 0;
           }, 155);
         },
 
@@ -23017,6 +23480,8 @@
         const prop = { type: 'radio' };
 
         props.name !== void 0 && Object.assign(prop, {
+          // see https://vuejs.org/guide/extras/render-function.html#creating-vnodes (.prop)
+          '.checked': isTrue.value === true,
           '^checked': isTrue.value === true ? 'checked' : void 0,
           name: props.name,
           value: props.val
@@ -23222,7 +23687,7 @@
       );
 
       const attrs = vue.computed(() => {
-        const attrs = {};
+        const attrs = { role: 'group' };
 
         if (props.type === 'radio') {
           attrs.role = 'radiogroup';
@@ -23287,10 +23752,17 @@
     setup (props, { slots }) {
       const { proxy: { $q } } = vue.getCurrentInstance();
 
-      const $layout = vue.inject(layoutKey);
-      vue.inject(pageContainerKey, () => {
+      const $layout = vue.inject(layoutKey, emptyRenderFn);
+      if ($layout === emptyRenderFn) {
+        console.error('QPage needs to be a deep child of QLayout');
+        return emptyRenderFn
+      }
+
+      const $pageContainer = vue.inject(pageContainerKey, emptyRenderFn);
+      if ($pageContainer === emptyRenderFn) {
         console.error('QPage needs to be child of QPageContainer');
-      });
+        return emptyRenderFn
+      }
 
       const style = vue.computed(() => {
         const offset
@@ -23333,9 +23805,11 @@
     setup (_, { slots }) {
       const { proxy: { $q } } = vue.getCurrentInstance();
 
-      const $layout = vue.inject(layoutKey, () => {
+      const $layout = vue.inject(layoutKey, emptyRenderFn);
+      if ($layout === emptyRenderFn) {
         console.error('QPageContainer needs to be child of QLayout');
-      });
+        return emptyRenderFn
+      }
 
       vue.provide(pageContainerKey, true);
 
@@ -23385,9 +23859,11 @@
   function usePageSticky () {
     const { props, proxy: { $q } } = vue.getCurrentInstance();
 
-    const $layout = vue.inject(layoutKey, () => {
+    const $layout = vue.inject(layoutKey, emptyRenderFn);
+    if ($layout === emptyRenderFn) {
       console.error('QPageSticky needs to be child of QLayout');
-    });
+      return emptyRenderFn
+    }
 
     const attach = vue.computed(() => {
       const pos = props.position;
@@ -23600,6 +24076,12 @@
     }
   });
 
+  function getBool (val, otherwise) {
+    return [ true, false ].includes(val)
+      ? val
+      : otherwise
+  }
+
   var QPagination = createComponent({
     name: 'QPagination',
 
@@ -23611,22 +24093,20 @@
         required: true
       },
       min: {
-        type: Number,
+        type: [ Number, String ],
         default: 1
       },
       max: {
-        type: Number,
+        type: [ Number, String ],
         required: true
       },
-
-      color: {
-        type: String,
-        default: 'primary'
+      maxPages: {
+        type: [ Number, String ],
+        default: 0,
+        validator: v => (
+          (typeof v === 'string' ? parseInt(v, 10) : v) >= 0
+        )
       },
-      textColor: String,
-
-      activeColor: String,
-      activeTextColor: String,
 
       inputStyle: [ Array, String, Object ],
       inputClass: [ Array, String, Object ],
@@ -23660,11 +24140,6 @@
         type: Boolean,
         default: null
       },
-      maxPages: {
-        type: Number,
-        default: 0,
-        validator: v => v >= 0
-      },
 
       ripple: {
         type: [ Boolean, Object ],
@@ -23680,7 +24155,21 @@
       push: Boolean,
       glossy: Boolean,
 
-      dense: Boolean,
+      color: {
+        type: String,
+        default: 'primary'
+      },
+      textColor: String,
+
+      activeDesign: {
+        type: String,
+        default: '',
+        values: v => v === '' || btnDesignOptions.includes(v)
+      },
+      activeColor: String,
+      activeTextColor: String,
+
+      gutter: String,
       padding: {
         type: String,
         default: '3px 2px'
@@ -23695,6 +24184,16 @@
 
       const isDark = useDark(props, $q);
 
+      const minProp = vue.computed(() => parseInt(props.min, 10));
+      const maxProp = vue.computed(() => parseInt(props.max, 10));
+      const maxPagesProp = vue.computed(() => parseInt(props.maxPages, 10));
+
+      const inputPlaceholder = vue.computed(() => model.value + ' / ' + maxProp.value);
+      const boundaryLinksProp = vue.computed(() => getBool(props.boundaryLinks, props.input));
+      const boundaryNumbersProp = vue.computed(() => getBool(props.boundaryNumbers, !props.input));
+      const directionLinksProp = vue.computed(() => getBool(props.directionLinks, props.input));
+      const ellipsesProp = vue.computed(() => getBool(props.ellipses, !props.input));
+
       const newPage = vue.ref(null);
       const model = vue.computed({
         get: () => props.modelValue,
@@ -23703,32 +24202,33 @@
           if (props.disable || isNaN(val)) {
             return
           }
-          const value = between(val, props.min, props.max);
+          const value = between(val, minProp.value, maxProp.value);
           if (props.modelValue !== value) {
             emit('update:modelValue', value);
           }
         }
       });
 
-      vue.watch(() => props.min + props.max, () => {
+      vue.watch(() => `${ minProp.value }|${ maxProp.value }`, () => {
         model.value = props.modelValue;
       });
-
-      function getBool (val, otherwise) {
-        return [ true, false ].includes(val)
-          ? val
-          : otherwise
-      }
 
       const classes = vue.computed(() =>
         'q-pagination row no-wrap items-center'
         + (props.disable === true ? ' disabled' : '')
       );
-      const inputPlaceholder = vue.computed(() => model.value + ' / ' + props.max);
-      const __boundaryLinks = vue.computed(() => getBool(props.boundaryLinks, props.input));
-      const __boundaryNumbers = vue.computed(() => getBool(props.boundaryNumbers, !props.input));
-      const __directionLinks = vue.computed(() => getBool(props.directionLinks, props.input));
-      const __ellipses = vue.computed(() => getBool(props.ellipses, !props.input));
+
+      const gutterProp = vue.computed(() => (
+        props.gutter in btnPadding
+          ? `${ btnPadding[ props.gutter ] }px`
+          : props.gutter || null
+      ));
+      const gutterStyle = vue.computed(() => (
+        gutterProp.value !== null
+          ? `--q-pagination-gutter-parent:-${ gutterProp.value };--q-pagination-gutter-child:${ gutterProp.value }`
+          : null
+      ));
+
       const icons = vue.computed(() => {
         const ico = [
           props.iconFirst || $q.iconSet.pagination.first,
@@ -23739,37 +24239,89 @@
         return $q.lang.rtl === true ? ico.reverse() : ico
       });
 
-      const attrs = vue.computed(() => (
-        props.disable === true
-          ? { 'aria-disabled': 'true' }
-          : {}
-      ));
+      const attrs = vue.computed(() => ({
+        'aria-disabled': props.disable === true ? 'true' : 'false',
+        role: 'navigation'
+      }));
 
+      const btnDesignProp = vue.computed(() => getBtnDesign(props, 'flat'));
       const btnProps = vue.computed(() => ({
+        [ btnDesignProp.value ]: true,
+
         round: props.round,
         rounded: props.rounded,
 
-        outline: props.outline,
-        unelevated: props.unelevated,
-        push: props.push,
-        glossy: props.glossy,
-
-        dense: props.dense,
         padding: props.padding,
 
         color: props.color,
-        flat: true,
+        textColor: props.textColor,
+
         size: props.size,
         ripple: props.ripple !== null
           ? props.ripple
           : true
       }));
 
+      const btnActiveDesignProp = vue.computed(() => {
+        // we also reset non-active design
+        const acc = { [ btnDesignProp.value ]: false };
+        if (props.activeDesign !== '') {
+          acc[ props.activeDesign ] = true;
+        }
+        return acc
+      });
       const activeBtnProps = vue.computed(() => ({
-        flat: props.flat,
+        ...btnActiveDesignProp.value,
         color: props.activeColor || props.color,
         textColor: props.activeTextColor || props.textColor
       }));
+
+      const btnConfig = vue.computed(() => {
+        let maxPages = Math.max(
+          maxPagesProp.value,
+          1 + (ellipsesProp.value ? 2 : 0) + (boundaryNumbersProp.value ? 2 : 0)
+        );
+
+        const acc = {
+          pgFrom: minProp.value,
+          pgTo: maxProp.value,
+          ellipsesStart: false,
+          ellipsesEnd: false,
+          boundaryStart: false,
+          boundaryEnd: false,
+          marginalStyle: {
+            minWidth: `${ Math.max(2, String(maxProp.value).length) }em`
+          }
+        };
+
+        if (maxPagesProp.value && maxPages < (maxProp.value - minProp.value + 1)) {
+          maxPages = 1 + Math.floor(maxPages / 2) * 2;
+          acc.pgFrom = Math.max(minProp.value, Math.min(maxProp.value - maxPages + 1, props.modelValue - Math.floor(maxPages / 2)));
+          acc.pgTo = Math.min(maxProp.value, acc.pgFrom + maxPages - 1);
+
+          if (boundaryNumbersProp.value) {
+            acc.boundaryStart = true;
+            acc.pgFrom++;
+          }
+
+          if (ellipsesProp.value && acc.pgFrom > (minProp.value + (boundaryNumbersProp.value ? 1 : 0))) {
+            acc.ellipsesStart = true;
+            acc.pgFrom++;
+          }
+
+          if (boundaryNumbersProp.value) {
+            acc.boundaryEnd = true;
+            acc.pgTo--;
+          }
+
+          if (ellipsesProp.value && acc.pgTo < (maxProp.value - (boundaryNumbersProp.value ? 1 : 0))) {
+            acc.ellipsesEnd = true;
+            acc.pgTo--;
+          }
+        }
+
+        return acc
+      });
 
       function set (value) {
         model.value = value;
@@ -23779,20 +24331,40 @@
         model.value = model.value + offset;
       }
 
-      function updateModel () {
-        model.value = newPage.value;
-        newPage.value = null;
-      }
+      const inputEvents = vue.computed(() => {
+        function updateModel () {
+          model.value = newPage.value;
+          newPage.value = null;
+        }
 
-      function getBtn (cfg, page) {
-        const data = { ...btnProps.value, ...cfg };
+        return {
+          'onUpdate:modelValue': val => { newPage.value = val; },
+          onKeyup: e => { isKeyCode(e, 13) === true && updateModel(); },
+          onBlur: updateModel
+        }
+      });
+
+      function getBtn (cfg, page, active) {
+        const data = {
+          'aria-label': page,
+          'aria-current': 'false',
+          ...btnProps.value,
+          ...cfg
+        };
+
+        if (active === true) {
+          Object.assign(data, {
+            'aria-current': 'true',
+            ...activeBtnProps.value
+          });
+        }
 
         if (page !== void 0) {
           if (props.toFn !== void 0) {
             data.to = props.toFn(page);
           }
           else {
-            data.onClick = () => set(page);
+            data.onClick = () => { set(page); };
           }
         }
 
@@ -23803,147 +24375,107 @@
       Object.assign(proxy, { set, setByOffset });
 
       return () => {
-        const
-          contentStart = [],
-          contentEnd = [],
+        const contentStart = [];
+        const contentEnd = [];
+        let contentMiddle;
+
+        if (boundaryLinksProp.value === true) {
+          contentStart.push(
+            getBtn({
+              key: 'bls',
+              disable: props.disable || props.modelValue <= minProp.value,
+              icon: icons.value[ 0 ]
+            }, minProp.value)
+          );
+
+          contentEnd.unshift(
+            getBtn({
+              key: 'ble',
+              disable: props.disable || props.modelValue >= maxProp.value,
+              icon: icons.value[ 3 ]
+            }, maxProp.value)
+          );
+        }
+
+        if (directionLinksProp.value === true) {
+          contentStart.push(
+            getBtn({
+              key: 'bdp',
+              disable: props.disable || props.modelValue <= minProp.value,
+              icon: icons.value[ 1 ]
+            }, props.modelValue - 1)
+          );
+
+          contentEnd.unshift(
+            getBtn({
+              key: 'bdn',
+              disable: props.disable || props.modelValue >= maxProp.value,
+              icon: icons.value[ 2 ]
+            }, props.modelValue + 1)
+          );
+        }
+
+        if (props.input !== true) { // has buttons instead of inputbox
           contentMiddle = [];
+          const { pgFrom, pgTo, marginalStyle: style } = btnConfig.value;
 
-        if (__boundaryLinks.value) {
-          contentStart.push(getBtn({
-            key: 'bls',
-            disable: props.disable || props.modelValue <= props.min,
-            icon: icons.value[ 0 ]
-          }, props.min));
-          contentEnd.unshift(getBtn({
-            key: 'ble',
-            disable: props.disable || props.modelValue >= props.max,
-            icon: icons.value[ 3 ]
-          }, props.max));
-        }
+          if (btnConfig.value.boundaryStart === true) {
+            const active = minProp.value === props.modelValue;
+            contentStart.push(
+              getBtn({
+                key: 'bns',
+                style,
+                disable: props.disable,
+                label: minProp.value
+              }, minProp.value, active)
+            );
+          }
 
-        if (__directionLinks.value) {
-          contentStart.push(getBtn({
-            key: 'bdp',
-            disable: props.disable || props.modelValue <= props.min,
-            icon: icons.value[ 1 ]
-          }, props.modelValue - 1));
-          contentEnd.unshift(getBtn({
-            key: 'bdn',
-            disable: props.disable || props.modelValue >= props.max,
-            icon: icons.value[ 2 ]
-          }, props.modelValue + 1));
-        }
+          if (btnConfig.value.boundaryEnd === true) {
+            const active = maxProp.value === props.modelValue;
+            contentEnd.unshift(
+              getBtn({
+                key: 'bne',
+                style,
+                disable: props.disable,
+                label: maxProp.value
+              }, maxProp.value, active)
+            );
+          }
 
-        if (props.input === true) {
-          contentMiddle.push(vue.h(QInput, {
-            class: 'inline',
-            style: {
-              width: `${ inputPlaceholder.value.length / 1.5 }em`
-            },
-            type: 'number',
-            dense: true,
-            value: newPage.value,
-            disable: props.disable,
-            dark: isDark.value,
-            borderless: true,
-            inputClass: props.inputClass,
-            inputStyle: props.inputStyle,
-            placeholder: inputPlaceholder.value,
-            min: props.min,
-            max: props.max,
-            'onUpdate:modelValue' (value) { newPage.value = value; },
-            onKeyup (e) { isKeyCode(e, 13) === true && updateModel(); },
-            onBlur: updateModel
-          }));
-        }
-        else { // is type select
-          let
-            maxPages = Math.max(
-              props.maxPages,
-              1 + (__ellipses.value ? 2 : 0) + (__boundaryNumbers.value ? 2 : 0)
-            ),
-            pgFrom = props.min,
-            pgTo = props.max,
-            ellipsesStart = false,
-            ellipsesEnd = false,
-            boundaryStart = false,
-            boundaryEnd = false;
+          if (btnConfig.value.ellipsesStart === true) {
+            contentStart.push(
+              getBtn({
+                key: 'bes',
+                style,
+                disable: props.disable,
+                label: '…',
+                ripple: false
+              }, pgFrom - 1)
+            );
+          }
 
-          if (props.maxPages && maxPages < (props.max - props.min + 1)) {
-            maxPages = 1 + Math.floor(maxPages / 2) * 2;
-            pgFrom = Math.max(props.min, Math.min(props.max - maxPages + 1, props.modelValue - Math.floor(maxPages / 2)));
-            pgTo = Math.min(props.max, pgFrom + maxPages - 1);
-            if (__boundaryNumbers.value) {
-              boundaryStart = true;
-              pgFrom += 1;
-            }
-            if (__ellipses.value && pgFrom > (props.min + (__boundaryNumbers.value ? 1 : 0))) {
-              ellipsesStart = true;
-              pgFrom += 1;
-            }
-            if (__boundaryNumbers.value) {
-              boundaryEnd = true;
-              pgTo -= 1;
-            }
-            if (__ellipses.value && pgTo < (props.max - (__boundaryNumbers.value ? 1 : 0))) {
-              ellipsesEnd = true;
-              pgTo -= 1;
-            }
+          if (btnConfig.value.ellipsesEnd === true) {
+            contentEnd.unshift(
+              getBtn({
+                key: 'bee',
+                style,
+                disable: props.disable,
+                label: '…',
+                ripple: false
+              }, pgTo + 1)
+            );
           }
-          const style = {
-            minWidth: `${ Math.max(2, String(props.max).length) }em`
-          };
-          if (boundaryStart) {
-            const active = props.min === props.modelValue;
-            contentStart.push(getBtn({
-              key: 'bns',
-              style,
-              disable: props.disable,
-              flat: !active,
-              label: props.min,
-              ...(active ? activeBtnProps.value : {})
-            }, props.min));
-          }
-          if (boundaryEnd) {
-            const active = props.max === props.modelValue;
-            contentEnd.unshift(getBtn({
-              key: 'bne',
-              style,
-              disable: props.disable,
-              flat: !active,
-              label: props.max,
-              ...(active ? activeBtnProps.value : {})
-            }, props.max));
-          }
-          if (ellipsesStart) {
-            contentStart.push(getBtn({
-              key: 'bes',
-              style,
-              disable: props.disable,
-              label: '…',
-              ripple: false
-            }, pgFrom - 1));
-          }
-          if (ellipsesEnd) {
-            contentEnd.unshift(getBtn({
-              key: 'bee',
-              style,
-              disable: props.disable,
-              label: '…',
-              ripple: false
-            }, pgTo + 1));
-          }
+
           for (let i = pgFrom; i <= pgTo; i++) {
-            const btn = {
-              key: `bpg${ i }`,
-              style,
-              disable: props.disable,
-              label: i
-            };
-            if (i === props.modelValue) {
-              Object.assign(btn, activeBtnProps.value);
-            }
-            contentMiddle.push(getBtn(btn, i));
+            contentMiddle.push(
+              getBtn({
+                key: `bpg${ i }`,
+                style,
+                disable: props.disable,
+                label: i
+              }, i, i === props.modelValue)
+            );
           }
         }
 
@@ -23951,15 +24483,35 @@
           class: classes.value,
           ...attrs.value
         }, [
-          contentStart,
-
           vue.h('div', {
-            class: 'row justify-center'
+            class: 'q-pagination__content row no-wrap items-center',
+            style: gutterStyle.value
           }, [
-            contentMiddle
-          ]),
+            ...contentStart,
 
-          contentEnd
+            props.input === true
+              ? vue.h(QInput, {
+                class: 'inline',
+                style: { width: `${ inputPlaceholder.value.length / 1.5 }em` },
+                type: 'number',
+                dense: true,
+                value: newPage.value,
+                disable: props.disable,
+                dark: isDark.value,
+                borderless: true,
+                inputClass: props.inputClass,
+                inputStyle: props.inputStyle,
+                placeholder: inputPlaceholder.value,
+                min: minProp.value,
+                max: maxProp.value,
+                ...inputEvents.value
+              })
+              : vue.h('div', {
+                class: 'q-pagination__middle row justify-center'
+              }, contentMiddle),
+
+            ...contentEnd
+          ])
         ])
       }
     }
@@ -24240,7 +24792,7 @@
 
     emits: [
       'update:modelValue', 'save', 'cancel',
-      'before-show', 'show', 'before-hide', 'hide'
+      'beforeShow', 'show', 'beforeHide', 'hide'
     ],
 
     setup (props, { slots, emit }) {
@@ -24304,7 +24856,7 @@
         validated = false;
         initialValue.value = cloneDeep(props.modelValue);
         currentModel.value = cloneDeep(props.modelValue);
-        emit('before-show');
+        emit('beforeShow');
       }
 
       function onShow () {
@@ -24322,7 +24874,7 @@
           }
         }
 
-        emit('before-hide');
+        emit('beforeHide');
       }
 
       function onHide () {
@@ -24444,6 +24996,11 @@
         toggle (evt) { popupRef.value.toggle(evt); }
       });
 
+      injectProp(proxy, 'currentComponent', () => ({
+        type: type.value,
+        ref: popupRef.value
+      }));
+
       return () => {
         const data = {
           ref: popupRef,
@@ -24539,9 +25096,11 @@
       );
 
       const trackStyle = vue.computed(() => width(props.buffer !== void 0 ? props.buffer : 1, widthReverse.value, proxy.$q));
+      const transitionSuffix = vue.computed(() => `with${ props.instantFeedback === true ? 'out' : '' }-transition`);
+
       const trackClass = vue.computed(() =>
         'q-linear-progress__track absolute-full'
-        + ` q-linear-progress__track--with${ props.instantFeedback === true ? 'out' : '' }-transition`
+        + ` q-linear-progress__track--${ transitionSuffix.value }`
         + ` q-linear-progress__track--${ isDark.value === true ? 'dark' : 'light' }`
         + (props.trackColor !== void 0 ? ` bg-${ props.trackColor }` : '')
       );
@@ -24549,13 +25108,14 @@
       const modelStyle = vue.computed(() => width(motion.value === true ? 1 : props.value, widthReverse.value, proxy.$q));
       const modelClass = vue.computed(() =>
         'q-linear-progress__model absolute-full'
-        + ` q-linear-progress__model--with${ props.instantFeedback === true ? 'out' : '' }-transition`
+        + ` q-linear-progress__model--${ transitionSuffix.value }`
         + ` q-linear-progress__model--${ motion.value === true ? 'in' : '' }determinate`
       );
 
       const stripeStyle = vue.computed(() => ({ width: `${ props.value * 100 }%` }));
       const stripeClass = vue.computed(() =>
         `q-linear-progress__stripe absolute-${ props.reverse === true ? 'right' : 'left' }`
+        + ` q-linear-progress__stripe--${ transitionSuffix.value }`
       );
 
       return () => {
@@ -24719,6 +25279,8 @@
         });
       }
 
+      let $el, localScrollTarget, timer = null;
+
       function animateTo ({ pos, ratio }, done) {
         animating.value = true;
         pullPosition.value = pos;
@@ -24727,14 +25289,13 @@
           pullRatio.value = ratio;
         }
 
-        clearTimeout(timer);
+        timer !== null && clearTimeout(timer);
         timer = setTimeout(() => {
+          timer = null;
           animating.value = false;
           done && done();
         }, 300);
       }
-
-      let $el, localScrollTarget, timer;
 
       function updateScrollTarget () {
         localScrollTarget = getScrollTarget($el, props.scrollTarget);
@@ -24748,7 +25309,7 @@
       });
 
       vue.onBeforeUnmount(() => {
-        clearTimeout(timer);
+        timer !== null && clearTimeout(timer);
       });
 
       // expose public methods
@@ -25070,15 +25631,15 @@
           case dragType.RANGE:
             const
               ratioDelta = ratio - dragging.offsetRatio,
-              minR = between(dragging.ratioMin + ratioDelta, 0, 1 - dragging.rangeRatio),
+              minR = between(dragging.ratioMin + ratioDelta, state.innerMinRatio.value, state.innerMaxRatio.value - dragging.rangeRatio),
               modelDelta = localModel - dragging.offsetModel,
-              min = between(dragging.valueMin + modelDelta, props.min, props.max - dragging.rangeValue);
+              min = between(dragging.valueMin + modelDelta, state.innerMin.value, state.innerMax.value - dragging.rangeValue);
 
             pos = {
               minR,
               maxR: minR + dragging.rangeRatio,
-              min: parseFloat(min.toFixed(state.decimals.value)),
-              max: parseFloat((min + dragging.rangeValue).toFixed(state.decimals.value))
+              min: state.roundValueFn.value(min),
+              max: state.roundValueFn.value(min + dragging.rangeValue)
             };
 
             state.focus.value = 'both';
@@ -25108,7 +25669,7 @@
         stopAndPrevent(evt);
 
         const
-          stepVal = ([ 34, 33 ].includes(evt.keyCode) ? 10 : 1) * state.step.value,
+          stepVal = ([ 34, 33 ].includes(evt.keyCode) ? 10 : 1) * state.keyStep.value,
           offset = (
             ([ 34, 37, 40 ].includes(evt.keyCode) ? -1 : 1)
             * (state.isReversed.value === true ? -1 : 1)
@@ -25118,14 +25679,14 @@
         if (state.focus.value === 'both') {
           const interval = model.value.max - model.value.min;
           const min = between(
-            parseFloat((model.value.min + offset).toFixed(state.decimals.value)),
+            state.roundValueFn.value(model.value.min + offset),
             state.innerMin.value,
             state.innerMax.value - interval
           );
 
           model.value = {
             min,
-            max: parseFloat((min + interval).toFixed(state.decimals.value))
+            max: state.roundValueFn.value(min + interval)
           };
         }
         else if (state.focus.value === false) {
@@ -25137,7 +25698,7 @@
           model.value = {
             ...model.value,
             [ which ]: between(
-              parseFloat((model.value[ which ] + offset).toFixed(state.decimals.value)),
+              state.roundValueFn.value(model.value[ which ] + offset),
               which === 'min' ? state.innerMin.value : model.value.min,
               which === 'max' ? state.innerMax.value : model.value.max
             )
@@ -25264,7 +25825,7 @@
 
       const iconLabel = vue.computed(() => {
         if (typeof props.iconAriaLabel === 'string') {
-          const label = props.iconAriaLabel.length > 0 ? `${ props.iconAriaLabel } ` : '';
+          const label = props.iconAriaLabel.length !== 0 ? `${ props.iconAriaLabel } ` : '';
           return i => `${ label }${ i }`
         }
 
@@ -25380,13 +25941,13 @@
           case 37: // LEFT ARROW
           case 40: // DOWN ARROW
             if (iconRefs[ `rt${ i - 1 }` ]) {
-              iconRefs[ `rt${ i - 1 }` ].$el.focus();
+              iconRefs[ `rt${ i - 1 }` ].focus();
             }
             return stopAndPrevent(e)
           case 39: // RIGHT ARROW
           case 38: // UP ARROW
             if (iconRefs[ `rt${ i + 1 }` ]) {
-              iconRefs[ `rt${ i + 1 }` ].$el.focus();
+              iconRefs[ `rt${ i + 1 }` ].focus();
             }
             return stopAndPrevent(e)
         }
@@ -25409,7 +25970,7 @@
           child.push(
             vue.h('div', {
               key: i,
-              ref: vm => { iconRefs[ `rt${ i }` ] = vm; },
+              ref: el => { iconRefs[ `rt${ i }` ] = el; },
               class: 'q-rating__icon-container flex flex-center',
               ...attrs,
               onClick () { set(i); },
@@ -25537,7 +26098,7 @@
 
       const isDark = useDark(props, proxy.$q);
 
-      let timer, panRefPos;
+      let timer = null, panRefPos;
 
       const targetRef = vue.ref(null);
 
@@ -25591,7 +26152,7 @@
       scroll.horizontal.percentage = vue.computed(() => {
         const diff = scroll.horizontal.size.value - container.horizontal.value;
         if (diff <= 0) { return 0 }
-        const p = between(scroll.horizontal.position.value / diff, 0, 1);
+        const p = between(Math.abs(scroll.horizontal.position.value) / diff, 0, 1);
         return Math.round(p * 10000) / 10000
       });
       scroll.horizontal.thumbHidden = vue.computed(() =>
@@ -25617,7 +26178,7 @@
         return {
           ...props.thumbStyle,
           ...props.horizontalThumbStyle,
-          left: `${ scroll.horizontal.thumbStart.value }px`,
+          [ proxy.$q.lang.rtl === true ? 'right' : 'left' ]: `${ scroll.horizontal.thumbStart.value }px`,
           width: `${ scroll.horizontal.thumbSize.value }px`
         }
       });
@@ -25786,14 +26347,14 @@
       }
 
       function startTimer () {
-        if (tempShowing.value === true) {
-          clearTimeout(timer);
-        }
-        else {
-          tempShowing.value = true;
-        }
+        tempShowing.value = true;
 
-        timer = setTimeout(() => { tempShowing.value = false; }, props.delay);
+        timer !== null && clearTimeout(timer);
+        timer = setTimeout(() => {
+          timer = null;
+          tempShowing.value = false;
+        }, props.delay);
+
         props.onScroll !== void 0 && emitScroll();
       }
 
@@ -25801,15 +26362,39 @@
         targetRef.value[ dirProps[ axis ].scroll ] = offset;
       }
 
+      let mouseEventTimer = null;
+
       function onMouseenter () {
-        hover.value = true;
+        if (mouseEventTimer !== null) {
+          clearTimeout(mouseEventTimer);
+        }
+
+        // setTimeout needed for iOS; see ticket #16210
+        mouseEventTimer = setTimeout(() => {
+          mouseEventTimer = null;
+          hover.value = true;
+        }, proxy.$q.platform.is.ios ? 50 : 0);
       }
 
       function onMouseleave () {
+        if (mouseEventTimer !== null) {
+          clearTimeout(mouseEventTimer);
+          mouseEventTimer = null;
+        }
+
         hover.value = false;
       }
 
       let scrollPosition = null;
+
+      vue.watch(() => proxy.$q.lang.rtl, rtl => {
+        if (targetRef.value !== null) {
+          setHorizontalScrollPosition(
+            targetRef.value,
+            Math.abs(scroll.horizontal.position.value) * (rtl === true ? -1 : 1)
+          );
+        }
+      });
 
       vue.onDeactivated(() => {
         scrollPosition = {
@@ -25847,7 +26432,9 @@
         setScrollPercentage (axis, percentage, duration) {
           localSetScrollPosition(
             axis,
-            percentage * (scroll[ axis ].size.value - container[ axis ].value),
+            percentage
+              * (scroll[ axis ].size.value - container[ axis ].value)
+              * (axis === 'horizontal' && proxy.$q.lang.rtl === true ? -1 : 1),
             duration
           );
         }
@@ -25943,12 +26530,16 @@
         return
       }
 
-      cancelAnimationFrame(contentEl._qOverflowAnimationFrame);
+      if (contentEl._qOverflowAnimationFrame !== void 0) {
+        cancelAnimationFrame(contentEl._qOverflowAnimationFrame);
+      }
+
       contentEl._qOverflowAnimationFrame = requestAnimationFrame(() => {
         if (contentEl === null) {
           return
         }
 
+        contentEl._qOverflowAnimationFrame = void 0;
         const children = contentEl.children || [];
 
         filterProto
@@ -26596,7 +27187,7 @@
 
     function emitScroll (index) {
       if (prevToIndex !== index) {
-        props.onVirtualScroll !== void 0 && emit('virtual-scroll', {
+        props.onVirtualScroll !== void 0 && emit('virtualScroll', {
           index,
           from: virtualScrollSliceRange.value.from,
           to: virtualScrollSliceRange.value.to - 1,
@@ -26768,9 +27359,9 @@
 
     emits: [
       ...useFieldEmits,
-      'add', 'remove', 'input-value', 'new-value',
+      'add', 'remove', 'inputValue', 'newValue',
       'keyup', 'keypress', 'keydown',
-      'filter-abort'
+      'filterAbort'
     ],
 
     setup (props, { slots, emit }) {
@@ -26784,8 +27375,9 @@
       const dialogFieldFocused = vue.ref(false);
       const innerLoadingIndicator = vue.ref(false);
 
-      let inputTimer, innerValueCache,
-        hasDialog, userInputValue, filterId, defaultInputValue,
+      let filterTimer = null, inputValueTimer = null,
+        innerValueCache,
+        hasDialog, userInputValue, filterId = null, defaultInputValue,
         transitionShowComputed, searchBuffer, searchBufferExp;
 
       const inputRef = vue.ref(null);
@@ -26892,6 +27484,11 @@
           .join(', ')
       );
 
+      const ariaCurrentValue = vue.computed(() => (props.displayValue !== void 0
+        ? props.displayValue
+        : selectedString.value
+      ));
+
       const needsHtmlFn = vue.computed(() => (
         props.optionsHtml === true
           ? () => true
@@ -26917,18 +27514,7 @@
           'aria-readonly': props.readonly === true ? 'true' : 'false',
           'aria-autocomplete': props.useInput === true ? 'list' : 'none',
           'aria-expanded': menu.value === true ? 'true' : 'false',
-          'aria-owns': `${ state.targetUid.value }_lb`,
           'aria-controls': `${ state.targetUid.value }_lb`
-        };
-
-        return attrs
-      });
-
-      const listboxAttrs = vue.computed(() => {
-        const attrs = {
-          id: `${ state.targetUid.value }_lb`,
-          role: 'listbox',
-          'aria-multiselectable': props.multiple === true ? 'true' : 'false'
         };
 
         if (optionIndex.value >= 0) {
@@ -26937,6 +27523,12 @@
 
         return attrs
       });
+
+      const listboxAttrs = vue.computed(() => ({
+        id: `${ state.targetUid.value }_lb`,
+        role: 'listbox',
+        'aria-multiselectable': props.multiple === true ? 'true' : 'false'
+      }));
 
       const selectedScope = vue.computed(() => {
         return innerValue.value.map((opt, i) => ({
@@ -26959,11 +27551,12 @@
 
         return props.options.slice(from, to).map((opt, i) => {
           const disable = isOptionDisabled.value(opt) === true;
+          const active = isOptionSelected(opt) === true;
           const index = from + i;
 
           const itemProps = {
             clickable: true,
-            active: false,
+            active,
             activeClass: computedOptionsSelectedClass.value,
             manualFocus: true,
             focused: false,
@@ -26972,15 +27565,13 @@
             dense: props.optionsDense,
             dark: isOptionsDark.value,
             role: 'option',
+            'aria-selected': active === true ? 'true' : 'false',
             id: `${ state.targetUid.value }_${ index }`,
             onClick: () => { toggleOption(opt); }
           };
 
           if (disable !== true) {
-            isOptionSelected(opt) === true && (itemProps.active = true);
             optionIndex.value === index && (itemProps.focused = true);
-
-            itemProps[ 'aria-selected' ] = itemProps.active === true ? 'true' : 'false';
 
             if ($q.platform.is.desktop === true) {
               itemProps.onMousemove = () => { menu.value === true && setOptionIndex(index); };
@@ -27229,9 +27820,11 @@
             scrollTo(index);
 
             if (skipInputValue !== true && props.useInput === true && props.fillInput === true) {
-              setInputValue(index >= 0
-                ? getOptionLabel.value(props.options[ index ])
-                : defaultInputValue
+              setInputValue(
+                index >= 0
+                  ? getOptionLabel.value(props.options[ index ])
+                  : defaultInputValue,
+                true
               );
             }
           }
@@ -27291,10 +27884,19 @@
         }
 
         e.target.value = '';
-        clearTimeout(inputTimer);
+
+        if (filterTimer !== null) {
+          clearTimeout(filterTimer);
+          filterTimer = null;
+        }
+        if (inputValueTimer !== null) {
+          clearTimeout(inputValueTimer);
+          inputValueTimer = null;
+        }
+
         resetInputValue();
 
-        if (typeof value === 'string' && value.length > 0) {
+        if (typeof value === 'string' && value.length !== 0) {
           const needle = value.toLocaleLowerCase();
           const findFn = extractFn => {
             const option = props.options.find(opt => extractFn.value(opt).toLocaleLowerCase() === needle);
@@ -27341,7 +27943,7 @@
           return
         }
 
-        const newValueModeValid = inputValue.value.length > 0
+        const newValueModeValid = inputValue.value.length !== 0
           && (props.newValueMode !== void 0 || props.onNewValue !== void 0);
 
         const tabShouldSelect = e.shiftKey !== true
@@ -27360,7 +27962,11 @@
           return
         }
 
-        if (e.target === void 0 || e.target.id !== state.targetUid.value) { return }
+        if (
+          e.target === void 0
+          || e.target.id !== state.targetUid.value
+          || state.editable.value !== true
+        ) { return }
 
         // down
         if (
@@ -27376,6 +27982,10 @@
         // backspace
         if (
           e.keyCode === 8
+          && (
+            props.useChips === true
+            || props.clearable === true
+          )
           && props.hideSelected !== true
           && inputValue.value.length === 0
         ) {
@@ -27433,8 +28043,10 @@
           && props.useInput !== true
           && e.key !== void 0
           && e.key.length === 1 // printable char
-          && e.altKey === e.ctrlKey // not kbd shortcut
-          && (e.keyCode !== 32 || searchBuffer.length > 0) // space in middle of search
+          && e.altKey === false // not kbd shortcut
+          && e.ctrlKey === false // not kbd shortcut
+          && e.metaKey === false // not kbd shortcut, especially on macOS with Command key
+          && (e.keyCode !== 32 || searchBuffer.length !== 0) // space in middle of search
         ) {
           menu.value !== true && showPopup(e);
 
@@ -27468,7 +28080,7 @@
               scrollTo(index);
 
               if (index >= 0 && props.useInput === true && props.fillInput === true) {
-                setInputValue(getOptionLabel.value(props.options[ index ]));
+                setInputValue(getOptionLabel.value(props.options[ index ]), true);
               }
             });
           }
@@ -27502,11 +28114,11 @@
               mode = props.newValueMode;
             }
 
+            updateInputValue('', props.multiple !== true, true);
+
             if (val === void 0 || val === null) {
               return
             }
-
-            updateInputValue('', props.multiple !== true, true);
 
             const fn = mode === 'toggle' ? toggleOption : add;
             fn(val, mode === 'add-unique');
@@ -27518,7 +28130,7 @@
           };
 
           if (props.onNewValue !== void 0) {
-            emit('new-value', inputValue.value, done);
+            emit('newValue', inputValue.value, done);
           }
           else {
             done(inputValue.value);
@@ -27541,8 +28153,8 @@
         return hasDialog === true
           ? menuContentRef.value
           : (
-              menuRef.value !== null && menuRef.value.__qPortalInnerRef.value !== null
-                ? menuRef.value.__qPortalInnerRef.value
+              menuRef.value !== null && menuRef.value.contentEl !== null
+                ? menuRef.value.contentEl
                 : void 0
             )
       }
@@ -27580,9 +28192,7 @@
 
         return [
           vue.h('span', {
-            [ valueAsHtml.value === true ? 'innerHTML' : 'textContent' ]: props.displayValue !== void 0
-              ? props.displayValue
-              : selectedString.value
+            [ valueAsHtml.value === true ? 'innerHTML' : 'textContent' ]: ariaCurrentValue.value
           })
         ]
       }
@@ -27637,7 +28247,7 @@
           id: isTarget === true ? state.targetUid.value : void 0,
           maxlength: props.maxlength,
           autocomplete: props.autocomplete,
-          'data-autofocus': (fromDialog !== true && props.autofocus === true) || void 0,
+          'data-autofocus': fromDialog === true || props.autofocus === true || void 0,
           disabled: props.disable === true,
           readonly: props.readonly === true,
           ...inputControlEvents.value
@@ -27656,7 +28266,14 @@
       }
 
       function onInput (e) {
-        clearTimeout(inputTimer);
+        if (filterTimer !== null) {
+          clearTimeout(filterTimer);
+          filterTimer = null;
+        }
+        if (inputValueTimer !== null) {
+          clearTimeout(inputValueTimer);
+          inputValueTimer = null;
+        }
 
         if (e && e.target && e.target.qComposing === true) {
           return
@@ -27676,16 +28293,26 @@
         }
 
         if (props.onFilter !== void 0) {
-          inputTimer = setTimeout(() => {
+          filterTimer = setTimeout(() => {
+            filterTimer = null;
             filter(inputValue.value);
           }, props.inputDebounce);
         }
       }
 
-      function setInputValue (val) {
+      function setInputValue (val, emitImmediately) {
         if (inputValue.value !== val) {
           inputValue.value = val;
-          emit('input-value', val);
+
+          if (emitImmediately === true || props.inputDebounce === 0 || props.inputDebounce === '0') {
+            emit('inputValue', val);
+          }
+          else {
+            inputValueTimer = setTimeout(() => {
+              inputValueTimer = null;
+              emit('inputValue', val);
+            }, props.inputDebounce);
+          }
         }
       }
 
@@ -27693,7 +28320,7 @@
         userInputValue = internal !== true;
 
         if (props.useInput === true) {
-          setInputValue(val);
+          setInputValue(val, true);
 
           if (noFiltering === true || internal !== true) {
             defaultInputValue = val;
@@ -27709,7 +28336,7 @@
         }
 
         if (state.innerLoading.value === true) {
-          emit('filter-abort');
+          emit('filterAbort');
         }
         else {
           state.innerLoading.value = true;
@@ -27719,7 +28346,7 @@
         if (
           val !== ''
           && props.multiple !== true
-          && innerValue.value.length > 0
+          && innerValue.value.length !== 0
           && userInputValue !== true
           && val === getOptionLabel.value(innerValue.value[ 0 ])
         ) {
@@ -27730,7 +28357,7 @@
           menu.value === true && (menu.value = false);
         }, 10);
 
-        clearTimeout(filterId);
+        filterId !== null && clearTimeout(filterId);
         filterId = localFilterId;
 
         emit(
@@ -27838,7 +28465,7 @@
             loading: innerLoadingIndicator.value,
             itemAligned: false,
             filled: true,
-            stackLabel: inputValue.value.length > 0,
+            stackLabel: inputValue.value.length !== 0,
             ...state.splitAttrs.listeners.value,
             onFocus: onDialogFieldFocus,
             onBlur: onDialogFieldBlur
@@ -27922,11 +28549,13 @@
         }
 
         if (state.focused.value === false) {
-          clearTimeout(filterId);
-          filterId = void 0;
+          if (filterId !== null) {
+            clearTimeout(filterId);
+            filterId = null;
+          }
 
           if (state.innerLoading.value === true) {
-            emit('filter-abort');
+            emit('filterAbort');
             state.innerLoading.value = false;
             innerLoadingIndicator.value = false;
           }
@@ -27964,7 +28593,7 @@
 
       function resetInputValue () {
         props.useInput === true && updateInputValue(
-          props.multiple !== true && props.fillInput === true && innerValue.value.length > 0
+          props.multiple !== true && props.fillInput === true && innerValue.value.length !== 0
             ? getOptionLabel.value(innerValue.value[ 0 ]) || ''
             : '',
           true,
@@ -27976,7 +28605,7 @@
         let optionIndex = -1;
 
         if (show === true) {
-          if (innerValue.value.length > 0) {
+          if (innerValue.value.length !== 0) {
             const val = getOptionValue.value(innerValue.value[ 0 ]);
             optionIndex = props.options.findIndex(v => isDeepEqual(getOptionValue.value(v), val));
           }
@@ -28012,14 +28641,14 @@
 
       function onControlPopupShow (e) {
         e !== void 0 && stop(e);
-        emit('popup-show', e);
+        emit('popupShow', e);
         state.hasPopupOpen = true;
         state.onControlFocusin(e);
       }
 
       function onControlPopupHide (e) {
         e !== void 0 && stop(e);
-        emit('popup-hide', e);
+        emit('popupHide', e);
         state.hasPopupOpen = false;
         state.onControlFocusout(e);
       }
@@ -28044,7 +28673,8 @@
       updatePreState();
 
       vue.onBeforeUnmount(() => {
-        clearTimeout(inputTimer);
+        filterTimer !== null && clearTimeout(filterTimer);
+        inputValueTimer !== null && clearTimeout(inputValueTimer);
       });
 
       // expose public methods
@@ -28078,7 +28708,7 @@
         floatingLabel: vue.computed(() =>
           (props.hideSelected !== true && hasValue.value === true)
           || typeof inputValue.value === 'number'
-          || inputValue.value.length > 0
+          || inputValue.value.length !== 0
           || fieldValueIsFilled(props.displayValue)
         ),
 
@@ -28137,8 +28767,9 @@
                 key: 'd_t',
                 class: 'q-select__focus-target',
                 id: isTarget === true ? state.targetUid.value : void 0,
+                value: ariaCurrentValue.value,
                 readonly: true,
-                'data-autofocus': (fromDialog !== true && props.autofocus === true) || void 0,
+                'data-autofocus': fromDialog === true || props.autofocus === true || void 0,
                 ...attrs,
                 onKeydown: onTargetKeydown,
                 onKeyup: onTargetKeyup,
@@ -28146,7 +28777,7 @@
               })
             );
 
-            if (isTarget === true && typeof props.autocomplete === 'string' && props.autocomplete.length > 0) {
+            if (isTarget === true && typeof props.autocomplete === 'string' && props.autocomplete.length !== 0) {
               child.push(
                 vue.h('input', {
                   class: 'q-select__autocomplete-input',
@@ -28158,7 +28789,7 @@
             }
           }
 
-          if (nameProp.value !== void 0 && props.disable !== true && innerOptionsValue.value.length > 0) {
+          if (nameProp.value !== void 0 && props.disable !== true && innerOptionsValue.value.length !== 0) {
             const opts = innerOptionsValue.value.map(value => vue.h('option', { value, selected: true }));
 
             child.push(
@@ -28174,7 +28805,8 @@
 
           return vue.h('div', {
             class: 'q-field__native row items-center',
-            ...attrs
+            ...attrs,
+            ...state.splitAttrs.listeners.value
           }, child)
         },
 
@@ -28303,7 +28935,7 @@
 
       const contentRef = vue.ref(null);
 
-      let timer, pan = {}, dirRefs = {}, dirContentRefs = {};
+      let timer = null, pan = {}, dirRefs = {}, dirContentRefs = {};
 
       const langDir = vue.computed(() => (
         $q.lang.rtl === true
@@ -28354,7 +28986,9 @@
           if (pan.scale === 1) {
             node.style.transform = `translate${ pan.axis }(${ pan.dir * 100 }%)`;
 
+            timer !== null && clearTimeout(timer);
             timer = setTimeout(() => {
+              timer = null;
               emit(pan.showing, { reset });
               emit('action', { side: pan.showing, reset });
             }, 230);
@@ -28425,7 +29059,7 @@
       });
 
       vue.onBeforeUnmount(() => {
-        clearTimeout(timer);
+        timer !== null && clearTimeout(timer);
       });
 
       // expose public methods
@@ -28962,7 +29596,7 @@
     vue.h('rect', {
       x: '0',
       y: '0',
-      width: ' 100',
+      width: '100',
       height: '100',
       fill: 'none'
     }),
@@ -29043,7 +29677,7 @@
     vue.h('rect', {
       x: '0',
       y: '0',
-      width: ' 100',
+      width: '100',
       height: '100',
       fill: 'none'
     }),
@@ -29053,7 +29687,7 @@
       vue.h('rect', {
         x: '-20',
         y: '-20',
-        width: ' 40',
+        width: '40',
         height: '40',
         fill: 'currentColor',
         opacity: '0.9'
@@ -29078,7 +29712,7 @@
       vue.h('rect', {
         x: '-20',
         y: '-20',
-        width: ' 40',
+        width: '40',
         height: '40',
         fill: 'currentColor',
         opacity: '0.8'
@@ -29103,7 +29737,7 @@
       vue.h('rect', {
         x: '-20',
         y: '-20',
-        width: ' 40',
+        width: '40',
         height: '40',
         fill: 'currentColor',
         opacity: '0.7'
@@ -29128,7 +29762,7 @@
       vue.h('rect', {
         x: '-20',
         y: '-20',
-        width: ' 40',
+        width: '40',
         height: '40',
         fill: 'currentColor',
         opacity: '0.6'
@@ -29276,7 +29910,7 @@
       vue.h('rect', {
         x: '-10',
         y: '-30',
-        width: ' 20',
+        width: '20',
         height: '60',
         fill: 'currentColor',
         opacity: '0.6'
@@ -29302,7 +29936,7 @@
       vue.h('rect', {
         x: '-10',
         y: '-30',
-        width: ' 20',
+        width: '20',
         height: '60',
         fill: 'currentColor',
         opacity: '0.8'
@@ -29328,7 +29962,7 @@
       vue.h('rect', {
         x: '-10',
         y: '-30',
-        width: ' 20',
+        width: '20',
         height: '60',
         fill: 'currentColor',
         opacity: '0.9'
@@ -29640,7 +30274,7 @@
         vue.h('rect', {
           x: '15',
           y: '20',
-          width: ' 70',
+          width: '70',
           height: '25'
         }, [
           vue.h('animate', {
@@ -29669,7 +30303,7 @@
         vue.h('rect', {
           x: '15',
           y: '55',
-          width: ' 70',
+          width: '70',
           height: '25'
         }, [
           vue.h('animate', {
@@ -30878,9 +31512,11 @@
     setup (props, { slots, emit }) {
       const { proxy: { $q } } = vue.getCurrentInstance();
 
-      const $stepper = vue.inject(stepperKey, () => {
-        console.error('QStep needs to be child of QStepper');
-      });
+      const $stepper = vue.inject(stepperKey, emptyRenderFn);
+      if ($stepper === emptyRenderFn) {
+        console.error('QStep needs to be a child of QStepper');
+        return emptyRenderFn
+      }
 
       const { getCacheWithFn } = useCache();
 
@@ -30938,7 +31574,7 @@
 
       return () => vue.h(
         'div',
-        { ref: rootRef, class: 'q-stepper__step', ...scrollEvent.value },
+        { ref: rootRef, class: 'q-stepper__step', role: 'tabpanel', ...scrollEvent.value },
         $stepper.value.vertical === true
           ? [
               vue.h(StepHeader, {
@@ -31013,8 +31649,8 @@
 
       const classes = vue.computed(() =>
         `q-stepper q-stepper--${ props.vertical === true ? 'vertical' : 'horizontal' }`
-        + (props.flat === true || isDark.value === true ? ' q-stepper--flat no-shadow' : '')
-        + (props.bordered === true || (isDark.value === true && props.flat === false) ? ' q-stepper--bordered' : '')
+        + (props.flat === true ? ' q-stepper--flat' : '')
+        + (props.bordered === true ? ' q-stepper--bordered' : '')
         + (isDark.value === true ? ' q-stepper--dark q-dark' : '')
       );
 
@@ -31145,7 +31781,7 @@
             + (props.autoWidth === true ? ' q-table--col-auto-width' : ''),
           style: col.headerStyle,
           onClick: evt => {
-            col.sortable === true && props.props.sort(col); // eslint-disable-line
+            col.sortable === true && props.props.sort(col);
             onClick(evt);
           }
         };
@@ -31362,6 +31998,9 @@
                 A = val(a),
                 B = val(b);
 
+              if (col.rawSort !== void 0) {
+                return col.rawSort(A, B, a, b) * dir
+              }
               if (A === null || A === void 0) {
                 return -1 * dir
               }
@@ -31369,6 +32008,8 @@
                 return 1 * dir
               }
               if (col.sort !== void 0) {
+                // gets called without rows that have null/undefined as value
+                // due to the above two statements
                 return col.sort(A, B, a, b) * dir
               }
               if (isNumber(A) === true && isNumber(B) === true) {
@@ -31514,7 +32155,7 @@
         sortBy: null,
         descending: false,
         page: 1,
-        rowsPerPage: props.rowsPerPageOptions.length > 0
+        rowsPerPage: props.rowsPerPageOptions.length !== 0
           ? props.rowsPerPageOptions[ 0 ]
           : 5
       }, props.pagination)
@@ -31725,7 +32366,7 @@
     });
 
     const allRowsSelected = vue.computed(() =>
-      computedRows.value.length > 0 && computedRows.value.every(
+      computedRows.value.length !== 0 && computedRows.value.every(
         row => selectedKeys.value[ getRowKey.value(row) ] === true
       )
     );
@@ -32008,7 +32649,7 @@
     },
 
     emits: [
-      'request', 'virtual-scroll',
+      'request', 'virtualScroll',
       ...useFullscreenEmits,
       ...useTableRowExpandEmits,
       ...useTableRowSelectionEmits
@@ -32242,7 +32883,7 @@
 
           scrollTarget.scrollTop = offsetTop;
 
-          emit('virtual-scroll', {
+          emit('virtualScroll', {
             index: toIndex,
             from: 0,
             to: innerPagination.value.rowsPerPage - 1,
@@ -32252,7 +32893,7 @@
       }
 
       function onVScroll (info) {
-        emit('virtual-scroll', info);
+        emit('virtualScroll', info);
       }
 
       function getProgress () {
@@ -32458,7 +33099,7 @@
 
           if (topLeft !== void 0) {
             child.push(
-              vue.h('div', { class: 'q-table-control' }, [
+              vue.h('div', { class: 'q-table__control' }, [
                 topLeft(marginalsScope.value)
               ])
             );
@@ -32666,7 +33307,7 @@
           }, getPaginationDiv(child))
         }
 
-        if (child.length > 0) {
+        if (child.length !== 0) {
           return vue.h('div', { class: bottomClass }, child)
         }
       }
@@ -33487,9 +34128,9 @@
             const am = computedFormat24h.value !== true
               ? isAM.value === true
               : (
-                  validHours.value.am.values.length > 0 && validHours.value.pm.values.length > 0
+                  validHours.value.am.values.length !== 0 && validHours.value.pm.values.length !== 0
                     ? distance >= clockRect.dist
-                    : validHours.value.am.values.length > 0
+                    : validHours.value.am.values.length !== 0
                 );
 
             val = getNormalizedClockValue(
@@ -33723,23 +34364,36 @@
         }
       }
 
+      function goToViewWhenHasModel (newView) {
+        const model = props.modelValue;
+        if (
+          view.value !== newView
+          && model !== void 0
+          && model !== null
+          && model !== ''
+          && typeof model !== 'string'
+        ) {
+          view.value = newView;
+        }
+      }
+
       function verifyAndUpdate () {
         if (hourInSelection.value !== null && hourInSelection.value(innerModel.value.hour) !== true) {
           innerModel.value = __splitDate();
-          view.value = 'hour';
+          goToViewWhenHasModel('hour');
           return
         }
 
         if (minuteInSelection.value !== null && minuteInSelection.value(innerModel.value.minute) !== true) {
           innerModel.value.minute = null;
           innerModel.value.second = null;
-          view.value = 'minute';
+          goToViewWhenHasModel('minute');
           return
         }
 
         if (props.withSeconds === true && secondInSelection.value !== null && secondInSelection.value(innerModel.value.second) !== true) {
           innerModel.value.second = null;
-          view.value = 'second';
+          goToViewWhenHasModel('second');
           return
         }
 
@@ -34003,9 +34657,11 @@
     },
 
     setup (props, { slots }) {
-      const $timeline = vue.inject(timelineKey, () => {
+      const $timeline = vue.inject(timelineKey, emptyRenderFn);
+      if ($timeline === emptyRenderFn) {
         console.error('QTimelineEntry needs to be child of QTimeline');
-      });
+        return emptyRenderFn
+      }
 
       const classes = vue.computed(() =>
         `q-timeline__entry q-timeline__entry--${ props.side }`
@@ -34094,7 +34750,7 @@
         + (props.inset === true ? ' q-toolbar--inset' : '')
       );
 
-      return () => vue.h('div', { class: classes.value }, hSlot(slots.default))
+      return () => vue.h('div', { class: classes.value, role: 'toolbar' }, hSlot(slots.default))
     }
   });
 
@@ -34178,9 +34834,9 @@
       'update:expanded',
       'update:ticked',
       'update:selected',
-      'lazy-load',
-      'after-show',
-      'after-hide'
+      'lazyLoad',
+      'afterShow',
+      'afterHide'
     ],
 
     setup (props, { slots, emit }) {
@@ -34240,7 +34896,7 @@
           const tickStrategy = node.tickStrategy || (parent ? parent.tickStrategy : props.tickStrategy);
           const
             key = node[ props.nodeKey ],
-            isParent = node[ props.childrenKey ] && node[ props.childrenKey ].length > 0,
+            isParent = node[ props.childrenKey ] && Array.isArray(node[ props.childrenKey ]) && node[ props.childrenKey ].length !== 0,
             selectable = node.disabled !== true && hasSelection.value === true && node.selectable !== false,
             expandable = node.disabled !== true && node.expandable !== false,
             hasTicking = tickStrategy !== 'none',
@@ -34398,16 +35054,15 @@
       }
 
       function expandAll () {
-        const
-          expanded = innerExpanded.value,
-          travel = node => {
-            if (node[ props.childrenKey ] && node[ props.childrenKey ].length > 0) {
-              if (node.expandable !== false && node.disabled !== true) {
-                expanded.push(node[ props.nodeKey ]);
-                node[ props.childrenKey ].forEach(travel);
-              }
+        const expanded = [];
+        const travel = node => {
+          if (node[ props.childrenKey ] && node[ props.childrenKey ].length !== 0) {
+            if (node.expandable !== false && node.disabled !== true) {
+              expanded.push(node[ props.nodeKey ]);
+              node[ props.childrenKey ].forEach(travel);
             }
-          };
+          }
+        };
 
         props.nodes.forEach(travel);
 
@@ -34429,7 +35084,7 @@
           if (Array.isArray(node[ props.childrenKey ]) !== true) {
             node[ props.childrenKey ] = [];
           }
-          emit('lazy-load', {
+          emit('lazyLoad', {
             node,
             key,
             done: children => {
@@ -34482,7 +35137,7 @@
                   }
                 });
               }
-              if (collapse.length > 0) {
+              if (collapse.length !== 0) {
                 target = target.filter(k => collapse.includes(k) === false);
               }
             }
@@ -34576,11 +35231,11 @@
       }
 
       function onShow () {
-        emit('after-show');
+        emit('afterShow');
       }
 
       function onHide () {
-        emit('after-hide');
+        emit('afterHide');
       }
 
       function getNode (node) {
@@ -34595,11 +35250,12 @@
           ? getChildren(node[ props.childrenKey ])
           : [];
 
-        const isParent = children.length > 0 || (m.lazy && m.lazy !== 'loaded');
+        const isParent = children.length !== 0 || (m.lazy && m.lazy !== 'loaded');
 
         let body = node.body
           ? slots[ `body-${ node.body }` ] || slots[ 'default-body' ]
           : slots[ 'default-body' ];
+
         const slotScope = header !== void 0 || body !== void 0
           ? getSlotScope(node, m, key)
           : null;
@@ -34623,6 +35279,8 @@
               + (m.selected === true ? ' q-tree__node--selected' : '')
               + (m.disabled === true ? ' q-tree__node--disabled' : ''),
             tabindex: m.link === true ? 0 : -1,
+            ariaExpanded: children.length > 0 ? m.expanded : null,
+            role: 'treeitem',
             onClick: (e) => {
               onClick(node, m, e);
             },
@@ -34687,16 +35345,21 @@
           isParent === true
             ? (
                 props.noTransition === true
-                  ? vue.h('div', {
-                    class: 'q-tree__node-collapsible' + textColorClass.value,
-                    key: `${ key }__q`
-                  }, [
-                    body,
-                    vue.h('div', {
-                      class: 'q-tree__children'
-                        + (m.disabled === true ? ' q-tree__node--disabled' : '')
-                    }, m.expanded ? children : null)
-                  ])
+                  ? (
+                      m.expanded === true
+                        ? vue.h('div', {
+                          class: 'q-tree__node-collapsible' + textColorClass.value,
+                          key: `${ key }__q`
+                        }, [
+                          body,
+                          vue.h('div', {
+                            class: 'q-tree__children'
+                              + (m.disabled === true ? ' q-tree__node--disabled' : ''),
+                            role: 'group'
+                          }, children)
+                        ])
+                        : null
+                    )
 
                   : vue.h(QSlideTransition, {
                     duration: props.duration,
@@ -34710,7 +35373,8 @@
                       body,
                       vue.h('div', {
                         class: 'q-tree__children'
-                          + (m.disabled === true ? ' q-tree__node--disabled' : '')
+                          + (m.disabled === true ? ' q-tree__node--disabled' : ''),
+                        role: 'group'
                       }, children)
                     ]),
                     [ [ vue.vShow, m.expanded ] ]
@@ -34726,7 +35390,7 @@
       }
 
       function onClick (node, meta, e, keyboard) {
-        keyboard !== true && blur(meta.key);
+        keyboard !== true && meta.selectable !== false && blur(meta.key);
 
         if (hasSelection.value && meta.selectable) {
           if (props.noSelectionUnset === false) {
@@ -34749,7 +35413,7 @@
         if (e !== void 0) {
           stopAndPrevent(e);
         }
-        keyboard !== true && blur(meta.key);
+        keyboard !== true && meta.selectable !== false && blur(meta.key);
         setExpanded(meta.key, !meta.expanded, node, meta);
       }
 
@@ -34804,7 +35468,8 @@
 
         return vue.h(
           'div', {
-            class: classes.value
+            class: classes.value,
+            role: 'tree'
           },
           children.length === 0
             ? (
@@ -34848,7 +35513,7 @@
     'start', 'finish', 'added', 'removed'
   ];
 
-  function getRenderer (getPlugin) {
+  function getRenderer (getPlugin, expose) {
     const vm = vue.getCurrentInstance();
     const { props, slots, emit, proxy } = vm;
     const { $q } = proxy;
@@ -34909,7 +35574,13 @@
       maxTotalSizeNumber
     } = useFile({ editable, dnd, getFileInput, addFilesToQueue });
 
-    Object.assign(state, getPlugin({ props, slots, emit, helpers: state }));
+    Object.assign(state, getPlugin({
+      props,
+      slots,
+      emit,
+      helpers: state,
+      exposeApi: obj => { Object.assign(state, obj); }
+    }));
 
     if (state.isBusy === void 0) {
       state.isBusy = vue.ref(false);
@@ -34939,7 +35610,7 @@
       editable.value === true
       && state.isBusy.value !== true
       && state.isUploading.value !== true
-      && state.queuedFiles.value.length > 0
+      && state.queuedFiles.value.length !== 0
     );
 
     vue.provide(uploaderKey, renderInput);
@@ -35019,7 +35690,7 @@
         return false
       });
 
-      if (removed.files.length > 0) {
+      if (removed.files.length !== 0) {
         state.files.value = localFiles;
         cb(removed);
         emit('removed', removed.files);
@@ -35147,8 +35818,8 @@
           vue.h('div', {
             class: 'flex flex-center no-wrap q-gutter-xs'
           }, [
-            getBtn(state.queuedFiles.value.length > 0, 'removeQueue', removeQueuedFiles),
-            getBtn(state.uploadedFiles.value.length > 0, 'removeUploaded', removeUploadedFiles),
+            getBtn(state.queuedFiles.value.length !== 0, 'removeQueue', removeQueuedFiles),
+            getBtn(state.uploadedFiles.value.length !== 0, 'removeUploaded', removeUploadedFiles),
 
             state.isUploading.value === true
               ? vue.h(QSpinner, { class: 'q-uploader__spinner' })
@@ -35230,7 +35901,7 @@
 
     vue.onBeforeUnmount(() => {
       state.isUploading.value === true && state.abort();
-      state.files.value.length > 0 && revokeImgURLs();
+      state.files.value.length !== 0 && revokeImgURLs();
     });
 
     const publicApi = {};
@@ -35263,7 +35934,23 @@
     });
 
     // expose public api (methods & computed props)
-    Object.assign(proxy, publicApi);
+    expose({
+      ...state,
+
+      upload,
+      reset,
+      removeUploadedFiles,
+      removeQueuedFiles,
+      removeFile,
+
+      pickFiles,
+      addFiles,
+
+      canAddFiles,
+      canUpload,
+      uploadSizeLabel,
+      uploadProgressLabel
+    });
 
     return () => {
       const children = [
@@ -35314,8 +36001,8 @@
       ? { ...coreEmitsObject, ...emits }
       : [ ...coreEmits, ...emits ],
 
-    setup () {
-      return getRenderer(injectPlugin)
+    setup (_, { expose }) {
+      return getRenderer(injectPlugin, expose)
     }
   });
 
@@ -35346,7 +36033,7 @@
     factory: Function
   };
 
-  const emits$1 = [ 'factory-failed', 'uploaded', 'failed', 'uploading' ];
+  const emits$1 = [ 'factoryFailed', 'uploaded', 'failed', 'uploading' ];
 
   function injectPlugin ({ props, emit, helpers }) {
     const xhrs = vue.ref([]);
@@ -35365,14 +36052,14 @@
     }));
 
     const isUploading = vue.computed(() => workingThreads.value > 0);
-    const isBusy = vue.computed(() => promises.value.length > 0);
+    const isBusy = vue.computed(() => promises.value.length !== 0);
 
     let abortPromises;
 
     function abort () {
       xhrs.value.forEach(x => { x.abort(); });
 
-      if (promises.value.length > 0) {
+      if (promises.value.length !== 0) {
         abortPromises = true;
       }
     }
@@ -35403,7 +36090,7 @@
 
       if (!res) {
         emit(
-          'factory-failed',
+          'factoryFailed',
           new Error('QUploader: factory() does not return properly'),
           files
         );
@@ -35423,7 +36110,7 @@
             helpers.queuedFiles.value = helpers.queuedFiles.value.concat(files);
             files.forEach(f => { helpers.updateFileStatus(f, 'failed'); });
 
-            emit('factory-failed', err, files);
+            emit('factoryFailed', err, files);
             workingThreads.value--;
           }
         };
@@ -35582,9 +36269,13 @@
     name: 'QUploaderAddTrigger',
 
     setup () {
-      return vue.inject(uploaderKey, () => {
+      const $trigger = vue.inject(uploaderKey, emptyRenderFn);
+
+      if ($trigger === emptyRenderFn) {
         console.error('QUploaderAddTrigger needs to be child of QUploader');
-      })
+      }
+
+      return $trigger
     }
   });
 
@@ -35978,9 +36669,9 @@
       waitFor: options.waitFor === void 0 ? 0 : options.waitFor,
 
       duration: isNaN(options.duration) === true ? 300 : parseInt(options.duration, 10),
-      easing: typeof options.easing === 'string' && options.easing.length > 0 ? options.easing : 'ease-in-out',
+      easing: typeof options.easing === 'string' && options.easing.length !== 0 ? options.easing : 'ease-in-out',
       delay: isNaN(options.delay) === true ? 0 : parseInt(options.delay, 10),
-      fill: typeof options.fill === 'string' && options.fill.length > 0 ? options.fill : 'none',
+      fill: typeof options.fill === 'string' && options.fill.length !== 0 ? options.fill : 'none',
 
       resize: options.resize === true,
 
@@ -36779,12 +37470,11 @@
           : (
               options.waitFor === 'transitionend'
                 ? new Promise(resolve => {
-                  const timer = setTimeout(() => {
-                    endFn();
-                  }, 400);
-
-                  const endFn = ev => {
-                    clearTimeout(timer);
+                  const endFn = () => {
+                    if (timer !== null) {
+                      clearTimeout(timer);
+                      timer = null;
+                    }
 
                     if (elTo) {
                       elTo.removeEventListener('transitionend', endFn);
@@ -36793,6 +37483,8 @@
 
                     resolve();
                   };
+
+                  let timer = setTimeout(endFn, 400);
 
                   elTo.addEventListener('transitionend', endFn);
                   elTo.addEventListener('transitioncancel', endFn);
@@ -36895,7 +37587,7 @@
   }
 
   function insertArgs (arg, ctx) {
-    const opts = typeof arg === 'string' && arg.length > 0
+    const opts = typeof arg === 'string' && arg.length !== 0
       ? arg.split(':') : [];
 
     ctx.name = opts[ 0 ];
@@ -37262,6 +37954,7 @@
                 : ctx.touchSensitivity;
 
               ctx.timer = setTimeout(() => {
+                ctx.timer = void 0;
                 clearSelection();
                 ctx.triggered = true;
 
@@ -37278,10 +37971,13 @@
             move (evt) {
               const { top, left } = position(evt);
               if (
-                Math.abs(left - ctx.origin.left) >= ctx.sensitivity
-                || Math.abs(top - ctx.origin.top) >= ctx.sensitivity
+                ctx.timer !== void 0 && (
+                  Math.abs(left - ctx.origin.left) >= ctx.sensitivity
+                  || Math.abs(top - ctx.origin.top) >= ctx.sensitivity
+                )
               ) {
                 clearTimeout(ctx.timer);
+                ctx.timer = void 0;
               }
             },
 
@@ -37294,8 +37990,9 @@
               if (ctx.triggered === true) {
                 evt !== void 0 && stopAndPrevent(evt);
               }
-              else {
+              else if (ctx.timer !== void 0) {
                 clearTimeout(ctx.timer);
+                ctx.timer = void 0;
               }
             }
           };
@@ -37303,7 +38000,7 @@
           // duration in ms, touch in pixels, mouse in pixels
           const data = [ 600, 5, 7 ];
 
-          if (typeof binding.arg === 'string' && binding.arg.length > 0) {
+          if (typeof binding.arg === 'string' && binding.arg.length !== 0) {
             binding.arg.split(':').forEach((val, index) => {
               const v = parseInt(val, 10);
               v && (data[ index ] = v);
@@ -37347,7 +38044,7 @@
             cleanEvt(ctx, 'main');
             cleanEvt(ctx, 'temp');
 
-            clearTimeout(ctx.timer);
+            ctx.timer !== void 0 && clearTimeout(ctx.timer);
             ctx.styleCleanup !== void 0 && ctx.styleCleanup();
 
             delete el.__qtouchhold;
@@ -37398,7 +38095,7 @@
             return
           }
 
-          const durations = typeof arg === 'string' && arg.length > 0
+          const durations = typeof arg === 'string' && arg.length !== 0
             ? arg.split(':').map(val => parseInt(val, 10))
             : [ 0, 600, 300 ];
 
@@ -37486,6 +38183,8 @@
               };
 
               const fn = () => {
+                ctx.timer = void 0;
+
                 if (ctx.event === void 0) {
                   return
                 }
@@ -37529,8 +38228,9 @@
             },
 
             move (evt) {
-              if (ctx.event !== void 0 && shouldEnd(evt, ctx.origin) === true) {
+              if (ctx.event !== void 0 && ctx.timer !== void 0 && shouldEnd(evt, ctx.origin) === true) {
                 clearTimeout(ctx.timer);
+                ctx.timer = void 0;
               }
             },
 
@@ -37543,7 +38243,11 @@
               evt !== void 0 && ctx.event.repeatCount > 0 && stopAndPrevent(evt);
 
               cleanEvt(ctx, 'temp');
-              clearTimeout(ctx.timer);
+
+              if (ctx.timer !== void 0) {
+                clearTimeout(ctx.timer);
+                ctx.timer = void 0;
+              }
 
               ctx.event = void 0;
             }
@@ -37592,7 +38296,7 @@
           const ctx = el.__qtouchrepeat;
 
           if (ctx !== void 0) {
-            clearTimeout(ctx.timer);
+            ctx.timer !== void 0 && clearTimeout(ctx.timer);
 
             cleanEvt(ctx, 'main');
             cleanEvt(ctx, 'temp');
@@ -37903,7 +38607,9 @@
                 'q-bottom-sheet__item q-hoverable q-focusable cursor-pointer relative-position',
                 action.class
               ],
+              style: action.style,
               tabindex: 0,
+              role: 'listitem',
               onClick () { onOk(action); },
               onKeyup (e) { e.keyCode === 13 && onOk(action); }
             }, [
@@ -37933,11 +38639,11 @@
             ? vue.h(QSeparator, { spaced: true, dark: isDark.value })
             : vue.h(QItem, {
               class: [ 'q-bottom-sheet__item', action.classes ],
+              style: action.style,
               tabindex: 0,
               clickable: true,
               dark: isDark.value,
-              onClick () { onOk(action); },
-              onKeyup (e) { e.keyCode === 13 && onOk(action); }
+              onClick () { onOk(action); }
             }, () => [
               vue.h(
                 QItemSection,
@@ -37979,9 +38685,12 @@
         child.push(
           props.grid === true
             ? vue.h('div', {
-              class: 'row items-stretch justify-start'
+              class: 'row items-stretch justify-start',
+              role: 'list'
             }, getGrid())
-            : vue.h('div', getList())
+            : vue.h('div', {
+              role: 'list'
+            }, getList())
         );
 
         return child
@@ -38053,7 +38762,7 @@
 
       let vm, emittedOK = false;
       const dialogRef = vue.ref(null);
-      const el = createGlobalNode();
+      const el = createGlobalNode(false, 'dialog');
 
       const applyState = cmd => {
         if (dialogRef.value !== null && dialogRef.value[ cmd ] !== void 0) {
@@ -38563,12 +39272,12 @@
       function getPrompt () {
         return [
           vue.h(QInput, {
-            modelValue: model.value,
-            ...formProps.value,
             color: vmColor.value,
             dense: true,
             autofocus: true,
             dark: isDark.value,
+            ...formProps.value,
+            modelValue: model.value,
             'onUpdate:modelValue': onUpdateModel,
             onKeyup: onInputKeyup
           })
@@ -38578,11 +39287,11 @@
       function getOptions () {
         return [
           vue.h(QOptionGroup, {
-            modelValue: model.value,
-            ...formProps.value,
             color: vmColor.value,
             options: props.options.items,
             dark: isDark.value,
+            ...formProps.value,
+            modelValue: model.value,
             'onUpdate:modelValue': onUpdateModel
           })
         ]
@@ -38753,7 +39462,7 @@
     app,
     vm,
     uid$1 = 0,
-    timeout,
+    timeout = null,
     props = {},
     activeGroups = {};
 
@@ -38802,14 +39511,14 @@
       }
       else {
         props.uid = ++uid$1;
-        clearTimeout(timeout);
+        timeout !== null && clearTimeout(timeout);
 
         timeout = setTimeout(() => {
-          timeout = void 0;
+          timeout = null;
 
           const el = createGlobalNode('q-loading');
 
-          app = vue.createApp({
+          app = createChildApp({
             name: 'QLoading',
 
             setup () {
@@ -38871,7 +39580,7 @@
                 onAfterLeave
               }, getContent)
             }
-          });
+          }, Plugin$2.__parentApp);
 
           vm = app.mount(el);
         }, props.delay);
@@ -38915,9 +39624,9 @@
           }
         }
 
-        if (timeout !== void 0) {
+        if (timeout !== null) {
           clearTimeout(timeout);
-          timeout = void 0;
+          timeout = null;
         }
 
         Plugin$2.isActive = false;
@@ -38930,16 +39639,20 @@
       }
     },
 
-    install ({ $q }) {
+    install ({ $q, parentApp }) {
       $q.loading = this;
 
-      if ($q.config.loading !== void 0) {
-        this.setDefaults($q.config.loading);
+      {
+        Plugin$2.__parentApp = parentApp;
+
+        if ($q.config.loading !== void 0) {
+          this.setDefaults($q.config.loading);
+        }
       }
     }
   });
 
-  let updateId, currentClientMeta;
+  let updateId = null, currentClientMeta;
   const clientList = [];
 
   function normalize (meta) {
@@ -39034,7 +39747,7 @@
       document.title = add.title;
     }
 
-    if (Object.keys(remove).length > 0) {
+    if (Object.keys(remove).length !== 0) {
       [ 'meta', 'link', 'script' ].forEach(type => {
         remove[ type ].forEach(name => {
           document.head.querySelector(`${ type }[data-qmeta="${ name }"]`).remove();
@@ -39073,6 +39786,8 @@
   }
 
   function updateClientMeta () {
+    updateId = null;
+
     const data = {
       title: '',
       titleTemplate: null,
@@ -39098,7 +39813,7 @@
   }
 
   function planClientUpdate () {
-    clearTimeout(updateId);
+    updateId !== null && clearTimeout(updateId);
     updateId = setTimeout(updateClientMeta, 50);
   }
 
@@ -39119,6 +39834,7 @@
   const positionClass = {};
   const emptyRE = /^\s*$/;
   const notifRefs = [];
+  const invalidTimeoutValues = [ void 0, null, true, false, '' ];
 
   const positionList = [
     'top-left', 'top-right',
@@ -39212,15 +39928,15 @@
       notif.position = 'bottom';
     }
 
-    if (notif.timeout === void 0) {
+    if (invalidTimeoutValues.includes(notif.timeout) === true) {
       notif.timeout = 5000;
     }
     else {
-      const t = parseInt(notif.timeout, 10);
+      const t = Number(notif.timeout); // we catch exponential notation too with Number() casting
       if (isNaN(t) || t < 0) {
         return logError('wrong timeout', config)
       }
-      notif.timeout = t;
+      notif.timeout = Number.isFinite(t) ? t : 0;
     }
 
     if (notif.timeout === 0) {
@@ -39325,7 +40041,10 @@
 
     if (originalApi !== void 0) {
       // reset timeout if any
-      clearTimeout(originalApi.notif.meta.timer);
+      if (originalApi.notif.meta.timer) {
+        clearTimeout(originalApi.notif.meta.timer);
+        originalApi.notif.meta.timer = void 0;
+      }
 
       // retain uid
       notif.meta.uid = originalApi.notif.meta.uid;
@@ -39361,7 +40080,10 @@
       // ok, so it's NOT a new one
       else {
         // reset timeout if any
-        clearTimeout(original.meta.timer);
+        if (original.meta.timer) {
+          clearTimeout(original.meta.timer);
+          original.meta.timer = void 0;
+        }
 
         if (notif.badgePosition !== void 0) {
           if (badgePositions.includes(notif.badgePosition) === false) {
@@ -39391,6 +40113,7 @@
 
     if (notif.timeout > 0) {
       notif.meta.timer = setTimeout(() => {
+        notif.meta.timer = void 0;
         dismiss();
       }, notif.timeout + /* show duration */ 1000);
     }
@@ -39439,7 +40162,10 @@
   }
 
   function removeNotification (notif) {
-    clearTimeout(notif.meta.timer);
+    if (notif.meta.timer) {
+      clearTimeout(notif.meta.timer);
+      notif.meta.timer = void 0;
+    }
 
     const index = notificationsList[ notif.position ].value.indexOf(notif);
     if (index !== -1) {
@@ -39812,6 +40538,9 @@
     area.contentEditable = 'true';
     area.style.position = 'fixed'; // avoid scrolling to bottom
 
+    const fn = () => {};
+    addFocusout(fn);
+
     document.body.appendChild(area);
     area.focus();
     area.select();
@@ -39819,6 +40548,8 @@
     const res = document.execCommand('copy');
 
     area.remove();
+    removeFocusout(fn);
+
     return res
   }
 
@@ -39909,9 +40640,9 @@
     }
 
     once (name, callback, ctx) {
-      const listener = () => {
+      const listener = (...args) => {
         this.off(name, listener);
-        callback.apply(ctx, arguments);
+        callback.apply(ctx, args);
       };
 
       listener.__callback = callback;
@@ -39933,21 +40664,25 @@
 
     off (name, callback) {
       const list = this.__stack[ name ];
-      const liveEvents = [];
 
-      if (list !== void 0 && callback) {
-        list.forEach(entry => {
-          if (entry.fn !== callback && entry.fn.__callback !== callback) {
-            liveEvents.push(entry);
-          }
-        });
+      if (list === void 0) {
+        return this // chainable
+      }
 
-        if (liveEvents.length !== 0) {
-          this.__stack[ name ] = liveEvents;
-        }
-        else {
-          delete this.__stack[ name ];
-        }
+      if (callback === void 0) {
+        delete this.__stack[ name ];
+        return this // chainable
+      }
+
+      const liveEvents = list.filter(
+        entry => entry.fn !== callback && entry.fn.__callback !== callback
+      );
+
+      if (liveEvents.length !== 0) {
+        this.__stack[ name ] = liveEvents;
+      }
+      else {
+        delete this.__stack[ name ];
       }
 
       return this // chainable
@@ -40325,7 +41060,7 @@
    */
 
   var index_umd = {
-    version: '2.9.2',
+    version: '2.14.2',
     install (app, opts) {
       installQuasar(app, {
         components,

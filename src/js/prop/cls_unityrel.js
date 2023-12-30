@@ -31,6 +31,16 @@ export class AnimationRegisterOptions
          * @type {Array<Number>}
          */
         this.registerMoveTypes = [];
+
+        /**
+         * @type {Array<{text:String, value:int}}
+         */
+        this.registerExpressions = [];
+
+        /**
+         * @type {Array<{text:String, value:int}}
+         */
+        this.registerMaterials = [];
         /**
          * to append registration a motion to same key-frame
          */
