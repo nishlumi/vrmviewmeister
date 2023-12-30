@@ -722,18 +722,25 @@ export class appModelOperator {
             this.mainData.elements.projectSelector.searchedFiles.splice(0,this.mainData.elements.projectSelector.searchedFiles.length);
             this.mainData.elements.projectSelector.files.splice(0,this.mainData.elements.projectSelector.files.length);
             const filegd = this.mainData.appconf.confs.fileloader.gdrive;
-            if ((filegd.url != "") &&
-                (filegd.enabled === true)
-            ) {
-                var baseurl = this.mainData.appconf.confs.fileloader.gdrive.url;
-                var apikey = this.mainData.appconf.confs.fileloader.gdrive.apikey;
-                var urlparams = new URLSearchParams();
+            
+            var baseurl = this.mainData.appconf.confs.fileloader.gdrive.url;
+            var apikey = this.mainData.appconf.confs.fileloader.gdrive.apikey;
+            var urlparams = new URLSearchParams();
 
-                if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
-                    baseurl = SAMPLEURL;
-                    apikey = SAMPLEKEY;
+            if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+                baseurl = SAMPLEURL;
+                apikey = SAMPLEKEY;
+            }
+            var isExecute = false;
+            if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
+                if ((filegd.url != "") && (filegd.enabled === true)) {
+                    isExecute = true;
                 }
+            }else if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+                isExecute = true;
+            }
 
+            if (isExecute === true) {
                 //---if base parts of url not found, append its.
                 /*if (baseurl.indexOf("https://script.google.com/macros/s/") < 0) {
                     baseurl = "https://script.google.com/macros/s/" + baseurl;
@@ -741,6 +748,7 @@ export class appModelOperator {
                 if (baseurl.lastIndexOf("/exec") < 0) {
                     baseurl = baseurl + "/exec";
                 }*/
+
                 
                 //---setting URL parameters
                 urlparams.append("mode","enumdir");
