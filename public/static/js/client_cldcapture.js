@@ -196,7 +196,9 @@ const app = Vue.createApp({
                 return (capapp.value.left.list.selected.key == item.key);
             }
         });
-
+        const chkShareNavigator = Vue.computed(() => {
+            return ("share" in navigator);
+        });
         
         Vue.onBeforeMount(() => {
             var darktheme = sessionStorage.getItem("UseDarkTheme");
@@ -232,7 +234,7 @@ const app = Vue.createApp({
             selectListItem,
             datefilter_onchange,
             //---computed---
-            list_actived,
+            list_actived,chkShareNavigator,
             //---other method---
             loadData,loadSetting,
         };

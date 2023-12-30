@@ -29,9 +29,12 @@
                     <q-btn flat round dense icon="file_download" @click="download_onclick">
                         <q-tooltip v-text="_T('download as file')"></q-tooltip>
                     </q-btn>
-                    <q-btn flat round dense icon="share" @click="share_onclick">
-                        <q-tooltip v-text="_T('share_file')"></q-tooltip>
-                    </q-btn>
+                    <template v-if="chkShareNavigator">
+                        <q-btn flat round dense icon="share" @click="share_onclick">
+                            <q-tooltip v-text="_T('share_file')"></q-tooltip>
+                        </q-btn>
+                    </template>
+                    
                 </q-toolbar>
                 <a href="" ref="lnk_capturedownload" download="pic.png" class="common_ui_off"></a>
             </q-header>
