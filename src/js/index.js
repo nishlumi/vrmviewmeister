@@ -130,7 +130,7 @@ const app = Vue.createApp({
 
             ribbonData.elements.language_box.selected = loc;
 
-            if (mainData.appconf.confs.fileloader.gdrive.enabled && (mainData.appconf.confs.fileloader.gdrive.url != "")) {
+            if ((mainData.appconf.confs.fileloader.gdrive.enabled === true) && (mainData.appconf.confs.fileloader.gdrive.url != "")) {
                 mainData.states.googledrive_gas = true;
             }else{
                 mainData.states.googledrive_gas = false;
