@@ -627,6 +627,11 @@ export class appModelOperator {
         //---timeline ui    
         this.mainData.states.selectedTimeline.clearFrame(aro.index, movetype);
 
+        if (avatar.type == AF_TARGETTYPE.VRM) {
+            //---VRM properties clear: equipment
+            avatar.UnequipAll(true);
+            this.objpropData.elements.vrmui.equip.equipments.splice(0, this.objpropData.elements.vrmui.equip.equipments.length);
+        }
         AppQueue.add(new queueData(
             {target:AppQueue.unity.ManageAnimation,method:'UnregisterFrame',param:JSON.stringify(aro)},
             "",QD_INOUT.toUNITY,
@@ -1581,6 +1586,11 @@ export class appModelOperator {
                     
                     //---change C# float to int 1-100%
                     cls.value = parseFloat(ln[1]);
+                    //---is_changed
+                    if (ln.length > 1) {
+                        cls.isChanged = ln[2] == 1 ? true : false;
+                    }
+
                     if (isNaN(cls.value)) {
                         cls.value = 0;
                     }else{

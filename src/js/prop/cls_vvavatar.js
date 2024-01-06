@@ -85,6 +85,9 @@ export class VVAvatar {
          */
         this.handPoseList = [];
 
+        /**
+         * @type {String} Raw string for BlendShape list
+         */
         this.blendShapes = "";
         /**
          * @type {VVBlendShape[]}
@@ -268,6 +271,24 @@ export class VVAvatar {
         
 
         return param;
+    }
+    /**
+     * Unequip all body part (add AppQueue only)
+     * @param {Object} unity Unity object
+     */
+    UnequipAll(unity) {
+        for (var i = 0; i < this.equipList.length; i++) {
+            var param = `${this.equipList[i].bodybonename},${this.equipList[i].equipitem}`;
+            if (unity) {
+                AppQueue.add(new queueData(
+                    {target:this.id,method:'UnequipObjectFromOuter',param:param},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+                
+            }
+        }
+        this.equipList.splice(0, this.equipList.length);
     }
     /**
      * Check this avatar is equipping the param's object

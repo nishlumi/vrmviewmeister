@@ -156,7 +156,8 @@ export class appDataObjectProp {
                         //{label : "RealToon", value: "RealToon/Version 5/Lite/Default"},
                         {label : "Comic", value : "Custom/ComicShader"},
                         {label : "Ice", value : "Custom/IceShader"},
-                        {label : "Pixelize", value : "Custom/PixelizeTexture"}
+                        {label : "Pixelize", value : "Custom/PixelizeTexture"},
+                        {label : "Cutout", value : "Unlit/CustomCutout"}
                     ],
                     shaderselected : null,
                     colorselected: "#FFFFFFFF",

@@ -12,11 +12,30 @@ router.get('/', function(req, res, next) {
   var opt = { 
     hostname: req.hostname,
     title: 'VRMViewMeister', 
+    uimode: "pc",
     jsenv : jsenv,
     csrfToken : req.secret
   };
   console.log(opt);
   res.render('toppage',opt );
+});
+/* GET home page. */
+router.get('/mui', function(req, res, next) {
+  var jsenv = "";
+  
+  if (process.env.NODE_ENV == "production") {
+    jsenv = "prod.";
+  }
+  
+  var opt = { 
+    hostname: req.hostname,
+    title: 'VRMViewMeister', 
+    uimode: "mobile",
+    jsenv : jsenv,
+    csrfToken : req.secret
+  };
+  console.log(opt);
+  res.render('mobilepage',opt );
 });
 
 router.get('/redirect', function(req, res, next) {
