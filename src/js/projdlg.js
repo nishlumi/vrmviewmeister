@@ -479,6 +479,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
             ));
             AppQueue.start();
             mainData.elements.projdlg.pinfo.oldbaseDuration = mainData.elements.projdlg.pinfo.baseDuration;
+            mainData.states.currentEditOperationCount++;
         },() => {
             mainData.elements.projdlg.pinfo.baseDuration = mainData.elements.projdlg.pinfo.oldbaseDuration;     
         });

@@ -283,6 +283,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
                         }
                     }
                     mainData.data.project.timelineFrameLength += count;
+                    mainData.states.currentEditOperationCount++;
                 }
             }
         ));
@@ -310,6 +311,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
                         }
                     }
                     mainData.data.project.timelineFrameLength -= count;
+                    this.mainData.states.currentEditOperationCount++;
                 }
             }
         ));
