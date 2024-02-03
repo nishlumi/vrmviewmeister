@@ -17,7 +17,8 @@ export class appDataObjectProp {
                 side : "right",
                 width : 350,
                 miniwidth : 60,
-                breakpoint : 500
+                breakpoint : 500,
+                behavior : "normal",
             },
             contextmenu : {
                 show :false,
@@ -35,6 +36,10 @@ export class appDataObjectProp {
                     min : 1,
                     max : 5000,
                 },
+                drag : 10,
+                angularDrag : 10,
+                useCollision : false,
+                useGravity : false,
                 fastRotate360 : false,
                 scaleIsOnlyX : false,
                 jumpNum : 0,
@@ -383,19 +388,44 @@ export class appDataObjectProp {
                 text : "",
                 anchor_position : "",
                 anchor_positionOptions : [
-                    {label : _T("TopLeft"), value:"tl"},{label : _T("MiddleLeft"), value:"ml"},{label : _T("BottomLeft"), value:"bl"},
-                    {label : _T("TopCenter"), value:"tm"},{label : _T("MiddleCenter"), value:"mm"},{label : _T("BottomCenter"), value:"bm"},
-                    {label : _T("TopRight"), value:"tr"},{label : _T("MiddleRight"), value:"mr"},{label : _T("BottomRight"), value:"br"}
+                    {label : t("TopLeft"), value:"tl"},{label : t("MiddleLeft"), value:"ml"},{label : t("BottomLeft"), value:"bl"},
+                    {label : t("TopCenter"), value:"tm"},{label : t("MiddleCenter"), value:"mm"},{label : t("BottomCenter"), value:"bm"},
+                    {label : t("TopRight"), value:"tr"},{label : t("MiddleRight"), value:"mr"},{label : t("BottomRight"), value:"br"}
                 ],
                 size : 12,
                 colorselected : "#000",
                 fontstyleselected : "",
                 fontstyleOptions : [
-                    {label: _T("normal"), value:0},
-                    {label: _T("bold"), value:1},
-                    {label: _T("italic"), value:2},
-                    {label: _T("boldanditalic"), value:3},
-                ]
+                    {label: t("normal"), value:0},
+                    {label: t("bold"), value:1},
+                    {label: t("italic"), value:2},
+                    {label: t("boldanditalic"), value:3},
+                ],
+                //---new fonstyles
+                fontstylesRich : {
+                    b : false, i : false, u : false, s : false,
+                    UL : "",
+                },
+                area_size : {x: 20, y: 3},
+                text_alignment : {},
+                text_overflow_options : [
+                    {label: t("to_overflow"), value:0},
+                    {label: t("to_ellipsis"), value:1},
+                    {label: t("to_masking"), value:2},
+                    {label: t("to_truncate"), value:3},
+                    {label: t("to_scrollrect"), value:4},
+                    {label: t("to_page"), value:5},
+                    {label: t("to_linked"), value:6},
+                ],
+                text_overflow : {label: t("to_overflow"), value:0},
+                dimension : "2d",
+                colorGradient : {
+                    tl : "#000",tr : "#000",
+                    bl : "#000",br : "#000",
+                },
+                colortype : "s", //s - simple, g - gradient
+                outlineWidth : 0,
+                outlineColor : "#000",
             },
             uimageui : {
                 colorselected : "#FFF",

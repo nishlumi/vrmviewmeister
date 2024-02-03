@@ -36,6 +36,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
      */
     const _appfileLoader = async (fdata, fileloadname, ext, fileloadtype, tmpfile) => {
         if (fileloadtype == "ap") {
+            mainData.elements.loading = true;
             //---For Animation Project
             var data = "";
             try {
@@ -132,12 +133,16 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             var msgadd = `${jsdata.frames[jsdata.frames.length-1].index}`;
             if (mainData.data.project.timelineFrameLength < jsdata.frames[jsdata.frames.length-1].index) {
                 appConfirm(t("msg_openmotion_error3")+msgadd,() => {
+                    mainData.elements.loading = true;
                     callbody(fdata);
                 });
             }else{
+                mainData.elements.loading = true;
                 callbody(fdata);
             }
         }else if (fileloadtype == "pos") {
+            mainData.elements.loading = true;
+
             var text = "";
             if (tmpfile.data instanceof File) {
                 text = await tmpfile.data.text();
@@ -149,6 +154,8 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             modelOperator.returnPoseDialogValue(jsdata);
             callback.mainData.elements.loading = false;
         }else{
+            mainData.elements.loading = true;
+            
             //---below is BINARY files 
             var dbtype = "";
             if (fileloadtype == "v") {
@@ -347,7 +354,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     return;
                 }
 
-                mainData.elements.loading = true;
+                
                 mainData.elements.loadingTypePercent = false;
                 //---load file body
                 await _appfileLoader(fdata,
@@ -731,6 +738,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         mainData.appconf.applyUnity();
         AppQueue.start();
         mainData.appconf.save();
+        VFileHelper.setAppConf(mainData.appconf);
 
         modelOperator.setDarkMode(mainData.appconf.confs.application.UseDarkTheme);
 

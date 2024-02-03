@@ -90,7 +90,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     });
     const checkText = Vue.computed(()=> {
         if (!mainData.states.selectedAvatar) return false;
-        return ((objpropData.states.dimension == "2d") && (mainData.states.selectedAvatar.type == AF_TARGETTYPE.Text));
+        return ((mainData.states.selectedAvatar.type == AF_TARGETTYPE.Text));
+    });
+    const checkText3D = Vue.computed(() => {
+        if (!mainData.states.selectedAvatar) return false;
+        return ((objpropData.states.dimension == "3d") && (mainData.states.selectedAvatar.type == AF_TARGETTYPE.Text3D));
     });
     const checkUImage = Vue.computed(()=> {
         if (!mainData.states.selectedAvatar) return false;
@@ -219,7 +223,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
                     (cast.type == AF_TARGETTYPE.Light) ||
                     (cast.type == AF_TARGETTYPE.Camera) ||
                     (cast.type == AF_TARGETTYPE.Image) ||
-                    (cast.type == AF_TARGETTYPE.Effect)
+                    (cast.type == AF_TARGETTYPE.Effect) ||
+                    (cast.type == AF_TARGETTYPE.Text3D)
                 )
             ) {
                 if (cast.avatar.id != mainData.states.selectedAvatar.id) {
@@ -304,6 +309,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         var z = parseFloat(objpropData.elements.common.scale3d.z);
         if (isNaN(x) || isNaN(y) || isNaN(z)) return;
 
+        
         var scaleIsOnlyX = objpropData.elements.common.scaleIsOnlyX;
         objpropData.states.isEditingFromUI = true;
         var fl = x / 100.0;
@@ -391,6 +397,39 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         ));
         AppQueue.start();
         return true;
+    }
+    const OnChange_RigidDrag = () => {
+        //if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
+        var x = parseFloat(objpropData.elements.common.drag);
+        var y = parseFloat(objpropData.elements.common.angularDrag);
+        if (isNaN(x) || isNaN(y)) return;
+
+        var param = `${x},${y}`;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetDragFromOuter',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+        return true;
+    }
+    const OnChange_UseCollision = (val) => {
+        var param = (val === true) ? 1 : 0;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetEasyCollision',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const OnChange_UseGravity = (val) => {
+        var param = (val === true) ? 1 : 0;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetUseGravity',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
     }
     const OnChange_JumpNum = (val) => {
         var jp = parseFloat(objpropData.elements.common.jumpPower);
@@ -531,6 +570,14 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
 
         AppQueue.add(new queueData(
             {target:mainData.states.selectedAvatar.id,method:'SetHeadLock', param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const OnClicked_MirrorPose = () => {
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'MirrorPose'},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -743,7 +790,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
                 (cast.type == AF_TARGETTYPE.Light) || 
                 (cast.type == AF_TARGETTYPE.Camera) || 
                 (cast.type == AF_TARGETTYPE.Image) ||
-                (cast.type == AF_TARGETTYPE.Effect)
+                (cast.type == AF_TARGETTYPE.Effect) ||
+                (cast.type == AF_TARGETTYPE.Text3D) 
             ) {
                 var chkret = modelOperator.checkEnumurateEquipping(cast);
                 if (chkret.avatar == null) {
@@ -2114,7 +2162,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     const textColor_onchange = (val) => {
         var param = MUtility.toHexaColor(val);
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetFontColor',param:param},
+            {target:mainData.states.selectedAvatar.id,method:'SetFontColorFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -2129,10 +2177,29 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         ));
         AppQueue.start();
     }
-    const textAnchorPos_onchange = (val) => {
-        var param = val;
+    const textStyleRich_onchange = (val) => {
+        var param = ["-","-","-","-","-","-"];
+        if (objpropData.elements.textui.fontstylesRich.b === true) param[0] = "b";
+        if (objpropData.elements.textui.fontstylesRich.i === true) param[1] = "i";
+        if (objpropData.elements.textui.fontstylesRich.u === true) param[2] = "u";
+        if (objpropData.elements.textui.fontstylesRich.s === true) param[3] = "s";
+        if (objpropData.elements.textui.fontstylesRich.UL == "U") {
+            param[5] = "U";
+        }else if (objpropData.elements.textui.fontstylesRich.UL == "L") {
+            param[4] = "L";
+        }
+        console.log(param,param.join(""));
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetAnchorPos',param:param},
+            {target:mainData.states.selectedAvatar.id,method:'SetFontStyles',param:param.join("")},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const textAnchorPos_onchange = (val) => {
+        var param = val.value;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetTextAlignment',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -2141,12 +2208,90 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     const textText_onchange = (val) => {
         var param = val;
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetText',param:param},
+            {target:mainData.states.selectedAvatar.id,method:'SetVVMText',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
         AppQueue.start();
     }
+    const textcolortype_onchange = (val) => {
+        /*if (val == "g") {
+            var param = MUtility.toHexaColor("FFFFFF");
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'SetFontColorFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }*/
+        var param = "";
+        if (objpropData.elements.textui.colortype == "s") {
+            param = "0";
+        }else if (objpropData.elements.textui.colortype = "g") {
+            param = "1";
+        }
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetEnableColorGradientFromOuter',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+        
+        
+    }
+    const textOverflow_onchange = (val) => {
+        var param = val.value;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetTextOverflow',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const textcolorGradient_onchange = (val, dir) => {
+        
+        var param = `${dir},${MUtility.toHexaColor(val)}`;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetColorGradientFromOuter',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+        
+    }
+    const textAreasize_onchange = () => {
+        //if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
+        var x = parseFloat(objpropData.elements.textui.area_size.x);
+        var y = parseFloat(objpropData.elements.textui.area_size.y);
+        if (isNaN(x) || isNaN(y)) return;
+
+        var param = `${x},${y}`;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetTextAreaSizeFromOuter',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+        return true;
+    }
+    const textOutlineWidth_onchange = (val) => {
+        var param = `${val}`;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetFontOutlineWidthFromOuter',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const textOutlineColor_onchange = (val) => {
+        var param = MUtility.toHexaColor(val);
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetFontOutlineColorFromOuter',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    
     //===UImage====================================
     const uimageColor_onchange = (val) => {
         var param = MUtility.toHexaColor(val);
@@ -2174,7 +2319,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             checkDimension, curprop,
             checkVRM,checkOObject,checkLight,checkCamera,checkImage,checkEffect,
             checkStage,checkStageType,checkStageTypeWater,checkSkyMode,checkSkyShaderProcedural,checkSkyShader6sided,
-            checkText,checkUImage,
+            checkText,checkUImage,checkText3D,
             checkVRMEquipItemChecked,showEquipedItemBodypart,
             checkMaterialShaderVRMMToon,checkMaterialShaderStandard,checkMaterialShaderWater,
             checkMaterialShaderSketchShader,checkMaterialShaderPostSketchShader,
@@ -2188,7 +2333,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             OnChange_Position3D,OnChange_Rotation3D,OnChange_Scale3D,
             OnChange_Position2D,OnChange_Rotation2D,OnChange_Scale2D,OnChange_Size2D,
             OnChange_JumpNum,OnChange_JumpPower,OnChange_PunchColumn,OnChange_ShakeColumn,
-            wa_propVRMMoveMode,OnClicked_editIKPosition,OnClicked_editGravity,
+            OnChange_RigidDrag,OnChange_UseCollision,OnChange_UseGravity,
+            wa_propVRMMoveMode,OnClicked_editIKPosition,OnClicked_editGravity,OnClicked_MirrorPose,
             OnChange_LeftHand,OnChange_RightHand,OnChange_FingerStretch,
             onchange_expression_searchstr,onchange_bs_searchstr,OnChange_BlendShape, OnChange_BlendShape_Checked,
             OnChange_Blink_enable,OnChange_Blink_interval,OnChange_Blink_opening,OnChange_Blink_closing,OnChange_Blink_closeTime,
@@ -2250,7 +2396,10 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             skyTint_onchange,skyGroundColor_onchange,
             windDirectionXZ_onchange,windDirectionY_onchange,windPower_onchange,windFrequency_onchange,windDuration_onchange,
 
-            textFontsize_onchange,textColor_onchange,textStyle_onchange,textAnchorPos_onchange,textText_onchange,
+            textFontsize_onchange,textColor_onchange,textStyle_onchange,
+            textStyleRich_onchange,textOverflow_onchange,
+            textAnchorPos_onchange,textText_onchange,textAreasize_onchange,
+            textcolortype_onchange,textOutlineWidth_onchange,textOutlineColor_onchange,textcolorGradient_onchange,
 
             uimageColor_onchange,
 

@@ -566,7 +566,26 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         if (ename == "addtext") {
             var param = [
                 "ABC",
-                "tl"
+                "tl",
+                "2"
+            ];
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.FileMenuCommands,method:'OpenText',param:param.join(",")},
+                "sendobjectinfo",QD_INOUT.returnJS,
+                callback.sendObjectInfo,
+                {callback}
+            ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        }else if (ename == "addtext3d") {
+            var param = [
+                "ABC",
+                "tl",
+                "3"
             ];
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.FileMenuCommands,method:'OpenText',param:param.join(",")},
@@ -840,6 +859,82 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 
             });
 
+        }else if (ename == "openmotion") {
+            if (options.type == "f") {
+                Sub_openfile("ap","MOTION");
+            }else if (options.type == "i") {
+                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
+                mainData.elements.projectSelector.selectTypeName = FILEOPTION.MOTION.types[0].description;
+                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.MOTION;
+                mainData.elements.projectSelector.selectType = FILEOPTION.MOTION.types;
+                modelOperator.enumerateFilesToProjectSelector("MOTION");
+                
+                mainData.elements.projectSelector.show = true;
+            }else if (options.type == "g") {
+                mainData.elements.loading = true;
+                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
+                mainData.elements.projectSelector.selectTypeName = FILEOPTION.MOTION.types[0].description;
+                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.MOTION;
+                mainData.elements.projectSelector.selectType = FILEOPTION.MOTION.types;
+                modelOperator.enumerateFilesToProjectSelector("MOTION");
+                mainData.elements.projectSelector.show = true;
+            }
+        }else if (ename == "savemotion") {
+            var tmpcast = modelOperator.getRole(mainData.states.selectedCast.roleName,"role");
+            var param = tmpcast.roleName + "," + tmpcast.type;
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'SaveSingleMotion', param:param},
+                "savemotion",QD_INOUT.returnJS,
+                callback.savemotion,
+                {callback, disktype : options.type, savetype : "overwrite"}
+            ));
+            AppQueue.start();
+        }else if (ename == "savemotion_anim") {
+            if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
+                appAlert(t("msg_error_mediapipe1"));
+                return;
+            }
+            var tmpcast = mainData.states.selectedCast;
+            var param = tmpcast.roleName + "," + tmpcast.type + ",m";
+            //AppQueue.unity.ManageAnimation
+            AppQueue.add(new queueData(
+                {target:tmpcast.avatar.id,method:'GenerateAnimationCurve'},
+                "savebvhmotion",QD_INOUT.returnJS,
+                callback.saveanimmotion,
+                {callback: callback, selRoleTitle: tmpcast.roleTitle}
+            ));
+            AppQueue.start();
+        }else if (ename == "savemotion_bvh") {
+            if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
+                appAlert(t("msg_error_mediapipe1"));
+                return;
+            }
+            var tmpcast = mainData.states.selectedCast;
+    
+            var param = tmpcast.roleName + "," + tmpcast.type + ",m";
+            //AppQueue.unity.ManageAnimation
+            AppQueue.add(new queueData(
+                {target:tmpcast.avatar.id,method:'ExportRecordedBVH'},
+                "savebvhmotion",QD_INOUT.returnJS,
+                callback.savebvhmotion,
+                {callback: callback, selRoleTitle: tmpcast.roleTitle}
+            ));
+            AppQueue.start();
+        }else if (ename == "savemotion_vrma") {
+            if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
+                appAlert(t("msg_error_mediapipe1"));
+                return;
+            }
+            var tmpcast = mainData.states.selectedCast;
+            var param = tmpcast.roleName + "," + tmpcast.type + ",m";
+            //AppQueue.unity.ManageAnimation
+            AppQueue.add(new queueData(
+                {target:tmpcast.avatar.id,method:'ExportVRMA'},
+                "savebvhmotion",QD_INOUT.returnJS,
+                callback.savevrmamotion,
+                {callback: callback, selRoleTitle: tmpcast.roleTitle}
+            ));
+            AppQueue.start();
         }else if (ename == "connect_vroidhub") {
             mainData.vroidhubapi.generateAuthLink();
         }else if (ename == "list_vroidhub") {
@@ -1106,36 +1201,6 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 modelOperator.removeKeyframe(mainData.states.selectedAvatar, timelineData.states.currentcursor, AF_MOVETYPE.AllProperties);
             });
         }else if (ename == "delemptyline") {
-        }else if (ename == "openmotion") {
-            if (options.type == "f") {
-                Sub_openfile("ap","MOTION");
-            }else if (options.type == "i") {
-                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
-                mainData.elements.projectSelector.selectTypeName = FILEOPTION.MOTION.types[0].description;
-                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.MOTION;
-                mainData.elements.projectSelector.selectType = FILEOPTION.MOTION.types;
-                modelOperator.enumerateFilesToProjectSelector("MOTION");
-                
-                mainData.elements.projectSelector.show = true;
-            }else if (options.type == "g") {
-                mainData.elements.loading = true;
-                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
-                mainData.elements.projectSelector.selectTypeName = FILEOPTION.MOTION.types[0].description;
-                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.MOTION;
-                mainData.elements.projectSelector.selectType = FILEOPTION.MOTION.types;
-                modelOperator.enumerateFilesToProjectSelector("MOTION");
-                mainData.elements.projectSelector.show = true;
-            }
-        }else if (ename == "savemotion") {
-            var tmpcast = modelOperator.getRole(mainData.states.selectedCast.roleName,"role");
-            var param = tmpcast.roleName + "," + tmpcast.type;
-            AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SaveSingleMotion', param:param},
-                "savemotion",QD_INOUT.returnJS,
-                callback.savemotion,
-                {callback, disktype : options.type, savetype : "overwrite"}
-            ));
-            AppQueue.start();
         }
     }
     //==================================================
@@ -1660,6 +1725,36 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             format : evt
         });
     }
+    const openmotion_file_onclick = (evt) => {
+        RibbonFuncModel('openmotion',{
+            type : "f"
+        });
+    }
+    const openmotion_internal_onclick = (evt) => {
+        RibbonFuncModel('openmotion',{
+            type : "i"
+        });
+    }
+    const openmotion_gdrive_onclick = (evt) => {
+        RibbonFuncModel('openmotion',{
+            type : "g"
+        });
+    }
+    const savemotion_file_onclick = (evt) => {
+        RibbonFuncModel('savemotion',{
+            type : "f"
+        });
+    }
+    const savemotion_internal_onclick = (evt) => {
+        RibbonFuncModel('savemotion',{
+            type : "i"
+        });
+    }
+    const savemotion_gdrive_onclick = (evt) => {
+        RibbonFuncModel('savemotion',{
+            type : "g"
+        });
+    }
 
     //---Animation tab------------------------
     const openproject_file_onclick = (evt) => {
@@ -1728,36 +1823,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             value: ribbonData.elements.frame.current
         });
     }
-    const openmotion_file_onclick = (evt) => {
-        RibbonFuncAnimation('openmotion',{
-            type : "f"
-        });
-    }
-    const openmotion_internal_onclick = (evt) => {
-        RibbonFuncAnimation('openmotion',{
-            type : "i"
-        });
-    }
-    const openmotion_gdrive_onclick = (evt) => {
-        RibbonFuncAnimation('openmotion',{
-            type : "g"
-        });
-    }
-    const savemotion_file_onclick = (evt) => {
-        RibbonFuncAnimation('savemotion',{
-            type : "f"
-        });
-    }
-    const savemotion_internal_onclick = (evt) => {
-        RibbonFuncAnimation('savemotion',{
-            type : "i"
-        });
-    }
-    const savemotion_gdrive_onclick = (evt) => {
-        RibbonFuncAnimation('savemotion',{
-            type : "g"
-        });
-    }
+    
     //--System effect-----------------------------------
     const bloom_checked_onchange = (value, evt) => {
         RibbonFuncSystemEffect('bloom_checked',{

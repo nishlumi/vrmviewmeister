@@ -689,6 +689,7 @@ const AppDB = {
 	},
 	clearAll() {
 		this.temp.clear();
+		this.loglst.splice(0, this.loglst.length);
 	},
 	clearHistory() {
 		this.avatar_meta.clear();

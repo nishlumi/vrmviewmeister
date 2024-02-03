@@ -142,7 +142,7 @@ export class UnityCallbackFunctioner {
                 if (mainData.states.loadingfile) URL.revokeObjectURL(mainData.states.loadingfile);
                 mainData.states.loadingfileHandle = null;
                 loadingfileHandle = null;
-
+                
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.OperateActiveVRM,method:'ChangeIKMarkerStyle',param:parseFloat(ribbonData.elements.optionArea.ikmarkerSize)},
                     "",QD_INOUT.toUNITY,
@@ -351,6 +351,7 @@ export class UnityCallbackFunctioner {
          * @type {UnityCallbackFunctioner}
          */
         const callback = options.callback;
+        const avatar = callback.mainData.states.selectedAvatar;
 
         var arr = val.split("%");
         //---position
@@ -366,9 +367,24 @@ export class UnityCallbackFunctioner {
             callback.objpropData.elements.common.rotation3d.z = Math.round(parseFloat(tmprot[2]));
             //---scale
             var tmpsca = arr[2].split(",");
-            const calctmpscax = Math.round(parseFloat(tmpsca[0]) * 100);
-            const calctmpscay = Math.round(parseFloat(tmpsca[1]) * 100);
-            const calctmpscaz = Math.round(parseFloat(tmpsca[2]) * 100);
+            var calctmpscax = Math.round(parseFloat(tmpsca[0]) * 100);
+            var calctmpscay = Math.round(parseFloat(tmpsca[1]) * 100);
+            var calctmpscaz = Math.round(parseFloat(tmpsca[2]) * 100);
+            /*if (avatar.type == AF_TARGETTYPE.Text3D) {
+                calctmpscax = Math.round(parseFloat(tmpsca[0]));
+                calctmpscay = Math.round(parseFloat(tmpsca[1]));
+                calctmpscaz = Math.round(parseFloat(tmpsca[2]));
+            }*/
+            if (arr.length >= 4) {
+                var tmpdrag = arr[3].split(",");
+                callback.objpropData.elements.common.drag = parseFloat(tmpdrag[0]);
+                callback.objpropData.elements.common.angularDrag = parseFloat(tmpdrag[1]);
+                callback.objpropData.elements.common.useCollision = (tmpdrag[2] == "1") ? true : false;
+                callback.objpropData.elements.common.useGravity = (tmpdrag[3] == "1") ? true : false;
+            }
+            
+            
+            
             callback.objpropData.elements.common.scale3d.x = calctmpscax;
             callback.objpropData.elements.common.scale3d.y = calctmpscay;
             callback.objpropData.elements.common.scale3d.z = calctmpscaz;
@@ -801,6 +817,7 @@ export class UnityCallbackFunctioner {
          * @type {UnityCallbackFunctioner}
          */
         const callback = options.callback;
+        const modelOperator = callback.modelOperator;
         const mainData = callback.mainData;
         var el = callback.objpropData.elements;
 
@@ -842,11 +859,18 @@ export class UnityCallbackFunctioner {
                 //---Camera object
                 el.objectui.matopt.textureSeltypeselected = el.objectui.matopt.textureSeltype[1];
                 var role = arr[inx].replace("#Camera","");
-                el.objectui.matopt.textureCameraRender = 
+                var hitrole = modelOperator.getAvatarFromRole(role);
+                if (hitrole) {
+                    el.objectui.matopt.textureCameraRender = {
+                        label : hitrole.roleTitle,
+                        value : hitrole.roleName
+                    }
+                }
+                /*el.objectui.matopt.textureCameraRender = 
                     el.objectui.matopt.textureCameraRenderOptions.find(match => {
                         if (match.value == role) return true;
                         return false;
-                    });
+                    });*/
             }else{
                 //---Normal texture name
                 el.objectui.matopt.textureSeltypeselected = el.objectui.matopt.textureSeltype[0];
@@ -1208,20 +1232,51 @@ export class UnityCallbackFunctioner {
 
             //---text
             textui.text = arr[0];
-            //---anchor pos
-            textui.anchor_position = textui.anchor_positionOptions.find(item => {
-                if (item.value == arr[1]) return true;
-                return false;
-            });
             //---size
-            textui.size = parseInt(arr[2]);
+            textui.size = parseInt(arr[1]);
             //---style
             textui.fontstyleselected = textui.fontstyleOptions.find(item => {
-                if (item.value == parseInt(arr[3])) return true;
+                if (item.value == parseInt(arr[2])) return true;
                 return false;
             });
+            for (var obj in textui.fontstylesRich) {
+                if (arr[2].indexOf(obj) > -1) {
+                    textui.fontstylesRich[obj] = obj;
+                }
+            }
             //---color
-            textui.colorselected = MUtility.toHexaColor(arr[4]);
+            textui.colorselected = MUtility.toHexaColor(arr[3]);
+
+            //---size:x & y
+            {
+                var sizearr = arr[4].split(",");
+                textui.area_size.x = parseInt(sizearr[0]);
+                //---size:y
+                textui.area_size.y = parseInt(sizearr[1]);
+            }
+            //---text alignment
+            textui.anchor_position = textui.anchor_positionOptions.find(item => {
+                if (item.value == arr[5]) return true;
+                return false;
+            });
+            
+            //---text overflow
+            var arr8int = parseInt(arr[6]);
+            textui.text_overflow = textui.text_overflow_options[arr8int];
+            //---dimension
+            textui.dimension = arr[7];
+            //---is gradient
+            textui.colortype = arr[8] == "1" ? "g" : "s";
+            //---gradient colors
+            var colors = arr[9].split(",");
+            var colordir = ["tl","tr","bl","br"];
+            colors.forEach((v,i,a) => {
+                textui.colorGradient[colordir[i]] = MUtility.toHexaColor(v);
+            });
+            //---outline width
+            textui.outlineWidth = parseFloat(arr[10]);
+            //---outline color
+            textui.outlineColor = MUtility.toHexaColor(arr[11]);
         }else{
             AppQueue.add(new queueData(
                 {target:callback.mainData.states.selectedAvatar.id,method:'GetIndicatedPropertyFromOuter',param:1},
@@ -2307,7 +2362,7 @@ export class UnityCallbackFunctioner {
         }else{
             appPrompt(callback.t("msg_motion_save"),(fname)=>{
                 vf.types.push(vopt);
-                vf.suggestedName = fname;
+                vf.suggestedName = fname + (fname.indexOf(".anim") > -1 ? "" : ".anim");
                 var acckey = "";
                 var accval = "";
                 for (var obj in vopt.accept) {
@@ -2349,7 +2404,50 @@ export class UnityCallbackFunctioner {
         }else{
             appPrompt(callback.t("msg_motion_save"),(fname)=>{
                 vf.types.push(vopt);
-                vf.suggestedName = fname;
+                vf.suggestedName = fname + (fname.indexOf(".bvh") > -1 ? "" : ".bvh");
+                var acckey = "";
+                var accval = "";
+                for (var obj in vopt.accept) {
+                    acckey = obj;
+                    accval = vopt.accept[obj];
+                    break;
+                }
+                var content = new Blob([txt], {type : acckey});
+                var burl = URL.createObjectURL(content);
+                VFileHelper.saveUsingDialog(burl,vf,true)
+                .then(ret => {
+                    URL.revokeObjectURL(burl);
+                });
+                
+            },vf.suggestedName);
+        }
+    }
+    async savevrmamotion (val, options) {
+        /**
+         * @type {UnityCallbackFunctioner}
+         */
+        const callback = options.callback;
+        const refs = callback.refs;
+        const selRoleTitle = options.selRoleTitle;
+
+        //---edit complete to YAML
+        var js = JSON.parse(val);
+        console.log(js);
+        var txt = new Uint8Array(js.data);
+
+        //---File System Access API
+        var vopt = new VFileType();
+        vopt = FILEOPTION.MOTION.types[1];
+        var vf = new VFileOptions();
+        vf.suggestedName = "motion.vrma";
+
+        if (VFileHelper.flags.isElectron) {
+            vf.types.push(vopt);
+            VFileHelper.saveUsingDialog(txt,vf,true);
+        }else{
+            appPrompt(callback.t("msg_motion_save"),(fname)=>{
+                vf.types.push(vopt);
+                vf.suggestedName = fname + (fname.indexOf(".vrma") > -1 ? "" : ".vrma");
                 var acckey = "";
                 var accval = "";
                 for (var obj in vopt.accept) {
@@ -2500,7 +2598,8 @@ export class UnityCallbackFunctioner {
                 if (chara.targetType in [
                     AF_TARGETTYPE.VRM,AF_TARGETTYPE.OtherObject,
                     AF_TARGETTYPE.Camera,AF_TARGETTYPE.Light,
-                    AF_TARGETTYPE.Effect,AF_TARGETTYPE.Image
+                    AF_TARGETTYPE.Effect,AF_TARGETTYPE.Image,
+                    AF_TARGETTYPE.Text3D
                 ]) {
                     for (var f = 0; f < chara.frames.length; f++) {
                         var fdata = chara.frames[f];

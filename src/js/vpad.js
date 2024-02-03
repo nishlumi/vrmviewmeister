@@ -246,8 +246,8 @@ export function defineVpadDlg(app, Quasar) {
                 //data.value.elements.rotation.power = newInfo.duration;
 
                 var moveVal = newInfo.offset;
-                moveVal.x = moveVal.x * rotateRate.value;
-                moveVal.y = moveVal.y * rotateRate.value;
+                moveVal.x = moveVal.x * parseFloat(rotateRate.value);
+                moveVal.y = moveVal.y * parseFloat(rotateRate.value);
                 //data.value.elements.rotation.current.x = 0;
                 //data.value.elements.rotation.current.y = 0;
                 var relpos = {x: 0, y: 0};
@@ -298,11 +298,11 @@ export function defineVpadDlg(app, Quasar) {
                 if (newInfo.direction == "up") {
                     data.value.elements.progress.icon = "arrow_downward";
                     data.value.elements.progress.current.z += moveVal.y;
-                    relpos.z = -1 * translateRate.value;
+                    relpos.z = -1 * parseFloat(translateRate.value);
                 }else if (newInfo.direction == "down") {
                     data.value.elements.progress.icon = "arrow_upward";
                     data.value.elements.progress.current.z -= moveVal.y;
-                    relpos.z = 1 * translateRate.value;
+                    relpos.z = 1 * parseFloat(translateRate.value);
                 }else{
                     data.value.elements.progress.icon = "radio_button_unchecked";
                 }
@@ -310,7 +310,7 @@ export function defineVpadDlg(app, Quasar) {
                 //var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
                 var param = [relpos.x, relpos.y, relpos.z].join(",");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.Camera,method:'TranslateCameraPosFromOuter',param:param},
+                    {target:AppQueue.unity.XR,method:'TranslateCameraPosFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -331,19 +331,19 @@ export function defineVpadDlg(app, Quasar) {
                 if (newInfo.direction == "up") {
                     data.value.elements.translation.icon = "arrow_downward";
                     data.value.elements.translation.current.y += moveVal.y;
-                    relpos.y = -1 * translateRate.value;
+                    relpos.y = -1 * parseFloat(translateRate.value);
                 }else if (newInfo.direction == "down") {
                     data.value.elements.translation.icon = "arrow_upward";
                     data.value.elements.translation.current.y -= moveVal.y;
-                    relpos.y = 1 * translateRate.value;
+                    relpos.y = 1 * parseFloat(translateRate.value);
                 }else if (newInfo.direction == "left") {
                     data.value.elements.translation.icon = "arrow_forward";
                     data.value.elements.translation.current.x -= moveVal.x;
-                    relpos.x = 1 * translateRate.value;
+                    relpos.x = 1 * parseFloat(translateRate.value);
                 }else if (newInfo.direction == "right") {
                     data.value.elements.translation.icon = "arrow_back";
                     data.value.elements.translation.current.x += moveVal.x;
-                    relpos.x = -1 * translateRate.value;
+                    relpos.x = -1 * parseFloat(translateRate.value);
                 }else{
                     data.value.elements.translation.icon = "radio_button_unchecked";
                 }
@@ -351,7 +351,7 @@ export function defineVpadDlg(app, Quasar) {
                 //var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
                 var param = [relpos.x, relpos.y, relpos.z].join(",");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.Camera,method:'TranslateCameraPosFromOuter',param:param},
+                    {target:AppQueue.unity.XR,method:'TranslateCameraPosFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));

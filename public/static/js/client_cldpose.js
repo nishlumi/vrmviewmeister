@@ -458,7 +458,7 @@ const app = Vue.createApp({
             var sinfo = opener._REFAPP.childreturner["select_info"];
             if (sinfo) {
                 console.log(sinfo);
-                return;
+                //return;
             }
             var js = new ChildReturner();
             js.origin = location.origin;
@@ -466,7 +466,22 @@ const app = Vue.createApp({
             js.funcName = "saveanimmotion";
             
             
-            js.data = JSON.stringify(poseapp.value.list.selected.data);
+            js.data = JSON.stringify({});
+            opener.postMessage(js);
+        }
+        const btn_savevrmamotion_onclick = () => {
+            var sinfo = opener._REFAPP.childreturner["select_info"];
+            if (sinfo) {
+                console.log(sinfo);
+                //return;
+            }
+            var js = new ChildReturner();
+            js.origin = location.origin;
+            js.windowName = "pose";
+            js.funcName = "savevrmamotion";
+            
+            
+            js.data = JSON.stringify({});
             opener.postMessage(js);
         }
         
@@ -512,7 +527,8 @@ const app = Vue.createApp({
             apply_onclick,delete_onclick,download_onclick,upload_onclick,
             selectListItem,onchange_searchstr,
             listorigin_onchange,modetab_change,
-            btn_savebvhmotion_onclick,btn_saveanimmotion_onclick,checkSelectVRMObject,
+            btn_savebvhmotion_onclick,btn_saveanimmotion_onclick,btn_savevrmamotion_onclick,
+            checkSelectVRMObject,
             //---computed---
             list_actived,listitem_height,targetTypeName,
             //---other method---

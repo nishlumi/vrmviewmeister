@@ -148,6 +148,23 @@ const app = Vue.createApp({
                     6, i,
                     js.list[i].rotation.z
                 );
+                data.value.elements.spreadsheet.setValueFromCoords(
+                    7, i,
+                    js.list[i].drag
+                );
+                data.value.elements.spreadsheet.setValueFromCoords(
+                    8, i,
+                    js.list[i].anglarDrag
+                );
+                /*data.value.elements.spreadsheet.setValueFromCoords(
+                    7, i,
+                    js.list[i].useCollision
+                );
+                data.value.elements.spreadsheet.setValueFromCoords(
+                    8, i,
+                    js.list[i].useGravity
+                );
+                */
             }
         }
         const reload_onclick = () => {
@@ -179,7 +196,11 @@ const app = Vue.createApp({
                 lists.push({
                     ikname : ln[0],
                     position : new UnityVector3(parseFloat(ln[1]),parseFloat(ln[2]),parseFloat(ln[3])),
-                    rotation : new UnityVector3(parseFloat(ln[4]),parseFloat(ln[5]),parseFloat(ln[6]))
+                    rotation : new UnityVector3(parseFloat(ln[4]),parseFloat(ln[5]),parseFloat(ln[6])),
+                    useCollision : 0, //ln[7] == 1 ? 1 : 0,
+                    useGravity : 0, //ln[8] == 1 ? 1 : 0,
+                    drag : isNaN(parseFloat(ln[7])) == false ? parseFloat(ln[8]) : 10,
+                    anglarDrag : isNaN(parseFloat(ln[7])) == false ? parseFloat(ln[8]) : 10,
                 });
             }
             var param = JSON.stringify({
@@ -368,7 +389,11 @@ const app = Vue.createApp({
                     { type: 'number', title: 'Rotation X', width: 100, align : "right" },
                     { type: 'number', title: 'Rotation Y', width: 100, align : "right" },
                     { type: 'number', title: 'Rotation Z', width: 100, align : "right"  },
-        
+                    { type: 'number', title: 'drag', width: 50, align : "right"  },
+                    { type: 'number', title: 'anglarDrag', width: 50, align : "right"  },
+                    /*{ type: 'number', title: 'use Collision', width: 30, align : "center"  },
+                    { type: 'number', title: 'use Gravity', width: 30, align : "center"  },
+                    */
                 ],
                 /**
                  * 

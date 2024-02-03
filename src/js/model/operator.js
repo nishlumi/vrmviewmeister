@@ -95,7 +95,7 @@ export class appModelOperator {
                     "",QD_INOUT.toUNITY,
                     null
                 ));
-            }else if (target.type == AF_TARGETTYPE.Text) {
+            }else if ((target.type == AF_TARGETTYPE.Text) || (target.type == AF_TARGETTYPE.Text3D)) {
                 //this.callUnityCanvas("DestroyOther",target.id);
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.FileMenuCommands,method:'DestroyText',param:target.id},
@@ -791,7 +791,12 @@ export class appModelOperator {
                     if (db2conf[dbname]) {
                         var confID = this.mainData.appconf.confs.fileloader.gdrive.user[db2conf[dbname]];
                         if (confID != "") {
-                            urlparams.append("dirid",confID);
+                            if (this.mainData.appconf.confs.fileloader.gdrive.userByName[db2conf[dbname]] === true) {
+                                urlparams.append("dirname",confID);
+                            }else{
+                                urlparams.append("dirid",confID);
+                            }
+                            
                         }
                     }
                 }else if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
@@ -961,7 +966,8 @@ export class appModelOperator {
                     (obj.type == AF_TARGETTYPE.Light) || 
                     (obj.type == AF_TARGETTYPE.Camera) || 
                     (obj.type == AF_TARGETTYPE.Image) ||
-                    (obj.type == AF_TARGETTYPE.Effect)
+                    (obj.type == AF_TARGETTYPE.Effect) ||
+                    (obj.type == AF_TARGETTYPE.Text3D)
                 ) {
                     var eq = selavatar.isEquipping(obj);
                     if ((eq.avatar != null) && (eq.parts != null)) {
@@ -1034,7 +1040,7 @@ export class appModelOperator {
                 this.UnityCallback.destroyAfter,
                 {callback : this.UnityCallback}
             ));
-        }else if (selavatar.type == AF_TARGETTYPE.Text) { 
+        }else if ((selavatar.type == AF_TARGETTYPE.Text) || (selavatar.type == AF_TARGETTYPE.Text3D)) { 
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.FileMenuCommands,method:'DestroyText',param:selavatar.id},
                 "destroyobject",QD_INOUT.returnJS,
@@ -1153,15 +1159,27 @@ export class appModelOperator {
             //---setup each panel: turn on/off panel, enumerate avatar's BlendShapes, equipList
             if (
                 (selected.avatar.type == AF_TARGETTYPE.Text) || 
-                (selected.avatar.type == AF_TARGETTYPE.UImage)
+                (selected.avatar.type == AF_TARGETTYPE.UImage) ||
+                (selected.avatar.type == AF_TARGETTYPE.Text3D)
             ) {
-                AppQueue.add(new queueData(
-                    {target:selected.avatar.id,method:'GetCommonTransformFromOuter'},
-                    "gettransform2D",QD_INOUT.returnJS,
-                    this.UnityCallback.gettransform2D,
-                    {callback : this.UnityCallback}
-                ));
-                this.objpropData.states.dimension = "2d";
+                if (selected.avatar.type == AF_TARGETTYPE.Text3D) {
+                    AppQueue.add(new queueData(
+                        {target:selected.avatar.id,method:'GetCommonTransformFromOuter'},
+                        "gettransform3D",QD_INOUT.returnJS,
+                        this.UnityCallback.gettransform3D,
+                        {callback : this.UnityCallback}
+                    ));
+                    this.objpropData.states.dimension = "3d";
+                }else if (selected.avatar.motion.dimension == "2d") {
+                    AppQueue.add(new queueData(
+                        {target:selected.avatar.id,method:'GetCommonTransformFromOuter'},
+                        "gettransform2D",QD_INOUT.returnJS,
+                        this.UnityCallback.gettransform2D,
+                        {callback : this.UnityCallback}
+                    ));
+                    this.objpropData.states.dimension = "2d";
+                }
+                
             }else if (selected.avatar.type == AF_TARGETTYPE.SystemEffect) {
 
             }else if (selected.avatar.type == AF_TARGETTYPE.Audio) {
@@ -1306,7 +1324,7 @@ export class appModelOperator {
                     this.UnityCallback.getpropertyEffect,
                     { avatar: tmpav, callback : this.UnityCallback}
                 ));
-            }else if (selected.avatar.type == AF_TARGETTYPE.Text) {
+            }else if ((selected.avatar.type == AF_TARGETTYPE.Text) || (selected.avatar.type == AF_TARGETTYPE.Text3D)) {
                 AppQueue.add(new queueData(
                     {target:selected.avatar.id,method:'GetIndicatedPropertyFromOuter',param:1},
                     "getpropertyText",QD_INOUT.returnJS,

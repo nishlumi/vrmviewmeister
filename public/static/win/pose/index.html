@@ -104,6 +104,7 @@
                     >
                         <q-tooltip v-text="_T('open from file')"></q-tooltip>
                     </q-btn>
+                    <!--
                     <template v-if="poseapp.states.item_mode == 'motion'">
                         <q-btn flat round dense icon="directions_run" :disable="checkSelectVRMObject()" >
                             <q-tooltip v-text="_T('export anim file')" anchor="top right"></q-tooltip>
@@ -116,10 +117,14 @@
                                     <q-item clickable v-close-popup @click="btn_saveanimmotion_onclick">
                                         <q-item-section>.anim</q-item-section>
                                     </q-item>
+                                    <q-item clickable v-close-popup @click="btn_savevrmamotion_onclick">
+                                        <q-item-section>.vrma</q-item-section>
+                                    </q-item>
                                 </q-list>
                             </q-menu>
                         </q-btn>
                     </template>
+                    -->
                     <q-spinner v-if="poseapp.header.loading"
                         color="secondary"
                         size="3em"
@@ -154,8 +159,6 @@
                     <div class="row poseliststyle">
                         <div class="posecard-grid fit-width">
                             <template v-for="(item,index) in poseapp.list.options">
-                                
-                                
                                 <div class="posecard-itembase"
                                     :key="index"
                                     v-if="item.visibility==true"

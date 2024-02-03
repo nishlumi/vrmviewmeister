@@ -12,8 +12,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.3.2",
-            revision : "20240108-01",
+            version : "2.4.0",
+            revision : "20240203-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -296,6 +296,11 @@ export class appMainData {
             //avoidSetEvent : false,
             animationPlaying : false,
             currentProjectFromFile : true,
+            /**
+             * Saved storage type.
+             * "i"nternal, "f"ile, "g"oogleDrive
+             * @type {String}
+             */
             currentProjectFromStorageType : "i", // internal, file, googleDrive,
             currentProjectFilename : "project",
             currentProjectFilepath : "project",

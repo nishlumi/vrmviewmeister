@@ -44,10 +44,12 @@ export class ChildManager {
             }else if (data.funcName == "savebvhmotion") {
                 var js = JSON.parse(data.data);
                 this.saveBVHMotion(js);
-            }
-            else if (data.funcName == "saveanimmotion") {
+            }else if (data.funcName == "saveanimmotion") {
                 var js = JSON.parse(data.data);
                 this.saveAnimMotion(js);
+            }else if (data.funcName == "savevrmamotion") {
+                var js = JSON.parse(data.data);
+                this.saveVRMAMotion(js);
             }
         }else if (data.windowName == "mediapipe") {
             if (data.funcName == "apply_pose") {
@@ -175,6 +177,22 @@ export class ChildManager {
             {target:tmpcast.avatar.id,method:'GenerateAnimationCurve'},
             "savebvhmotion",QD_INOUT.returnJS,
             this.UnityCallback.saveanimmotion,
+            {callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle}
+        ));
+        AppQueue.start();
+    }
+    saveVRMAMotion (data) {
+        if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
+            appAlert(t("msg_error_mediapipe1"));
+            return;
+        }
+        var tmpcast = this.mainData.states.selectedCast;
+        var param = tmpcast.roleName + "," + tmpcast.type + ",m";
+        //AppQueue.unity.ManageAnimation
+        AppQueue.add(new queueData(
+            {target:tmpcast.avatar.id,method:'ExportVRMA'},
+            "savebvhmotion",QD_INOUT.returnJS,
+            this.UnityCallback.savevrmamotion,
             {callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle}
         ));
         AppQueue.start();

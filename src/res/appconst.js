@@ -42,6 +42,10 @@ export const FILEOPTION = {
             {
                 description : "VVM motion file",
                 accept : {"application/json": [".vvmmot",".json",".bvh",".anim"]}
+            },
+            {
+                description : "VRM Animation file",
+                accept : {"application/octet-stream": [".vrma"]}
             }
         ],
         encoding : "utf8"
@@ -142,6 +146,7 @@ export const AF_TARGETTYPE =
     Effect : 8,
     SystemEffect : 9,
     Stage : 10,
+    Text3D : 11,
 
     Unknown : 99
 }
@@ -192,10 +197,15 @@ export const AF_MOVETYPE = {
     Jump : 42,
     Coloring : 43,
     Collider : 44,
+    Rigid : 45,
 
     GravityProperty : 50,
     VRMIKProperty : 51,
     VRMBlink : 52,
+
+    //---reserved
+    AppCommand : 60,
+    Action : 61,
 
     AllProperties : 88,
     Stop : 99

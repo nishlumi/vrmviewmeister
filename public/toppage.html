@@ -431,6 +431,11 @@
                                         </template>
                                     </q-list>
                                 </q-menu>
+                            </q-btn><br>
+                            <q-btn flat dense size="md" icon="format_shapes" @click="ribbonEvent.RibbonFuncModel('addtext3d')" no-caps>
+                                <q-tooltip>
+                                    {{ "3D" + $t('Text') }}
+                                </q-tooltip>
                             </q-btn>
                         </div>
                         <div class="ribbon-group-title">Add</div>
@@ -544,38 +549,62 @@
                     <div class="ribbon-group-sep"></div>
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
-                            <q-btn flat icon="bookmark_add" :label="$t('cons_save')+'...'" no-caps 
-                            >
+                            <q-btn flat icon="bookmark_add" 
+                                :label="$t('cons_save')+'...'" no-caps 
+                            ><!-- Post and Motion submenu ======================##  -->
                                 <q-menu>
                                     <q-list>
-                                        <q-item-label><b>{{ $t('ribbon_pose_save') }}</b></q-item-label>
-                                        <q-separator></q-separator>
-                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_direct')">
-                                            <q-item-section>{{ $t('Disk')}}</q-item-section>
+                                        <q-item clickable >
+                                            <q-item-section>{{ $t('ribbon_pose_save') }}</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+                                                    <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_direct')">
+                                                        <q-item-section>{{ $t('Disk')}}</q-item-section>
+                                                    </q-item>                                        
+                                                    <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose')">
+                                                        <q-item-section>{{ $t('Internal Storage')}}</q-item-section>
+                                                    </q-item>
+                                                    <template v-if="mainData.states.googledrive_gas">
+                                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_drive')">
+                                                            <q-item-section>Google Drive</q-item-section>
+                                                            <q-item-section side><q-icon name="cloud_upload"></q-icon></q-item-section>
+                                                        </q-item>
+                                                    </template>
+                                                </q-list>
+                                            </q-menu>
+                                        </q-item>
+                                        <q-item clickable >
+                                            <q-item-section>{{ $t('ribbon_motion_save') }}</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_file_onclick">
+                                                        <q-item-section>{{ $t('Disk') }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_internal_onclick">
+                                                        <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
+                                                    </q-item>
+                                                    <template v-if="mainData.states.googledrive_gas">
+                                                        <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_gdrive_onclick">
+                                                            <q-item-section>Google Drive</q-item-section>
+                                                            <q-item-section side><q-icon name="cloud_upload"></q-icon></q-item-section>
+                                                        </q-item>
+                                                    </template>
+                                                    <q-separator></q-separator>
+                                                    <q-item-label>{{ $t('general_format') }}</q-item-label>
+                                                    <q-item clickable disable v-close-popup @click="ribbonEvent.RibbonFuncModel('savemotion_bvh')">
+                                                        <q-item-section>{{ ".bvh" }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncModel('savemotion_anim')">
+                                                        <q-item-section>{{ ".anim" }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savemotion_vrma')">
+                                                        <q-item-section>{{ ".vrma" }}</q-item-section>
+                                                    </q-item>
+                                                </q-list>
+                                            </q-menu>
                                         </q-item>                                        
-                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose')">
-                                            <q-item-section>{{ $t('Internal Storage')}}</q-item-section>
-                                        </q-item>
-                                        <template v-if="mainData.states.googledrive_gas">
-                                            <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_drive')">
-                                                <q-item-section>Google Drive</q-item-section>
-                                            </q-item>
-                                        </template>
-                                        <q-separator></q-separator>
-                                        <q-item-label><b>{{ $t('ribbon_motion_save') }}</b></q-item-label>
-                                        <q-separator></q-separator>
-                                        <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_file_onclick">
-                                            <q-item-section>{{ $t('Disk') }}</q-item-section>
-                                        </q-item>                                    
-                                        <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_internal_onclick">
-                                            <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
-                                        </q-item>
-
-                                        <template v-if="mainData.states.googledrive_gas">
-                                            <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_gdrive_onclick">
-                                                <q-item-section>Google Drive</q-item-section>
-                                            </q-item>
-                                        </template>
                                     </q-list>
                                 </q-menu>
                             </q-btn>                            
@@ -1571,7 +1600,39 @@
                                 </div>
                             </template>
                         </div>
-                        <div class="row">
+                        <template v-if="!objpropEvent.checkStage">
+                            <div class="row">
+                                <div class="col-3 q-pt-sm">
+                                    {{ $t('rigid_title') }}
+                                </div>
+                                <div class="col-9">
+                                    <q-toggle v-model="objpropData.elements.common.useCollision" 
+                                        color="primary" 
+                                        :label="$t('rigid_collision')"
+                                        @update:model-value="objpropEvent.OnChange_UseCollision"
+                                    ></q-toggle>
+                                </div>
+                                <div class="col-9 offset-xs-3">
+                                    <q-toggle v-model="objpropData.elements.common.useGravity" 
+                                        color="primary" 
+                                        :label="$t('rigid_gravity')"
+                                        @update:model-value="objpropEvent.OnChange_UseGravity"
+                                    ></q-toggle>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3 q-pt-sm">
+                                    
+                                </div>
+                                <div class="col-4">
+                                    <q-input v-model.number="objpropData.elements.common.drag" @update:model-value="objpropEvent.OnChange_RigidDrag" type="number" :label="$t('rigid_drag')" dense  :min="0" :max="20" :step="0.05"></q-input>
+                                </div>
+                                <div class="col-4 offset-sm-1">
+                                    <q-input v-model.number="objpropData.elements.common.angularDrag" @update:model-value="objpropEvent.OnChange_RigidDrag" type="number" :label="$t('rigid_adrag')" dense  :min="0" :max="20" :step="0.05"></q-input>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="row" v-if="!objpropEvent.checkStage">
                             <div class="col-3 q-pt-sm">
                                 <div>{{ $t('Jump') }}</div>
                             </div>
@@ -1582,7 +1643,7 @@
                                 <q-input v-model.number="objpropData.elements.common.jumpPower" @update:model-value="objpropEvent.OnChange_JumpPower" type="number" :label="$t('jumppower')" dense  :min="-10" :max="10" :step="0.1"></q-input>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" v-if="!objpropEvent.checkStage">
                             <div class="col-12">
                                 <q-tabs
                                     v-model="objpropData.elements.common.effectTabSelected"
@@ -1682,7 +1743,7 @@
                                 <q-input v-model.number="objpropData.elements.common.rotation2d.z" @update:model-value="objpropEvent.OnChange_Rotation2D" type="number" label="Z" dense :min="0" :max="360" :step="0.1"></q-input>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" v-if="objpropEvent.checkUImage">
                             <div class="col-4">
                                 {{ $t('size') }}
                             </div>
@@ -1783,6 +1844,13 @@
                                         </div>
                                     </fieldset>
                                     
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <q-btn flat color="primary" icon="mdi-mirror" :label="$t('reverse pose')"
+                                        @click="objpropEvent.OnClicked_MirrorPose"
+                                    ></q-btn>
                                 </div>
                             </div>
                         </q-card-section>
@@ -4353,7 +4421,7 @@
             </template>
             
             <!-- Text ==================================================================== -->
-            <template v-if="objpropEvent.checkText">
+            <template v-if="objpropEvent.checkText || objpropEvent.checkText3D">
                 <q-expansion-item
                     expand-separator switch-toggle-side dense
                 >
@@ -4398,19 +4466,144 @@
                                         @update:model-value="objpropEvent.textFontsize_onchange"
                                     ></q-input>
                                 </div>
+                                <!--
                                 <div class="offset-sm-1 col-6">
                                     <q-select v-model="objpropData.elements.textui.fontstyleselected" 
                                         :options="objpropData.elements.textui.fontstyleOptions" 
                                         :label="$t('font style')" dense
                                         @update:model-value="objpropEvent.textStyle_onchange"
                                     ></q-select>
+                                </div>-->
+                            </div>
+                            <div class="row">
+                                <div class="col-7">
+                                    <q-checkbox 
+                                        v-model="objpropData.elements.textui.fontstylesRich.b"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        <q-icon name="format_bold"></q-icon>
+                                    </q-checkbox>
+                                    <q-checkbox 
+                                        v-model="objpropData.elements.textui.fontstylesRich.i"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        <q-icon name="format_italic"></q-icon>
+                                    </q-checkbox>
+                                    <q-checkbox 
+                                        v-model="objpropData.elements.textui.fontstylesRich.u"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        <q-icon name="format_underlined"></q-icon>
+                                    </q-checkbox>
+                                    <q-checkbox 
+                                        v-model="objpropData.elements.textui.fontstylesRich.s"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        <q-icon name="format_strikethrough"></q-icon>
+                                    </q-checkbox>
+                                </div>
+                                <div class="col-5">
+                                    <q-radio v-model="objpropData.elements.textui.fontstylesRich.UL" val="-"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        --
+                                    </q-radio>
+                                    <q-radio v-model="objpropData.elements.textui.fontstylesRich.UL" val="U"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        AZ
+                                    </q-radio>
+                                    <q-radio v-model="objpropData.elements.textui.fontstylesRich.UL" val="L"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        az
+                                    </q-radio>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
+                                    <q-select v-model="objpropData.elements.textui.text_overflow" 
+                                        :options="objpropData.elements.textui.text_overflow_options" 
+                                        :label="$t('text_overflow')" dense
+                                        @update:model-value="objpropEvent.textOverflow_onchange"
+                                    ></q-select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <q-radio v-model="objpropData.elements.textui.colortype" 
+                                        val="s" :label="$t('Solid color')"
+                                        @update:model-value="objpropEvent.textcolortype_onchange"
+                                    ></q-radio>
+                                </div>
+                                <div class="col-6">
+                                    <q-radio v-model="objpropData.elements.textui.colortype" 
+                                        val="g" :label="$t('gradient_colortype')"
+                                        @update:model-value="objpropEvent.textcolortype_onchange"
+                                    ></q-radio>
+                                </div>
+                                <div class="col-12" v-if="objpropData.elements.textui.colortype == 's'">
                                     <ucolor-picker v-model="objpropData.elements.textui.colorselected"
                                         :label="$t('color')"
                                         @change="objpropEvent.textColor_onchange"
+                                    ></ucolor-picker>
+                                </div>
+                                <template v-else-if="objpropData.elements.textui.colortype == 'g'">
+                                    <div class="col-12">
+                                        <b>{{ $t('color_gradient') }}</b>
+                                    </div>
+                                    <div class="col-6">
+                                        <ucolor-picker v-model="objpropData.elements.textui.colorGradient.tl"
+                                            label="Top Left"
+                                            @change="objpropEvent.textcolorGradient_onchange($event,'tl')"
+                                        ></ucolor-picker>
+                                    </div>
+                                    <div class="col-6">
+                                        <ucolor-picker v-model="objpropData.elements.textui.colorGradient.tr"
+                                            label="Top Right"
+                                            @change="objpropEvent.textcolorGradient_onchange($event,'tr')"
+                                        ></ucolor-picker>
+                                    </div>
+                                    <div class="col-6">
+                                        <ucolor-picker v-model="objpropData.elements.textui.colorGradient.bl"
+                                            label="Bottom Left"
+                                            @change="objpropEvent.textcolorGradient_onchange($event,'bl')"
+                                        ></ucolor-picker>
+                                    </div>
+                                    <div class="col-6">
+                                        <ucolor-picker v-model="objpropData.elements.textui.colorGradient.br"
+                                            label="Bottom Right"
+                                            @change="objpropEvent.textcolorGradient_onchange($event,'br')"
+                                        ></ucolor-picker>
+                                    </div>
+                                </template>
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-4 q-pt-xs">
+                                    {{ $t('textarea_size') }}
+                                </div>
+                                <div class="col-4 q-pr-sm">
+                                    <q-input v-model.number="objpropData.elements.textui.area_size.x" @update:model-value="objpropEvent.textAreasize_onchange" type="number" label="X" dense :min="1" :max="999" :step="1"></q-input>
+                                </div>
+                                <div class="col-4">
+                                    <q-input v-model.number="objpropData.elements.textui.area_size.y" @update:model-value="objpropEvent.textAreasize_onchange" type="number" label="Y" dense :min="1" :max="999" :step="1"></q-input>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">{{ $t("outline") }}</div>
+                                <div class="col-12">
+                                    <q-slider
+                                        v-model.number="objpropData.elements.textui.outlineWidth"
+                                        :min="0" :max="1" :step="0.05"
+                                        color="primary" dense label
+                                        @update:model-value="objpropEvent.textOutlineWidth_onchange"
+                                    ></q-slider>
+                                </div>
+                                <div class="col-12">
+                                    <ucolor-picker v-model="objpropData.elements.textui.outlineColor"
+                                        :label="$t('color')"
+                                        @change="objpropEvent.textOutlineColor_onchange"
                                     ></ucolor-picker>
                                 </div>
                             </div>

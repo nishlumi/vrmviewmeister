@@ -21,6 +21,8 @@ export class VVConfigTemplate {
             is_externalwin_keyframe : false,
             vpad_rotaterate : 0.1,
             vpad_translaterate : 1,
+            vrar_moverate : 0.1,
+            vrar_rotaterate : 1,
         };
         this.model = {
             use_animation_generic_when_otherobject :false,
@@ -71,6 +73,14 @@ export class VVConfigTemplate {
                     vrm : "",
                     other : "",
                     image : "",
+                },
+                userByName : {
+                    pose : false,
+                    motion : false,
+                    project : false,
+                    vrm : false,
+                    other : false,
+                    image : false,
                 }
             }
         }
@@ -187,21 +197,26 @@ export class VVAppConfig{
     }
     copy() {
         var cp = new VVAppConfig();
-        for (var obj in this.confs.application) {
-            cp.confs.application[obj] = this.confs.application[obj]
+        /*for (var obj in this.confs.application) {
+            cp.confs.application[obj] = this.confs.application[obj];
         }
         for (var obj in this.confs.model) {
-            cp.confs.model[obj] = this.confs.model[obj]
+            cp.confs.model[obj] = this.confs.model[obj];
         }
         for (var obj in this.confs.animation) {
-            cp.confs.animation[obj] = this.confs.animation[obj]
-        }
+            cp.confs.animation[obj] = this.confs.animation[obj];
+        }        
         for (var obj in this.confs.fileloader) {
-            cp.confs.fileloader[obj] = this.confs.fileloader[obj]
+            cp.confs.fileloader[obj] = this.confs.fileloader[obj];
         }
         for (var obj in this.confs.aiapis) {
-            cp.confs.aiapis[obj] = this.confs.aiapis[obj]
-        }
+            cp.confs.aiapis[obj] = this.confs.aiapis[obj];
+        }*/
+        cp.confs.application = Vue.toRaw(this.confs.application);
+        cp.confs.model = Vue.toRaw(this.confs.model);
+        cp.confs.animation = Vue.toRaw(this.confs.animation);
+        cp.confs.fileloader = Vue.toRaw(this.confs.fileloader);
+        cp.confs.aiapis = Vue.toRaw(this.confs.aiapis);
         return cp;
     }
     save() {
@@ -346,6 +361,16 @@ export class VVAppConfig{
         ));
         AppQueue.add(new queueData(
             {target:AppQueue.unity.Camera,method:'ShowTargetObject',param:this.confs.application.show_camera_target_object ? "1" : "0"},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetMoveRate',param:parseFloat(this.confs.application.vrar_moverate)},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetRotateRate',param:parseFloat(this.confs.application.vrar_rotaterate)},
             "",QD_INOUT.toUNITY,
             null
         ));

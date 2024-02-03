@@ -13,6 +13,7 @@ export const defineAppObjlistData = (mainData) => {
         {value:AF_TARGETTYPE.UImage, label:"Image UI"},
         {value:AF_TARGETTYPE.Effect, label:"Effect"},
         {value:AF_TARGETTYPE.Stage, label:"Stage"},
+        {value:AF_TARGETTYPE.Text3D, label:"Text 3D"},
     ];
     const objlistData = Vue.ref({
         elements : {
@@ -22,7 +23,8 @@ export const defineAppObjlistData = (mainData) => {
                 side : "left",
                 width : 225,
                 miniwidth : 60,
-                breakpoint : 300
+                breakpoint : 300,
+                behavior : "normal",
             },
             objecttypes : {
                 selected : tmpobjecttypes[0],

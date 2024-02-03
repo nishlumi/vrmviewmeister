@@ -107,6 +107,23 @@ const template = `
                                         <q-input v-model="appconf.confs.application.vpad_translaterate" type="number" :min="0.1" :max="2" :step="0.01" dense></q-input>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <b>VR/AR</b>
+                                    </div>
+                                    <div class="col-3 offset-1 q-pt-sm">
+                                        <span class="">{{ $t('msg_vpad_rotaterate')}}</span>
+                                    </div>
+                                    <div class="col-2">
+                                        <q-input v-model="appconf.confs.application.vrar_rotaterate" type="number" :min="0.01" :max="9999" :step="0.01" dense></q-input>
+                                    </div>
+                                    <div class="col-3 offset-1 q-pt-sm">
+                                        <span class="">{{ $t('msg_vpad_translaterate')}}</span>
+                                    </div>
+                                    <div class="col-2">
+                                        <q-input v-model="appconf.confs.application.vrar_moverate" type="number" :min="0.01" :max="9999" :step="0.01" dense></q-input>
+                                    </div>
+                                </div>
                             </q-item-section>
                         </q-item>
                     </q-list>
@@ -337,38 +354,61 @@ const template = `
                                     <div class="col-2">
                                         Project
                                     </div>
-                                    <div class="col-10">
+                                    <div class="col-7">
                                         <q-input v-model="appconf.confs.fileloader.gdrive.user.project" type="text" dense></q-input>
                                     </div>
+                                    <div class="col-3">
+                                        <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.project" :label="$t('gdrive_by_name')"></q-toggle>
+                                    </div>
+
                                     <div class="col-2">
                                         Motion
                                     </div>
-                                    <div class="col-10">
+                                    <div class="col-7">
                                         <q-input v-model="appconf.confs.fileloader.gdrive.user.motion" type="text" dense></q-input>
                                     </div>
+                                    <div class="col-3">
+                                        <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.motion" :label="$t('gdrive_by_name')"></q-toggle>
+                                    </div>
+
                                     <div class="col-2">
                                         Pose
                                     </div>
-                                    <div class="col-10">
+                                    <div class="col-7">
                                         <q-input v-model="appconf.confs.fileloader.gdrive.user.pose" type="text" dense></q-input>
                                     </div>
+                                    <div class="col-3">
+                                        <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.pose" :label="$t('gdrive_by_name')"></q-toggle>
+                                    </div>
+
                                     <div class="col-2">
                                         VRM
                                     </div>
-                                    <div class="col-10">
+                                    <div class="col-7">
                                         <q-input v-model="appconf.confs.fileloader.gdrive.user.vrm" type="text" dense></q-input>
                                     </div>
+                                    <div class="col-3">
+                                        <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.vrm" :label="$t('gdrive_by_name')"></q-toggle>
+                                    </div>
+
                                     <div class="col-2">
                                         OtherObject
                                     </div>
-                                    <div class="col-10">
+                                    <div class="col-7">
                                         <q-input v-model="appconf.confs.fileloader.gdrive.user.other" type="text" dense></q-input>
                                     </div>
+                                    <div class="col-3">
+                                        <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.other" :label="$t('gdrive_by_name')"></q-toggle>
+                                    </div>
+
                                     <div class="col-2">
                                         Image
                                     </div>
-                                    <div class="col-10">
+                                    <div class="col-7">
                                         <q-input v-model="appconf.confs.fileloader.gdrive.user.image" type="text" dense></q-input>
+                                    </div>
+                                    <div class="col-3">
+                                        <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.image" :label="$t('gdrive_by_name')"></q-toggle>
                                     </div>
                                 </div>
                             </q-item-section>
@@ -628,7 +668,7 @@ export function defineConfigDlg(app, Quasar) {
 
             const show = Vue.ref(false);
             const tabIndex = Vue.ref("application");
-            const appconf = Vue.ref(null);
+            const appconf = Vue.ref(new VVAppConfig());
             const elements = Vue.ref({
                 application : {
                     preview_memory : new Number(DEFAULTMEM)
@@ -641,6 +681,12 @@ export function defineConfigDlg(app, Quasar) {
                     vrarctrl_right : {
                         options : cns_vrarctrllist,
                         selected : cns_vrarctrllist[1],
+                    }
+                },
+                fileloader : {
+                    isName : {
+                        project : false, motion: false, pose : false,
+                        vrm : false, other: false, image: false
                     }
                 },
                 aiapis : {
@@ -661,12 +707,14 @@ export function defineConfigDlg(app, Quasar) {
                     }
                 }
             });
+            var backupdata = {};
 
             //---watch-----------------------------------
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
                 show.value = newval;
                 if (newval === true) {
-                    appconf.value = appconfig.value.copy();
+                    appconf.value.confs = JSON.original(appconfig.value.confs); //Vue.toRaw(appconfig.value); //.copy();
+                    backupdata = JSON.original(appconfig.value);
 
                     elements.value.application.preview_memory = 
                         (DEFAULTMEM * appconf.value.confs.application.UseMemory) / 1024 / 1024;
@@ -694,6 +742,8 @@ export function defineConfigDlg(app, Quasar) {
             }
             const cancel_onclick = () => {
                 show.value = false;
+                console.log(appconf.value);
+                console.log(backupdata);
                 context.emit("update:model-value",show.value);
             }
             const vrarctrl_panel_left_onchange = (val) => {
@@ -703,6 +753,9 @@ export function defineConfigDlg(app, Quasar) {
             const vrarctrl_panel_right_onchange = (val) => {
                 console.log(val);
                 appconf.value.confs.model.vrarctrl_panel_right = val.value;
+            }
+            const fileloader_isName_OnChange = (val) => {
+
             }
 
             return {

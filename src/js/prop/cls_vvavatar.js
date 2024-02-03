@@ -194,6 +194,8 @@ export class VVAvatar {
             this.thumbnail = locpath + "img/pic_audio.png";
         }else if (this.type == AF_TARGETTYPE.Stage) {
             this.thumbnail = locpath + "img/pic_stage.png";
+        }else if (this.type == AF_TARGETTYPE.Text3D) {
+            this.thumbnail = locpath + "img/pic_text.png";
         }
         this.animations.name = js.animationName || "";
         this.animations.length = js.animationLength ? parseFloat(js.animationLength) : 0;

@@ -373,11 +373,14 @@ export class VFileOperator {
                         .then(js => {
                             resolve(js);
                         });*/
+                        //---If the Electron app can receive from Google Drive. return normally.
                         ret.text()
                         .then(txt => {
                             console.log(txt);
+                            resolve({cd:0, data:JSON.parse(txt)});
                         });
                     }else{
+                        //---If webapp can not receive from Google Drive. return dummy code.
                         resolve({cd:-1});
                     }
                 })
