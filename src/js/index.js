@@ -114,6 +114,8 @@ const app = Vue.createApp({
         UnityCallback.timelineEvent = timelineEvent;
         UnityCallback.refs["lnk_savemotion"] = lnk_savemotion;
 
+        Vue.provide("UNITYCONFIG",unityConfig.value);
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         //---Life cycle
         const calcUnitySize = (w, h) => {
@@ -126,7 +128,10 @@ const app = Vue.createApp({
             //modelOperator.setScreenSize(w - left - right, h - tab - tl, false);
         }
         Vue.onBeforeMount(() => {
-            mainData.appconf.load();
+            mainData.appconf.load()
+            .then(res => {
+                mainData.appconf.applyUnity(false);
+            });
 
             ribbonData.elements.language_box.selected = loc;
 

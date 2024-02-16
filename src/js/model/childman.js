@@ -662,6 +662,9 @@ export class ChildManager {
             case "resetduration_onclick":
                 this.keyframe_resetduration_onclick(dt.param);
                 break;
+            case "memo_onchange":
+                this.keyframe_memo_onchange(dt.params);
+                break;
             case "easing_onchange":
                 this.keyframe_easing_onchange(dt.params);
                 break;
@@ -710,6 +713,21 @@ export class ChildManager {
             null
         ));
         
+        AppQueue.start();
+        this.mainData.states.currentEditOperationCount++;
+    }
+    keyframe_memo_onchange (params) {
+        for (var i = 0; i < params.length; i++) {
+            var param = JSON.stringify(params[i]);
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'SetMemo',param:param},
+                "setmemo",QD_INOUT.returnJS,
+                (val)=>{
+                    var js = JSON.parse(val);
+                    //console.log(js);
+                }
+            ));
+        }
         AppQueue.start();
         this.mainData.states.currentEditOperationCount++;
     }

@@ -15,6 +15,9 @@ export class VOSFile {
          * @type {String} file path
          */
         this.path = obj.path || "";
+        if (obj instanceof File) {
+            this.path = obj.name;
+        }
         /**
          * @type {String} any cloud service file id etc...
          */

@@ -23,6 +23,8 @@ export class AnimationRegisterOptions
         this.ease = 1;
         //this.registerBone = IKBoneType.None;
         //this.registerMove = AF_MOVETYPE.Rest;
+        this.memo = "";
+        
         /**
          * @type {Array<Number>}
          */

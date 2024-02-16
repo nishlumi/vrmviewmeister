@@ -56,16 +56,19 @@ const app = Vue.createApp({
                     "text-dark" : true,
                 },
                 target : null,
-                frameIndex : 0,
+                frameIndex : 1,
 
                 targetFrameIndexBegin : 1,
                 targetFrameIndexEnd : 1,
                 targetDuringFrames : [],
-                destinationFrameIndex : 0,
+                destinationFrameIndex : 1,
                 duration : 0.01,
                 easing : {
                     options : [],
                     selected : UserAnimationEase.Unset
+                },
+                memo : {
+                    text: ""
                 },
                 copySrcVrm: {
                     selected : { label: "---", value:null},
@@ -379,6 +382,49 @@ const app = Vue.createApp({
             js.funcName = "resetduration_onclick";
             js.data = JSON.stringify({
                 param
+            });
+            opener.postMessage(js);
+        }
+        const memo_onchange = (val) => {
+            var newval = val;
+
+            const timeline = data.value.states.timeline;
+            if (timeline == null) return;
+
+            var params = [];
+            var cnt = TargetFrameLength();
+            for (var i = 0; i < cnt; i++) {
+                var frameIndex = getSingleTargetFrameIndex(i);
+
+                var aro = {}; //new AnimationRegisterOptions();
+                aro["targetId"] = data.value.states.timeline.target.avatarId;
+                aro["targetRole"] = data.value.states.timeline.target.roleName;
+                aro["targetType"] = data.value.states.timeline.target.type;
+                aro["index"] = frameIndex;
+                aro["memo"] = newval;
+    
+                var param = (aro);
+
+                params.push(param);
+                /*
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'SetEase',param:JSON.stringify(aro)},
+                    "setease",QD_INOUT.returnJS,
+                    (val)=>{
+                        var js = JSON.parse(val);
+                        //console.log(js);
+                    }
+                ));
+                */
+            }
+            //AppQueue.start();
+
+            var js = new ChildReturner();
+            js.origin = location.origin;
+            js.windowName = "keyframe";
+            js.funcName = "memo_onchange";
+            js.data = JSON.stringify({
+                params
             });
             opener.postMessage(js);
         }
@@ -859,7 +905,7 @@ const app = Vue.createApp({
             getFrameByKey,
             //---events
             close_onclick,resetduration_onclick,
-            easing_onchange,duration_onchange,
+            memo_onchange,easing_onchange,duration_onchange,
             transform_onchange,
             frameno_onchange,targetframebeginno_onchange,targetframeendno_onchange,editframeno_onclick,
             copysumduration_onclick,

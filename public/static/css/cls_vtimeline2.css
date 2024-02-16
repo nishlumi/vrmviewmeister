@@ -68,6 +68,14 @@
 .oneline-dlgbox {
     grid-column : 25 / 26;
 }
+.seekbar-buttonbox {
+    grid-column : 1 / 10;
+    overflow : hidden;
+}
+.seekbar-seekbox {
+    grid-column : 10 / 25;
+    overflow : hidden;
+}
 .oneline-seekbox-opt {
     grid-column : 21 / 25; 
     padding-top : 1rem;

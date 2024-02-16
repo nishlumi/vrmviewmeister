@@ -73,12 +73,22 @@ const template = `
         <q-tabs v-model="kfapp.elements.tab.selection"
             class="bg-white text-primary" no-caps
         >
-            <q-tab name="easing" :label="$t('easing')"></q-tab>
+            <q-tab name="easing" :label="$t('general')"></q-tab>
             <q-tab name="duration" :label="$t('duration')"></q-tab>
             <q-tab name="transform" :label="$t('position')+','+$t('rotation')"></q-tab>
         </q-tabs>
         <q-tab-panels v-model="kfapp.elements.tab.selection">
             <q-tab-panel name="easing">
+                <div class="row q-mt-md">
+                    <div class="col-12">
+                        <q-input type="text" 
+                            v-model="kfapp.elements.memo.text"
+                            :label="_T('memo')" filled
+                            @update:model-value="memo_onchange"
+                            :disable="kfapp.states.disable"
+                        ></q-input>
+                    </div>
+                </div>
                 <div class="row q-mt-md">
                     <div class="col-12">
                         <q-select v-model="kfapp.elements.easing.selected"
@@ -234,16 +244,19 @@ export function defineKeyframeDlg(app, Quasar) {
                         "text-dark" : true,
                     },
                     target : null,
-                    frameIndex : 0,
+                    frameIndex : 1,
 
                     targetFrameIndexBegin : 1,
                     targetFrameIndexEnd : 1,
                     targetDuringFrames : [],
-                    destinationFrameIndex : 0,
+                    destinationFrameIndex : 1,
                     duration : 0.01,
                     easing : {
                         options : [],
                         selected : UserAnimationEase.Unset
+                    },
+                    memo : {
+                        text: ""
                     },
                     copySrcVrm: {
                         selected : { label: "---", value:null},
@@ -549,6 +562,35 @@ export function defineKeyframeDlg(app, Quasar) {
                 
                 AppQueue.start();
             }
+            const memo_onchange = (val) => {
+                var newval = val;
+    
+                if (timeline.value == null) return;
+
+                var cnt = TargetFrameLength();
+                for (var i = 0; i < cnt; i++) {
+                    var frameIndex = getSingleTargetFrameIndex(i);
+
+                    var aro = new AnimationRegisterOptions();
+                    aro.targetId = timeline.value.target.avatarId;
+                    aro.targetRole = timeline.value.target.roleName;
+                    aro.targetType = timeline.value.target.type;
+                    aro.index = frameIndex;
+                    aro.memo = newval;
+        
+                    var param = JSON.stringify(aro);
+                    
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'SetMemo',param:JSON.stringify(aro)},
+                        "setmemo",QD_INOUT.returnJS,
+                        (val)=>{
+                            var js = JSON.parse(val);
+                            console.log(js);
+                        }
+                    ));
+                }
+                AppQueue.start();
+            }
             const easing_onchange = (val) => {
                 var newval = val.value;
     
@@ -838,7 +880,7 @@ export function defineKeyframeDlg(app, Quasar) {
                 checkAvailableTimeline,showAvatarName,showAvatarImage,cmp_vrmlist,
                 //---method---
                 close_onclick,resetduration_onclick,
-                easing_onchange,duration_onchange,
+                memo_onchange,easing_onchange,duration_onchange,
                 transform_onchange,
                 frameno_onchange,targetframebeginno_onchange,targetframeendno_onchange,editframeno_onclick,
                 copysumduration_onclick

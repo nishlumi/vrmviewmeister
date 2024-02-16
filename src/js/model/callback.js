@@ -553,6 +553,27 @@ export class UnityCallbackFunctioner {
             //---MoveMode
             callback.objpropData.elements.vrmui.movemode = arr[7] == "1" ? true : false;
 
+            //============================
+            //---VRMAnimation
+            //---is playing animation flag
+            callback.isplayanima_oth(arr[8],options);
+            //---animation state flag
+            callback.getplayflag_oth(arr[9],options);
+            //---seek position animation [4]
+            callback.getseek4oth(arr[10],options);
+            //---animation speed 
+            callback.get_animationspeed(arr[11],callback.objpropData);
+            //---max length [6]
+            callback.get_animationmaxlength(arr[12],callback.objpropData);
+            //---wrap mode
+            callback.get_animationwrapmode(arr[13],callback.objpropData);
+            //---animation clip list
+            callback.get_anmimationcliplist(arr[14],callback.objpropData);
+            //---current animation clip
+            callback.get_current_animationcilp(arr[15],options);
+            //---enable flag of VRMAnimation
+            callback.objpropData.elements.vrmui.vrmanim.isenable = arr[16] == "1" ? true : false;
+            
         }else{
             AppQueue.add(new queueData(
                 {target:avatar.id,method:'GetIndicatedPropertyFromOuter'},
@@ -664,6 +685,24 @@ export class UnityCallbackFunctioner {
             }
         }
     }
+    async after_setvrma(val, options) {
+        /**
+         * @type {UnityCallbackFunctioner}
+         */
+        const callback = options.callback;
+
+        var arr = val.split("\t");
+
+        //---vrma enabled?
+        callback.objpropData.elements.vrmui.vrmanim.isenable = arr[0] == "1" ? true : false;
+
+        //---animation clip list
+        callback.get_anmimationcliplist(arr[1],callback.objpropData);
+        //---current animation clip
+        callback.get_current_animationcilp(arr[2],options);
+        //---max length [6]
+        callback.get_animationmaxlength(arr[3],callback.objpropData);        
+    }
     //===OtherObject properties==========================================
     async isplayanima_oth(val, options) {
         /**
@@ -703,6 +742,9 @@ export class UnityCallbackFunctioner {
     async get_anmimationcliplist (val, objpropData) {
         var lst = val.split("=");
         objpropData.elements.objectui.animation.cliplist = lst;
+        
+        objpropData.elements.objectui.animation.isenable = (lst.length > 0);
+        
     }
     async get_animationspeed(val, objpropData) {
         objpropData.elements.objectui.animation.speed = parseFloat(val);
@@ -991,14 +1033,14 @@ export class UnityCallbackFunctioner {
             }
             //---is playing animation flag
             callback.isplayanima_oth(arr[2],options);
-
+            //---animation state flag
             callback.getplayflag_oth(arr[3],options);
-            //---max length [6]
-            callback.get_animationmaxlength(arr[6],callback.objpropData);
             //---seek position animation [4]
             callback.getseek4oth(arr[4],options);
             //---animation speed 
             callback.get_animationspeed(arr[5],callback.objpropData);
+            //---max length [6]
+            callback.get_animationmaxlength(arr[6],callback.objpropData);
             //---wrap mode
             callback.get_animationwrapmode(arr[7],callback.objpropData);
             //---animation clip list

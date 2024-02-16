@@ -926,15 +926,18 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 return;
             }
             var tmpcast = mainData.states.selectedCast;
-            var param = tmpcast.roleName + "," + tmpcast.type + ",m";
-            //AppQueue.unity.ManageAnimation
-            AppQueue.add(new queueData(
-                {target:tmpcast.avatar.id,method:'ExportVRMA'},
-                "savebvhmotion",QD_INOUT.returnJS,
-                callback.savevrmamotion,
-                {callback: callback, selRoleTitle: tmpcast.roleTitle}
-            ));
-            AppQueue.start();
+            appPrompt(t("msg_input_motionname"),(motionname) => {                
+                var param = tmpcast.roleName + "," + tmpcast.type + ",m";
+                //AppQueue.unity.ManageAnimation
+                AppQueue.add(new queueData(
+                    {target:tmpcast.avatar.id,method:'ExportVRMA',param:motionname},
+                    "savebvhmotion",QD_INOUT.returnJS,
+                    callback.savevrmamotion,
+                    {callback: callback, selRoleTitle: tmpcast.roleTitle}
+                ));
+                AppQueue.start();
+            });
+            
         }else if (ename == "connect_vroidhub") {
             mainData.vroidhubapi.generateAuthLink();
         }else if (ename == "list_vroidhub") {

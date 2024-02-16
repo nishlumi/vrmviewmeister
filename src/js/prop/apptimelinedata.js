@@ -31,6 +31,7 @@ export class appDataTimeline {
                 duration : 0,
                 easing : GetEnumName(UserAnimationEase, UserAnimationEase.Linear),
                 ikmarkers : [],
+                memo : "",
             }
         };
         this.data = {

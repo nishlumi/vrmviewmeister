@@ -240,6 +240,24 @@ const template = `
                                     </div>
                                     -->
                                 </div>
+                                <div class="row q-pt-sm">
+                                    <div class="col-6">
+                                        <span>{{ $t('msg_vrar_camera_initpos')}}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <q-checkbox v-model="appconf.confs.model.vrar_save_camerapos" :label="$t('msg_vrar_save_camerapos')"></q-checkbox>
+                                    </div>
+                                    <div class="col-3"></div>
+                                    <div class="col-3 q-pl-xs">
+                                        <q-input label="X:" v-model="appconf.confs.model.vrar_camera_initpos_x" type="number" min="-99" max="99" step="0.01" dense :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
+                                    </div>
+                                    <div class="col-3 q-pl-xs">
+                                        <q-input label="Y:" v-model="appconf.confs.model.vrar_camera_initpos_y" type="number" min="-99" max="99" step="0.01" dense :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
+                                    </div>
+                                    <div class="col-3 q-pl-xs">
+                                        <q-input label="Z:" v-model="appconf.confs.model.vrar_camera_initpos_z" type="number" min="-99" max="99" step="0.01" dense :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
+                                    </div>
+                                </div>
                             </q-item-section>
                         </q-item>
                     </q-list>

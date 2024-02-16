@@ -1,4 +1,5 @@
 import { VFileHelper } from "../../public/static/js/filehelper";
+import { UnityVector3 } from "./prop/cls_unityrel";
 
 export class VVConfigTemplate {
     constructor() {
@@ -40,6 +41,10 @@ export class VVConfigTemplate {
             interlock_body_legs : true,
             vrarctrl_panel_left : 1,
             vrarctrl_panel_right : 0,
+            vrar_save_camerapos : false,
+            vrar_camera_initpos_x : 0,
+            vrar_camera_initpos_y : 0,
+            vrar_camera_initpos_z : 0,
         };
         this.animation = {
             initial_framecount : 60,
@@ -227,41 +232,45 @@ export class VVAppConfig{
         localStorage.setItem(this._info.setcloudname,JSON.stringify(this.clouds));
     }
     load() {
-        var textdata = localStorage.getItem(this._info.setname);
-        if (textdata) {
-            var tmp = JSON.parse(textdata);
-
-            //---config (probably add after)
-            for (var obj in this.confs) { //---category
-                var category = this.confs[obj];
-                var rawcat = Vue.toRaw(this.confs[obj]);
-                if (obj in tmp) { //---has saved category ?
-                    var fileCategory = tmp[obj];
-                    var merged = this.mergeObjects(rawcat, fileCategory);
-                    this.confs[obj] = merged;
-
-                    /*
-                    for (var setone in fileCategory) {
-                        var so = fileCategory[setone];  //each config in the category
-                        if (setone in category) {
-                            category[setone] = so;
+        var def = new Promise((resolve) => {
+            var textdata = localStorage.getItem(this._info.setname);
+            if (textdata) {
+                var tmp = JSON.parse(textdata);
+    
+                //---config (probably add after)
+                for (var obj in this.confs) { //---category
+                    var category = this.confs[obj];
+                    var rawcat = Vue.toRaw(this.confs[obj]);
+                    if (obj in tmp) { //---has saved category ?
+                        var fileCategory = tmp[obj];
+                        var merged = this.mergeObjects(rawcat, fileCategory);
+                        this.confs[obj] = merged;
+    
+                        /*
+                        for (var setone in fileCategory) {
+                            var so = fileCategory[setone];  //each config in the category
+                            if (setone in category) {
+                                category[setone] = so;
+                            }
                         }
+                        */
                     }
-                    */
+                }
+                //this.data = tmp;
+            }
+    
+            textdata = localStorage.getItem(this._info.setcloudname);
+            if (textdata) {
+                tmp = JSON.parse(textdata);
+                for (var obj in this.clouds) {
+                    if (obj in tmp) {
+                        this.clouds[obj] = tmp[obj];
+                    }
                 }
             }
-            //this.data = tmp;
-        }
-
-        textdata = localStorage.getItem(this._info.setcloudname);
-        if (textdata) {
-            tmp = JSON.parse(textdata);
-            for (var obj in this.clouds) {
-                if (obj in tmp) {
-                    this.clouds[obj] = tmp[obj];
-                }
-            }
-        }
+            resolve(this);
+        });
+        return def;        
     }
     mergeObjects(a, b) {
         if (a === null || a === undefined) {
@@ -467,6 +476,21 @@ export class VVAppConfig{
         AppQueue.add(new queueData(
             {target:AppQueue.unity.ManageAnimation,method:'SetValFromOuter',param:
                 `int,${"vrarctrl_panel_right"},${this.confs.model.vrarctrl_panel_right}`
+            },
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetValFromOuter',param:
+                `int,${"vrar_save_camerapos"},${this.confs.model.vrar_save_camerapos === true ? 1 : 0}`
+            },
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        var vrarcamerapos = `${this.confs.model.vrar_camera_initpos_x}:${this.confs.model.vrar_camera_initpos_y}:${this.confs.model.vrar_camera_initpos_z}`;
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetValFromOuter',param:
+                `str,${"vrar_camera_initpos"},${vrarcamerapos}`
             },
             "",QD_INOUT.toUNITY,
             null

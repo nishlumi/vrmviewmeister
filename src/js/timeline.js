@@ -452,6 +452,13 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         aro.index = parseInt(frameitem.text);
 
         AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'GetMemoFromOuter',param:JSON.stringify(aro)},
+            "getease",QD_INOUT.returnJS,
+            (val) => {
+                timelineData.states.popup.memo = val;
+            }
+        ));
+        AppQueue.add(new queueData(
             {target:AppQueue.unity.ManageAnimation,method:'GetEaseFromOuter',param:JSON.stringify(aro)},
             "getease",QD_INOUT.returnJS,
             (val) => {

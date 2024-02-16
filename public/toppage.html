@@ -2408,7 +2408,7 @@
             
             <!-- Other Object ==================================================================== -->
             
-            <template v-if="objpropEvent.checkOObject">
+            <template v-if="objpropEvent.checkOObject || objpropEvent.checkVRM">
                 <q-expansion-item
                     expand-separator switch-toggle-side dense
                 >
@@ -2433,24 +2433,54 @@
                             <fieldset>
                                 <legend>{{ $t('preview') }}</legend>
                                 <div class="row">
+                                    <template v-if="objpropEvent.checkVRM">
+                                        <div class="col-8">
+                                            <q-file fill bottom-slots dense
+                                                v-model="objpropData.elements.vrmui.vrmanim.file"
+                                                accept=".vrma"
+                                                @update:model-value="objpropEvent.objectVRMAnimation_onselected"
+                                            >
+                                                <template v-slot:prepend>
+                                                    <q-icon name="animation" @click.stop.prevent></q-icon>
+                                                </template>
+                                                <template v-slot:append>
+                                                    <q-icon name="close" @click.stop.prevent="objpropEvent.objectVRMAnimationClear" class="cursor-pointer"></q-icon>
+                                                </template>
+                                            </q-file>
+                                        </div>
+                                        <div class="col-4">
+                                            <q-toggle v-model="objpropData.elements.vrmui.vrmanim.isenable" 
+                                                color="primary"
+                                                @update:model-value="objpropEvent.objectVRMAnimationToggleEnable"
+                                                :disable="!objpropData.elements.objectui.animation.isenable"
+                                            ></q-toggle>
+                                        </div>
+                                    </template>
+
                                     <div class="col-12">
                                         <q-select v-model="objpropData.elements.objectui.animation.clipselected"
                                             :options="objpropData.elements.objectui.animation.cliplist"
                                             dense @update:model-value="objpropEvent.objectAnimationClip_onselected"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
                                         ></q-select>
                                     </div>
+                                    
                                     <div class="col-3">
                                         <q-btn color="primary" flat round :icon="objpropData.elements.objectui.animation.play_icon" 
                                             @click="objpropEvent.objectAnimation_onplay"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
                                         ></q-btn>
                                     </div>
                                     <div class="col-3">
-                                        <q-btn color="primary" flat round icon="stop" @click="objpropEvent.objectAnimation_onstop"></q-btn>
+                                        <q-btn color="primary" flat round icon="stop" 
+                                            @click="objpropEvent.objectAnimation_onstop"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
+                                        ></q-btn>
                                     </div>
                                     <div class="col-4 offset-md-1">
                                         <q-select v-model="objpropData.elements.objectui.animation.wrapmodeSelected"
                                             :options="objpropData.elements.objectui.animation.wrapmodeOptions"
-                                            dense filled 
+                                            dense filled :disable="!objpropData.elements.objectui.animation.isenable"
                                             @update:model-value="objpropEvent.objectAnimationLoop_onchange"
                                         ></q-select>
                                     </div>
@@ -2461,6 +2491,7 @@
                                             :min="0" :max="objpropData.elements.objectui.animation.maxPosition" :step="0.001"
                                             color="primary" dense label
                                             @update:model-value="objpropEvent.objectAnimationSeek_onseek"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
                                         ></q-slider>
                                     </div>
                                     <div class="col-12 q-mt-sm q-pr-sm">
@@ -2470,6 +2501,7 @@
                                             :min="0.1" :max="4" :step="0.1"
                                             color="primary" dense label
                                             @update:model-value="objpropEvent.objectAnimationSpeed_onseek"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
                                         ></q-slider>
                                     </div>
                                 </div>
@@ -2480,6 +2512,7 @@
                                         :options="objpropData.elements.objectui.animation.flagOptions" 
                                         :label="$t('object_animation_formotion')"
                                         @update:model-value="objpropEvent.objectAnimationRegister_onchange"
+                                        :disable="!objpropData.elements.objectui.animation.isenable"
                                     ></q-select>
                                 </div>
                             </div>
@@ -2526,7 +2559,7 @@
                                 <div class="col-11 offset-md-1">
                                     <q-slider
                                         v-model.number="objpropData.elements.lightui.power"
-                                        :min="1" :max="30" :step="0.1"
+                                        :min="0.1" :max="20" :step="0.01"
                                         color="primary" dense label
                                         @update:model-value="objpropEvent.lightPower_onchange"
                                     ></q-slider>
@@ -2539,7 +2572,7 @@
                                 <div class="col-11 offset-md-1">
                                     <q-slider
                                         v-model.number="objpropData.elements.lightui.range"
-                                        :min="1" :max="100" :step="0.1"
+                                        :min="0.1" :max="15" :step="0.01"
                                         color="primary" dense label
                                         @update:model-value="objpropEvent.lightRange_onchange"
                                     ></q-slider>
@@ -4263,7 +4296,7 @@
                                 <div class="col-11 offset-1">
                                     <q-slider
                                         v-model.number="objpropData.elements.stageui.dlight_power"
-                                        :min="1" :max="5" :step="0.1"
+                                        :min="0.1" :max="5" :step="0.01"
                                         color="primary" dense label
                                         @update:model-value="objpropEvent.dlightPower_onchange"
                                     ></q-slider>
@@ -4276,7 +4309,7 @@
                                 <div class="col-11 offset-1">
                                     <q-slider
                                         v-model.number="objpropData.elements.stageui.dlight_strength"
-                                        :min="0" :max="1" :step="0.1"
+                                        :min="0" :max="1" :step="0.01"
                                         color="primary" dense label
                                         @update:model-value="objpropEvent.dlightStrength_onchange"
                                     ></q-slider>
@@ -4679,7 +4712,7 @@
             <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
                 <div class="vvtl-seekbar">
                     <div class="grid-oneline">
-                        <div class="oneline-namebox">
+                        <div class="seekbar-buttonbox">
                             <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
                                 <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
                             </q-btn>
@@ -4708,44 +4741,42 @@
                             <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
                                 <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
                             </q-btn>
+                            <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
+                                <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
+                            </q-btn>
+                            <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
+                                <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
+                            </q-btn>
+
+                            
+                            <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
+                                <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
+                            </q-btn-->
+                            <!--q-input v-model.number="timelineData.elements.childKey.val" 
+                                type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
+                                @update:model-value="timelineEvent.OnChange_childKeyVal"
+                            ></q-input-->
+                            
+                            <!--q-btn flat round icon="playlist_remove" 
+                                :disable="timelineData.elements.childKey.disable_remove"
+                                @click="timelineEvent.deleteChildKey_onclick"
+                            >
+                                <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
+                            </q-btn-->
+                            
                         </div>
-                        <div class="oneline-seekbox q-pr-sm">
+                        <div class="seekbar-seekbox q-pl-md q-pr-md">
                             <div class="row">
-                                <div class="col-1">
-                                    <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
-                                        <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
-                                    </q-btn>
-                                    <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
-                                        <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
-                                    </q-btn>
+                                <div class="col-2">
+                                    <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
                                 </div>
-                                <div class="col-1 q-pl-md">
-                                    <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
-                                        <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
-                                    </q-btn-->
-                                </div>
-                                <div class="col-1">
-                                    <!--q-input v-model.number="timelineData.elements.childKey.val" 
-                                        type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
-                                        @update:model-value="timelineEvent.OnChange_childKeyVal"
-                                    ></q-input-->
-                                    
-                                </div>
-                                <div class="col-1 q-pl-md">                                    
-                                    <!--q-btn flat round icon="playlist_remove" 
-                                        :disable="timelineData.elements.childKey.disable_remove"
-                                        @click="timelineEvent.deleteChildKey_onclick"
-                                    >
-                                        <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
-                                    </q-btn-->
-                                </div>
-                                <div class="col-8 q-pl-md" style="padding-top : 1.1rem;">
+                                <div class="col-10" style="padding-top : 1.1rem;">
                                     <q-slider
                                         v-model.number="timelineData.elements.seekbar"
                                         :min="1"
                                         :max="mainData.data.project.timelineFrameLength"
                                         :step="1" 
-                                        color="primary"
+                                        color="primary" 
                                         @update:model-value="timelineEvent.seekbar_onchange"
                                     ></q-slider>
                                 </div>
@@ -4827,7 +4858,7 @@
                                             @pointerenter="timelineEvent.keyframebox_popuptip(item, frameitem)"
                                         ><b>{{ timelineEvent.keyframeHasTranslateCount(item, frameitem) }}</b>
                                             <q-tooltip anchor="top middle" self="bottom left" class="bg-secondary text-dark text-body1">
-                                                <b style="font-size:12pt">{{ (frameindex+1) }}</b><br>
+                                                <b style="font-size:12pt">{{ (frameindex+1) }}</b>:<strong class="q-ml-md">{{ timelineData.states.popup.memo }}</strong><br>
                                                 <span>{{ $t("duration") }}: {{ timelineData.states.popup.duration }}</span><br>
                                                 <span>{{ $t("easing") }}: {{ timelineData.states.popup.easing }}</span><br>
                                                 <span>{{ $t("contents_to_register") }} /IK-Marker :</span>

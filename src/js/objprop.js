@@ -1356,9 +1356,42 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         ));
         AppQueue.start();
     }
+    const objectVRMAnimation_onselected = (val) => {
+        var param = URL.createObjectURL(val);
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetVRMAnimation',param:param},
+            "setvrma",QD_INOUT.returnJS,
+            UnityCallback.after_setvrma,
+            {callback: UnityCallback}
+        ));
+        AppQueue.start();
+        URL.revokeObjectURL(val);
+        objpropData.elements.vrmui.vrmanim.isenable = true;
+    }
+    const objectVRMAnimationClear = () => {
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'DisableVRMA'},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+        objpropData.elements.vrmui.vrmanim.file = null;
+    }
+    const objectVRMAnimationToggleEnable = (val) => {
+        var methodname = "EnableVRMA";
+        if (val === false) {
+            methodname = "DisableVRMA";
+        }
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:methodname},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
     const objectAnimation_onplay = () => {
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'PauseAnimationFromOuter'},
+            {target:mainData.states.selectedAvatar.id,method:"PauseAnimationFromOuter"},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -1370,9 +1403,9 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             objpropData.elements.objectui.animation.play_icon = "play_circle";
         }
     }
-    const objectAnimation_onstop = () => {
+    const objectAnimation_onstop = () => {        
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'StopAnimation'},
+            {target:mainData.states.selectedAvatar.id,method:"StopAnimation"},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -2364,6 +2397,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
                 objectTextureFilelabel_onchange,objectTextureRole_onchange,
             objectAnimationClip_onselected,objectAnimation_onplay,objectAnimationLoop_onchange,
                 objectAnimation_onstop,objectAnimationSeek_onseek,objectAnimationSpeed_onseek,objectAnimationRegister_onchange,
+                objectVRMAnimation_onselected,objectVRMAnimationClear,objectVRMAnimationToggleEnable,
 
             lightRendermode_onchange,lightColor_onchange,lightPower_onchange,
             lightRange_onchange,lightSpotangle_onchange,

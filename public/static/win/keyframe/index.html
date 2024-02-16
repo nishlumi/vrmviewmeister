@@ -99,12 +99,22 @@
             <q-tabs v-model="data.elements.tab.selection"
                 class="bg-white text-primary" no-caps
             >
-                <q-tab name="easing" :label="_T('easing')"></q-tab>
+                <q-tab name="easing" :label="_T('general')"></q-tab>
                 <q-tab name="duration" :label="_T('duration')"></q-tab>
                 <q-tab name="transform" :label="_T('position')+','+_T('rotation')"></q-tab>
             </q-tabs>
             <q-tab-panels v-model="data.elements.tab.selection">
                 <q-tab-panel name="easing">
+                    <div class="row q-mt-md">
+                        <div class="col-12">
+                            <q-input type="text" 
+                                v-model="data.elements.memo.text"
+                                :label="_T('memo')" filled
+                                @update:model-value="memo_onchange"
+                                :disable="data.states.disable"
+                            ></q-input>
+                        </div>
+                    </div>
                     <div class="row q-mt-md">
                         <div class="col-12">
                             <q-select v-model="data.elements.easing.selected"
