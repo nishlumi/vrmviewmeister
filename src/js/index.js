@@ -163,31 +163,35 @@ const app = Vue.createApp({
                 setupFixUnityEvent(modelOperator,UnityCallback);
                 Vue.nextTick(async () => {
                     //---firstly set config to Unity, after each initial set up
-                    mainData.appconf.applyUnity(false);
-                    modelOperator.newProject(false);
-                    modelLoader.setupDefaultObject();
+                    mainData.appconf.load()
+                    .then(confres => {
+                        mainData.appconf.applyUnity(false);
+                        modelOperator.newProject(false);
+                        modelLoader.setupDefaultObject();
 
-                    calcUnitySize(Quasar.Screen.width, Quasar.Screen.height);
-                    //mainData.elements.canvas.scrollArea.width = `${Quasar.Screen.width - 300 - 225}px`;
-                    //mainData.elements.canvas.scrollArea.height = `${Quasar.Screen.height - 128 - 36 - 200}px`;
-                    ribbonData.elements.scr_size.width = unitycontainer.value.width; 
-                    ribbonData.elements.scr_size.height = unitycontainer.value.height;
-    
-                    //---additional settings
-                    modelOperator.setDarkMode(mainData.appconf.confs.application.UseDarkTheme);
+                        calcUnitySize(Quasar.Screen.width, Quasar.Screen.height);
+                        //mainData.elements.canvas.scrollArea.width = `${Quasar.Screen.width - 300 - 225}px`;
+                        //mainData.elements.canvas.scrollArea.height = `${Quasar.Screen.height - 128 - 36 - 200}px`;
+                        ribbonData.elements.scr_size.width = unitycontainer.value.width; 
+                        ribbonData.elements.scr_size.height = unitycontainer.value.height;
+        
+                        //---additional settings
+                        modelOperator.setDarkMode(mainData.appconf.confs.application.UseDarkTheme);
+                        
+                        //AppQueue.start();
+                        
+                        //---1st: load app material
+                        modelOperator.load_materialFile(true);
+                        ID("splash").classList.add("fadeout");
+                        modelLoader.downloadAddressableAssetBundles();
+                        modelLoader.onload_effectDirectory();
+                        AppQueue.start();
+                        mainData.states.currentEditOperationCount = 0;
+                        mainData.states.backupEditOperationCount = 0;
+                
+                        modelLoader.schedulingBackup();
+                    });
                     
-                    //AppQueue.start();
-                    
-                    //---1st: load app material
-                    modelOperator.load_materialFile(true);
-                    ID("splash").classList.add("fadeout");
-                    modelLoader.downloadAddressableAssetBundles();
-                    modelLoader.onload_effectDirectory();
-                    AppQueue.start();
-                    mainData.states.currentEditOperationCount = 0;
-                    mainData.states.backupEditOperationCount = 0;
-            
-                    modelLoader.schedulingBackup();
                 });
 
                 /**

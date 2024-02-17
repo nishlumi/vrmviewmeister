@@ -402,16 +402,32 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
 
         }else if (ename == "enter_vr") {
             //AppQueue.canvas.Module.WebXR.toggleVR();
+            var param = [
+                mainData.appconf.confs.model.vrar_save_camerapos === true ? "1" : "0",
+                [
+                    mainData.appconf.confs.model.vrar_camera_initpos_x,
+                    mainData.appconf.confs.model.vrar_camera_initpos_y,
+                    mainData.appconf.confs.model.vrar_camera_initpos_z
+                ].join(":")
+            ].join(",");
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'EnterVR'},
+                {target:AppQueue.unity.ManageAnimation,method:'EnterVR',param:param},
                 "",QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
         }else if (ename == "enter_ar") {
             //AppQueue.canvas.Module.WebXR.toggleAR();
+            var param = [
+                mainData.appconf.confs.model.vrar_save_camerapos === true ? "1" : "0",
+                [
+                    mainData.appconf.confs.model.vrar_camera_initpos_x,
+                    mainData.appconf.confs.model.vrar_camera_initpos_y,
+                    mainData.appconf.confs.model.vrar_camera_initpos_z
+                ].join(":")
+            ].join(",");
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'EnterAR'},
+                {target:AppQueue.unity.ManageAnimation,method:'EnterAR',param:param},
                 "",QD_INOUT.toUNITY,
                 null
             ));

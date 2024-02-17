@@ -1381,12 +1381,26 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         var methodname = "EnableVRMA";
         if (val === false) {
             methodname = "DisableVRMA";
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:methodname,param:0},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }else{
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:methodname},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
         }
-        AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:methodname},
-            "",QD_INOUT.toUNITY,
-            null
-        ));
+        
+        /*if (val === false) {
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:"ApplyBoneTransformToIKTransform"},
+                "",QD_INOUT.toUNITY,
+                null
+            )); 
+        }*/
         AppQueue.start();
     }
     const objectAnimation_onplay = () => {
