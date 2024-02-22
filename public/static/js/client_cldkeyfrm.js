@@ -359,13 +359,21 @@ const app = Vue.createApp({
         const resetduration_onclick = () => {
             if (data.value.states.timeline.target.avatar == null) return;
 
-            var aro = {}; //new AnimationRegisterOptions();
-            aro["targetId"] = data.value.states.timeline.target.avatarId;
-            aro["targetRole"] = data.value.states.timeline.target.roleName;
-            aro["targetType"] = data.value.states.timeline.target.type;
-            aro["index"] = data.value.elements.frameIndex;
-    
-            var param = (aro);
+            var params = [];
+            var cnt = TargetFrameLength();
+            for (var i = 0; i < cnt; i++) {
+                var frameIndex = getSingleTargetFrameIndex(i);
+
+                var aro = {}; //new AnimationRegisterOptions();
+                aro["targetId"] = data.value.states.timeline.target.avatarId;
+                aro["targetRole"] = data.value.states.timeline.target.roleName;
+                aro["targetType"] = data.value.states.timeline.target.type;
+                aro["index"] = frameIndex;
+        
+                var param = (aro);
+
+                params.push(param);
+            }
     
             /*
             AppQueue.add(new queueData(
@@ -381,7 +389,7 @@ const app = Vue.createApp({
             js.windowName = "keyframe";
             js.funcName = "resetduration_onclick";
             js.data = JSON.stringify({
-                param
+                params
             });
             opener.postMessage(js);
         }
@@ -847,6 +855,14 @@ const app = Vue.createApp({
                     if (hitval != null) {
                         data.value.elements.duration = Math.floor(parseFloat(hitval) * 10000000) / 10000000;
                         AppDB.temp.removeItem("kfa_getduration");
+                    }
+                    
+                });
+                AppDB.temp.getItem("kfa_getmemo")
+                .then(hitval => {
+                    if (hitval != null) {
+                        data.value.elements.memo.text = hitval;
+                        AppDB.temp.removeItem("kfa_getmemo");
                     }
                     
                 });

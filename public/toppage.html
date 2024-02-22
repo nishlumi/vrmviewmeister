@@ -2250,41 +2250,86 @@
                     </template>
                     <q-card>
                         <q-card-section style="padding:2px;">
-                            <div class="row">
-                                <div class="col-9">
-                                    <q-checkbox left-label v-model="objpropData.elements.vrmui.blink.enable" :label="$t('blink_enable')" 
-                                        @update:model-value="objpropEvent.OnChange_Blink_enable" dense
-                                    ></q-checkbox>
-                                </div>
+                            <div>
+                                <q-tabs
+                                    v-model="objpropData.elements.vrmui.blendshapeOption.selected"
+                                    class="text-primary" dense
+                                >
+                                    <q-tab name="blink" :label="$t('blink')" dense></q-tab>
+                                    <q-tab name="lipsync" :label="$t('Lip sync')" dense></q-tab>
+                                </q-tabs>
+                                <q-tab-panels v-model="objpropData.elements.vrmui.blendshapeOption.selected" animated>
+                                    <q-tab-panel name="blink">
+                                        <div class="row">
+                                            <div class="col-9">
+                                                <q-checkbox left-label v-model="objpropData.elements.vrmui.blink.enable" :label="$t('blink_enable')" 
+                                                    @update:model-value="objpropEvent.OnChange_Blink_enable" dense
+                                                ></q-checkbox>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <q-input v-model="objpropData.elements.vrmui.blink.interval" type="number" :label="$t('blink_interval')" :min="0" :max="10" :step="0.1"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_interval" dense
+                                                ></q-input>
+                                            </div>
+                                            <div class="col-5 offset-xs-1">
+                                                <q-input v-model="objpropData.elements.vrmui.blink.opening" type="number" :label="$t('blink_opening')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_opening" dense
+                                                ></q-input>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <q-input v-model="objpropData.elements.vrmui.blink.closing" type="number" :label="$t('blink_closing')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_closing" dense
+                                                ></q-input>
+                                            </div>
+                                            <div class="col-5 offset-xs-1">
+                                                <q-input v-model="objpropData.elements.vrmui.blink.closeTime" type="number" :label="$t('blink_closetime')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_closeTime" dense
+                                                ></q-input>
+                                            </div>
+                                        </div>
+                                    </q-tab-panel>
+                                    <q-tab-panel name="lipsync">
+                                        <div class="row">
+                                            <div class="col-9">
+                                                <q-checkbox left-label v-model="objpropData.elements.vrmui.lipsync.enable" :label="$t('lipsync_enable')" 
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_enable" dense
+                                                ></q-checkbox>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <q-input v-model="objpropData.elements.vrmui.lipsync.interval" type="number" :label="$t('lipsync_interval')" :min="0" :max="10" :step="0.1"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_interval" dense
+                                                ></q-input>
+                                            </div>
+                                            <div class="col-5 offset-xs-1">
+                                                <q-input v-model="objpropData.elements.vrmui.lipsync.opening" type="number" :label="$t('lipsync_opening')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_opening" dense
+                                                ></q-input>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <q-input v-model="objpropData.elements.vrmui.lipsync.closing" type="number" :label="$t('lipsync_closing')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_closing" dense
+                                                ></q-input>
+                                            </div>
+                                            <div class="col-5 offset-xs-1">
+                                                
+                                            </div>
+                                        </div>
+                                    </q-tab-panel>
+                                </q-tab-panels>
                             </div>
-                            <div class="row">
-                                <div class="col-5">
-                                    <q-input v-model="objpropData.elements.vrmui.blink.interval" type="number" :label="$t('blink_interval')" :min="0" :max="10" :step="0.1"
-                                        @update:model-value="objpropEvent.OnChange_Blink_interval" dense
-                                    ></q-input>
-                                </div>
-                                <div class="col-5 offset-xs-1">
-                                    <q-input v-model="objpropData.elements.vrmui.blink.opening" type="number" :label="$t('blink_opening')" :min="0" :max="10" :step="0.01"
-                                        @update:model-value="objpropEvent.OnChange_Blink_opening" dense
-                                    ></q-input>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-5">
-                                    <q-input v-model="objpropData.elements.vrmui.blink.closing" type="number" :label="$t('blink_closing')" :min="0" :max="10" :step="0.01"
-                                        @update:model-value="objpropEvent.OnChange_Blink_closing" dense
-                                    ></q-input>
-                                </div>
-                                <div class="col-5 offset-xs-1">
-                                    <q-input v-model="objpropData.elements.vrmui.blink.closeTime" type="number" :label="$t('blink_closetime')" :min="0" :max="10" :step="0.01"
-                                        @update:model-value="objpropEvent.OnChange_Blink_closeTime" dense
-                                    ></q-input>
-                                </div>
-                            </div>
+                            
                             <div class="area_blendshape">
                                 <q-tabs
                                     v-model="objpropData.elements.vrmui.blendshapeTab"
-                                    class="text-primary"
+                                    class="text-primary" dense
                                 >
                                     <q-tab name="renderer" :label="$t('bs_renderer')" dense></q-tab>
                                     <q-tab name="proxy" :label="$t('bs_proxy')" dense></q-tab>

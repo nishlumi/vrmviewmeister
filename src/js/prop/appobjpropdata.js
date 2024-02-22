@@ -90,12 +90,25 @@ export class appDataObjectProp {
                 blendshapeTab : "proxy",
                 blendShape_searchstr : "",
                 expression_searchstr : "",
+                blendshapeOption : {
+                    options : [
+                        {label: t("blink"), value: "blink"},
+                        {label: t("Lip sync"), value: "lipsync"},
+                    ],
+                    selected: "blink"
+                },
                 blink : {
                     enable : false,
                     interval : 5,
                     opening : 0.03,
                     closing : 0.1,
                     closeTime : 0.06,
+                },
+                lipsync : {
+                    enable : false,
+                    interval : 0.5,
+                    opening : 0.03,
+                    closing : 0.1,
                 },
                 headLock : 1,
                 equip : {

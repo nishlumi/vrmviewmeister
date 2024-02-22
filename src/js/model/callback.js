@@ -606,6 +606,29 @@ export class UnityCallbackFunctioner {
         //---closeTime
         vrmui.blink.closeTime = parseFloat(js[4]);
     }
+    async getpropertyLipsync(val, options) {
+        /**
+         * @type {UnityCallbackFunctioner}
+         */
+        const callback = options.callback;
+         /**
+          * @type {VVAvatar}
+          */
+        const avatar = options.avatar;
+        const vrmui = callback.objpropData.elements.vrmui;
+
+        var js = val.split(",");
+
+        //---enable
+        vrmui.lipsync.enable = js[0] == "1" ? true : false;
+        //---interval
+        vrmui.lipsync.interval = parseFloat(js[1]);
+        //---opening
+        vrmui.lipsync.opening = parseFloat(js[2]);
+        //---closing
+        vrmui.lipsync.closing = parseFloat(js[3]);
+
+    }
     async getpropertyTextureConfig(val, options) {
         /**
          * @type {UnityCallbackFunctioner}

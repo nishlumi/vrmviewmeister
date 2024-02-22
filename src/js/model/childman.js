@@ -703,15 +703,24 @@ export class ChildManager {
                 AppDB.temp.setItem("kfa_getduration",val);
             }
         ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'GetMemoFromOuter',param:straro},
+            "getmemo",QD_INOUT.returnJS,
+            (val) => {
+                AppDB.temp.setItem("kfa_getmemo",val);
+            }
+        ));
         AppQueue.start();
     }
-    keyframe_resetduration_onclick(aro) {
-        var straro = JSON.stringify(aro);
-        AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'ResetAutoDuration',param:straro},
-            "",QD_INOUT.toUNITY,
-            null
-        ));
+    keyframe_resetduration_onclick(params) {
+        for (var i = 0; i < params.length; i++) {
+            var param = JSON.stringify(params[i]);
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'ResetAutoDuration',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
         
         AppQueue.start();
         this.mainData.states.currentEditOperationCount++;

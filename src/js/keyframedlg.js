@@ -421,6 +421,15 @@ export function defineKeyframeDlg(app, Quasar) {
                         kfapp.value.elements.duration = Math.floor(parseFloat(val) * 10000000) / 10000000;
                     }
                 ));
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'GetMemoFromOuter',param:JSON.stringify(aro)},
+                    "getmemo",QD_INOUT.returnJS,
+                    (val) => {
+                        //console.log(val);
+                        kfapp.value.elements.memo.text = val;
+                    }
+                ));
+                
                 AppQueue.start();
             }
 
@@ -544,22 +553,29 @@ export function defineKeyframeDlg(app, Quasar) {
                 context.emit("update:model-value",show.value);
             }
             const resetduration_onclick = () => {
+                if (timeline.value == null) return;
                 if (timeline.value.target.avatar == null) return;
+
     
-                var aro = new AnimationRegisterOptions();
-                aro.targetId = timeline.value.target.avatarId;
-                aro.targetRole = timeline.value.target.roleName;
-                aro.targetType = timeline.value.target.type;
-                aro.index = kfapp.value.elements.frameIndex;
-        
-                var param = JSON.stringify(aro);
-        
-                AppQueue.add(new queueData(
-                    {target:AppQueue.unity.ManageAnimation,method:'ResetAutoDuration',param:param},
-                    "",QD_INOUT.toUNITY,
-                    null
-                ));
-                
+                var cnt = TargetFrameLength();
+                for (var i = 0; i < cnt; i++) {
+                    var frameIndex = getSingleTargetFrameIndex(i);
+
+                    var aro = new AnimationRegisterOptions();
+                    aro.targetId = timeline.value.target.avatarId;
+                    aro.targetRole = timeline.value.target.roleName;
+                    aro.targetType = timeline.value.target.type;
+                    //aro.index = kfapp.value.elements.frameIndex;
+                    aro.index = frameIndex;
+            
+                    var param = JSON.stringify(aro);
+            
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'ResetAutoDuration',param:param},
+                        "",QD_INOUT.toUNITY,
+                        null
+                    ));
+                }
                 AppQueue.start();
             }
             const memo_onchange = (val) => {
@@ -581,7 +597,7 @@ export function defineKeyframeDlg(app, Quasar) {
                     var param = JSON.stringify(aro);
                     
                     AppQueue.add(new queueData(
-                        {target:AppQueue.unity.ManageAnimation,method:'SetMemo',param:JSON.stringify(aro)},
+                        {target:AppQueue.unity.ManageAnimation,method:'SetMemo',param:param},
                         "setmemo",QD_INOUT.returnJS,
                         (val)=>{
                             var js = JSON.parse(val);
@@ -610,7 +626,7 @@ export function defineKeyframeDlg(app, Quasar) {
                     var param = JSON.stringify(aro);
                     
                     AppQueue.add(new queueData(
-                        {target:AppQueue.unity.ManageAnimation,method:'SetEase',param:JSON.stringify(aro)},
+                        {target:AppQueue.unity.ManageAnimation,method:'SetEase',param:param},
                         "setease",QD_INOUT.returnJS,
                         (val)=>{
                             var js = JSON.parse(val);

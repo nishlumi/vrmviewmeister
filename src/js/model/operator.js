@@ -1257,6 +1257,13 @@ export class appModelOperator {
                     
                 ));
                 AppQueue.add(new queueData(
+                    {target:selected.avatar.id,method:'GetAutoBlendShapeFromOuter'},
+                    "getautoblendshape",QD_INOUT.returnJS,
+                    this.UnityCallback.getpropertyLipsync,
+                    {avatar: tmpav, callback : this.UnityCallback}
+                    
+                ));
+                AppQueue.add(new queueData(
                     {target:selected.avatar.id,method:'ListProxyBlendShapeFromOuter'},
                     "getlistblendshapeproxy",QD_INOUT.returnJS,
                     this.UnityCallback.getListBlendShapeProxy,

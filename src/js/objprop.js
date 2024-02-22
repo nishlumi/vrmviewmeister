@@ -775,6 +775,72 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         ));
         AppQueue.start();
     }
+    //------Lip sync (Auto Blendshape) ---
+    const OnChange_Lipsync_enable = (val) => {
+        var param = val === true ? 1 : 0;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetPlayFlagAutoBlendShape', param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        if (val === true) {
+            /*AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'AutoBlendShape', param:0},
+                "",QD_INOUT.toUNITY,
+                null
+            ));*/
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'PlayAutoBlendShape'},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }else{
+            /*AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'PauseAutoBlendShape'},
+                "",QD_INOUT.toUNITY,
+                null
+            ));*/
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'StopAutoBlendShape'},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        AppQueue.start();
+    }
+    const OnChange_Lipsync_interval = (val) => {
+        var param = parseFloat(val);
+        if (isNaN(param)) return;
+
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetAutoBlendShapeInterval', param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const OnChange_Lipsync_opening = (val) => {
+        var param = parseFloat(val);
+        if (isNaN(param)) return;
+
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetAutoBlendShapeOpeningSeconds', param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    const OnChange_Lipsync_closing = (val) => {
+        var param = parseFloat(val);
+        if (isNaN(param)) return;
+
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetAutoBlendShapeCloseSeconds', param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
     //------Equip---
     const equiptarget_addbox_onclick = () => {
         objpropData.elements.vrmui.equip.dialogOptions.splice(0, objpropData.elements.vrmui.equip.dialogOptions.length);
@@ -1380,6 +1446,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     const objectVRMAnimationToggleEnable = (val) => {
         var methodname = "EnableVRMA";
         if (val === false) {
+            /*AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:"ApplyBoneTransformToIKTransform"},
+                "",QD_INOUT.toUNITY,
+                null
+            )); */
             methodname = "DisableVRMA";
             AppQueue.add(new queueData(
                 {target:mainData.states.selectedAvatar.id,method:methodname,param:0},
@@ -1394,13 +1465,6 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             ));
         }
         
-        /*if (val === false) {
-            AppQueue.add(new queueData(
-                {target:mainData.states.selectedAvatar.id,method:"ApplyBoneTransformToIKTransform"},
-                "",QD_INOUT.toUNITY,
-                null
-            )); 
-        }*/
         AppQueue.start();
     }
     const objectAnimation_onplay = () => {
@@ -2385,6 +2449,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             OnChange_LeftHand,OnChange_RightHand,OnChange_FingerStretch,
             onchange_expression_searchstr,onchange_bs_searchstr,OnChange_BlendShape, OnChange_BlendShape_Checked,
             OnChange_Blink_enable,OnChange_Blink_interval,OnChange_Blink_opening,OnChange_Blink_closing,OnChange_Blink_closeTime,
+            OnChange_Lipsync_enable,OnChange_Lipsync_interval,OnChange_Lipsync_opening,OnChange_Lipsync_closing,
             equiptarget_addbox_onclick,equipparts_onclicked,equipDialog_OK_OnClick,equipDialog_Cancel_OnClick,
             OnChanged_IKHandleSelected,OnChanged_IKHandleAssigning,OnClick_IKHandleReset,
             OnChange_HeadLock,

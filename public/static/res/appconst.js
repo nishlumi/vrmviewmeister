@@ -198,6 +198,7 @@ export const AF_MOVETYPE = {
     GravityProperty : 50,
     VRMIKProperty : 51,
     VRMBlink : 52,
+    VRMAutoBlendShape : 53,
 
     //---reserved
     AppCommand : 60,
