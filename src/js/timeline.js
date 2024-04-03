@@ -471,9 +471,19 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             {target:AppQueue.unity.ManageAnimation,method:'GetDurationFromOuter',param:JSON.stringify(aro)},
             "getduration",QD_INOUT.returnJS,
             (val) => {
-                timelineData.states.popup.duration = Math.floor(parseFloat(val) * 10000000) / 10000000;
+                timelineData.states.popup.duration = parseFloat(val).toFixed(3);
 
                 //item.getFrameByKey(frameitem).show = true;
+            }
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'GetThisTimeFromOuter',param:JSON.stringify(aro)},
+            "getthistime",QD_INOUT.returnJS,
+            (val) => {
+                var js = val.split(",");
+                timelineData.states.popup.time.current = parseFloat(js[0]).toFixed(3);
+                timelineData.states.popup.time.whole = parseFloat(js[1]).toFixed(3);
+
             }
         ));
         AppQueue.add(new queueData(

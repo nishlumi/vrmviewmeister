@@ -12,8 +12,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.5.1",
-            revision : "20240223-01",
+            version : "2.6.0",
+            revision : "20240406-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -151,6 +151,24 @@ export class appMainData {
                     rowsPerPage : [20],
                 },
                 materialselection : "",
+                //---table [vrma store]------------------------------
+                vrmaTableColumns : [
+                    { name: 'filename', align: 'left', label: t('filename'), field: 'filename' },
+                    { name: 'clipCount', align: 'right', label: t('clipCount'), field: 'clipCount' },
+                    { name: 'filepath', align: 'left', label: t('file path'), field: 'filepath' },
+                    { name: 'storageTypeId', align: 'left', label: 'storageTypeId', field: 'storageTypeId' },
+                    { name: 'storageType', align: 'left', label: t('storageType'), field: 'storageType' },
+                    { name: 'save', align: 'left', label: t('save in project'), field: 'save' },
+                ],
+                vrmaTableVisiblecCol : [
+                    "filename", "clipCount", "filepath", "storageType", "save"
+                ],
+                vrmaTablePagenation : {
+                    rowsPerPage : [10]
+                },
+                vrmaList :[],
+                vrmaselection : "",
+                vrmaSaveSelection: [],
             },
             materialadddlg : {
                 show : false,

@@ -1,10 +1,10 @@
-import { AF_TARGETTYPE, FILEEXTENSION_ANIMATION, FILEEXTENSION_MOTION, FILEEXTENSION_POSE, FILEOPTION, INTERNAL_FILE, UserAnimationState } from "../../res/appconst.js";
-import { VVAnimationFrameActor, VVAnimationProject, VVAvatar, VVAvatarEquipSaveClass, VVPoseConfig, VVTimelineFrameData, VVTimelineTarget } from "../prop/cls_vvavatar.js";
+import { AF_TARGETTYPE, FILEEXTENSION_ANIMATION, FILEEXTENSION_MOTION, FILEEXTENSION_POSE, FILEEXTENSION_VRMA, FILEOPTION, INTERNAL_FILE, STORAGE_TYPE, UserAnimationState } from "../../res/appconst.js";
+import { AnimationProjectPreloadFiles, VVAnimationFrameActor, VVAnimationProject, VVAvatar, VVAvatarEquipSaveClass, VVPoseConfig, VVTimelineFrameData, VVTimelineTarget } from "../prop/cls_vvavatar.js";
 import { appModelOperator } from "./operator.js";
 import { LimitOfCallbackObjectProperty } from "../../res/appconst.js";
 import { AppDBMeta } from "../appconf.js";
 import { VFileHelper, VFileOptions, VFileType, VOSFile } from "../../../public/static/js/filehelper.js";
-import { AvatarPunchEffect, AvatarShakeEffect, UnityColor } from "../prop/cls_unityrel.js";
+import { AvatarPunchEffect, AvatarShakeEffect, UnityColor, VRMAnimationClip, VRMAnimationCllip } from "../prop/cls_unityrel.js";
 import { appMainData } from "../prop/appmaindata.js";
 import { appDataTimeline } from "../prop/apptimelinedata.js";
 import { appDataRibbon } from "../prop/appribbondata.js";
@@ -569,10 +569,12 @@ export class UnityCallbackFunctioner {
             callback.get_animationwrapmode(arr[13],callback.objpropData);
             //---animation clip list
             callback.get_anmimationcliplist(arr[14],callback.objpropData);
+            //---VRMAnimation selected file name
+            callback.objpropData.elements.vrmui.vrmanim.list.selected = arr[16];
             //---current animation clip
             callback.get_current_animationcilp(arr[15],options);
             //---enable flag of VRMAnimation
-            callback.objpropData.elements.vrmui.vrmanim.isenable = arr[16] == "1" ? true : false;
+            callback.objpropData.elements.vrmui.vrmanim.isenable = arr[17] == "1" ? true : false;
             
         }else{
             AppQueue.add(new queueData(
@@ -1871,7 +1873,7 @@ export class UnityCallbackFunctioner {
         const mainData = callback.mainData;
         const modelOperator = callback.modelOperator;
         const modelLoader = callback.modelLoader;
-        const ribbonData = callback.ribbonData;
+        const ribbonData = callback.ribbonData;        
         //const objectUrls = options.objectUrls;
 
         //---revoke object urls
@@ -1889,6 +1891,7 @@ export class UnityCallbackFunctioner {
 
         var proj = new VVAnimationProject(js);
         mainData.data.project.setFromUnity(proj);
+        mainData.data.project.preloadFiles = options.preload;
 
         //---apply UI
         mainData.elements.projdlg.pinfo.fps = proj.fps;
@@ -1999,6 +2002,9 @@ export class UnityCallbackFunctioner {
                 ishit.path = item.path;
             }
         });
+        //---re-set preload data
+        proj.preloadFiles = JSON.original(mainData.data.project.preloadFiles);
+
         //---delete empty timeline
         /*
         if (mainData.appconf.confs.animation.remove_emptytimeline_whensave) {
@@ -2495,6 +2501,17 @@ export class UnityCallbackFunctioner {
         const refs = callback.refs;
         const selRoleTitle = options.selRoleTitle;
 
+        const notify = () => {
+            Quasar.Notify.create({
+                message : callback.t("cons_save_complete"), 
+                position : "top-right",
+                color : "info",
+                textColor : "black",
+                timeout : 3000, 
+                multiLine : true
+            });
+        }
+
         //---edit complete to YAML
         var js = JSON.parse(val);
         console.log(js);
@@ -2506,29 +2523,105 @@ export class UnityCallbackFunctioner {
         var vf = new VFileOptions();
         vf.suggestedName = "motion.vrma";
 
-        if (VFileHelper.flags.isElectron) {
-            vf.types.push(vopt);
-            VFileHelper.saveUsingDialog(txt,vf,true);
-        }else{
+        if (options.disktype == "i") {
+            //---To internal storage
+            //   save data: File object
             appPrompt(callback.t("msg_motion_save"),(fname)=>{
                 vf.types.push(vopt);
                 vf.suggestedName = fname + (fname.indexOf(".vrma") > -1 ? "" : ".vrma");
-                var acckey = "";
                 var accval = "";
+                var acckey = "";
                 for (var obj in vopt.accept) {
                     acckey = obj;
                     accval = vopt.accept[obj];
                     break;
                 }
+                var curdate = new Date();
                 var content = new Blob([txt], {type : acckey});
-                var burl = URL.createObjectURL(content);
-                VFileHelper.saveUsingDialog(burl,vf,true)
+                var gfile = new File([txt], fname);
+                var meta = new AppDBMeta(
+                    fname + (fname.indexOf(FILEEXTENSION_VRMA) == -1 ? FILEEXTENSION_VRMA : ""),
+                    fname,
+                    gfile.size,
+                    "VRMA",
+                    curdate,
+                    curdate
+                );
+                AppDB.avatar_meta.setItem(meta.fullname, meta);
+                AppDB.vrma.setItem(meta.fullname, {
+                    filename : meta.fullname,
+                    data : gfile
+                })
                 .then(ret => {
-                    URL.revokeObjectURL(burl);
+                    notify();
                 });
+            });
+        }else if (options.disktype == "f") {
+            //---To Local disk
+            //   save data: File(byte[])
+            if (VFileHelper.flags.isElectron) {
+                vf.types.push(vopt);
+                VFileHelper.saveUsingDialog(txt,vf,true);
+            }else{
+                appPrompt(callback.t("msg_motion_save"),(fname)=>{
+                    vf.types.push(vopt);
+                    vf.suggestedName = fname + (fname.indexOf(".vrma") > -1 ? "" : ".vrma");
+                    var acckey = "";
+                    var accval = "";
+                    for (var obj in vopt.accept) {
+                        acckey = obj;
+                        accval = vopt.accept[obj];
+                        break;
+                    }
+                    var content = new Blob([txt], {type : acckey});
+                    var burl = URL.createObjectURL(content);
+                    VFileHelper.saveUsingDialog(burl,vf,true)
+                    .then(ret => {
+                        URL.revokeObjectURL(burl);
+                    });
+                    
+                },vf.suggestedName);
+            }
+        }else if (options.disktype == "g") {
+            //---To Google drive
+            //   save data: byte[]
+            var googlemeta = {
+                extension:FILEEXTENSION_VRMA,
+                nameoverwrite : true, //always overwrite saving
+                isbinary : true
+            }
+            
+            const enterSave = (value) => {
+                VFileHelper.saveToGoogleDrive(false,googlemeta,value)
+                .then(retdum => {
+                    //---confirm latest saved file
+                    return VFileHelper.confirmGoogleDriveLastSavedFile(googlemeta);
+                })
+                .then(retjs => {
+                    notify();
+                    
+                })
+                .catch(err => {
+                    Quasar.Notify.create({
+                        message : "Google Drive save error" + err.toString(), 
+                        position : "top-right",
+                        color : "error",
+                        textColor : "white",
+                        timeout : 3000, 
+                        multiLine : true
+                    });
+                });
+            }
+            
+
+            appPrompt(callback.t("msg_motion_save"),(fname)=>{
+                googlemeta["name"] = fname + (fname.indexOf(FILEEXTENSION_VRMA) > -1 ? "" : FILEEXTENSION_VRMA)
                 
-            },vf.suggestedName);
+                enterSave(txt);
+            });
         }
+        
+        
     }
     async savepose (val, options) {
         /**
@@ -2679,6 +2772,58 @@ export class UnityCallbackFunctioner {
                     }
                 }
             }
+        }
+
+    }
+    async loadAfterVRMA(val, options)  {
+        /**
+         * @type {UnityCallbackFunctioner}
+         */
+        const callback = options.callback;
+        const mainData = callback.mainData;
+        const modelOperator = callback.modelOperator;
+        const vrmui = callback.objpropData.elements.vrmui;
+        const strageTypeName = (id) => {
+            for (var obj in STORAGE_TYPE) {
+                if (id == STORAGE_TYPE[obj]) {
+                    return obj;
+                }
+                "";
+            }
+        }
+
+        mainData.elements.loading = false;
+
+        var js = JSON.parse(val);
+        var vac = new VRMAnimationClip();
+        vac.filename = js.filename;
+        vac.clips =  js.clips;
+        vac.originalFile = options.loadingfileHandle;
+        console.log(vac);
+
+        var ishit = mainData.elements.projdlg.vrmaList.findIndex(v => {
+            if (v.filepath == vac.originalFile.path) {
+                return true;
+            }
+            return false;
+        });
+
+        if (ishit == -1) {
+            //---loaded VRMA list of parent
+            mainData.elements.projdlg.vrmaList.push({
+                filename : vac.filename,
+                clipCount : vac.clips.length,
+                filepath : vac.originalFile.path,
+                storageTypeId : vac.originalFile.storageType,
+                storageType : strageTypeName(vac.originalFile.storageType),
+                save : options.saveInProject,
+                data : vac,
+            });
+            //---selection VRMA list
+            vrmui.vrmanim.list.options.push(vac.filename);
+        }
+        if (options.objectURL) {
+            URL.revokeObjectURL(options.objectURL);
         }
 
     }

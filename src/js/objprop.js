@@ -1423,16 +1423,47 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         AppQueue.start();
     }
     const objectVRMAnimation_onselected = (val) => {
-        var param = URL.createObjectURL(val);
-        AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'SetVRMAnimation',param:param},
-            "setvrma",QD_INOUT.returnJS,
-            UnityCallback.after_setvrma,
-            {callback: UnityCallback}
-        ));
+        var param = (val);
+        if (param == "---") {
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'ClearVRMA',param:0},
+                "setvrma",QD_INOUT.toUNITY,
+                null
+            ));
+            objpropData.elements.vrmui.vrmanim.isenable = false;
+            objpropData.elements.objectui.animation.cliplist = [];
+            objpropData.elements.objectui.animation.isenable = false;
+        }else{
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'SetVRMAnimation',param:param},
+                "setvrma",QD_INOUT.returnJS,
+                UnityCallback.after_setvrma,
+                {callback: UnityCallback}
+            ));
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'AdjustVRMAInitialRotation'},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            
+            //URL.revokeObjectURL(val);
+            objpropData.elements.vrmui.vrmanim.isenable = true;
+            objpropData.elements.objectui.animation.isenable = true;
+
+            //---to list animation clip
+            var cur = mainData.elements.projdlg.vrmaList.find(v => {
+                if (v.filename == val) return true;
+                return false;
+            });
+            if (cur) {
+                objpropData.elements.objectui.animation.cliplist = cur.data.clips.map(v => v.name);
+            }else{
+                objpropData.elements.objectui.animation.cliplist = [];
+            }
+            
+             
+        }
         AppQueue.start();
-        URL.revokeObjectURL(val);
-        objpropData.elements.vrmui.vrmanim.isenable = true;
     }
     const objectVRMAnimationClear = () => {
         AppQueue.add(new queueData(

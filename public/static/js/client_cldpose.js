@@ -52,12 +52,23 @@ const app = Vue.createApp({
             }
         });
         const fileoption = {
-            types: [
-                {
-                    description : "VVM pose file",
-                    accept : {"application/json": [".vvmpose",".json"]}
-                }
-            ]
+            POSE: {
+                types: [
+                    {
+                        description : "VVM pose file",
+                        accept : {"application/json": [".vvmpose",".json"]}
+                    }
+                ]
+            },
+            MOTION : {
+                types: [
+                    {
+                        description : "VVM motion file",
+                        accept : {"application/json": [".vvmmot",".json"]}
+                    }
+                ]
+            }
+            
         };
 
         const loadData = () => {
@@ -86,6 +97,7 @@ const app = Vue.createApp({
                         name: key,
                         type: value.targetType,
                         version : value.version,
+                        height : Math.round(value.bodyHeight[1] * 1000) / 1000,
                         
                         frameCount : value.frames.length,
                         startFrame : value.frames[0].index,
@@ -154,10 +166,12 @@ const app = Vue.createApp({
         const download_onclick = async () => {
             if (poseapp.value.list.selected) {
                 var opt = new VFileOptions();
-                opt.types = fileoption.types;
+                
                 if (poseapp.value.states.item_mode == "pose") {
+                    opt.types = fileoption.POSE.types;
                     opt.suggestedName = poseapp.value.list.selected.name + ".vvmpose";
                 }else if (poseapp.value.states.item_mode == "motion") {
+                    opt.types = fileoption.MOTION.types;
                     opt.suggestedName = poseapp.value.list.selected.name + ".vvmmot";
                 }
                 
@@ -215,7 +229,12 @@ const app = Vue.createApp({
         }
         const upload_onclick = async () => {
             //fl_openpose.value.click();
-            VFileHelper.openFromDialog(fileoption,async (files,cd,err)=>{
+            var lfileoption = null;
+            if (poseapp.value.states.item_mode == "pose") lfileoption = fileoption.POSE;
+            if (poseapp.value.states.item_mode == "motion") lfileoption = fileoption.MOTION;
+
+
+            VFileHelper.openFromDialog(lfileoption, 0, async (files,cd,err)=>{
                 if (files) {
                     var data = null;
                     if (files[0].data instanceof File) {
@@ -238,7 +257,7 @@ const app = Vue.createApp({
 
                         }else if (poseapp.value.states.item_mode == "motion") {
                             if ((!js) || 
-                                !("movingData" in js)
+                                !("frames" in js)
                             ) {
                                 appAlert(_T("msg_motion_erroropen"));
                                 return;
@@ -340,6 +359,7 @@ const app = Vue.createApp({
                                         name: obj.name,
                                         type: posedata.targetType,
                                         version : posedata.version,
+                                        height: Math.round(posedata.bodyHeight[1] * 1000) / 1000,
                                         
                                         frameCount : posedata.frames.length,
                                         startFrame : posedata.frames[0].index,
@@ -503,6 +523,24 @@ const app = Vue.createApp({
                 Quasar.lang.set(qlang);
             }else{
                 Quasar.lang.set(Quasar.lang.enUS);
+            }
+            if (location.search != "") {
+                var s = location.search.replace("?","").split("&");
+                var svobj = {};
+                for (var si = 0; si < s.length; si++) {
+                    var item = s[si].split("=");
+                    svobj[item[0]] = item[1];
+                }
+                console.log(svobj);
+
+                if ("mode" in svobj) {
+                    if (svobj["mode"] == "p") {
+                        poseapp.value.states.item_mode = "pose";
+                    }
+                    else if (svobj["mode"] == "m") {
+                        poseapp.value.states.item_mode = "motion";
+                    }
+                }
             }
         });
         Vue.onMounted(() => {

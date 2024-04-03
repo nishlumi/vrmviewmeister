@@ -14,7 +14,7 @@ export class VOSFile {
         /**
          * @type {String} file path
          */
-        this.path = obj.path || "";
+        this.path = obj.path || obj.filename || "";
         if (obj instanceof File) {
             this.path = obj.name;
         }
@@ -25,7 +25,7 @@ export class VOSFile {
         /**
          * @type {String}
          */
-        this.name = obj.name || obj.path || "";
+        this.name = obj.name || obj.path || obj.filename || "";
         /**
          * @type {String} file encoding
          */
@@ -42,6 +42,11 @@ export class VOSFile {
          * @type {Number}
          */
         this.size = obj.size || 0;
+        if (obj.data) {
+            if (obj.data instanceof File) {
+                this.size = obj.data.size;
+            }
+        }
         /**
          * @type {String|Blob}
          */
@@ -49,7 +54,7 @@ export class VOSFile {
 
         /**
          * @type {String} int - Internal Storage, loc - Local, 
-         * ggd - Google Drive, appggd - Application
+         * ggd - Google Drive, appggd - Application, web - web url
          */
         this.storageType = "";
     }
@@ -158,9 +163,10 @@ export class VFileOperator {
     /**
      * To open a file from file dialog
      * @param {VFileOptions} fileoption file type options
+     * @param {Number} typeselection file type option selected index
      * @param {Function} callback (files,cd,err) => {}
      */
-    async openFromDialog(fileoption, callback) {
+    async openFromDialog(fileoption, typeselection, callback) {
         this.callbacks.open = null;
         this.callbacks.open = callback;
         try {
@@ -173,11 +179,11 @@ export class VFileOperator {
                 }
             }else if (this.flags.isElectron) {
                 var acceptExtension = [];
-                for (var obj in fileoption.types[0].accept) {
-                    acceptExtension = fileoption.types[0].accept[obj].map(o => o.replace(".",""));
+                for (var obj in fileoption.types[typeselection].accept) {
+                    acceptExtension = fileoption.types[typeselection].accept[obj].map(o => o.replace(".",""));
                 }
                 var vfopt = {
-                    name : fileoption.types[0].description,
+                    name : fileoption.types[typeselection].description,
                     extensions : acceptExtension
                 }
                 var files = await elecAPI.openFiles({
@@ -190,8 +196,8 @@ export class VFileOperator {
                 }
             }else{
                 var arr = [];
-                for (var obj in fileoption.types[0].accept) {
-                    arr = fileoption.types[0].accept[obj];
+                for (var obj in fileoption.types[typeselection].accept) {
+                    arr = fileoption.types[typeselection].accept[obj];
                     break;
                 }
                 this.elements.upload_fileoptions = fileoption;
@@ -317,7 +323,7 @@ export class VFileOperator {
     /**
      * To save any data to Google Drive
      * @param {bool} is_saveas flag is saveAs ? 
-     * @param {{id:"",name:"",extension:"",destination:"", nameoverwrite:bool}} meta file information
+     * @param {{id:"",name:"",extension:"",destination:"", nameoverwrite:bool, isbinary:bool}} meta file information
      * @param {*} data data to save (not stringify)
      */
     async saveToGoogleDrive(is_saveas, meta, data) {
@@ -340,6 +346,7 @@ export class VFileOperator {
                 //---setup param
                 urlparams.append("mode",is_saveas ? "saveas" : "save");
                 urlparams.append("apikey",apikey);
+                if ("isbinary" in meta) urlparams.append("isbinary",meta.isbinary);
 
                 var finalurl = baseurl; // `${baseurl}?mode=${is_saveas ? "saveas" : "save"}&apikey=${apikey}`;
                 if (meta["nameoverwrite"] && (meta["nameoverwrite"] === true)) {
@@ -353,6 +360,7 @@ export class VFileOperator {
                 if ("id" in meta) postdata["id"] = meta.id;
                 if ("name" in meta) postdata["name"] = meta.name;
                 if ("destination" in meta) postdata["destination"] = meta.destination;
+                
                 postdata["data"] = data;
                 
                 var req = new Request(finalurl + "?" + urlparams.toString(),{

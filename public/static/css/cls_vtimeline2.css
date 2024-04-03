@@ -69,16 +69,27 @@
     grid-column : 25 / 26;
 }
 .seekbar-buttonbox {
-    grid-column : 1 / 10;
+    grid-column : 1 / 13;
+    overflow : hidden;
+}
+.seekbar-currentframe {
+    grid-column : 13 / 14;
     overflow : hidden;
 }
 .seekbar-seekbox {
-    grid-column : 10 / 25;
+    grid-column : 14 / 25;
     overflow : hidden;
 }
 .oneline-seekbox-opt {
     grid-column : 21 / 25; 
     padding-top : 1rem;
+}
+.seekbar-button-separator {
+    border-left: 3px double gray;
+    width: 5px;
+    display: inline-flex;
+    height: 1.715em;
+    vertical-align: middle;
 }
 /*.oneline-namebox {
     overflow : hidden !important;

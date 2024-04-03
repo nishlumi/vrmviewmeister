@@ -5,6 +5,7 @@ import { VVAnimationProject } from "./prop/cls_vvavatar.js";
 import { AppDBMeta } from "./appconf.js";
 import { VFileHelper, VFileOptions, VFileType, VOSFile } from "../../public/static/js/filehelper.js";
 import { appMainData } from "./prop/appmaindata.js";
+import { ManagedVRMA } from "./prop/cls_unityrel.js";
 
 /**
  * 
@@ -196,7 +197,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                         {target:AppQueue.unity.ManageAnimation,method:'LoadProject',param:JSON.stringify(originalresult)},
                         "openproject",QD_INOUT.returnJS,
                         callback.openproject,
-                        {callback}
+                        {callback, preload: originalresult.preloadFiles}
                     ));
                     AppQueue.start();
                     mainData.elements.projectSelector.show = false;
@@ -207,14 +208,21 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                     }
                     //---get mimetype
                     var mimetype = "";
-                    for (var obj in FILEOPTION[DBname].types[0].accept) {
-                        mimetype = obj;
+                    if (DBname == "VRMA") {
+                        for (var obj in FILEOPTION["VRMA"].types[0].accept) {
+                            mimetype = obj;
+                        }
+                    }else{
+                        for (var obj in FILEOPTION[DBname].types[0].accept) {
+                            mimetype = obj;
+                        }
                     }
+                    
 
                     //if (await modelOperator.verifyFileHandlePermission(result,options) === true) {
                     if (isJudge) {
                         var originalvos = new VOSFile(originalresult);
-                        originalvos.storageType = originalresult.storageType || "";
+                        originalvos.storageType = originalresult.storageType || mainData.elements.projectSelector.selectStorageType || "";
 
                         var result = null;
                         if (VFileHelper.flags.isHistoryFSAA) {
@@ -290,6 +298,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                             }
                         }
                         
+                        //---start to load each file type selected.
                         mainData.elements.loadingTypePercent = false;
                         if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.VRM) {
                             var f = result; //await result.getFile();
@@ -332,7 +341,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                             var fdata = URL.createObjectURL(f);
                             mainData.data.objectUrl.vrm = fdata;
                             mainData.states.fileloadname = originalresult.name;
-                            mainData.states.fileloadtype = "v";
+                            mainData.states.fileloadtype = "o";
                             mainData.states.loadingfileHandle = originalvos;
                             var filearr =  mainData.states.fileloadname.split(".");
                             var ext = filearr[filearr.length-1];
@@ -358,6 +367,43 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
             
                             //---final decide is after.
                             return;
+                        }else if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.VRMA) {
+                            var ishit = mainData.elements.projdlg.vrmaList.findIndex(v => {
+                                if (v.filepath == originalvos.path) {
+                                    return true;
+                                }
+                                return false;
+                            });
+
+                            if (ishit == -1) {
+                                //---For VRMAnimation
+                                var f = result; 
+                                var fdata = URL.createObjectURL(f);
+                                mainData.data.objectUrl.vrm = fdata;
+                                mainData.states.fileloadname = originalresult.name || originalresult.filename;
+                                mainData.states.fileloadtype = "vrma";
+                                mainData.states.loadingfileHandle = originalvos;
+                                var filearr =  mainData.states.fileloadname.split(".");
+                                var ext = filearr[filearr.length-1];
+                                
+                                var param = JSON.stringify(new ManagedVRMA(fdata, mainData.states.fileloadname));
+                                AppQueue.add(new queueData(
+                                    {target:AppQueue.unity.ManageAnimation,method:'OpenVRMA',param:param},
+                                    "openvrma",QD_INOUT.returnJS,
+                                    callback.loadAfterVRMA,
+                                    {callback,objectURL:fdata,filename:mainData.states.fileloadname,
+                                        fileloadtype: "vrma",
+                                        loadingfileHandle : originalvos,
+                                        saveInProject:false}
+                                ));
+                            }else{
+                                if (fdata) URL.revokeObjectURL(fdata);
+                                appAlert(t("msg_opened_samfile"));
+                                callback.mainData.elements.loading = false;
+                                
+                            }
+
+                            
                         }
                         
                         AppQueue.start();
@@ -540,34 +586,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                         URL.revokeObjectURL(burl);
                     });
                 }
-                /*
-                var bb = new Blob([JSON.stringify(v)], {type : "application/json"});
-                if (refs.lnk_saveproject.value.href) window.URL.revokeObjectURL(refs.lnk_saveproject.value.href);
-                var burl = URL.createObjectURL(bb);
-                refs.lnk_saveproject.value.href = burl;
-                refs.lnk_saveproject.value.download = fullname;
-                refs.lnk_saveproject.value.click(); 
-                */
-                /*
-                //File System Access API
-                if ("showSaveFilePicker" in window) {
-                    const savepicker = await window.showSaveFilePicker({
-                        suggestedName : mainData.elements.projectSelector.selected,
-                        types: mainData.elements.projectSelector.selectType
-                    });
-                    if (savepicker) {
-                        const writer = await savepicker.createWritable();
-                        if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) {
-                            writer.write(JSON.stringify(v));
-                        }else{
-                            writer.write(v);
-                        }
-                        await writer.close();
-                    }
-                }else{
-                    console.log("Not found window.showSaveFilePicker...");
-                }
-                */
+                
             });
         }
         
@@ -581,8 +600,17 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
             var file = files[0];
 
             var f = file ;//await file.getFile();
-            var textdata = await f.text();
-            var js = JSON.parse(textdata);
+            var textdata = "";
+            var js = null;
+            if (f.text) {
+                textdata = await f.text();
+                js = JSON.parse(textdata);
+            }
+            if (f.data.text) {
+                textdata = await f.data.text();
+                js = JSON.parse(textdata);
+            }            
+            
 
             if (("mkey" in js) && ("casts" in js) && ("timeline" in js)) {
                 var curdate = new Date(file.lastModified);
@@ -612,54 +640,10 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
     const onclick_upload_projectSelector = async () => {
         const fopt = new VFileOptions();
         fopt.types = FILEOPTION.PROJECT.types;
-        VFileHelper.openFromDialog(fopt,(files,cd,err)=>{
+        VFileHelper.openFromDialog(fopt, 0, (files,cd,err)=>{
             if (cd == 0) onchange_fil_projselector(files);
         });
-        /*
-        if ("showOpenFilePicker" in window) {
-            try {
-                var files = await window.showOpenFilePicker({
-                    types: mainData.elements.projectSelector.selectType
-                });
-                if (files) {
-                    if (files.length > 0) {
-                        //**
-                        // * @type {FileSystemFileHandle}
-                        // *
-                        var f0 = files[0];
-                        var file = await f0.getFile();
-                        var textdata = await file.text();
-                        var js = JSON.parse(textdata);
-
-                        if (("mkey" in js) && ("casts" in js) && ("timeline" in js)) {
-                            var curdate = new Date(file.lastModified);
-                            var meta = new AppDBMeta(
-                                file.name + (file.name.indexOf(FILEEXTENSION_ANIMATION) == -1 ? FILEEXTENSION_ANIMATION : ""),
-                                file.name,
-                                textdata.length,
-                                "PROJECT",
-                                curdate,
-                                curdate,
-                            );
-                            
-                            var proj = new VVAnimationProject(js);
-
-                            await AppDB.scene_meta.setItem(meta.fullname,meta);
-                            await AppDB.scene.setItem(meta.fullname,proj);
-                            onclick_refresh_projectSelector();
-                        }else{
-                            appAlert(t("msg_error_allfile"));
-                            return;
-                        }
-                    }
-                }
-            }catch(e) {
-                console.log(e);
-            }
-        }else{
-            console.log("Not found window.showOpenFilePicker...");
-        }
-        */
+        
     }
     const onchange_searchstr = (val) => {
         var arr = [];

@@ -1,7 +1,7 @@
 import { appModelOperator } from "./model/operator.js";
 import { UnityCallbackFunctioner } from "./model/callback.js";
-import { VVTimelineTarget } from "./prop/cls_vvavatar.js";
-import { AF_TARGETTYPE, FILEEXTENSION_DEFAULT, FILEEXTENSION_MOTION, FILEEXTENSION_MOTION_GENERAL, FILEOPTION } from "../res/appconst.js";
+import { AnimationProjectPreloadFiles, VVTimelineTarget } from "./prop/cls_vvavatar.js";
+import { AF_TARGETTYPE, FILEEXTENSION_DEFAULT, FILEEXTENSION_MOTION, FILEEXTENSION_MOTION_GENERAL, FILEOPTION, STORAGE_TYPE } from "../res/appconst.js";
 import { VFileHelper, VFileOptions, VFileType, VOSFile } from "../../public/static/js/filehelper.js";
 import { AnimationParsingOptions } from "./prop/cls_unityrel.js";
 import { appDataTimeline } from "./prop/apptimelinedata.js";
@@ -61,6 +61,14 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
         }
         return true;
     });
+    const checkVRMASelected = Vue.computed( () => {
+        if ((mainData.elements.projdlg.tab == 'vrmas')
+        ) {
+            return true;
+        }else{
+            return false;
+        }
+    });
     const rowIsFixedObject = (row) => {
         if (
             (row.name == "Stage") ||
@@ -73,6 +81,9 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
             return false;
         }
     }
+    //---watch------------------------------------------------
+
+
     //---event--------------------------------------------------------------
     //  [toolbar] --------------------------------------------
     const btn_refresh_onclick = () => {
@@ -174,13 +185,74 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
             AppQueue.start();
         });
     }
+    const btn_delVRMA_onclick = () => {
+        var msg = t('msg_motion_delconfirm');
+        var filepath = mainData.elements.projdlg.vrmaselection;
+        if (filepath != "") {
+            appConfirm(msg,() => {
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'CloseVRMA',param:filepath},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+                AppQueue.start();
+                var ishit = mainData.elements.projdlg.vrmaList.findIndex(v => {
+                    if (v.filepath == filepath) return true;
+                    return false;
+                });
+                if (ishit > -1) {
+                    var beforeData = mainData.elements.projdlg.vrmaList[ishit];
+                    var ishit_objprop = callback.objpropData.elements.vrmui.vrmanim.list.options.findIndex(v => {
+                        if (v == beforeData.filename) return true;
+                        return false;
+                    });
+                    if (ishit_objprop > -1) {
+                        callback.objpropData.elements.vrmui.vrmanim.list.options.splice(ishit_objprop, 1);
+                    }
+                    mainData.elements.projdlg.vrmaList.splice(ishit, 1);
+                    
+                }
+            });
+        }
+        
+    }
+    const vrmarow_save_onchecked = (flag, row) => {
+        console.log(flag, row);
+        if ((row.storageTypeId == STORAGE_TYPE.LOCAL) && (!VFileHelper.checkNativeAPI)) {
+            appAlert(t("msg_saveproj_vrma"));
+            return;
+        }
+        const project = mainData.data.project;
+        var ishit = project.preloadFiles.findIndex(v => {
+            if ((v.fileuri == row.filepath) && (v.filetype == "vrma")) return true;
+            return false;
+        });
+        var data = new AnimationProjectPreloadFiles();
+        data.filetype = "vrma";
+        data.fileuri = row.filepath;
+        data.filename = row.filename;
+        data.options = "";
+        data.uritype = row.storageTypeId;
+        if (flag === true) {
+            //---create
+            if (ishit == -1) {
+                project.preloadFiles.push(data);
+            }else{
+                project.preloadFiles[ishit] = data;
+            }
+        }else{
+            //---delete
+            project.preloadFiles.splice(ishit, 1);
+        }
+        
+    }
     const btn_loadsinglemotion_onclick = async (fromscreen) => {
         //fil_animmotion.value = null;
         //fil_animmotion.click();
 
         var fopt = new VFileOptions();
         fopt.types = FILEOPTION.MOTION.types;
-        VFileHelper.openFromDialog(FILEOPTION.MOTION,
+        VFileHelper.openFromDialog(FILEOPTION.MOTION, 0,
             /**
              * 
              * @param {VOSFile[]} files 
@@ -507,7 +579,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
             /**
              * @type {VVTimelineTarget}
              */
-            var tl = timelineData.data.timelines[fix];
+            var tl = timelineData.data.timelines[finx];
 
             //---change roleTitle of timeline.target (VVCast)
             if (tl) {
@@ -906,11 +978,13 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
     return {
         projectdlgEvent : Vue.reactive({
             //---computed------------------
-            checkSelectFixedObject,checkAvatarSelectable,chk_addmat_rad_file,chk_addmat_rad_sd,
+            checkSelectFixedObject,checkAvatarSelectable,checkVRMASelected,
+            chk_addmat_rad_file,chk_addmat_rad_sd,
             checkSelectVRMObject,rowIsFixedObject,
             //---event----------------------
             btn_refresh_onclick,btn_delRole_onclick,btn_loadsinglemotion_onclick,fil_animmotion_onchange,
-            btn_savesinglemotion_onclick,btn_delAllRole_onclick,
+            btn_savesinglemotion_onclick,btn_delAllRole_onclick,btn_delVRMA_onclick,
+            vrmarow_save_onchecked,
             oneditok_roleTitle,onselectok_avatar,filteredlist_selavatar_popup,
             btn_saveanimmotion_onclick,btn_savebvhmotion_onclick,
 

@@ -452,6 +452,33 @@ export class VVAnimationProjectMaterialPackage {
         this.materials = [];
     }
 }
+export class AnimationProjectPreloadFiles {
+    constructor() {
+        /**
+         * @type {String} file URI
+         */
+        this.fileuri = "";
+
+        /**
+         * @type {String} file name
+         */
+        this.filename = "";
+        /**
+         * @type {String} File URI type : int - Internal Storage, loc - Local, 
+         * ggd - Google Drive, appggd - Application, web - web url
+         */
+        this.uritype = "";
+        /**
+         * @type {String} Option string for file
+         */
+        this.options = "";
+
+        /**
+         * @type {String} File type
+         */
+        this.filetype = "";
+    }
+}
 export class VVAnimationProject {
     constructor(param) {
         //---when saving, count up 
@@ -480,6 +507,10 @@ export class VVAnimationProject {
          * @type {VVAnimationProjectMaterialPackage}
          */
         this.materialManager = new VVAnimationProjectMaterialPackage();
+        /**
+         * @type {AnimationProjectPreloadFiles[]}
+         */
+        this.preloadFiles = [];
         this.isSharing = false;
         this.isReadonly = false;
         //this.isNew = true;
@@ -519,6 +550,7 @@ export class VVAnimationProject {
             //if ("isOpenAndEdit" in param) this.isOpenAndEdit = param.isOpenAndEdit;
             if ("fixedProp" in param) this.fixedProp = param.fixedProp;
             if ("materialManager" in param) this.materialManager = param.materialManager;
+            if ("preloadFiles" in param) this.preloadFiles = param.preloadFiles;
         }
 
         /*this.htmlOnly = {

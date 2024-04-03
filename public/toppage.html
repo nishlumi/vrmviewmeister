@@ -47,22 +47,36 @@
     <q-layout view="hHh LpR fFf" style="overflow:hidden">
         <q-header v-model="mainData.elements.header" class="text-dark" reveal elevated bordered>
 <!--[] Ribbon tab panel ==========================================================================-->
-            <q-tabs
-                v-model="ribbonData.elements.tab.selectIndex"
-                class="bg-primary text-white shadow-2"
-                inline-label no-caps dense align="left"
-                :style="ribbonData.elements.tab.style"
-            >
-                <q-tab name="home" icon="home" :label="$t('ribbon_title_home')"></q-tab>
-                <q-tab name="screen" icon="web" :label="$t('ribbon_title_screen')"></q-tab>
-                <q-tab name="model" icon="emoji_people" :label="$t('ribbon_title_vrm')" ></q-tab>
-                <q-tab name="animation" icon="animation" :label="$t('ribbon_title_animation')"></q-tab>
-                <q-tab name="effect" icon="air" :label="$t('ribbon_title_systemeffect')" ></q-tab>
-                <q-tab name="audio" icon="headphones" :label="$t('ribbon_title_audio')" ></q-tab>
-            </q-tabs>
+            <q-toolbar class="bg-primary text-white">
+                
+                <q-tabs
+                    v-model="ribbonData.elements.tab.selectIndex"
+                    
+                    inline-label no-caps dense align="left"
+                    :style="ribbonData.elements.tab.style"
+                    @click="ribbonEvent.tabbar_onclick"
+                >
+                    <q-tab name="home" icon="home" :label="$t('ribbon_title_home')"></q-tab>
+                    <q-tab name="screen" icon="web" :label="$t('ribbon_title_screen')"></q-tab>
+                    <q-tab name="model" icon="emoji_people" :label="$t('ribbon_title_vrm')" ></q-tab>
+                    <q-tab name="animation" icon="animation" :label="$t('ribbon_title_animation')"></q-tab>
+                    <q-tab name="effect" icon="air" :label="$t('ribbon_title_systemeffect')" ></q-tab>
+                    <q-tab name="audio" icon="headphones" :label="$t('ribbon_title_audio')" ></q-tab>
+                </q-tabs>
+                <q-space></q-space>
+                <q-toggle v-model="ribbonData.elements.tab.check_show" 
+                    dark color="yellow"
+                    @update:model-value="ribbonEvent.check_show_changed"
+                >
+                    <q-tooltip><span>{{ "show ribbon panel" }}</span></q-tooltip>
+                </q-toggle>
+            </q-toolbar>
+            <!-- class="bg-primary text-white shadow-2" -->
+            
         
             <q-tab-panels v-model="ribbonData.elements.tab.selectIndex"
                 :style="ribbonData.elements.tabpanel.style"
+                class="shadow-2"
             >
                 <!-- Home tab ------------------------------------------------------>
                 <q-tab-panel name="home" class=" q-pa-sm">
@@ -549,13 +563,48 @@
                     <div class="ribbon-group-sep"></div>
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
-                            <q-btn flat icon="bookmark_add" 
-                                :label="$t('cons_save')+'...'" no-caps 
-                            ><!-- Post and Motion submenu ======================##  -->
-                                <q-menu>
+                            <q-btn flat icon="file_open" 
+                                :label="$t('open_project')+'...'" no-caps 
+                            ><!-- Opem menu for Post/Motion======================##  -->
+                                <q-menu anchor="top end" self="top start">
+                                    <q-list>
+                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('poselist_pose')">
+                                            <q-item-section>{{ $t('ribbon_apppose')}}</q-item-section>
+                                        </q-item>  
+                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('poselist_motion')">
+                                            <q-item-section>{{ $t('ribbon_appmotion')}}</q-item-section>
+                                        </q-item>  
+                                        <q-item clickable >
+                                            <q-item-section>VRMAnimation...</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.openvrma_file_onclick">
+                                                        <q-item-section>{{ $t('Disk') }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.openvrma_internal_onclick">
+                                                        <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
+                                                    </q-item>
+                                                    <template v-if="mainData.states.googledrive_gas">
+                                                        <q-item clickable  v-close-popup @click="ribbonEvent.openvrma_gdrive_onclick">
+                                                            <q-item-section>Google Drive</q-item-section>
+                                                            <q-item-section side><q-icon name="cloud_upload"></q-icon></q-item-section>
+                                                        </q-item>
+                                                    </template>
+                                                </q-list>
+                                            </q-menu>
+                                        </q-item>                                        
+                                    </q-list>
+                                </q-menu>
+                            </q-btn>                            
+                            <br>
+                            <q-btn flat icon="save" 
+                                :label="$t('save_project')+'...'" no-caps 
+                            ><!-- Save menu for Pose/Motion ======================## -->
+                                <q-menu anchor="top end" self="top start">
                                     <q-list>
                                         <q-item clickable >
-                                            <q-item-section>{{ $t('ribbon_pose_save') }}</q-item-section>
+                                            <q-item-section>{{ $t('ribbon_apppose') + "..." }}</q-item-section>
                                             <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
                                             <q-menu anchor="top end" self="top start">
                                                 <q-list>
@@ -575,7 +624,7 @@
                                             </q-menu>
                                         </q-item>
                                         <q-item clickable >
-                                            <q-item-section>{{ $t('ribbon_motion_save') }}</q-item-section>
+                                            <q-item-section>{{ $t('ribbon_appmotion') + "..."  }}</q-item-section>
                                             <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
                                             <q-menu anchor="top end" self="top start">
                                                 <q-list>
@@ -591,27 +640,78 @@
                                                             <q-item-section side><q-icon name="cloud_upload"></q-icon></q-item-section>
                                                         </q-item>
                                                     </template>
-                                                    <q-separator></q-separator>
-                                                    <q-item-label>{{ $t('general_format') }}</q-item-label>
+                                                </q-list>
+                                            </q-menu>
+                                        </q-item>
+                                        <q-item clickable>
+                                            <q-item-section>{{ $t("Motion") + ":" + $t('general_format') + "..."  }}</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
                                                     <q-item clickable disable v-close-popup @click="ribbonEvent.RibbonFuncModel('savemotion_bvh')">
                                                         <q-item-section>{{ ".bvh" }}</q-item-section>
                                                     </q-item>
                                                     <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncModel('savemotion_anim')">
                                                         <q-item-section>{{ ".anim" }}</q-item-section>
                                                     </q-item>
-                                                    <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savemotion_vrma')">
-                                                        <q-item-section>{{ ".vrma" }}</q-item-section>
-                                                    </q-item>
                                                 </q-list>
                                             </q-menu>
-                                        </q-item>                                        
+                                        </q-item>
+                                        <q-item clickable>
+                                            <q-item-section>VRMAnimation...</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('f','savevrma')">
+                                                        <q-item-section>{{ $t('Disk') }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('i','savevrma')">
+                                                        <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
+                                                    </q-item>
+
+                                                    <!--
+                                                    <q-item-label>{{ $t('Disk') }}</q-item-label>
+                                                    <q-separator></q-separator>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('f','savevrma')">
+                                                        <q-item-section>{{ $t('save_proj')}}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('f','saveasvrma')">
+                                                        <q-item-section>{{ $t('save as')}}</q-item-section>
+                                                    </q-item>
+                                                    <q-separator></q-separator>
+                                                    
+                    
+                                                    <q-item-label class="q-pa-xs">{{ $t('Internal Storage') }}</q-item-label>
+                                                    <q-separator></q-separator>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('i','savevrma')">
+                                                        <q-item-section>{{ $t('save_proj')}}</q-item-section>
+                                                    </q-item>                                        
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('i','saveasvrma')">
+                                                        <q-item-section>{{ $t('save as')}}</q-item-section>
+                                                    </q-item>
+                    
+                                                    
+                                                    <template v-if="mainData.states.googledrive_gas">
+                                                        <q-item-label class="q-pa-xs">Google Drive</q-item-label>
+                                                        <q-separator></q-separator>
+                                                        <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('g','savevrma')">
+                                                            <q-item-section>{{ $t('save_proj')}}</q-item-section>
+                                                        </q-item>                                        
+                                                        <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('g','saveasvrma')">
+                                                            <q-item-section>{{ $t('save as')}}</q-item-section>
+                                                        </q-item>
+                                                    </template>
+                                                    -->
+                                                </q-list>
+                                            </q-menu>
+                                        </q-item>
                                     </q-list>
                                 </q-menu>
-                            </q-btn>                            
-                            <br>
-                            <q-btn flat dense icon="dashboard" :label="$t('ribbon_pose_list')" no-caps 
+                            </q-btn>
+                            <!--<q-btn flat icon="dashboard" :label="$t('ribbon_pose_list')" no-caps 
                                 @click="ribbonEvent.RibbonFuncModel('poselist')"
-                            ></q-btn>
+                            ></q-btn>-->
                         </div>
                         <div class="ribbon-group-title">Pose/Motion</div>
                     </div>
@@ -841,6 +941,10 @@
                                         <q-separator></q-separator>
                                         <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncAnimation('delpropkeyframe')">
                                             <q-item-section>{{ $t('tl_utl_del3') }}</q-item-section>
+                                        </q-item>
+                                        <q-separator></q-separator>
+                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncAnimation('delvrmakeyframe')">
+                                            <q-item-section>{{ $t('tl_utl_del4') }}</q-item-section>
                                         </q-item>
                                     </q-list>
                                 </q-menu>
@@ -2479,7 +2583,7 @@
                                 <legend>{{ $t('preview') }}</legend>
                                 <div class="row">
                                     <template v-if="objpropEvent.checkVRM">
-                                        <div class="col-8">
+                                        <!--<div class="col-8">
                                             <q-file fill bottom-slots dense
                                                 v-model="objpropData.elements.vrmui.vrmanim.file"
                                                 accept=".vrma"
@@ -2499,6 +2603,13 @@
                                                 @update:model-value="objpropEvent.objectVRMAnimationToggleEnable"
                                                 :disable="!objpropData.elements.objectui.animation.isenable"
                                             ></q-toggle>
+                                        </div>-->
+                                        <div class="col-12">
+                                            <q-select v-model="objpropData.elements.vrmui.vrmanim.list.selected" 
+                                                :options="objpropData.elements.vrmui.vrmanim.list.options"
+                                                label="VRMAnimation" filled
+                                                @update:model-value="objpropEvent.objectVRMAnimation_onselected"
+                                            ></q-select>
                                         </div>
                                     </template>
 
@@ -4758,18 +4869,21 @@
                 <div class="vvtl-seekbar">
                     <div class="grid-oneline">
                         <div class="seekbar-buttonbox">
+                            <!--
                             <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
                                 <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
                             </q-btn>
                             <q-btn flat round icon="skip_next" @click="timelineEvent.skip_next_onclick">
                                 <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
                             </q-btn>
+                            -->
                             <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
                                 <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
                             </q-btn>
                             <q-btn flat round icon="zoom_in" @click="timelineEvent.zoom_in_onclick">
                                 <q-tooltip>{{ $t('tl_util_zoomin') }}</q-tooltip>
                             </q-btn>
+                            <span class="seekbar-button-separator"></span>
                             <q-btn flat round icon="play_circle_filled" no-caps 
                                 @click="ribbonEvent.RibbonFuncAnimation('playfirst')"
                             ></q-btn>
@@ -4779,12 +4893,27 @@
                             <q-btn flat round icon="stop" no-caps 
                                 @click="ribbonEvent.RibbonFuncAnimation('stop')"
                             ></q-btn>
-                            
-                            <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
-                                <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
-                            </q-btn>
+
+                            <span class="seekbar-button-separator"></span>
+                            <template v-if="mainData.appconf.confs.animation.recover_pose_whenselected == false">
+                                <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
+                                    <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
+                                </q-btn>
+                            </template>
                             <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
                                 <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
+                            </q-btn>
+                            
+                            <span class="seekbar-button-separator"></span>
+                            <q-btn flat round icon="add_task" 
+                                @click="ribbonEvent.menu_addkeyframe_onclick"
+                            >
+                                <q-tooltip>{{ $t('tl_utl_reg1') }}</q-tooltip>
+                            </q-btn>
+                            <q-btn flat round icon="delete"
+                                @click="ribbonEvent.RibbonFuncAnimation('delkeyframe')"
+                            >
+                                <q-tooltip>{{ $t('tl_utl_del1') }}</q-tooltip>
                             </q-btn>
                             <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
                                 <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
@@ -4792,6 +4921,7 @@
                             <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
                                 <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
                             </q-btn>
+                            
 
                             
                             <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
@@ -4810,22 +4940,22 @@
                             </q-btn-->
                             
                         </div>
+                        <div class="seekbar-currentframe">
+                            <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
+                        </div>
                         <div class="seekbar-seekbox q-pl-md q-pr-md">
-                            <div class="row">
-                                <div class="col-2">
-                                    <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
-                                </div>
-                                <div class="col-10" style="padding-top : 1.1rem;">
-                                    <q-slider
-                                        v-model.number="timelineData.elements.seekbar"
-                                        :min="1"
-                                        :max="mainData.data.project.timelineFrameLength"
-                                        :step="1" 
-                                        color="primary" 
-                                        @update:model-value="timelineEvent.seekbar_onchange"
-                                    ></q-slider>
-                                </div>
+                            
+                            <div style="padding-top : 1.1rem;">
+                                <q-slider
+                                    v-model.number="timelineData.elements.seekbar"
+                                    :min="1"
+                                    :max="mainData.data.project.timelineFrameLength"
+                                    :step="1" 
+                                    color="primary" 
+                                    @update:model-value="timelineEvent.seekbar_onchange"
+                                ></q-slider>
                             </div>
+                            
                             
                         </div>
                         <div class="oneline-dlgbox">
@@ -4903,7 +5033,11 @@
                                             @pointerenter="timelineEvent.keyframebox_popuptip(item, frameitem)"
                                         ><b>{{ timelineEvent.keyframeHasTranslateCount(item, frameitem) }}</b>
                                             <q-tooltip anchor="top middle" self="bottom left" class="bg-secondary text-dark text-body1">
-                                                <b style="font-size:12pt">{{ (frameindex+1) }}</b>:<strong class="q-ml-md">{{ timelineData.states.popup.memo }}</strong><br>
+                                                [<b style="font-size:12pt">{{ (frameindex+1) }}</b>] :
+                                                <b style="font-size:12pt">{{ timelineData.states.popup.time.current }}</b>/
+                                                <b>{{ timelineData.states.popup.time.whole }}</b>: 
+                                                <strong class="q-ml-md">{{ timelineData.states.popup.memo }}</strong><br>
+                                                <br>
                                                 <span>{{ $t("duration") }}: {{ timelineData.states.popup.duration }}</span><br>
                                                 <span>{{ $t("easing") }}: {{ timelineData.states.popup.easing }}</span><br>
                                                 <span>{{ $t("contents_to_register") }} /IK-Marker :</span>
@@ -4996,6 +5130,7 @@
             :select-avatar="mainData.elements.vrminfodlg.selectedAvatar"
             @apply="modelLoader.OnOk_VrminfoDlg"
         ></vrminfo-dlg>
+        <!-- ### Project Dialog ############################ -->
         <q-dialog v-model="mainData.elements.projdlg.show" 
             class="projdlg_style"
             :maximized="mainData.elements.projdlg.maximized"
@@ -5027,6 +5162,9 @@
                         </q-btn>
                         -->
                     </template>
+                    <template v-if="projectdlgEvent.checkVRMASelected">
+                        <q-btn flat round dense icon="delete" @click="projectdlgEvent.btn_delVRMA_onclick"><q-tooltip v-text="$t('cons_delete')"></q-tooltip></q-btn>
+                    </template>
                     <q-space></q-space>
                     <q-btn flat round dense icon="close" @click="mainData.elements.projdlg.show = false"></q-btn>
 
@@ -5040,7 +5178,7 @@
                          align="justify"
                     >
                         <q-tab name="pinfo":label="$t('project_info')"></q-tab>
-                        <!--<q-tab name="role" :label="$t('edit_role')"></q-tab>-->
+                        <q-tab name="vrmas" label="VRMAnimation"></q-tab>
                         <q-tab name="avatar" :label="$t('select_avatar')"></q-tab>
                         <q-tab name="material" :label="$t('material')"></q-tab>
                     </q-tabs>
@@ -5086,35 +5224,54 @@
                                 </div>
                             </div>
                         </q-tab-panel>
-                        <!--
-                        <q-tab-panel name="role" class="q-pa-xs">
+                        
+                        <q-tab-panel name="vrmas" class="q-pa-xs">
                             <q-table class="projdlg-table q-ma-none q-pa-none"
-                                :rows="mainData.elements.projdlg.editroles"
-                                :columns="mainData.elements.projdlg.editroleColumns"
-                                :visible-columns="mainData.elements.projdlg.editroleVisiblecCol"
-                                row-key="id" dense
+                                :rows="mainData.elements.projdlg.vrmaList"
+                                :columns="mainData.elements.projdlg.vrmaTableColumns"
+                                :visible-columns="mainData.elements.projdlg.vrmaTableVisiblecCol"
+                                row-key="path" dense
                                 selection="single"
-                                :pagination="mainData.elements.projdlg.editrolePagenation"
+                                :pagination="mainData.elements.projdlg.vrmaTablePagenation"
                                 :rows-per-page-options="[10]"
                             >
                                 <template v-slot:body="props">
                                     <q-tr :props="props">
                                         <q-td>
-                                            <q-radio v-model="mainData.elements.projdlg.roleselection" :val="props.row.name"></q-radio>
+                                            <q-radio v-model="mainData.elements.projdlg.vrmaselection" :val="props.row.filepath"></q-radio>
                                         </q-td>
-                                        <q-td key="name" :props="props"><span v-text="props.row.name"></span></q-td>
-                                        <q-td key="type" :props="props"><span v-text="props.row.type"></span></q-td>
-                                        <q-td key="roleTitle" :props="props">
-                                            {{ props.row.roleTitle }}
-                                            <q-popup-edit v-model="props.row.roleTitle" buttons v-slot="scope" @update:model-value="projectdlgEvent.oneditok_roleTitle(scope,props.row)" :title="$t('new role title')" v-if="props.row.name != 'Stage'">
-                                                <q-input v-model="scope.value" dense autofocus @keyup.enter="scope.set" filled></q-input>
-                                            </q-popup-edit>
+                                        <q-td key="filename" :props="props"><span v-text="props.row.filename"></span></q-td>
+                                        <q-td key="clipCount" :props="props"><span v-text="props.row.clipCount"></span></q-td>
+                                        <q-td key="filepath" :props="props"><span v-text="props.row.filepath"></span></q-td>
+                                        <q-td key="storageType" :props="props"><span v-text="props.row.storageType"></span></q-td>
+                                        <q-td>
+                                            <q-checkbox v-model="props.row.save" @update:model-value="projectdlgEvent.vrmarow_save_onchecked(props.row.save, props.row)"></q-checkbox>
                                         </q-td>
                                     </q-tr>
                                 </template>
                             </q-table>
+                            <!--<table>
+                                <thead>
+                                    <tr>
+                                        <th>{{ "filename" }}</th>
+                                        <th>{{ "clip count" }}</th>
+                                        <th>{{ "path" }}</th>
+                                        <th>{{ "storage type" }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr v-for="(vrma,index) in mainData.elements.projdlg.vrmaList" :key="index">
+                                        <td>{{ vrma.filename }}</td>
+                                        <td>{{ vrma.clips.length }}</td>
+                                        <td>{{ vrma.originalFile.path }}</td>
+                                        <td>{{ vrma.originalFile.storageType }}</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>-->
                         </q-tab-panel>
-                        -->
+                        
                         <q-tab-panel name="avatar" class="q-pa-xs"><!--==========================================-->
                             <q-table class="projdlg-table q-ma-none q-pa-none"
                                 :rows="mainData.elements.projdlg.selavatars"

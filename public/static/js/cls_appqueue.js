@@ -140,6 +140,13 @@ const AppQueue = {
         }catch(e) {
             console.error("appqueue start error:",e);
             AppDB.writeLog("appqueue.start","error",{err:e, data:first});
+            var msg = e.message + "\r\n" + 
+            first.unity.target + "." + first.unity.method + ":" + first.unity.param;
+
+            appNotifyError(msg,{
+                timeout: 5000,
+                multiline: true
+            });
             this.isExecuting = false;
             //---remove 1st element 
             this.list.splice(0,1);

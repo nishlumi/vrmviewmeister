@@ -214,6 +214,14 @@
                                                         {{ item.version }}
                                                     </div>
                                                 </div>
+                                                <div class="row" v-if="item.type == 0">
+                                                    <div class="col-6 offset-1">
+                                                        <b>{{ _T("Recommended height") }}:</b>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        {{ item.height }} cm
+                                                    </div>
+                                                </div>
                                                 <div class="row q-mt-sm">
 
                                                     <div class="col-4">

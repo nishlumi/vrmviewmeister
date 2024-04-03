@@ -429,6 +429,7 @@ function appNotify(message,options) {
 	};
 	if (options["position"]) param["position"] = options["position"];
 	if (options["timeout"]) param["timeout"] = options["timeout"];
+	if (options["multiline"]) param["multiline"] = options["multiline"];
 	_appNotify(param);
 }
 function appNotifySuccess(message,options) {
@@ -438,6 +439,7 @@ function appNotifySuccess(message,options) {
 	};
 	if (options["position"]) param["position"] = options["position"];
 	if (options["timeout"]) param["timeout"] = options["timeout"];
+	if (options["multiline"]) param["multiline"] = options["multiline"];
 	_appNotify(param);
 }
 function appNotifyWarning(message,options) {
@@ -447,6 +449,17 @@ function appNotifyWarning(message,options) {
 	};
 	if (options["position"]) param["position"] = options["position"];
 	if (options["timeout"]) param["timeout"] = options["timeout"];
+	if (options["multiline"]) param["multiline"] = options["multiline"];
+	_appNotify(param);
+}
+function appNotifyError(message,options) {
+	var param = {
+		message : message,
+		type : "negative"
+	};
+	if (options["position"]) param["position"] = options["position"];
+	if (options["timeout"]) param["timeout"] = options["timeout"];
+	if (options["multiline"]) param["multiline"] = options["multiline"];
 	_appNotify(param);
 }
 
@@ -590,6 +603,7 @@ const AppDB = {
 
 	pose : null,
 	motion : null,
+	vrma : null,
 	scene_meta : null,
 	scene : null,
 
@@ -641,6 +655,11 @@ const AppDB = {
             name : "origfile",
             driver : localforage.INDEXEDDB,
             storeName : "motion"
+        });
+		this.vrma = localforage.createInstance({
+            name : "origfile",
+            driver : localforage.INDEXEDDB,
+            storeName : "vrma"
         });
 		this.scene_meta = localforage.createInstance({
             name : "origfile",

@@ -1,13 +1,13 @@
 import { AF_TARGETTYPE, AF_MOVETYPE, FILEEXTENSION_VRM,
     FILEEXTENSION_OTHEROBJECT, FILEEXTENSION_IMAGE,
     FILEEXTENSION_ANIMATION, FILEEXTENSION_DEFAULT, FILEOPTION, 
-    FILEEXTENSION_MOTION, INTERNAL_FILE, StageType, EFFECTLIST, FILEEXTENSION_POSE
+    FILEEXTENSION_MOTION, INTERNAL_FILE, StageType, EFFECTLIST, FILEEXTENSION_POSE, FILEEXTENSION_VRMA, STORAGE_TYPE
 } from "../../res/appconst.js"
 import { AppDBMeta } from "../appconf.js";
 import {  VVAvatar, VVCast,VVAnimationProject, VVTimelineFrameData, VVTimelineTarget } from '../prop/cls_vvavatar.js';
 import { VFileHelper, VOSFile } from "../../../public/static/js/filehelper.js";
 import { appModelOperator } from "./operator.js";
-import { AnimationParsingOptions } from "../prop/cls_unityrel.js";
+import { AnimationParsingOptions, ManagedVRMA } from "../prop/cls_unityrel.js";
 import { appDataTimeline } from "../prop/apptimelinedata.js";
 import { appMainData } from "../prop/appmaindata.js";
 
@@ -64,7 +64,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                         {target:AppQueue.unity.ManageAnimation,method:'LoadProject',param:data},
                         "openproject",QD_INOUT.returnJS,
                         callback.openproject,
-                        {callback}
+                        {callback, preload: proj.preloadFiles}
                     ));
                     AppQueue.start();
                 }else{
@@ -216,6 +216,32 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                         loadingfileHandle : tmpfile}
                 ));
                 dbtype = "IMAGES";
+            }else if (fileloadtype == "vrma") {
+                var ishit = mainData.elements.projdlg.vrmaList.findIndex(v => {
+                    if (v.filepath == tmpfile.path) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (ishit == -1) {
+                    var param = JSON.stringify(new ManagedVRMA(fdata, fileloadname));
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'OpenVRMA',param:param},
+                        "openvrma",QD_INOUT.returnJS,
+                        callback.loadAfterVRMA,
+                        {callback,objectURL:fdata,filename:fileloadname,
+                            fileloadtype: fileloadtype,
+                            loadingfileHandle : tmpfile,
+                            saveInProject:false}
+                    ));
+                }else{
+                    if (fdata) URL.revokeObjectURL(fdata);
+                    appAlert(t("msg_opened_samfile"));
+                    callback.mainData.elements.loading = false;
+                    return;
+                }
+
+                
             }
 
             AppQueue.start();
@@ -285,6 +311,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 tmpfile.lastModified = handle.lastModified;
                 tmpfile.type = handle.type;
                 tmpfile.size = handle.size;
+                tmpfile.storageType = STORAGE_TYPE.LOCAL;
                 /**
                  * @type {File} tmpfile.data
                  */
@@ -310,8 +337,15 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     if (tmpfile.name.toLowerCase().indexOf(item) > -1) return true;
                     return false;
                 });
+                var isHitVRMA = tmpfile.name.toLowerCase().indexOf(FILEEXTENSION_VRMA) > -1;
 
-                if (tmpfile.name.toLowerCase().indexOf(FILEEXTENSION_VRM) > -1) {
+                if (isHitVRMA) {
+                    mainData.states.loadingfile = fdata;
+                    mainData.states.loadingfileHandle = tmpfile;
+                    mainData.states.fileloadtype = "vrma";
+                    filetype = "VRMA";
+
+                }else if (tmpfile.name.toLowerCase().indexOf(FILEEXTENSION_VRM) > -1) {
                     //---if VRM: Binary
                     mainData.states.fileloadtype = "v";
                     mainData.states.loadingfileHandle = tmpfile;

@@ -1,6 +1,6 @@
 import { AF_TARGETTYPE, AF_MOVETYPE, CNS_BODYBONES, IKBoneType, INTERNAL_FILE, FILEEXTENSION_ANIMATION, FILEOPTION, STORAGE_TYPE, SAMPLEURL, SAMPLEKEY} from "../../res/appconst.js"
 import { VVAnimationProject, VVAvatar, VVCast, VVSelectedObjectItem,  VVBlendShape, VVAvatarEquipSaveClass, VVTimelineTarget, VVTimelineFrameData, VVAnimationFrameActor, VVAnimationProjectMaterialPackage, VVAnimationFrame } from '../prop/cls_vvavatar.js';
-import { AnimationParsingOptions, AnimationRegisterOptions, BvhData, BvhNode, UnityVector3 } from "../prop/cls_unityrel.js";
+import { AnimationParsingOptions, AnimationRegisterOptions, BvhData, BvhNode, ManagedVRMA, UnityVector3 } from "../prop/cls_unityrel.js";
 import { ChildReturner } from "../../../public/static/js/cls_childreturner.js";
 import { AppDBMeta } from "../appconf.js";
 import { appDataTimeline } from "../prop/apptimelinedata.js";
@@ -8,7 +8,7 @@ import { appMainData } from "../prop/appmaindata.js";
 import { UnityCallbackFunctioner } from "./callback.js";
 import { appDataRibbon } from "../prop/appribbondata.js";
 import { appDataObjectProp } from "../prop/appobjpropdata.js";
-import { VFileHelper } from "../../../public/static/js/filehelper.js";
+import { VFileHelper, VOSFile } from "../../../public/static/js/filehelper.js";
 
 export class appModelOperator {
     /**
@@ -193,6 +193,12 @@ export class appModelOperator {
         this.ribbonData.elements.frame.max = proj.timelineFrameLength;
 
         this.mainData.elements.projdlg.pinfo.fps = proj.fps;
+        this.mainData.elements.projdlg.pinfo.name = "";
+        this.mainData.elements.projdlg.pinfo.description = "";
+        this.mainData.elements.projdlg.pinfo.license = "";
+        this.mainData.elements.projdlg.pinfo.url = "";
+        //this.mainData.elements.projdlg.vrmaList.splice(0, this.mainData.elements.projdlg.vrmaList.length);
+
 
         this.ribbonData.elements.frame.baseDuration = proj.fps / 6000.0;
 
@@ -582,6 +588,17 @@ export class appModelOperator {
                 });
             }
         }
+        else if (
+            (avatar.type == AF_TARGETTYPE.OtherObject) ||
+            (avatar.type == AF_TARGETTYPE.Image)
+        ) {
+            for (var i = 0; i < this.objpropData.elements.objectui.materialIsChanges.length; i++) {
+                aro.registerMaterials.push({
+                    text : this.objpropData.elements.objectui.materialnames[i],
+                    value : this.objpropData.elements.objectui.materialIsChanges[i] === true ? 1 : 0
+                });
+            }
+        }
 
         //---timeline ui
         var fdata = new VVTimelineFrameData(aro.index,{
@@ -760,9 +777,17 @@ export class appModelOperator {
                 urlparams.append("apikey",apikey);
 
                 var fopt = FILEOPTION[dbname];
-                var facept = fopt.types[0].accept;
+                var facept = "";
+                if (dbname == "VRMA") {
+                    fopt = FILEOPTION.MOTION;
+                    facept = fopt.types[1].accept;
+                }else{
+                    facept = fopt.types[0].accept;
+                }
+                
                 var fext = "";
                 
+                //---cut dot of first character.
                 if (dbname == "OBJECTS") {
                     for (var obj in facept) {
                         var arr = facept[obj];
@@ -786,6 +811,8 @@ export class appModelOperator {
                     VRM : "vrm",
                     OBJECTS : "other",
                     IMAGES : "image",
+                    MOTION : "motion",
+                    VRMA : "motion"
                 }
                 if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
                     if (db2conf[dbname]) {
@@ -1716,9 +1743,16 @@ export class appModelOperator {
         const localFileOpen = async (ftype, vos) => {
             var mimetype = "";
             var result = null;
-            for (var obj in FILEOPTION[ftype].types[0].accept) {
-                mimetype = obj;
+            if (ftype == "VRMA") {
+                for (var obj in FILEOPTION.VRMA.types[0].accept) {
+                    mimetype = obj;
+                }
+            }else{
+                for (var obj in FILEOPTION[ftype].types[0].accept) {
+                    mimetype = obj;
+                }
             }
+            
             var ishit_local = false;
             if (vos["storageType"]) {
                 if (vos.storageType == STORAGE_TYPE.LOCAL) {
@@ -1750,6 +1784,52 @@ export class appModelOperator {
             }
             
             return result;
+        }
+        //---set up preload files
+        if (project.preloadFiles) {
+            for (var i = 0; i < project.preloadFiles.length; i++) {
+                var pfile = project.preloadFiles[i];
+                var f = null;
+                if (pfile.filetype == "vrma") {
+                    //===VRMAnimation with Project
+                    var vos = new VOSFile({});
+                    vos.path = pfile.fileuri;
+                    vos.name = pfile.filename;
+                    vos.type = "application/octet-stream";
+                    vos.encoding = "binary";
+                    vos.storageType = pfile.uritype;
+                    if (vos.storageType == STORAGE_TYPE.INTERNAL) {
+                        f = await AppDB.vrma.getItem(vos.path);
+                    }else if (vos.storageType == STORAGE_TYPE.LOCAL) {
+                        if (VFileHelper.checkNativeAPI) {
+                            f = await localFileOpen("VRMA",vos);
+                        }else{
+                            //TODO:ウェブアプリ時、ローカル読み込みの代替手段
+                            //---端末から開いたものは履歴として内蔵にいれるか？
+                        }
+                        
+                    }else if (
+                        (vos.storageType == STORAGE_TYPE.GOOGLEDRIVE) ||
+                        (vos.storageType == STORAGE_TYPE.APPLICATION)
+                    ) {
+                       var gfile = await VFileHelper.openFromGoogleDrive(vos.path, ".vrma");
+                       f = gfile.data;
+                    }
+                    //### TODO: get file from other web uri.
+
+                    var fdata = URL.createObjectURL(f.data);
+                    var param = JSON.stringify(new ManagedVRMA(fdata, vos.name));
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'OpenVRMA',param:param},
+                        "openvrma",QD_INOUT.returnJS,
+                        this.UnityCallback.loadAfterVRMA,
+                        {callback:this.UnityCallback,objectURL:fdata,filename:vos.name,
+                            fileloadtype: pfile.filetype,
+                            loadingfileHandle : vos,
+                            saveInProject:true}
+                    ));
+                }
+            }
         }
 
         //---set up new cast and role

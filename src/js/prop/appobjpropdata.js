@@ -142,6 +142,10 @@ export class appDataObjectProp {
                     rimfresnel : 1,
                 },
                 vrmanim : {
+                    list : {
+                        selected : "",
+                        options : ["---"]
+                    },
                     file : null,
                     isenable : false,
                 }

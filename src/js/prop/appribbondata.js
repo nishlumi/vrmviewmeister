@@ -13,13 +13,19 @@ export class appDataRibbon {
         this.elements = {
             tab : {
                 selectIndex : ("home"),
+                oldselectIndex : "",
                 style : {
-                    height : "36px",
-                }
+                    height : "50px", //"36px",
+                },
+                check_show : true,
             },
             tabpanel : {
                 style : {
-                    height : "128px"
+                    height : "128px",
+                    display: "block",
+                    //---closed panel style
+                    position: "relative", //fixed
+                    width : "100%",
                 }
             },
             //---Home

@@ -10,6 +10,7 @@ export const DEFAULTMEM = 268435456;
 export const LimitOfCallbackObjectProperty = 10;
 
 export const FILEEXTENSION_VRM = ".vrm";
+export const FILEEXTENSION_VRMA = ".vrma";
 export const FILEEXTENSION_POSE = ".vvmpose";
 export const FILEEXTENSION_MOTION = ".vvmmot";
 export const FILEEXTENSION_MOTION_GENERAL = [".bvh",".anim"];
@@ -42,6 +43,10 @@ export const FILEOPTION = {
             {
                 description : "VVM motion file",
                 accept : {"application/json": [".vvmmot",".json",".bvh",".anim"]}
+            },
+            {
+                description : "VRM Animation file",
+                accept : {"application/octet-stream": [".vrma"]}
             }
         ],
         encoding : "utf8"
@@ -104,6 +109,7 @@ export const INTERNAL_FILE = {
     PROJECT : "scene",
     MOTION : "motion",
     POSE : "pose",
+    VRMA : "vrma",
 }
 
 export const CNS_BODYBONES = {

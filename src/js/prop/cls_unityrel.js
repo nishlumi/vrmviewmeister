@@ -1,3 +1,4 @@
+import { VOSFile } from "../../../public/static/js/filehelper";
 import { AF_MOVETYPE, AF_TARGETTYPE, CameraClearFlags, IKBoneType } from "../../res/appconst";
 
 export class AnimationRegisterOptions
@@ -539,5 +540,27 @@ export class BvhData {
             }
         }
         return ret;
+    }
+}
+export class ManagedVRMA {
+    constructor(fname, name) {
+        this.filename = fname || "";
+        this.name = name || "";
+    }
+}
+export class VRMAnimationClip {
+    constructor() {
+        /**
+         * @type {String}
+         */
+        this.filename = "";
+        /**
+         * @type {{name:String, time:float}[]}
+         */
+        this.clips = [];
+        /**
+         * @type {VOSFile}
+         */
+        this.originalFile = null;
     }
 }

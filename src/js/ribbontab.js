@@ -39,11 +39,12 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
      * 
      * @param {String} filetype 
      * @param {String} accepts 
+     * @param {Number} typeselection
      */
-    const Sub_openfile = async (filetype,accepts) => {
+    const Sub_openfile = async (filetype,accepts,typeselection = 0) => {
         mainData.states.fileloadtype = filetype;
 
-        VFileHelper.openFromDialog(FILEOPTION[accepts],(files,cd,err)=>{
+        VFileHelper.openFromDialog(FILEOPTION[accepts],typeselection,(files,cd,err)=>{
             if (cd == 0) {
                 mainData.elements.loading = true;
                 mainData.elements.loadingTypePercent = false;
@@ -433,6 +434,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
         }
+        close_tabpanel();
     }
     //==================================================
     const RibbonFuncScreen = (ename, options) => {
@@ -576,6 +578,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
         }
+        close_tabpanel();
     }
     //==================================================
     const RibbonFuncModel = (ename, options) => {
@@ -786,13 +789,13 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 ));
                 AppQueue.start();
             },"");
-        }else if (ename == "poselist") {
+        }else if (ename == "poselist_pose") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
             
             if (mainData.elements.win_pose && !mainData.elements.win_pose.closed) {
                 //mainData.elements.win_pose.location.reload(true);
             }else{
-                mainData.elements.win_pose = window.open("static/win/pose/index.html","posewindow",
+                mainData.elements.win_pose = window.open("static/win/pose/index.html?mode=p","posewindow",
                     "width=780,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
                 );
             }
@@ -875,9 +878,29 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 
             });
 
+        }else if (ename == "poselist_motion") {
+            sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
+            
+            if (mainData.elements.win_pose && !mainData.elements.win_pose.closed) {
+                //mainData.elements.win_pose.location.reload(true);
+            }else{
+                mainData.elements.win_pose = window.open("static/win/pose/index.html?mode=m","posewindow",
+                    "width=780,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                );
+            }
+            
+            if (VFileHelper.checkNativeAPI) { 
+                var title = mainData.elements.win_pose.document.title
+                window.elecAPI.focusWindow(title);
+            }else{
+                mainData.elements.win_pose.blur();
+                window.focus();
+                window.blur();
+                mainData.elements.win_pose.focus();
+            }
         }else if (ename == "openmotion") {
             if (options.type == "f") {
-                Sub_openfile("ap","MOTION");
+                Sub_openfile("mot","MOTION");
             }else if (options.type == "i") {
                 mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
                 mainData.elements.projectSelector.selectTypeName = FILEOPTION.MOTION.types[0].description;
@@ -936,7 +959,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {callback: callback, selRoleTitle: tmpcast.roleTitle}
             ));
             AppQueue.start();
-        }else if (ename == "savemotion_vrma") {
+        }else if (ename == "savevrma") {
             if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
                 appAlert(t("msg_error_mediapipe1"));
                 return;
@@ -944,16 +967,39 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             var tmpcast = mainData.states.selectedCast;
             appPrompt(t("msg_input_motionname"),(motionname) => {                
                 var param = tmpcast.roleName + "," + tmpcast.type + ",m";
+                var svtype = "as";
+                if (ename == "savevrma") {
+                    svtype = "overwrite";
+                }
                 //AppQueue.unity.ManageAnimation
                 AppQueue.add(new queueData(
                     {target:tmpcast.avatar.id,method:'ExportVRMA',param:motionname},
                     "savebvhmotion",QD_INOUT.returnJS,
                     callback.savevrmamotion,
-                    {callback: callback, selRoleTitle: tmpcast.roleTitle}
+                    {callback: callback, disktype : options.type, savetype : svtype, selRoleTitle: tmpcast.roleTitle}
                 ));
                 AppQueue.start();
             });
-            
+        }else if (ename == "openvrma")  {
+            if (options.type == "f") {
+                Sub_openfile("vrma","VRMA", 0);
+            }else if (options.type == "i") {
+                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
+                mainData.elements.projectSelector.selectTypeName = FILEOPTION.VRMA.types[0].description;
+                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.VRMA;
+                mainData.elements.projectSelector.selectType = FILEOPTION.MOTION.types;
+                modelOperator.enumerateFilesToProjectSelector("VRMA");
+                
+                mainData.elements.projectSelector.show = true;
+            }else if (options.type == "g") {
+                mainData.elements.loading = true;
+                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
+                mainData.elements.projectSelector.selectTypeName = FILEOPTION.VRMA.types[0].description;
+                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.VRMA;
+                mainData.elements.projectSelector.selectType = FILEOPTION.MOTION.types;
+                modelOperator.enumerateFilesToProjectSelector("VRMA");
+                mainData.elements.projectSelector.show = true;
+            }
         }else if (ename == "connect_vroidhub") {
             mainData.vroidhubapi.generateAuthLink();
         }else if (ename == "list_vroidhub") {
@@ -962,6 +1008,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 console.log(res);
             })
         }
+        close_tabpanel();
     }
     //==================================================
     const RibbonFuncAnimation = (ename, options) => {
@@ -1219,8 +1266,26 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             appConfirm(t("msg_delframe_currentkey_prop"),()=>{
                 modelOperator.removeKeyframe(mainData.states.selectedAvatar, timelineData.states.currentcursor, AF_MOVETYPE.AllProperties);
             });
+        }else if (ename == "delvrmakeyframe") {
+            appConfirm(t("msg_delframe_currentkey_vrma"),()=>{
+                AppQueue.add(new queueData(
+                    {target:mainData.states.selectedAvatar,method:'ClearKeyFrameVRMA'},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+                AppQueue.start();
+                Quasar.Notify.create({
+                    message : t("msg_after_delframe_currentkey_vrma"), 
+                    position : "top-right",
+                    color : "info",
+                    textColor : "black",
+                    timeout : 1500, 
+                    multiLine : true
+                });
+            });
         }else if (ename == "delemptyline") {
         }
+        close_tabpanel();
     }
     //==================================================
     const RibbonFuncSystemEffect = (ename, options) => {
@@ -1449,6 +1514,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
         }
+        close_tabpanel();
     }
     //==================================================
     const RibbonFuncAudio = (ename, options) => {
@@ -1618,6 +1684,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
         }
+        close_tabpanel();
     }
     //===============================================================
     //  Watch events
@@ -1629,7 +1696,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         
     },{deep:true});
     */
-    const wa_tabSelectedIndex = Vue.watch(() => ribbonData.elements.tab.selectIndex, (newval) => {
+    const wa_tabSelectedIndex = Vue.watch(() => ribbonData.elements.tab.selectIndex, (newval,oldval) => {
         if (newval == "effect") {
 
         }else if (newval == "audio") {
@@ -1637,6 +1704,16 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else{
             
         }
+        /*if (!ribbonData.elements.tab.check_show) {
+            if (newval == oldval) {
+                close_tabpanel();
+            }else{
+                ribbonData.elements.tabpanel.style.display = "block";
+            }
+            
+        }*/
+        
+        //ribbonData.elements.tab.oldselectIndex = newval;
     });
     const changeStateLnkdownload = (newval) => {
         if (newval == "initial") {
@@ -1677,7 +1754,16 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     const getCurrentModeSize = () => {
         var tab = parseInt(ribbonData.elements.tab.style.height);
         var tabpanel = parseInt(ribbonData.elements.tabpanel.style.height);
-        return tab + tabpanel;
+        var ret = tab;
+        if (ribbonData.elements.tab.check_show) {
+            ret += tabpanel;
+        }
+        return ret;
+    }
+    const close_tabpanel = () => {
+        if (!ribbonData.elements.tab.check_show) {
+            ribbonData.elements.tabpanel.style.display = "none";
+        }
     }
     
     //===============================================================
@@ -1687,6 +1773,34 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         locale.value = val;
         localStorage.setItem("appLocale",val);
         //AppDB.app.setItem("appLocale",val);
+    }
+    const check_show_changed = (val) => {
+        var h = parseInt(mainData.elements.canvas.scrollArea.height);
+        if (val === true) {
+            ribbonData.elements.tabpanel.style.display = "block";
+            ribbonData.elements.tabpanel.style.position = "relative";
+            mainData.elements.canvas.scrollArea.height = (h - 128) + "px";
+        }else{
+            ribbonData.elements.tabpanel.style.display = "none";
+            ribbonData.elements.tabpanel.style.position = "fixed";
+            mainData.elements.canvas.scrollArea.height = (h + 128) + "px";
+        }
+        
+    }
+    const tabbar_onclick = () => {
+        if (!ribbonData.elements.tab.check_show) {
+            
+            if (ribbonData.elements.tabpanel.style.display == "none") {
+                ribbonData.elements.tabpanel.style.display = "block";
+            }else{
+                if (ribbonData.elements.tab.oldselectIndex == ribbonData.elements.tab.selectIndex) {
+                    ribbonData.elements.tabpanel.style.display = "none";
+                }
+            }
+            
+            
+        }
+        ribbonData.elements.tab.oldselectIndex = ribbonData.elements.tab.selectIndex;
     }
     //---Screen tab--------------------------------
     const applyScreen_onclick = (evt) => {
@@ -1772,6 +1886,27 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     const savemotion_gdrive_onclick = (evt) => {
         RibbonFuncModel('savemotion',{
             type : "g"
+        });
+    }
+    const openvrma_file_onclick = (evt) => {
+        RibbonFuncModel('openvrma',{
+            type : "f"
+        });
+    }
+    const openvrma_internal_onclick = (evt) => {
+        RibbonFuncModel('openvrma',{
+            type : "i"
+        });
+    }
+    const openvrma_gdrive_onclick = (evt) => {
+        RibbonFuncModel('openvrma',{
+            type : "g"
+        });
+    }
+    const savevrma_onclick = (disktype, savetype) => {
+        RibbonFuncModel(savetype,{
+            type : disktype,
+
         });
     }
 
@@ -2044,13 +2179,14 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         chkAppIsOSApp,chkTabSelectEffectORAudio,
 
         //---watches
+        wa_tabSelectedIndex,
         //wa_langbox_selected,
         wa_lnkdownload_onoff,
         changeStateLnkdownload,
         getCurrentModeSize,
         
         //---trigger events
-        language_box_changed,
+        language_box_changed,check_show_changed,tabbar_onclick,
         applyScreen_onclick,originalSize_onclick,downloadVideo_onclick,getCapture_onclick,
         rotate360_onchange,rotateSpeed_onchange,useAntialias_onchange,showIKMarker_onchange,
         ikmarkerSize_onchange,
@@ -2064,6 +2200,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         setmaxframe_onchange,setbaseduration_onchange,setloop_onchange,setcurrentframe_onchange,
         openmotion_file_onclick,openmotion_internal_onclick,openmotion_gdrive_onclick,
         savemotion_file_onclick,savemotion_internal_onclick, savemotion_gdrive_onclick,
+        openvrma_file_onclick,openvrma_internal_onclick,openvrma_gdrive_onclick,savevrma_onclick,
 
         bloom_checked_onchange, bloom_intensity_onchange,
         chroma_checked_onchange, chroma_intensity_onchange, 
