@@ -241,7 +241,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     return;
                 }
 
-                
+                dbtype = "VRMA";
             }
 
             AppQueue.start();
@@ -249,7 +249,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             //---save to recently history
             if (mainData.appconf.confs.application.stock_opened_file_history === true) {
                 //---This timing is PROJECT,OBJECTS only (VRM and IMAGES is after)
-                if (["OBJECTS","IMAGES"].indexOf(dbtype) > -1) {
+                if (["OBJECTS","IMAGES","VRMA"].indexOf(dbtype) > -1) {
                     saveToInternalStorage(dbtype, tmpfile);
                 }
                 
@@ -519,7 +519,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         //---save to recently history
         if (mainData.appconf.confs.application.stock_opened_file_history === true) {
             //---exclude VRM, because it cancelable.
-            if (["OBJECTS","IMAGES"].indexOf(filetype) > -1) {
+            if (["OBJECTS","IMAGES","VRMA"].indexOf(filetype) > -1) {
                 await saveToInternalStorage(filetype, originalfile);
             }
         }
