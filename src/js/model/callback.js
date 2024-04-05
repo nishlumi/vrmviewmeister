@@ -2519,7 +2519,7 @@ export class UnityCallbackFunctioner {
 
         //---File System Access API
         var vopt = new VFileType();
-        vopt = FILEOPTION.MOTION.types[1];
+        vopt = FILEOPTION.VRMA.types[0];
         var vf = new VFileOptions();
         vf.suggestedName = "motion.vrma";
 

@@ -1798,14 +1798,18 @@ export class appModelOperator {
                     vos.type = "application/octet-stream";
                     vos.encoding = "binary";
                     vos.storageType = pfile.uritype;
+
+                    var fdata = null;
                     if (vos.storageType == STORAGE_TYPE.INTERNAL) {
                         f = await AppDB.vrma.getItem(vos.path);
+                        fdata = URL.createObjectURL(f.data);
                     }else if (vos.storageType == STORAGE_TYPE.LOCAL) {
                         if (VFileHelper.checkNativeAPI) {
                             f = await localFileOpen("VRMA",vos);
+                            fdata = URL.createObjectURL(f);
                         }else{
-                            //TODO:ウェブアプリ時、ローカル読み込みの代替手段
-                            //---端末から開いたものは履歴として内蔵にいれるか？
+                            //---if file is local, app is webapp, can not access.
+                            appNotifyWarning(this._t("msg_error_localfile_vrma")+":"+pfile.filename,{timeout:5000});
                         }
                         
                     }else if (
@@ -1814,10 +1818,11 @@ export class appModelOperator {
                     ) {
                        var gfile = await VFileHelper.openFromGoogleDrive(vos.path, ".vrma");
                        f = gfile.data;
+                       fdata = URL.createObjectURL(f.data);
                     }
                     //### TODO: get file from other web uri.
 
-                    var fdata = URL.createObjectURL(f.data);
+                    //var fdata = URL.createObjectURL(f.data);
                     var param = JSON.stringify(new ManagedVRMA(fdata, vos.name));
                     AppQueue.add(new queueData(
                         {target:AppQueue.unity.ManageAnimation,method:'OpenVRMA',param:param},

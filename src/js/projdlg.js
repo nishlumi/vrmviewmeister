@@ -218,10 +218,10 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
     }
     const vrmarow_save_onchecked = (flag, row) => {
         console.log(flag, row);
-        if ((row.storageTypeId == STORAGE_TYPE.LOCAL) && (!VFileHelper.checkNativeAPI)) {
+        /*if ((row.storageTypeId == STORAGE_TYPE.LOCAL) && (!VFileHelper.checkNativeAPI)) {
             appAlert(t("msg_saveproj_vrma"));
             return;
-        }
+        }*/
         const project = mainData.data.project;
         var ishit = project.preloadFiles.findIndex(v => {
             if ((v.fileuri == row.filepath) && (v.filetype == "vrma")) return true;
@@ -233,6 +233,13 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
         data.filename = row.filename;
         data.options = "";
         data.uritype = row.storageTypeId;
+        //---if app is webapp and to open from local
+        if (!VFileHelper.checkNativeAPI) {
+            if (row.storageTypeId == STORAGE_TYPE.LOCAL) {
+                data.uritype = STORAGE_TYPE.INTERNAL;
+            }
+        }
+        
         if (flag === true) {
             //---create
             if (ishit == -1) {

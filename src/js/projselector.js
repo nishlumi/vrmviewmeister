@@ -1,6 +1,6 @@
 import { appModelOperator } from "./model/operator.js";
 import { UnityCallbackFunctioner } from "./model/callback.js";
-import { FILEEXTENSION_ANIMATION, FILEOPTION, INTERNAL_FILE, AF_TARGETTYPE, STORAGE_TYPE, SAMPLEURL, SAMPLEKEY } from "../res/appconst.js";
+import { FILEEXTENSION_ANIMATION, FILEOPTION, INTERNAL_FILE, AF_TARGETTYPE, STORAGE_TYPE, SAMPLEURL, SAMPLEKEY, FILEEXTENSION_VRMA } from "../res/appconst.js";
 import { VVAnimationProject } from "./prop/cls_vvavatar.js";
 import { AppDBMeta } from "./appconf.js";
 import { VFileHelper, VFileOptions, VFileType, VOSFile } from "../../public/static/js/filehelper.js";
@@ -499,6 +499,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
         
     }
     const onclick_download_projectSelector = async () => {
+        var DBNAME = mainData.elements.projectSelector.selectDB;
         if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
 
             const filegd = mainData.appconf.confs.fileloader.gdrive;
@@ -557,13 +558,21 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
             dataDB.getItem(mainData.elements.projectSelector.selected)
             .then(async v => {
                 var fullname = mainData.elements.projectSelector.selected;
-                if (fullname.indexOf(FILEEXTENSION_ANIMATION) == -1) {
+                if ((DBNAME == INTERNAL_FILE.PROJECT) && (fullname.indexOf(FILEEXTENSION_ANIMATION) == -1)) {
                     fullname = mainData.elements.projectSelector.selected + FILEEXTENSION_ANIMATION;
+                }else if ((DBNAME == INTERNAL_FILE.VRMA) && (fullname.indexOf(FILEEXTENSION_VRMA) == -1)) {
+                    fullname = mainData.elements.projectSelector.selected + FILEEXTENSION_VRMA;
                 }
 
                 var vopt = new VFileType();
-                vopt.accept = FILEOPTION.PROJECT.types[0].accept;
-                vopt.description = FILEOPTION.PROJECT.types[0].description;
+                if (DBNAME == INTERNAL_FILE.PROJECT) {
+                    vopt.accept = FILEOPTION.PROJECT.types[0].accept;
+                    vopt.description = FILEOPTION.PROJECT.types[0].description;
+                }else if (DBNAME == INTERNAL_FILE.VRMA) {
+                    vopt.accept = FILEOPTION.VRMA.types[0].accept;
+                    vopt.description = FILEOPTION.VRMA.types[0].description;
+                }
+                
                 var vf = new VFileOptions();
                 vf.types.push(vopt);
                 vf.suggestedName = fullname;
@@ -579,12 +588,22 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                         accval = vopt.accept[obj];
                         break;
                     }
-                    var content = new Blob([JSON.stringify(v)], {type : acckey});
-                    var burl = URL.createObjectURL(content);
-                    VFileHelper.saveUsingDialog(burl,vf,true)
-                    .then(ret => {
-                        URL.revokeObjectURL(burl);
-                    });
+                    if (DBNAME == INTERNAL_FILE.VRMA) {
+                        var content = new Blob([v.data], {type : acckey});
+                        var burl = URL.createObjectURL(content);
+                        VFileHelper.saveUsingDialog(burl,vf,true)
+                        .then(ret => {
+                            URL.revokeObjectURL(burl);
+                        });
+                    }else{
+                        var content = new Blob([JSON.stringify(v)], {type : acckey});
+                        var burl = URL.createObjectURL(content);
+                        VFileHelper.saveUsingDialog(burl,vf,true)
+                        .then(ret => {
+                            URL.revokeObjectURL(burl);
+                        });
+                    }
+                    
                 }
                 
             });

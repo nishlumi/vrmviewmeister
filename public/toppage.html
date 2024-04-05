@@ -5587,11 +5587,15 @@
                                 <q-tooltip>{{$t('rename')}}</q-tooltip>
                             </q-btn>
                         </template>
+                    </template>
+                    <template v-if="(mainData.elements.projectSelector.selectDB == 'scene') || (mainData.elements.projectSelector.selectDB == 'vrma')">
                         <q-btn flat round icon="file_download" :disable="mainData.elements.projectSelector.selected == ''"
                             @click="projectSelectorEvent.onclick_download_projectSelector"
                         >
                             <q-tooltip v-text="$t('download as file')"></q-tooltip>
                         </q-btn>
+                    </template>
+                    <template v-if="mainData.elements.projectSelector.selectDB == 'scene'">
                         <template v-if="!cmp_projectSelectorStorageGDrive">
                             <q-btn flat round icon="file_upload"
                                 @click="projectSelectorEvent.onclick_upload_projectSelector"

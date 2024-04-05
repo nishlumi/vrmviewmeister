@@ -20,7 +20,7 @@
     - VRMAnimationを内蔵ストレージに保存できるようにした。
     - VRMAnimationを内蔵ストレージ・Googleドライブからも開けるようにした。
     - 複数のVRMAnimationを開けるようにした。
-    - VRMAnimationをキーフレームに登録し、複数を切り替えられるようにした。
+    - VRMAnimationをキーフレームに登録し、複数を切り替えられるようにした。    
 * VRM
     - VRMのPelvis, LeftLeg, RightLegのIKマーカーの初期位置を若干変更。
 * プロジェクト設定
