@@ -3,6 +3,7 @@ import { AppDBMeta, VVAppConfig } from "../appconf.js";
 import { AF_TARGETTYPE, FILEOPTION, INTERNAL_FILE, STORAGE_TYPE, UserAnimationEase } from "../../res/appconst.js";
 import { VOSFile } from "../../../public/static/js/filehelper.js";
 import { VRoidHubConnector } from "../model/vroidhub.js";
+import { UnityVector3 } from "./cls_unityrel.js";
 
 export class appMainData {
     constructor(appName, appDesc) {
@@ -12,8 +13,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.6.0",
-            revision : "20240406-01",
+            version : "2.7.0",
+            revision : "20240503-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -204,6 +205,80 @@ export class appMainData {
             },
             vpaddlg : {
                 show : false
+            },
+            mobilepad : {
+                left : {
+                    rotation : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0,0,0)
+                    },
+                    progress : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0, 0, 0)
+                    },
+                    translation : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0,0,0)
+                    },
+                    targetzoom : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0, 0, 0)
+                    },
+                    panelCSS : {
+                        "q-dark" : false,
+                        "text-dark" : true,
+                    },
+                    cpadCSS : {
+                        "bg-grey-9" : false,
+                        "text-white" : false,
+                        "bg-grey-1" : true,
+                        "text-dark" : true,
+                    }
+                },
+                right : {
+                    rotation : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0,0,0)
+                    },
+                    progress : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0, 0, 0)
+                    },
+                    translation : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0,0,0)
+                    },
+                    targetzoom : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0, 0, 0)
+                    },
+                    panelCSS : {
+                        "q-dark" : false,
+                        "text-dark" : true,
+                    },
+                    cpadCSS : {
+                        "bg-grey-9" : false,
+                        "text-white" : false,
+                        "bg-grey-1" : true,
+                        "text-dark" : true,
+                    }
+                },
             },
             navigationdlg : {
                 show : false,

@@ -765,21 +765,31 @@ div.screen-number-area {
 */
 .vpad_rotation {
     width : auto; /*180px;*/
-    height : 150px;
+    height : 100px;
     border-radius : 4px;
 }
 .vpad_progress {
     width : auto;
-    height : 150px;
+    height : 100px;
     border-radius : 4px;
 }
 .vpad_translation {
     width : auto; /*180px;*/
-    height : 150px;
+    height : 100px;
     border-radius : 4px;
 }
 .vpad_slider {
     width : 180px;
+}
+.mblpad_progress {
+    width : auto;
+    height : 50px;
+    border-radius : 4px;
+}
+.mblpad_translation {
+    width : auto; /*180px;*/
+    height : 50px;
+    border-radius : 4px;
 }
 
 /*==============================================================

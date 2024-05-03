@@ -61,6 +61,9 @@
     grid-column: 1 / 8;
     overflow: hidden;
 }
+.grid-mainarea .oneline-namebox {
+    padding-bottom: 15px;
+}
 .oneline-seekbox {
     grid-column : 8 / 25;
     /*padding-top : 1.5rem;*/
@@ -97,8 +100,8 @@
 }*/
 .oneline-timelinebox {
     grid-column : 8 / 25;
-    overflow-x : hidden !important;
-    overflow-y : hidden !important;
+    overflow-x : hidden;
+    overflow-y : hidden;
     height : 100% !important;
 }
 .vvtl-timeline .grid-headerarea {

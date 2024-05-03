@@ -71,7 +71,22 @@ export function defineObjlist (app,Quasar,mainData,objlistData,modelOperator) {
         }
     }
     const getCurrentModeSize = () => {
-        return (objlistData.elements.drawer.miniState) ? objlistData.elements.drawer.miniwidth : objlistData.elements.drawer.width;
+        if ((Quasar.Screen.name == "sm") ||
+            (Quasar.Screen.name == "xs")
+        ){
+            return (objlistData.elements.drawer.miniState) ? objlistData.elements.drawer.miniwidth : objlistData.elements.drawer.width;
+        }else{
+            return (objlistData.elements.drawer.miniState) ? objlistData.elements.drawer.miniwidth : objlistData.elements.drawer.width;
+        }
+    }
+    const setupMobileSize = () => {
+        if ((Quasar.Screen.name == "sm") ||
+            (Quasar.Screen.name == "xs")
+        ){
+            objlistData.elements.drawer.behavior = "mobile";
+            objlistData.elements.drawer.show = true;
+            objlistData.elements.drawer.miniState = true;
+        }
     }
     /**
      * objectlist clicked = <object-list> v-model changed
@@ -161,7 +176,7 @@ export function defineObjlist (app,Quasar,mainData,objlistData,modelOperator) {
     return {
         objlistEvent : Vue.reactive({
             filtered_objectlist,objectlist_typename,objectlist_selectedclass,checkListSelStage,
-            leftdrawer_minimize,getCurrentModeSize,
+            leftdrawer_minimize,getCurrentModeSize,setupMobileSize,
             objectlist_onclicked,
             //---context menu---
             listmenu_rename_onclick,listmenu_info_onclick,listmenu_focus_onclick,

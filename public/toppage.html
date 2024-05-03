@@ -47,12 +47,13 @@
     <q-layout view="hHh LpR fFf" style="overflow:hidden">
         <q-header v-model="mainData.elements.header" class="text-dark" reveal elevated bordered>
 <!--[] Ribbon tab panel ==========================================================================-->
-            <q-toolbar class="bg-primary text-white">
+            <q-toolbar class="bg-primary text-white q-pt-none q-pb-none" style="min-height:32px">
                 
                 <q-tabs
                     v-model="ribbonData.elements.tab.selectIndex"
                     
                     inline-label no-caps dense align="left"
+                    mobile-arrows
                     :style="ribbonData.elements.tab.style"
                     @click="ribbonEvent.tabbar_onclick"
                 >
@@ -385,7 +386,7 @@
                                 :min="0.01"
                                 :max="0.2"
                                 :step="0.01"
-                                color="primary"
+                                color="primary" label
                                 @update:model-value="ribbonEvent.ikmarkerSize_onchange"
                             ></q-slider>
                         </div>
@@ -1471,6 +1472,55 @@
                     </q-item-section>
                 </q-item>
             </q-list>
+            <template v-slot:mini>
+                <q-list bordered>
+                    <q-item v-ripple dense>
+                        <q-item-section avatar>
+                            <q-icon color="primary" name="chevron_left" 
+                                @click="objlistEvent.leftdrawer_minimize"
+                            ></q-icon>
+                        </q-item-section>
+                    </q-item>
+                    
+                </q-list>
+                <q-icon name="height" size="md"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="mobilePadEvent.progress_onswipe_left"
+                    :class="mainData.elements.mobilepad.left.cpadCSS"
+                    class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.left.progress.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <q-icon name="swap_horiz" size="sm"></q-icon><q-icon name="swap_vert" size="sm"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse="mobilePadEvent.translation_onswipe_left"
+                    :class="mainData.elements.mobilepad.left.cpadCSS"
+                    class="mblpad_translation cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                            <q-icon :name="mainData.elements.mobilepad.left.translation.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <q-icon name="zoom_in_map" size="sm"></q-icon><q-icon name="zoom_out_map" size="sm"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="mobilePadEvent.targetzoom_onswipe_left"
+                    :class="mainData.elements.mobilepad.left.cpadCSS"
+                    class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.left.targetzoom.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+            </template>
+
             <div v-show="!objlistData.elements.drawer.miniState">
                 <!--
                       
@@ -1633,6 +1683,54 @@
                 <q-item-section>Properties</q-item-section>
             </q-item>
             </q-list>
+            <template v-slot:mini>
+                <q-list bordered>
+                    <q-item v-ripple dense>
+                        <q-item-section avatar>
+                            <q-icon color="primary" name="chevron_right"
+                                @click="objpropEvent.rightdrawer_minimize"
+                            ></q-icon>
+                        </q-item-section>
+                        <q-item-section>Properties</q-item-section>
+                    </q-item>
+                </q-list>
+                <q-icon name="height" size="md"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="mobilePadEvent.progress_onswipe_right"
+                    :class="mainData.elements.mobilepad.right.cpadCSS"
+                    class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.right.progress.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <q-icon name="swap_horiz" size="sm"></q-icon><q-icon name="swap_vert" size="sm"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse="mobilePadEvent.translation_onswipe_right"
+                    :class="mainData.elements.mobilepad.right.cpadCSS"
+                    class="mblpad_translation cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                            <q-icon :name="mainData.elements.mobilepad.right.translation.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <q-icon name="zoom_in_map" size="sm"></q-icon><q-icon name="zoom_out_map" size="sm"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="mobilePadEvent.targetzoom_onswipe_right"
+                    :class="mainData.elements.mobilepad.right.cpadCSS"
+                    class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.right.targetzoom.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+            </template>
             <div v-show="!objpropData.elements.drawer.miniState">
             <q-expansion-item
                 expand-separator switch-toggle-side dense
@@ -1647,12 +1745,15 @@
                         <div class="row">
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.position3d.x" @update:model-value="objpropEvent.OnChange_Position3D" type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                                <uswipe-input v-model.number="objpropData.elements.common.position3d.x" @update:model-value="objpropEvent.OnChange_Position3D"  dense show-icon :min="-99.9999999" :max="99.9999999" :step="0.01"></uswipe-input>
                             </div>
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.position3d.y" @update:model-value="objpropEvent.OnChange_Position3D" type="number" label="Y" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                                <uswipe-input v-model.number="objpropData.elements.common.position3d.y" @update:model-value="objpropEvent.OnChange_Position3D"  dense show-icon :min="-99.9999999" :max="99.9999999" :step="0.01"></uswipe-input>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.position3d.z" @update:model-value="objpropEvent.OnChange_Position3D" type="number" label="Z" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                                <uswipe-input v-model.number="objpropData.elements.common.position3d.z" @update:model-value="objpropEvent.OnChange_Position3D" dense show-icon :min="-99.9999999" :max="99.9999999" :step="0.01"></uswipe-input>
                             </div>
                         </div>
                         <div class="row">
@@ -1664,12 +1765,15 @@
                         <div class="row">
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.rotation3d.x" @update:model-value="objpropEvent.OnChange_Rotation3D" type="number" label="X" dense :min="0.0" :max="360.0" :step="1"></q-input>
+                                <uswipe-input show-icon loop-value v-model.number="objpropData.elements.common.rotation3d.x" @update:model-value="objpropEvent.OnChange_Rotation3D" :min="0.0" :max="360.0" :step="1"></uswipe-input>
                             </div>
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.rotation3d.y" @update:model-value="objpropEvent.OnChange_Rotation3D" type="number" label="Y" dense :min="0.0" :max="360.0" :step="1"></q-input>
+                                <uswipe-input show-icon loop-value v-model.number="objpropData.elements.common.rotation3d.y" @update:model-value="objpropEvent.OnChange_Rotation3D" :min="0.0" :max="360.0" :step="1"></uswipe-input>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.rotation3d.z" @update:model-value="objpropEvent.OnChange_Rotation3D" type="number" label="Z" dense :min="0.0" :max="360.0" :step="1"></q-input>
+                                <uswipe-input show-icon loop-value v-model.number="objpropData.elements.common.rotation3d.z" @update:model-value="objpropEvent.OnChange_Rotation3D" :min="0.0" :max="360.0" :step="1"></uswipe-input>
                             </div>
                         </div>
                         <div class="row">
@@ -1686,11 +1790,13 @@
                         <div class="row">
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.scale3d.x" @update:model-value="objpropEvent.OnChange_Scale3D" type="number" label="X" dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.scale3d.x" @update:model-value="objpropEvent.OnChange_Scale3D" type="number"  dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></uswipe-input>
                             </div>
                             <template v-if="objpropData.elements.common.scaleIsOnlyX === false">                            
                                 <template v-if="!objpropEvent.checkStage">
                                     <div class="col-4 q-pr-sm">
                                         <q-input v-model.number="objpropData.elements.common.scale3d.y" @update:model-value="objpropEvent.OnChange_Scale3D" type="number" label="Y" dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.common.scale3d.y" @update:model-value="objpropEvent.OnChange_Scale3D" type="number" dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></uswipe-input>
                                     </div>
                                 </template>
                                 <template v-else>
@@ -1701,6 +1807,7 @@
                                 
                                 <div class="col-4">
                                     <q-input v-model.number="objpropData.elements.common.scale3d.z" @update:model-value="objpropEvent.OnChange_Scale3D" type="number" label="Z" dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.common.scale3d.z" @update:model-value="objpropEvent.OnChange_Scale3D" type="number"  dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></uswipe-input>
                                 </div>
                             </template>
                         </div>
@@ -1730,9 +1837,11 @@
                                 </div>
                                 <div class="col-4">
                                     <q-input v-model.number="objpropData.elements.common.drag" @update:model-value="objpropEvent.OnChange_RigidDrag" type="number" :label="$t('rigid_drag')" dense  :min="0" :max="20" :step="0.05"></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.common.drag" @update:model-value="objpropEvent.OnChange_RigidDrag"  :min="0" :max="20" :step="0.05"></uswipe-input>
                                 </div>
                                 <div class="col-4 offset-sm-1">
                                     <q-input v-model.number="objpropData.elements.common.angularDrag" @update:model-value="objpropEvent.OnChange_RigidDrag" type="number" :label="$t('rigid_adrag')" dense  :min="0" :max="20" :step="0.05"></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.common.angularDrag" @update:model-value="objpropEvent.OnChange_RigidDrag" :min="0" :max="20" :step="0.05"></uswipe-input>
                                 </div>
                             </div>
                         </template>
@@ -1742,9 +1851,11 @@
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.jumpNum" @update:model-value="objpropEvent.OnChange_JumpNum" type="number" :label="$t('jumpcount')" dense  :min="0" :max="99" :step="1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.jumpNum" @update:model-value="objpropEvent.OnChange_JumpNum" :min="0" :max="99" :step="1"></uswipe-input>
                             </div>
                             <div class="col-4 offset-sm-1">
                                 <q-input v-model.number="objpropData.elements.common.jumpPower" @update:model-value="objpropEvent.OnChange_JumpPower" type="number" :label="$t('jumppower')" dense  :min="-10" :max="10" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.jumpPower" @update:model-value="objpropEvent.OnChange_JumpPower" :min="-10" :max="10" :step="0.1"></uswipe-input>
                             </div>
                         </div>
                         <div class="row" v-if="!objpropEvent.checkStage">
@@ -1759,9 +1870,15 @@
                                 <q-tab-panels v-model="objpropData.elements.common.effectTabSelected" animated>
                                     <q-tab-panel name="punch">
                                         <div class="row">
-                                            <div class="col-12">
+                                            <div class="col-5">
                                                 <q-checkbox v-model="objpropData.elements.common.punch.isEnable" label="On" @update:model-value="objpropEvent.OnChange_PunchColumn">
                                             </div>
+                                            <div class="col-7">
+                                                <q-checkbox v-model="objpropData.elements.common.punch_edited" :label="$t('cons_modify')" ></q-checkbox>
+                                                <!--<q-btn color="primary" :label="$t('cons_apply')" @click="objpropEvent.OnChange_PunchColumn"></q-btn>-->
+                                            </div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-12">
                                                 <q-radio v-model="objpropData.elements.common.punch.translationType" :options="objpropData.elements.common.punchTypeOptions" :val="3" label="Position" dense class="q-pr-xs" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-radio>
                                                 <q-radio v-model="objpropData.elements.common.punch.translationType" :options="objpropData.elements.common.punchTypeOptions" :val="4" label="Rotation" dense class="q-pr-xs" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-radio>
@@ -1769,26 +1886,36 @@
                                             </div>
                                             <div class="col-4 q-pr-sm">
                                                 <q-input v-model.number="objpropData.elements.common.punch.punch.x"  type="number" label="X" dense :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.punch.x"  :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                             <div class="col-4 q-pr-sm">
                                                 <q-input v-model.number="objpropData.elements.common.punch.punch.y"  type="number" label="Y" dense :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.punch.y" :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                             <div class="col-4">
                                                 <q-input v-model.number="objpropData.elements.common.punch.punch.z"  type="number" label="Z" dense :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.punch.z" :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                             <div class="col-5">
                                                 <q-input v-model.number="objpropData.elements.common.punch.vibrato"  type="number" :label="$t('vibrato')" dense :min="0" :max="99" :step="1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.vibrato" :min="0" :max="99" :step="1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                             <div class="col-5 offset-sm-2">
                                                 <q-input v-model.number="objpropData.elements.common.punch.elasiticity"  type="number" :label="$t('elasiticity')" dense :min="0" :max="1" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.elasiticity" :min="0" :max="1" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                         </div>
                                     </q-tab-panel>
                                     <q-tab-panel name="shake">
                                         <div class="row">
-                                            <div class="col-12">
+                                            <div class="col-5">
                                                 <q-checkbox v-model="objpropData.elements.common.shake.isEnable" label="On" @update:model-value="objpropEvent.OnChange_ShakeColumn">
                                             </div>
+                                            <div class="col-7">
+                                                <q-checkbox v-model="objpropData.elements.common.shake_edited" :label="$t('cons_modify')" ></q-checkbox>
+                                            </div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-12">
                                                 <q-radio v-model="objpropData.elements.common.shake.translationType" :options="objpropData.elements.common.shakeTypeOptions" :val="3" label="Position" dense class="q-pr-xs" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-radio>
                                                 <q-radio v-model="objpropData.elements.common.shake.translationType" :options="objpropData.elements.common.shakeTypeOptions" :val="4" label="Rotation" dense class="q-pr-xs" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-radio>
@@ -1796,12 +1923,15 @@
                                             </div>
                                             <div class="col-4 q-pr-sm">
                                                 <q-input v-model.number="objpropData.elements.common.shake.strength"  type="number" :label="$t('jumppower')" dense :min="0" :max="4" :step="0.01" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.shake.strength" :min="0" :max="4" :step="0.01" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></uswipe-input>
                                             </div>
                                             <div class="col-4 q-pr-sm">
                                                 <q-input v-model.number="objpropData.elements.common.shake.vibrato"  type="number" :label="$t('vibrato')" dense :min="0" :max="99" :step="1" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.shake.vibrato"  type="number" :label="$t('vibrato')" dense :min="0" :max="99" :step="1" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></uswipe-input>
                                             </div>
                                             <div class="col-4">
                                                 <q-input v-model.number="objpropData.elements.common.shake.randomness"  type="number" :label="$t('randomness')" dense :min="0" :max="100" :step="1" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.shake.randomness" :min="0" :max="100" :step="1" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></uswipe-input>
                                             </div>
                                             <div class="col-12">
                                                 <q-checkbox v-model="objpropData.elements.common.shake.fadeOut" :label="$t('fadeOut')" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn">
@@ -1828,9 +1958,11 @@
                         <div class="row">
                             <div class="col-6 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.position2d.x" @update:model-value="objpropEvent.OnChange_Position2D" type="number" label="X" dense :min="0" :max="100" :step="1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.position2d.x" @update:model-value="objpropEvent.OnChange_Position2D" :min="0" :max="100" :step="1"></uswipe-input>
                             </div>
                             <div class="col-6 col3_input">
                                 <q-input v-model.number="objpropData.elements.common.position2d.y" @update:model-value="objpropEvent.OnChange_Position2D" type="number" label="Y" dense :min="0" :max="100" :step="1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.position2d.y" @update:model-value="objpropEvent.OnChange_Position2D" :min="0" :max="100" :step="1"></uswipe-input>
                             </div>
                         </div>
                         <div class="row">
@@ -1845,6 +1977,7 @@
                             </div>-->
                             <div class="col-4 offset-sm-2">
                                 <q-input v-model.number="objpropData.elements.common.rotation2d.z" @update:model-value="objpropEvent.OnChange_Rotation2D" type="number" label="Z" dense :min="0" :max="360" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.rotation2d.z" @update:model-value="objpropEvent.OnChange_Rotation2D" :min="0" :max="360" :step="0.1"></uswipe-input>
                             </div>
                         </div>
                         <div class="row" v-if="objpropEvent.checkUImage">
@@ -1853,9 +1986,11 @@
                             </div>
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.size2d.x" @update:model-value="objpropEvent.OnChange_Size2D" type="number" label="X" dense :min="0" :max="9999" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.size2d.x" @update:model-value="objpropEvent.OnChange_Size2D" :min="0" :max="9999" :step="0.1"></uswipe-input>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.size2d.y" @update:model-value="objpropEvent.OnChange_Size2D" type="number" label="Y" dense :min="0" :max="9999" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.size2d.y" @update:model-value="objpropEvent.OnChange_Size2D" :min="0" :max="9999" :step="0.1"></uswipe-input>
                             </div>
                         </div>
                         <div class="row">
@@ -1864,9 +1999,11 @@
                             </div>
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.scale2d.x" @update:model-value="objpropEvent.OnChange_Scale2D" type="number" label="X" dense :min="0" :max="99" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.scale2d.x" @update:model-value="objpropEvent.OnChange_Scale2D" :min="0" :max="99" :step="0.1"></uswipe-input>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.scale2d.y" @update:model-value="objpropEvent.OnChange_Scale2D" type="number" label="Y" dense :min="0" :max="99" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.scale2d.y" @update:model-value="objpropEvent.OnChange_Scale2D" :min="0" :max="99" :step="0.1"></uswipe-input>
                             </div>
                         </div>
                     </q-card-section>
@@ -1897,6 +2034,10 @@
                                         :min="0" :max="10" :step="1"
                                         @update:model-value="objpropEvent.OnChange_HeadLock"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model="objpropData.elements.vrmui.headLock"
+                                        :min="0" :max="10" :step="1"
+                                        @update:model-value="objpropEvent.OnChange_HeadLock"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row">
@@ -2376,11 +2517,17 @@
                                                 <q-input v-model="objpropData.elements.vrmui.blink.interval" type="number" :label="$t('blink_interval')" :min="0" :max="10" :step="0.1"
                                                     @update:model-value="objpropEvent.OnChange_Blink_interval" dense
                                                 ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.blink.interval" :min="0" :max="10" :step="0.1"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_interval" 
+                                                ></uswipe-input>
                                             </div>
                                             <div class="col-5 offset-xs-1">
                                                 <q-input v-model="objpropData.elements.vrmui.blink.opening" type="number" :label="$t('blink_opening')" :min="0" :max="10" :step="0.01"
                                                     @update:model-value="objpropEvent.OnChange_Blink_opening" dense
                                                 ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.blink.opening" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_opening" 
+                                                ></uswipe-input>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -2388,11 +2535,17 @@
                                                 <q-input v-model="objpropData.elements.vrmui.blink.closing" type="number" :label="$t('blink_closing')" :min="0" :max="10" :step="0.01"
                                                     @update:model-value="objpropEvent.OnChange_Blink_closing" dense
                                                 ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.blink.closing" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_closing" 
+                                                ></uswipe-input>
                                             </div>
                                             <div class="col-5 offset-xs-1">
                                                 <q-input v-model="objpropData.elements.vrmui.blink.closeTime" type="number" :label="$t('blink_closetime')" :min="0" :max="10" :step="0.01"
                                                     @update:model-value="objpropEvent.OnChange_Blink_closeTime" dense
                                                 ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.blink.closeTime" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_closeTime" 
+                                                ></uswipe-input>
                                             </div>
                                         </div>
                                     </q-tab-panel>
@@ -2409,11 +2562,17 @@
                                                 <q-input v-model="objpropData.elements.vrmui.lipsync.interval" type="number" :label="$t('lipsync_interval')" :min="0" :max="10" :step="0.1"
                                                     @update:model-value="objpropEvent.OnChange_Lipsync_interval" dense
                                                 ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.lipsync.interval" :min="0" :max="10" :step="0.1"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_interval"
+                                                ></uswipe-input>
                                             </div>
                                             <div class="col-5 offset-xs-1">
                                                 <q-input v-model="objpropData.elements.vrmui.lipsync.opening" type="number" :label="$t('lipsync_opening')" :min="0" :max="10" :step="0.01"
                                                     @update:model-value="objpropEvent.OnChange_Lipsync_opening" dense
                                                 ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.lipsync.opening" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_opening"
+                                                ></uswipe-input>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -2421,6 +2580,9 @@
                                                 <q-input v-model="objpropData.elements.vrmui.lipsync.closing" type="number" :label="$t('lipsync_closing')" :min="0" :max="10" :step="0.01"
                                                     @update:model-value="objpropEvent.OnChange_Lipsync_closing" dense
                                                 ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.lipsync.closing" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_closing" 
+                                                ></uswipe-input>
                                             </div>
                                             <div class="col-5 offset-xs-1">
                                                 
@@ -2859,6 +3021,10 @@
                                         type="number" :min="1" :max="100" :step="0.25" dense
                                         @update:model-value="objpropEvent.cameraFov_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.fov" 
+                                        :min="1" :max="100" :step="0.25" 
+                                        @update:model-value="objpropEvent.cameraFov_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row prop-row-box-width">
@@ -2870,6 +3036,10 @@
                                         type="number" :min="11" :max="19" :step="1" dense
                                         @update:model-value="objpropEvent.cameraDepth_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.depth" 
+                                        :min="11" :max="19" :step="1" 
+                                        @update:model-value="objpropEvent.cameraDepth_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row prop-row-box-width">
@@ -2886,12 +3056,20 @@
                                                 type="number" :min="0" :max="1" :step="0.05" dense
                                                 @update:model-value="objpropEvent.cameraViewport_onchange"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.vp.position.x" 
+                                                :min="0" :max="1" :step="0.05" 
+                                                @update:model-value="objpropEvent.cameraViewport_onchange"
+                                            ></uswipe-input>
                                         </div>
                                         <div class="col-3">
                                             <q-input v-model.number="objpropData.elements.cameraui.vp.position.y" 
                                                 type="number" :min="0" :max="1" :step="0.05" dense
                                                 @update:model-value="objpropEvent.cameraViewport_onchange"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.vp.position.y" 
+                                                :min="0" :max="1" :step="0.05" 
+                                                @update:model-value="objpropEvent.cameraViewport_onchange"
+                                            ></uswipe-input>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2901,12 +3079,20 @@
                                                 type="number" :min="0" :max="1" :step="0.05" dense
                                                 @update:model-value="objpropEvent.cameraViewport_onchange"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.vp.size.x" 
+                                                :min="0" :max="1" :step="0.05" 
+                                                @update:model-value="objpropEvent.cameraViewport_onchange"
+                                            ></uswipe-input>
                                         </div>
                                         <div class="col-3">
                                             <q-input v-model.number="objpropData.elements.cameraui.vp.size.y" 
                                                 type="number" :min="0" :max="1" :step="0.05" dense
                                                 @update:model-value="objpropEvent.cameraViewport_onchange"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.vp.size.y" 
+                                                :min="0" :max="1" :step="0.05" 
+                                                @update:model-value="objpropEvent.cameraViewport_onchange"
+                                            ></uswipe-input>
                                         </div>
                                     </div>
                                 </div>
@@ -2933,12 +3119,20 @@
                                                 type="number" :min="0" :max="1000" :step="1" dense
                                                 @update:model-value="objpropEvent.cameraRenderTexture_resize"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.renderTexture.x" 
+                                                :min="0" :max="1000" :step="1" 
+                                                @update:model-value="objpropEvent.cameraRenderTexture_resize"
+                                            ></uswipe-input>
                                         </div>
                                         <div class="col-3">
                                             <q-input v-model.number="objpropData.elements.cameraui.renderTexture.y" 
                                                 type="number" :min="0" :max="1000" :step="1" dense
                                                 @update:model-value="objpropEvent.cameraRenderTexture_resize"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.renderTexture.y" 
+                                                 :min="0" :max="1000" :step="1" 
+                                                @update:model-value="objpropEvent.cameraRenderTexture_resize"
+                                            ></uswipe-input>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -3744,24 +3938,40 @@
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="X"
                                                                     @update:model-value="ui.event"
                                                                 ></q-input>
+                                                                <uswipe-input show-icon v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].x" 
+                                                                    :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" 
+                                                                    @update:model-value="ui.event"
+                                                                ></uswipe-input>
                                                             </div>
                                                             <div class="col-5 offset-sm-1">
                                                                 <q-input v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].y" 
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="Y"
                                                                     @update:model-value="ui.event"
                                                                 ></q-input>
+                                                                <uswipe-input show-icon v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].y" 
+                                                                    :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" 
+                                                                    @update:model-value="ui.event"
+                                                                ></uswipe-input>
                                                             </div>
                                                             <div class="col-5 offset-sm-1">
                                                                 <q-input v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].z" 
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="Z"
                                                                     @update:model-value="ui.event"
                                                                 ></q-input>
+                                                                <uswipe-input show-icon v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].z" 
+                                                                    :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" 
+                                                                    @update:model-value="ui.event"
+                                                                ></uswipe-input>
                                                             </div>
                                                             <div class="col-5 offset-sm-1">
                                                                 <q-input v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].w" 
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="W"
                                                                     @update:model-value="ui.event"
                                                                 ></q-input>
+                                                                <uswipe-input show-icon v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].w" 
+                                                                    :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" 
+                                                                    @update:model-value="ui.event"
+                                                                ></uswipe-input>
                                                             </div>
                                                         </div>
                                                     </template>
@@ -3918,6 +4128,11 @@
                                         @update:model-value="objpropEvent.effectColliderSize_onchange"
                                         :readonly="!objpropData.elements.effectui.colliderOn"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.effectui.colliderSize" 
+                                        :min="0" :max="4" :step="0.01" 
+                                        @update:model-value="objpropEvent.effectColliderSize_onchange"
+                                        :disable="!objpropData.elements.effectui.colliderOn"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                         </q-card-section>
@@ -4127,24 +4342,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4156,24 +4387,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4185,24 +4432,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4214,24 +4477,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4243,24 +4522,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4272,24 +4567,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                             </template>
@@ -4350,6 +4661,10 @@
                                             :min="0" :max="1" :step="0.01"
                                             @update:model-value="objpropEvent.skySunsize_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.sunsize"  
+                                            :min="0" :max="1" :step="0.01"
+                                            @update:model-value="objpropEvent.skySunsize_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row" v-if="objpropEvent.checkSkyShaderProcedural">
@@ -4358,6 +4673,10 @@
                                             :min="1" :max="10" :step="0.1"
                                             @update:model-value="objpropEvent.skySunsizeConvergence_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.sunsize_convergence"  
+                                            :min="1" :max="10" :step="0.1"
+                                            @update:model-value="objpropEvent.skySunsizeConvergence_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row" v-if="objpropEvent.checkSkyShaderProcedural">
@@ -4366,6 +4685,10 @@
                                             :min="0" :max="5" :step="0.1"
                                             @update:model-value="objpropEvent.skyAtmosphere_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.atmosphere_thickness"  
+                                            :min="0" :max="5" :step="0.1"
+                                            @update:model-value="objpropEvent.skyAtmosphere_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4374,6 +4697,10 @@
                                             :min="0" :max="8" :step="0.1"
                                             @update:model-value="objpropEvent.skyExposure_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.exposure"  
+                                            :min="0" :max="8" :step="0.1"
+                                            @update:model-value="objpropEvent.skyExposure_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4382,6 +4709,10 @@
                                             :min="0" :max="360" :step="1"
                                             @update:model-value="objpropEvent.skyRotation_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.rotation" 
+                                            :min="0" :max="360" :step="1" loop-value
+                                            @update:model-value="objpropEvent.skyRotation_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row q-mb-sm">
@@ -4433,16 +4764,28 @@
                                     <q-input v-model.number="objpropData.elements.stageui.dlight_rotation.x" type="number" label="X" dense :min="0" :max="360" :step="0.1"
                                         @update:model-value="objpropEvent.dlightRotation_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.dlight_rotation.x" 
+                                        :min="0" :max="360" :step="0.1" loop-value
+                                        @update:model-value="objpropEvent.dlightRotation_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-4 col3_input">
                                     <q-input v-model.number="objpropData.elements.stageui.dlight_rotation.y" type="number" label="Y" dense :min="0" :max="360" :step="0.1"
                                         @update:model-value="objpropEvent.dlightRotation_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.dlight_rotation.y"
+                                        :min="0" :max="360" :step="0.1" loop-value
+                                        @update:model-value="objpropEvent.dlightRotation_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-4">
                                     <q-input v-model.number="objpropData.elements.stageui.dlight_rotation.z" type="number" label="Z" dense :min="0" :max="360" :step="0.1"
                                         @update:model-value="objpropEvent.dlightRotation_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.dlight_rotation.z" 
+                                        :min="0" :max="360" :step="0.1" loop-value
+                                        @update:model-value="objpropEvent.dlightRotation_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row q-mb-sm">
@@ -4570,11 +4913,19 @@
                                     <q-input v-model.number="objpropData.elements.stageui.winddirection.xz" type="number" :label="$t('horizontal')" dense :min="0" :max="360" :step="1"
                                         @update:model-value="objpropEvent.windDirectionXZ_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.winddirection.xz" 
+                                        :min="0" :max="360" :step="1" loop-value
+                                        @update:model-value="objpropEvent.windDirectionXZ_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-4">
                                     <q-input v-model.number="objpropData.elements.stageui.winddirection.y" type="number" :label="$t('vertical')" dense :min="0" :max="360" :step="1"
                                         @update:model-value="objpropEvent.windDirectionY_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.winddirection.y" 
+                                        :min="0" :max="360" :step="1" loop-value
+                                        @update:model-value="objpropEvent.windDirectionY_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row q-mb-sm">
@@ -4582,11 +4933,19 @@
                                     <q-input v-model.number="objpropData.elements.stageui.windpower" type="number" :label="$t('Wind power')" dense :min="-100" :max="100" :step="0.1"
                                         @update:model-value="objpropEvent.windPower_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.windpower" 
+                                        :min="-100" :max="100" :step="0.1"
+                                        @update:model-value="objpropEvent.windPower_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-5 offset-1">
                                     <q-input v-model.number="objpropData.elements.stageui.windfrequency" type="number" :label="$t('Wind frequency')" dense :min="0" :max="1" :step="0.01"
                                         @update:model-value="objpropEvent.windFrequency_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.windfrequency" 
+                                        :min="0" :max="1" :step="0.01"
+                                        @update:model-value="objpropEvent.windFrequency_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row">
@@ -4651,9 +5010,15 @@
                             </div>
                             <div class="row">
                                 <div class="col-5">
-                                    <q-input v-model.number="objpropData.elements.textui.size" type="number" :min="7" :max="128" :step="1" :label="$t('size')"
+                                    <q-input v-model.number="objpropData.elements.textui.size" 
+                                        type="number" :label="$t('size')"
+                                        :min="7" :max="128" :step="1" 
                                         @update:model-value="objpropEvent.textFontsize_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.textui.size" 
+                                        :min="7" :max="128" :step="1" 
+                                        @update:model-value="objpropEvent.textFontsize_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <!--
                                 <div class="offset-sm-1 col-6">
@@ -4773,10 +5138,26 @@
                                     {{ $t('textarea_size') }}
                                 </div>
                                 <div class="col-4 q-pr-sm">
-                                    <q-input v-model.number="objpropData.elements.textui.area_size.x" @update:model-value="objpropEvent.textAreasize_onchange" type="number" label="X" dense :min="1" :max="999" :step="1"></q-input>
+                                    <q-input v-model.number="objpropData.elements.textui.area_size.x" 
+                                        @update:model-value="objpropEvent.textAreasize_onchange" 
+                                        type="number" label="X" dense 
+                                        :min="1" :max="999" :step="1"
+                                    ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.textui.area_size.x" 
+                                        @update:model-value="objpropEvent.textAreasize_onchange" 
+                                        :min="1" :max="999" :step="1"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-4">
-                                    <q-input v-model.number="objpropData.elements.textui.area_size.y" @update:model-value="objpropEvent.textAreasize_onchange" type="number" label="Y" dense :min="1" :max="999" :step="1"></q-input>
+                                    <q-input v-model.number="objpropData.elements.textui.area_size.y" 
+                                        @update:model-value="objpropEvent.textAreasize_onchange" 
+                                        type="number" label="Y" dense 
+                                        :min="1" :max="999" :step="1"
+                                    ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.textui.area_size.y" 
+                                        @update:model-value="objpropEvent.textAreasize_onchange" 
+                                        :min="1" :max="999" :step="1"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row">
@@ -4969,7 +5350,7 @@
                         <div class="oneline-namebox">
                             <div class="namebox-child"></div>
                         </div>
-                        <div class="oneline-timelinebox" ref="scroll_header_x">
+                        <div class="oneline-timelinebox" ref="scroll_header_x" @scroll="timelineEvent.scroll_header_x_onscroll">
                             <!-- frame number -->
                             <template v-if="timelineData.data.headercounts != null">
                                 <div class="timelinebox-content">
@@ -5017,7 +5398,7 @@
                             </q-scroll-area>-->
                             
                         </div>
-                        <div class="oneline-timelinebox" ref="scroll_keyframe_xy"  @wheel="timelineEvent.timelinebox_onwheel">
+                        <div class="oneline-timelinebox" style="overflow-x:auto;" ref="scroll_keyframe_xy" @scroll="timelineEvent.scroll_keyframe_xy_onscroll" @wheel="timelineEvent.timelinebox_onwheel">
                             <!-- timeline key frames -->
                             <div v-for="(item) in timelineData.data.timelines" :key="item.roleName"
                                  :dataIndex="item.roleName" :class="item.selected"
@@ -5069,7 +5450,7 @@
                     </div>
                     <div class="grid-oneline grid-scrollarea">
                         
-                        <div class="grid-scrollbarx scroll-on" ref="grid_scrollx" @scroll="timelineEvent.gridscrollx_onscroll">
+                        <div class="grid-scrollbarx scroll-on common_ui_off" ref="grid_scrollx" @scroll="timelineEvent.gridscrollx_onscroll">
                             <div class="scroll-content">
                                 <template v-if="timelineData.data.headercounts != null">
                                     <div v-for="(item,index) in timelineData.data.headercounts" :key="index" 

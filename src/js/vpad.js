@@ -12,12 +12,13 @@ const template = `
     </div>
     <div :class="data.elements.panelCSS" style="width:100%;height:calc(100% - 40px);">
     <div class="row">
-            <div class="col-5" style="text-align:center">{{ $t('rotation') }}</div>
+            <div class="col-4" style="text-align:center">{{ $t('rotation') }}</div>
             <div class="col-2" style="text-align:center">{{ $t('progress') }}</div>
-            <div class="col-5" style="text-align:center">{{ $t('translate') }}</div>
+            <div class="col-2" style="text-align:center">{{ $t('targetzoom_camera') }}</div>
+            <div class="col-4" style="text-align:center">{{ $t('translate') }}</div>
         </div>
         <div class="row">
-            <div class="col-5">
+            <div class="col-4">
                 <q-card
                     v-touch-pan.prevent.mouse="onswipe_rotation"
                     :class="data.elements.cpadCSS"
@@ -43,7 +44,20 @@ const template = `
                     </div>
                 </q-card>
             </div>
-            <div class="col-5">
+            <div class="col-2">
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="onswipe_targetzoom"
+                    :class="data.elements.cpadCSS"
+                    class="vpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="data.elements.targetzoom.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+            </div>
+            <div class="col-4">
                 <q-card
                     v-touch-pan.prevent.mouse="onswipe_translation"
                     :class="data.elements.cpadCSS"
@@ -58,7 +72,7 @@ const template = `
             </div>
         </div>
         <div class="row">
-            <div class="col-10  q-pl-sm q-pr-sm">
+            <div class="col-6 q-pl-sm q-pr-sm">
                 <q-btn flat round @click="onclick_reset_center_target">
                     <q-tooltip>{{ $t('reset_zaxis')}}</q-tooltip>
                     <q-icon name="flip_camera_android" size="md"></q-icon>
@@ -66,14 +80,17 @@ const template = `
                 <q-btn flat dense icon="restart_alt" 
                     :label="$t('ribbon_screen_camerareset')" 
                     @click="resetcamera_onclick" no-caps ></q-btn>
-                <q-btn flat round v-touch-repeat.mouse="onrepeat_targetzoomin">
+                <!--<q-btn flat round v-touch-repeat.mouse="onrepeat_targetzoomin">
                     <q-tooltip>{{ $t('zoomin_camera_et_target')}}</q-tooltip>
                     <q-icon name="zoom_in_map" size="md"></q-icon>
                 </q-btn>
                 <q-btn flat round  v-touch-repeat.mouse="onrepeat_targetzoomout">
                     <q-tooltip>{{ $t('zoomout_camera_et_target')}}</q-tooltip>
                     <q-icon name="zoom_out_map" size="md"></q-icon>
-                </q-btn>
+                </q-btn>-->
+                
+            </div>
+            <div class="col-6">
                 
             </div>
             
@@ -81,29 +98,7 @@ const template = `
     </div>
 </div>
 `;
-const bkup = `
-<q-slider v-model="data.elements.rotation.power" class="vpad_slider" label :min="0.5" :max="4" :step="0.1"></q-slider>
-<q-slider v-model="data.elements.translation.power" class="vpad_slider" label :min="0.5" :max="4" :step="0.1"></q-slider>
-    <div class="text-center">
-        <q-btn flat round v-touch-repeat.mouse="onclick_rotation_up"><q-icon name="arrow_upward" size="md"></q-icon></q-btn>
-        <div class="row items-center">
-            <q-btn flat round v-touch-repeat.mouse="onclick_rotation_left"><q-icon name="arrow_back" size="md"></q-icon></q-btn>
-            <q-btn flat round v-touch-repeat.mouse="onclick_rotation_zero"><q-icon name="radio_button_unchecked" size="md"></q-icon></q-btn>
-            <q-btn flat round v-touch-repeat.mouse="onclick_rotation_right"><q-icon name="arrow_forward" size="md"></q-icon></q-btn>
-        </div>
-        <q-btn flat round v-touch-repeat.mouse="onclick_rotation_down"><q-icon name="arrow_downward" size="md"></q-icon></q-btn>
-    </div>
-    <div class="text-center">
-        <q-btn flat round v-touch-repeat.mouse="onclick_translation_up"><q-icon name="arrow_upward" size="md"></q-icon></q-btn>
-        <div class="row items-center">
-            <q-btn flat round v-touch-repeat.mouse="onclick_translation_left"><q-icon name="arrow_back" size="md"></q-icon></q-btn>
-            <q-icon :icon="data.value.elements.translation.icon"></q-icon>
-            <q-btn flat round v-touch-repeat.mouse="onclick_translation_zero"><q-icon name="radio_button_unchecked" size="md"></q-icon></q-btn>
-            <q-btn flat round v-touch-repeat.mouse="onclick_translation_right"><q-icon name="arrow_forward" size="md"></q-icon></q-btn>
-        </div>
-        <q-btn flat round v-touch-repeat.mouse="onclick_translation_down"><q-icon name="arrow_downward" size="md"></q-icon></q-btn>
-    </div>
-`;
+
 
 export function defineVpadDlg(app, Quasar) {
     app.component("VpadDlg",{
@@ -161,6 +156,12 @@ export function defineVpadDlg(app, Quasar) {
                         info : null,
                         power : 2,
                         current : new UnityVector3(0,0,0)
+                    },
+                    targetzoom : {
+                        icon : "radio_button_unchecked",
+                        info : null,
+                        power : 2,
+                        current : new UnityVector3(0, 0, 0)
                     },
                     panelCSS : {
                         "q-dark" : false,
@@ -357,6 +358,37 @@ export function defineVpadDlg(app, Quasar) {
                 ));
                 AppQueue.start();
             }
+            const onswipe_targetzoom = ({evt, ...newInfo}) => {
+                data.value.elements.targetzoom.info = newInfo;
+
+                var moveVal = newInfo.distance;
+                moveVal.x = moveVal.x * 0.1;
+                moveVal.y = moveVal.y * 0.1;
+
+                var relpos = {x: 0, y: 0, z:0};
+                //data.value.elements.translation.current.x = 0;
+                //data.value.elements.translation.current.y = 0;
+                if (newInfo.direction == "up") {
+                    data.value.elements.targetzoom.icon = "zoom_in_map";
+                    data.value.elements.targetzoom.current.z += moveVal.y;
+                    relpos.z = -1 * parseFloat(translateRate.value);
+                }else if (newInfo.direction == "down") {
+                    data.value.elements.targetzoom.icon = "zoom_out_map";
+                    data.value.elements.targetzoom.current.z -= moveVal.y;
+                    relpos.z = 1 * parseFloat(translateRate.value);
+                }else{
+                    data.value.elements.targetzoom.icon = "radio_button_unchecked";
+                }
+
+                //var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
+                var param = [relpos.x, relpos.y, relpos.z].join(",");
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.XR,method:'MoveCamera2TargetDistance',param:relpos.z},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+                AppQueue.start();
+            }
             /*
             const onclick_rotation_up = ({evt, ...newInfo}) => {
                 onclick_rotation({x:0, y:data.value.elements.rotation.power * 1},newInfo);
@@ -541,7 +573,7 @@ export function defineVpadDlg(app, Quasar) {
             return {
                 show,data,
                 close_onclick,
-                onswipe_rotation,onswipe_translation,onswipe_progress,
+                onswipe_rotation,onswipe_translation,onswipe_progress,onswipe_targetzoom,
                 //onclick_rotation,
                 //onclick_rotation_zero,
                 //onclick_rotation_getmouse,

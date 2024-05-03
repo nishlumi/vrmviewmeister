@@ -78,16 +78,44 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
     });
     
 
+    const scroll_header_x_onscroll = (evt) => {
+        if (timelineRef.grid_scrollx.value && 
+            (evt.target != timelineRef.grid_scrollx.value)
+        ) {
+            timelineRef.grid_scrollx.value.scrollLeft = evt.target.scrollLeft;
+        }
+        if (timelineRef.scroll_keyframe_xy.value && 
+            (evt.target != timelineRef.scroll_keyframe_xy.value)
+        ) { 
+            timelineRef.scroll_keyframe_xy.value.scrollLeft = evt.target.scrollLeft;
+        }
+    }
+    const scroll_keyframe_xy_onscroll = (evt) => {
+        if (timelineRef.scroll_header_x.value && 
+            (evt.target != timelineRef.scroll_header_x.value)
+        ) {
+            timelineRef.scroll_header_x.value.scrollLeft = evt.target.scrollLeft;
+        }
+        if (timelineRef.grid_scrollx.value && 
+            (evt.target != timelineRef.grid_scrollx.value)
+        ) { 
+            timelineRef.grid_scrollx.value.scrollLeft = evt.target.scrollLeft;
+        }
+    }
     /**
      * Scroll Event of header number and x-dimension of timeline 
      */
     const gridscrollx_onscroll = (evt) => {
         if (timelineRef.scroll_header_x.value && 
             (evt.target != timelineRef.scroll_header_x.value)
-        ) timelineRef.scroll_header_x.value.scrollLeft = evt.target.scrollLeft;
+        ) {
+            timelineRef.scroll_header_x.value.scrollLeft = evt.target.scrollLeft;
+        }
         if (timelineRef.scroll_keyframe_xy.value && 
             (evt.target != timelineRef.scroll_keyframe_xy.value)
-        ) timelineRef.scroll_keyframe_xy.value.scrollLeft = evt.target.scrollLeft;
+        ) { 
+            timelineRef.scroll_keyframe_xy.value.scrollLeft = evt.target.scrollLeft;
+        }
     }
     /**
      * Scroll Event of y-dimension of name box and timeline
@@ -615,6 +643,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             //---events, watches-------------------
             wa_tlLength,
             //common_loadFrame,
+            scroll_header_x_onscroll,scroll_keyframe_xy_onscroll,
             gridscrollx_onscroll,gridscrolly_onscroll,timelinebox_onwheel,namebox_onwheel,
             skip_previous_onclick,skip_next_onclick,zoom_in_onclick,zoom_out_onclick,seekbar_onchange,loadFrame_onclick,
             openProperty_onclick,panelToggleBtn_onclick,

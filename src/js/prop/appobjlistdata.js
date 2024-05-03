@@ -23,7 +23,7 @@ export const defineAppObjlistData = (mainData) => {
                 side : "left",
                 width : 225,
                 miniwidth : 60,
-                breakpoint : 300,
+                breakpoint : 500,
                 behavior : "normal",
             },
             objecttypes : {

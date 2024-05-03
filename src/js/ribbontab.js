@@ -562,7 +562,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             if (mainData.appconf.confs.application.show_camera_target_object) {
                 //mainData.appconf.confs.application.show_camera_target_object = false;
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.Camera,method:'ShowTargetObject',param:param},
+                    {target:AppQueue.unity.Camera,method:'ShowTargetObject',param:param.toString()},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -1760,6 +1760,14 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }
         return ret;
     }
+    const setupMobileSize = () => {
+        if ((Quasar.Screen.name == "sm") ||
+            (Quasar.Screen.name == "xs")
+        ){
+            ribbonData.elements.tab.check_show = false;
+            check_show_changed(ribbonData.elements.tab.check_show);
+        }
+    }
     const close_tabpanel = () => {
         if (!ribbonData.elements.tab.check_show) {
             ribbonData.elements.tabpanel.style.display = "none";
@@ -2183,7 +2191,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         //wa_langbox_selected,
         wa_lnkdownload_onoff,
         changeStateLnkdownload,
-        getCurrentModeSize,
+        getCurrentModeSize,setupMobileSize,
         
         //---trigger events
         language_box_changed,check_show_changed,tabbar_onclick,

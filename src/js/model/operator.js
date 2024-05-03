@@ -1,6 +1,6 @@
 import { AF_TARGETTYPE, AF_MOVETYPE, CNS_BODYBONES, IKBoneType, INTERNAL_FILE, FILEEXTENSION_ANIMATION, FILEOPTION, STORAGE_TYPE, SAMPLEURL, SAMPLEKEY} from "../../res/appconst.js"
 import { VVAnimationProject, VVAvatar, VVCast, VVSelectedObjectItem,  VVBlendShape, VVAvatarEquipSaveClass, VVTimelineTarget, VVTimelineFrameData, VVAnimationFrameActor, VVAnimationProjectMaterialPackage, VVAnimationFrame } from '../prop/cls_vvavatar.js';
-import { AnimationParsingOptions, AnimationRegisterOptions, BvhData, BvhNode, ManagedVRMA, UnityVector3 } from "../prop/cls_unityrel.js";
+import { AnimationParsingOptions, AnimationRegisterOptions, AvatarPunchEffect, AvatarShakeEffect, BvhData, BvhNode, ManagedVRMA, UnityVector3 } from "../prop/cls_unityrel.js";
 import { ChildReturner } from "../../../public/static/js/cls_childreturner.js";
 import { AppDBMeta } from "../appconf.js";
 import { appDataTimeline } from "../prop/apptimelinedata.js";
@@ -598,6 +598,30 @@ export class appModelOperator {
                     value : this.objpropData.elements.objectui.materialIsChanges[i] === true ? 1 : 0
                 });
             }
+        }
+        //---other properties----------------
+        //---edited punch?
+        if (this.objpropData.elements.common.punch_edited === true) {
+            var punchparam = new AvatarPunchEffect();
+            punchparam.copyFrom(this.objpropData.elements.common.punch);
+            punchparam.isEnable = punchparam.isEnable == true ? 1 : 0;
+            AppQueue.add(new queueData(
+                {target:this.mainData.states.selectedAvatar.id,method:'SetPunchFromOuter',param:JSON.stringify(punchparam)},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        //---edited shake?
+        if (this.objpropData.elements.common.shake_edited === true) {
+            var shakeparam = new AvatarShakeEffect();
+            shakeparam.copyFrom(this.objpropData.elements.common.shake);
+            shakeparam.isEnable = shakeparam.isEnable == true ? 1 : 0;
+            shakeparam.fadeOut = shakeparam.fadeOut == true ? 1 : 0;
+            AppQueue.add(new queueData(
+                {target:this.mainData.states.selectedAvatar.id,method:'SetShakeFromOuter',param:JSON.stringify(shakeparam)},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
         }
 
         //---timeline ui

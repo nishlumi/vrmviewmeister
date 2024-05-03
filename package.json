@@ -4,7 +4,7 @@
     "name": "ISHII Eiju"
   },
   "description": "Web app for VRoid(VRM) : Posing, Animation",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "scripts": {
     "dev": "set NODE_ENV=delevopment&&set PORT=5026&&node ./app.js",
@@ -117,7 +117,7 @@
     "electron": "^24.3.1",
     "electron-builder": "^24.4.0",
     "interactjs": "^1.10.17",
-    "quasar": "^2.14.2",
+    "quasar": "^2.15.3",
     "webpack": "^5.83.1",
     "webpack-cli": "^5.1.1",
     "webpack-dev-server": "^4.15.0",

@@ -45,9 +45,12 @@ export class appDataObjectProp {
                 jumpNum : 0,
                 jumpPower : 1,
                 effectTabSelected : "punch",
+                punch_edited : false,
                 punch : new AvatarPunchEffect(),
                 punchTypeOptions : template.tmppunchshakeoptions,
+                shake_edited : false,
                 shake : new AvatarShakeEffect(),
+
                 shakeTypeOptions : template.tmppunchshakeoptions,
             },
             //---VRM

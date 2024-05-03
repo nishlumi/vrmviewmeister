@@ -15,7 +15,8 @@ export class appDataRibbon {
                 selectIndex : ("home"),
                 oldselectIndex : "",
                 style : {
-                    height : "50px", //"36px",
+                    height : "32px", //"36px",
+                    width: "100%"
                 },
                 check_show : true,
             },

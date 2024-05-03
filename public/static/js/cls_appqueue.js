@@ -43,7 +43,7 @@ const AppQueue = {
         Canvas : "Canvas",
         DLight : "Directional Light",
         Windzone : "WindZone",
-        Camera : "Main Camera",
+        Camera : "WebXRCameraSet",
         XR : "WebXRCameraSet",
         Stage : "Stage",
         FileMenuCommands : "AnimateArea",

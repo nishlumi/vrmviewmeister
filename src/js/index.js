@@ -31,6 +31,8 @@ import { defineChildManager } from "./model/childman.js";
 import { defineMaterialPropertyUI } from "./prop/cls_matprop.js";
 import { defineNavigationDlg } from "./navwin.js";
 import { VRoidHubConnector } from "./model/vroidhub.js";
+import { defineMobileOperator } from "./model/mblope.js";
+import { defineUswipeInput } from "../uswipeinput.js";
 
 var loc = localStorage.getItem("appLocale");
 //loc = await AppDB.app.getItem("appLocale");
@@ -105,6 +107,7 @@ const app = Vue.createApp({
         const { projectSelectorEvent,fil_projselector,cmp_projectSelectorStorageGDrive } = defineProjectSelector(app, Quasar, mainData, modelLoader, modelOperator, UnityCallback, {
             lnk_saveproject
         });
+        const {mobilePadEvent } = defineMobileOperator(app, Quasar, mainData, ribbonData, timelineData, modelLoader, modelOperator, UnityCallback);
 
         const { 
             mat_realtoon,UIMaterials
@@ -119,6 +122,9 @@ const app = Vue.createApp({
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         //---Life cycle
         const calcUnitySize = (w, h) => {
+            objlistEvent.setupMobileSize();
+            objpropEvent.setupMobileSize();
+            ribbonEvent.setupMobileSize();
             var left = objlistEvent.getCurrentModeSize();
             var right = objpropEvent.getCurrentModeSize();
             var tab = ribbonEvent.getCurrentModeSize();
@@ -126,6 +132,7 @@ const app = Vue.createApp({
             mainData.elements.canvas.scrollArea.width = `${w - left - right}px`;
             mainData.elements.canvas.scrollArea.height = `${h - tab - tl}px`;
             //modelOperator.setScreenSize(w - left - right, h - tab - tl, false);
+
         }
         Vue.onBeforeMount(() => {
             mainData.appconf.load()
@@ -280,6 +287,7 @@ const app = Vue.createApp({
             //hidfile_onchange,
             ribbonEvent,
             objlistEvent,
+            mobilePadEvent,
             //filtered_objectlist: objlistEvent.filtered_objectlist,
             objpropEvent,
             setupUnity, setupFixUnityEvent, setupDefaultObject, CanvasPointerEnter, CanvasPointerLeave,
@@ -329,6 +337,7 @@ defineSetupLang(Quasar);
 //Quasar.lang.set(Quasar.lang.ja);
 
 //---define element
+defineUswipeInput(app,Quasar);
 defineUcolorPicker(app,Quasar);
 defineAppInfoDlg(app,Quasar);
 defineVrmInfoDlg(app,Quasar);

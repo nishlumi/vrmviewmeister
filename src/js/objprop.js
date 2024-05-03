@@ -258,7 +258,23 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         }
     }
     const getCurrentModeSize = () => {
-        return (objpropData.elements.drawer.miniState) ? objpropData.elements.drawer.miniwidth : objpropData.elements.drawer.width;
+        if ((Quasar.Screen.name == "sm") ||
+            (Quasar.Screen.name == "xs")
+        ){
+            return (objpropData.elements.drawer.miniState) ? objpropData.elements.drawer.miniwidth : objpropData.elements.drawer.width;
+        }else{
+            return (objpropData.elements.drawer.miniState) ? objpropData.elements.drawer.miniwidth : objpropData.elements.drawer.width;
+            
+        }
+    }
+    const setupMobileSize = () => {
+        if ((Quasar.Screen.name == "sm") ||
+            (Quasar.Screen.name == "xs")
+        ){
+            objpropData.elements.drawer.behavior = "mobile";
+            objpropData.elements.drawer.show = true;
+            objpropData.elements.drawer.miniState = true;
+        }
     }
 
     const onclick_contextcopy = (evt) => {
@@ -447,6 +463,8 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         OnChange_JumpNum();
     }
     const OnChange_PunchColumn = (val) => {
+        objpropData.elements.common.punch_edited = true;
+        /*
         var param = new AvatarPunchEffect();
         param.copyFrom(objpropData.elements.common.punch);
         param.isEnable = param.isEnable == true ? 1 : 0;
@@ -455,9 +473,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             "",QD_INOUT.toUNITY,
             null
         ));
-        AppQueue.start();
+        AppQueue.start();*/
     }
     const OnChange_ShakeColumn = (val) => {
+        objpropData.elements.common.shake_edited = true;
+        /*
         var param = new AvatarShakeEffect();
         param.copyFrom(objpropData.elements.common.shake);
         param.isEnable = param.isEnable == true ? 1 : 0;
@@ -468,6 +488,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             null
         ));
         AppQueue.start();
+        */
     }
     //===VRM========================================
     const wa_propVRMMoveMode = Vue.watch(() => objpropData.elements.vrmui.movemode,(newval) => {
@@ -2471,7 +2492,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             //---watch--------------------------
             wa_materialNameSelected,
             //---events-------------------------
-            rightdrawer_minimize,getCurrentModeSize,
+            rightdrawer_minimize,getCurrentModeSize,setupMobileSize,
             OnChange_Position3D,OnChange_Rotation3D,OnChange_Scale3D,
             OnChange_Position2D,OnChange_Rotation2D,OnChange_Scale2D,OnChange_Size2D,
             OnChange_JumpNum,OnChange_JumpPower,OnChange_PunchColumn,OnChange_ShakeColumn,
