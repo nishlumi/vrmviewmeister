@@ -5,12 +5,22 @@ export class appDataTimeline {
     constructor() {
         
         this.elements = {
+            panel_styles : {
+                height : "250px",
+            },
             seekbar : 1,
+            seekbar_styles : {
+                height : "48px",
+            },
+            timeline_styles : {
+                height : "calc(100% - 48px)"
+            },
             boxStyle : {
                 height : "250px",
             },
             isExpand : true,
             toggleIcon : "expand_more",
+            mobile_toggleIcon : "keyboard_arrow_up",
             childKey : {
                 val : -1,
                 max : -1,
@@ -50,6 +60,21 @@ export class appDataTimeline {
              * child.vclass : css
              */
             headercounts : [],
+            cnshei : {
+                pc : {
+                    fold : 48,
+                    expand : 250
+                },
+                mobile : {
+                    fold : 96,
+                    expand : 298
+                }
+            },
+            oldhei : {
+                is_expand : false,
+                fold : 0,
+                expand : 0
+            }
         };
         
     }

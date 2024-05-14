@@ -2,7 +2,7 @@ import { UnityVector3 } from "./prop/cls_unityrel";
 
 const template = `
 <div ref="vpdlg" v-show="show" class="rounded-borders shadow-2" :style="data.elements.win.styles">
-    <div ref="vpdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
+    <div ref="vpdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs" :style="data.elements.titlebar.styles">
         <div class="row">
             <div>{{ $t('title_virtualpad') }}</div>
             <q-space></q-space>
@@ -72,7 +72,7 @@ const template = `
             </div>
         </div>
         <div class="row">
-            <div class="col-6 q-pl-sm q-pr-sm">
+            <div class="col-12 q-pl-sm q-pr-sm">
                 <q-btn flat round @click="onclick_reset_center_target">
                     <q-tooltip>{{ $t('reset_zaxis')}}</q-tooltip>
                     <q-icon name="flip_camera_android" size="md"></q-icon>
@@ -80,6 +80,7 @@ const template = `
                 <q-btn flat dense icon="restart_alt" 
                     :label="$t('ribbon_screen_camerareset')" 
                     @click="resetcamera_onclick" no-caps ></q-btn>
+
                 <!--<q-btn flat round v-touch-repeat.mouse="onrepeat_targetzoomin">
                     <q-tooltip>{{ $t('zoomin_camera_et_target')}}</q-tooltip>
                     <q-icon name="zoom_in_map" size="md"></q-icon>
@@ -90,9 +91,7 @@ const template = `
                 </q-btn>-->
                 
             </div>
-            <div class="col-6">
-                
-            </div>
+            
             
         </div>
     </div>
@@ -113,6 +112,18 @@ export function defineVpadDlg(app, Quasar) {
                 type: Number,
                 default : 1
             },
+            uimode : {
+                type: String,
+                default: "pc"
+            },
+            posbottom : {
+                type: Number,
+                default: 0
+            },
+            posright : {
+                type: Number,
+                default: 0
+            }
         },
         emits : [
             "update:model-value",
@@ -121,7 +132,7 @@ export function defineVpadDlg(app, Quasar) {
         setup(props, context) {
             const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
-            const {modelValue, rotateRate, translateRate } = Vue.toRefs(props);
+            const {modelValue, rotateRate, translateRate,uimode,posbottom,posright } = Vue.toRefs(props);
             const data = Vue.ref({
                 elements : {
                     win : {
@@ -130,7 +141,7 @@ export function defineVpadDlg(app, Quasar) {
                             bottom : "-9999px",
                             right : "-9999px",
                             width : "420px",
-                            height : "270px",
+                            height : "250px",
                             zIndex : 5003,
                             backgroundColor : "#FFFFFF"
                         },
@@ -138,6 +149,11 @@ export function defineVpadDlg(app, Quasar) {
                             x : 0,
                             y : 0
                         },
+                    },
+                    titlebar : {
+                        styles : {
+                            display : "block",
+                        }
                     },
                     rotation : {
                         icon : "radio_button_unchecked",
@@ -184,6 +200,18 @@ export function defineVpadDlg(app, Quasar) {
                 show.value = newval;
                 data.value.elements.win.styles.bottom = "0px";
                 data.value.elements.win.styles.right = "0px";
+                if (uimode.value == "mobile") {
+                    data.value.elements.titlebar.styles.display = "none";
+                    //data.value.elements.win.styles.bottom = `${posbottom.value}px`;
+                    //data.value.elements.win.styles.right = `${posright.value}px`;
+                    data.value.elements.win.styles.bottom = "0";
+                    data.value.elements.win.styles.right = "0";
+
+                    data.value.elements.win.styles.height = "max-content";
+                    data.value.elements.win.styles["top"] = `${Quasar.Screen.height - 180 - 48 - 10}px`;
+                    data.value.elements.win.styles["left"] = "0px";
+                    data.value.elements.win.styles.width = "100%";
+                }
             
                 data.value.elements.win.position.x = 0;
                 data.value.elements.win.position.y = 0;

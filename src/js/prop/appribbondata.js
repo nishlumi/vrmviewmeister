@@ -19,6 +19,7 @@ export class appDataRibbon {
                     width: "100%"
                 },
                 check_show : true,
+                toggleIcon : "check_box",
             },
             tabpanel : {
                 style : {

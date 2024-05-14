@@ -238,10 +238,20 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     const chkEnableVRAR = Vue.computed(() => {
         return (!ribbonData.elements.vrar.disable.vr || !ribbonData.elements.vrar.disable.ar);
     });
+    const chkDevicePlatform = () => {
+        if (navigator.userAgent.indexOf(" VR ") > -1) {
+            return "vr";
+        }else if (navigator.userAgent.indexOf(" Mobile ") > -1) { 
+            return "mobile";
+        }else{
+            return "pc";
+        }
+    }
     //===============================================================
     //  Main events judge
     //===============================================================
     const RibbonFuncHome = (ename) => {
+        var is_closepanel = false;
         if (ename == "thisapp") {
             mainData.elements.appinfodlg = true;
 
@@ -256,6 +266,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 AppQueue.start();
             });
             */
+           is_closepanel = true;
         }else if (ename == "clearcache") {
             
             appConfirm(t("msg_clearcache"),()=>{
@@ -263,6 +274,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 //AppDB.clearHistory();
                 AppQueue.list.splice(0,AppQueue.list.length);
                 AppQueue.isExecuting = false;
+                is_closepanel = true;
             });
             /*
             navigator.serviceWorker.getRegistration()
@@ -283,20 +295,25 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             appConfirm(t("msg_clearcache"),()=>{
                 AppQueue.list.splice(0,AppQueue.list.length);
                 AppQueue.isExecuting = false;
+                is_closepanel = true;
             });
         }else if (ename == "clearcachetemp") {
             appConfirm(t("msg_clearcache"),()=>{
                 AppDB.clearAll();
                 //AppDB.clearHistory();
+                is_closepanel = true;
             });
         }else if (ename == "clearcacheconf") {
             appConfirm(t("msg_clearcache"),()=>{
                 mainData.appconf.uninstall();
+                is_closepanel = true;
             });
         }else if (ename == "vrminfo") {
             Sub_vrminfo();
+            is_closepanel = true;
         }else if (ename == "openvrm") {
             Sub_openfile("v","VRM");
+            is_closepanel = true;
         }else if (ename == "openvrm_gdrive_direct") {
             appPrompt(t("msg1_open_gdrive"),(val) => {
                 mainData.elements.loading = true;
@@ -311,6 +328,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     }
                     
                 });
+                is_closepanel = true;
             });
         }else if (ename == "openvrm_gdrive") {
             mainData.elements.loading = true;
@@ -320,6 +338,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.VRM.types;
             modelOperator.enumerateFilesToProjectSelector("VRM");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "openvrm_appsample") {
             mainData.elements.loading = true;
             mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.APPLICATION;
@@ -328,8 +347,10 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.VRM.types;
             modelOperator.enumerateFilesToProjectSelector("VRM");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "openobject") {
             Sub_openfile("o","OBJECTS");
+            is_closepanel = true;
         }else if (ename == "openobject_gdrive_direct") {
             appPrompt(t("msg1_open_gdrive"),(val) => {
                 mainData.elements.loading = true;
@@ -345,6 +366,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     
                 });
             });
+            is_closepanel = true;
         }else if (ename == "openobject_gdrive") {
             mainData.elements.loading = true;
             mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
@@ -353,6 +375,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.OBJECTS.types;
             modelOperator.enumerateFilesToProjectSelector("OBJECTS");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "openobject_appsample") {
             mainData.elements.loading = true;
             mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.APPLICATION;
@@ -361,6 +384,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.OBJECTS.types;
             modelOperator.enumerateFilesToProjectSelector("OBJECTS");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "recentvrm") {
             mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
             mainData.elements.projectSelector.selectTypeName = FILEOPTION.VRM.types[0].description;
@@ -368,6 +392,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.VRM.types;
             modelOperator.enumerateFilesToProjectSelector("VRM");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "recentobj") {
             mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
             mainData.elements.projectSelector.selectTypeName = FILEOPTION.OBJECTS.types[0].description;
@@ -375,6 +400,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.OBJECTS.types;
             modelOperator.enumerateFilesToProjectSelector("OBJECTS");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "recentimg") {
             mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
             mainData.elements.projectSelector.selectTypeName = FILEOPTION.IMAGES.types[0].description;
@@ -382,6 +408,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.IMAGES.types;
             modelOperator.enumerateFilesToProjectSelector("IMAGES");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "recentuimg") {
             mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
             mainData.elements.projectSelector.selectTypeName = FILEOPTION.IMAGES.types[0].description;
@@ -389,18 +416,26 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.IMAGES.types;
             modelOperator.enumerateFilesToProjectSelector("IMAGES");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "getcapture") {
             Sub_getcapture();
+            is_closepanel = true;
         }else if (ename == "config") {
             mainData.elements.configdlg.show = true;
-            
+            is_closepanel = true;
         }else if (ename == "vpad") {
-            mainData.elements.vpaddlg.show = true;
+            if (ID("uimode").value == "mobile") {
+                if (Quasar.Screen.width > Quasar.Screen.height) {
+                    mainData.elements.landvpad.show = !mainData.elements.landvpad.show;
+                    return;
+                }
+            }
+            mainData.elements.vpaddlg.show = !mainData.elements.vpaddlg.show;
         }else if (ename == "shownav") {
             mainData.elements.navigationdlg.show = !mainData.elements.navigationdlg.show;
             mainData.elements.navigationdlg.webglw = mainData.elements.canvas.width;
             mainData.elements.navigationdlg.webglh = mainData.elements.canvas.height;
-
+            is_closepanel = true;
         }else if (ename == "enter_vr") {
             //AppQueue.canvas.Module.WebXR.toggleVR();
             var param = [
@@ -408,8 +443,9 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 [
                     mainData.appconf.confs.model.vrar_camera_initpos_x,
                     mainData.appconf.confs.model.vrar_camera_initpos_y,
-                    mainData.appconf.confs.model.vrar_camera_initpos_z
-                ].join(":")
+                    mainData.appconf.confs.model.vrar_camera_initpos_z,                    
+                ].join(":"),
+                chkDevicePlatform(),
             ].join(",");
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'EnterVR',param:param},
@@ -417,6 +453,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "enter_ar") {
             //AppQueue.canvas.Module.WebXR.toggleAR();
             var param = [
@@ -425,7 +462,8 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     mainData.appconf.confs.model.vrar_camera_initpos_x,
                     mainData.appconf.confs.model.vrar_camera_initpos_y,
                     mainData.appconf.confs.model.vrar_camera_initpos_z
-                ].join(":")
+                ].join(":"),
+                chkDevicePlatform(),
             ].join(",");
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'EnterAR',param:param},
@@ -433,15 +471,18 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }
-        close_tabpanel();
+        if (is_closepanel) close_tabpanel();
     }
     //==================================================
     const RibbonFuncScreen = (ename, options) => {
+        var is_closepanel = false;
         if (ename == "applyscreen") {
             //mainData.elements.canvas.styles.width = `${options.width}px`;
             //mainData.elements.canvas.styles.height = `${options.height}px`;
             modelOperator.setScreenSize(options.width,options.height,false);
+            is_closepanel = true;
         }else if (ename == "originalsize") {
             /*
             mainData.elements.canvas.styles.width = "100%";
@@ -457,7 +498,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 mainData.elements.navigationdlg.webglh = refs.unitycontainer.value.height;
             });*/
             modelOperator.setScreenSize(-1,-1,true);
-            
+            is_closepanel = true;
         }else if (ename == "resetcamera") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.Camera,method:'ResetCameraFromOuter'},
@@ -465,9 +506,10 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "getcapture") {
             Sub_getcapture(options.isTransparent);
-            
+            is_closepanel = true;
         }else if (ename == "listcapture") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
 
@@ -488,12 +530,14 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 window.blur();
                 mainData.elements.win_screenshot.focus();
             }
-            
+            is_closepanel = true;
         //}else if (ename == "settransparent") {
         }else if (ename == "beginrecord") {
             Sub_beginrecord();
+            is_closepanel = true;
         }else if (ename == "endrecord") {
             ribbonData.elements.lnk_download.state = false;
+            is_closepanel = true;
         //}else if (ename == "downloadvideo") {
         }else if (ename == "videomute") {
             var tracks = callback.unity.screen.recorder.stream.getAudioTracks();
@@ -505,6 +549,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     ribbonData.elements.lnk_download.icon_mute = "volume_mute";
                 }
             }
+            is_closepanel = true;
         }else if (ename == "videoplayer") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
 
@@ -525,7 +570,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 window.blur();
                 mainData.elements.win_vplayer.focus();
             }
-            
+            is_closepanel = true;
             
         }else if (ename == "rotate360") {
             var param = parseFloat(options.speed);
@@ -543,6 +588,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 ));
             }
             AppQueue.start();
+            is_closepanel = true;
         //}else if (ename == "rotatespeed") {
         }else if (ename == "antialias") {
             var param = "taa," + (options.isOn ? "1" : "0");
@@ -552,6 +598,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "showikmarker") {
             var param = options.isOn ? 1 : 0;
             AppQueue.add(new queueData(
@@ -569,6 +616,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             }
 
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "ikmarkersize") {
             var param = parseFloat(options.size);
             AppQueue.add(new queueData(
@@ -578,10 +626,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
         }
-        close_tabpanel();
+        if (is_closepanel) close_tabpanel();
     }
     //==================================================
     const RibbonFuncModel = (ename, options) => {
+        var is_closepanel = false;
         if (ename == "addtext") {
             var param = [
                 "ABC",
@@ -600,6 +649,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "addtext3d") {
             var param = [
                 "ABC",
@@ -618,8 +668,10 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "adduimage") {
             Sub_openfile("ui","IMAGES");
+            is_closepanel = true;
         }else if (ename == "addcamera") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.FileMenuCommands,method:'CreateCameraObject',param:"0"},
@@ -633,6 +685,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "addeffect") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.FileMenuCommands,method:'CreateSingleEffect'},
@@ -646,6 +699,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "addspotlight") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.FileMenuCommands,method:'OpenSpotLight'},
@@ -659,6 +713,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "addpointlight") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.FileMenuCommands,method:'OpenPointLight'},
@@ -672,6 +727,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "addbasicshape") {
             var param = options.format;
             AppQueue.add(new queueData(
@@ -686,12 +742,16 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "openvrm") {
             Sub_openfile("v","VRM");
+            is_closepanel = true;
         }else if (ename == "openobject") {
             Sub_openfile("o","OBJECTS");
+            is_closepanel = true;
         }else if (ename == "openimage") {
             Sub_openfile("img","IMAGES");
+            is_closepanel = true;
         }else if (ename == "openimage_gdrive_direct") {
             appPrompt(t("msg1_open_gdrive"),(val) => {
                 mainData.elements.loading = true;
@@ -706,6 +766,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     }
                     
                 });
+                is_closepanel = true;
             });
         }else if (ename == "openimage_gdrive") {
             mainData.elements.loading = true;
@@ -715,6 +776,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.IMAGES.types;
             modelOperator.enumerateFilesToProjectSelector("IMAGES");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "openimage_appsample") {
             mainData.elements.loading = true;
             mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.APPLICATION;
@@ -723,14 +785,17 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             mainData.elements.projectSelector.selectType = FILEOPTION.IMAGES.types;
             modelOperator.enumerateFilesToProjectSelector("IMAGES");
             mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "vrminfo") {
             Sub_vrminfo();
+            is_closepanel = true;
         }else if (ename == "savepose") {
             if (mainData.states.selectedAvatar == null) return;
             
             if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
                 var msg = t("msg_pose_save_check1");
                 appAlert(msg);
+                is_closepanel = true;
                 return;
             }
 
@@ -742,6 +807,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     {callback, filename: keyname, mode:"i"}
                 ));
                 AppQueue.start();
+                is_closepanel = true;
             },"");
         }else if (ename == "savepose_direct") {
             if (mainData.states.selectedAvatar == null) return;
@@ -749,6 +815,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
                 var msg = t("msg_pose_save_check1");
                 appAlert(msg);
+                is_closepanel = true;
                 return;
             }
             if (VFileHelper.checkNativeAPI) {
@@ -759,6 +826,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     {callback, filename: "posename", mode:"f"}
                 ));
                 AppQueue.start();
+                is_closepanel = true;
             }else{
                 appPrompt(t("msg_pose_sav"),(keyname)=>{
                     AppQueue.add(new queueData(
@@ -768,6 +836,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                         {callback, filename: keyname, mode:"f"}
                     ));
                     AppQueue.start();
+                    is_closepanel = true;
                 },"");
             }
             
@@ -777,6 +846,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
                 var msg = t("msg_pose_save_check1");
                 appAlert(msg);
+                is_closepanel = true;
                 return;
             }
 
@@ -788,6 +858,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     {callback, filename: keyname, mode:"g"}
                 ));
                 AppQueue.start();
+                is_closepanel = true;
             },"");
         }else if (ename == "poselist_pose") {
             sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
@@ -809,7 +880,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 window.blur();
                 mainData.elements.win_pose.focus();
             }
-            
+            is_closepanel = true;
             
         }else if (ename == "resetposition") {
             AppQueue.add(new queueData(
@@ -818,6 +889,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "resetrotate") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.OperateActiveVRM,method:'ResetParentHandleRotation'},
@@ -825,10 +897,12 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "modelremove") {
             appConfirm(t("msg_vrm_delconfirm"),() => {
                 modelOperator.removeBodyObject(mainData.states.selectedAvatar);
                 AppQueue.start();
+                is_closepanel = true;
             });
         }else if (ename == "resetallbone") {
             AppQueue.add(new queueData(
@@ -837,6 +911,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "mediapipe") {
             if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
                 appAlert(t("msg_error_mediapipe1"));
@@ -875,7 +950,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     window.blur();
                     mainData.elements.win_mediapipe.focus();
                 }
-                
+                is_closepanel = true;
             });
 
         }else if (ename == "poselist_motion") {
@@ -898,6 +973,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 window.blur();
                 mainData.elements.win_pose.focus();
             }
+            is_closepanel = true;
         }else if (ename == "openmotion") {
             if (options.type == "f") {
                 Sub_openfile("mot","MOTION");
@@ -918,6 +994,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 modelOperator.enumerateFilesToProjectSelector("MOTION");
                 mainData.elements.projectSelector.show = true;
             }
+            is_closepanel = true;
         }else if (ename == "savemotion") {
             var tmpcast = modelOperator.getRole(mainData.states.selectedCast.roleName,"role");
             var param = tmpcast.roleName + "," + tmpcast.type;
@@ -928,6 +1005,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {callback, disktype : options.type, savetype : "overwrite"}
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "savemotion_anim") {
             if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
                 appAlert(t("msg_error_mediapipe1"));
@@ -943,6 +1021,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {callback: callback, selRoleTitle: tmpcast.roleTitle}
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "savemotion_bvh") {
             if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
                 appAlert(t("msg_error_mediapipe1"));
@@ -959,6 +1038,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {callback: callback, selRoleTitle: tmpcast.roleTitle}
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "savevrma") {
             if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
                 appAlert(t("msg_error_mediapipe1"));
@@ -979,6 +1059,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     {callback: callback, disktype : options.type, savetype : svtype, selRoleTitle: tmpcast.roleTitle}
                 ));
                 AppQueue.start();
+                is_closepanel = true;
             });
         }else if (ename == "openvrma")  {
             if (options.type == "f") {
@@ -991,6 +1072,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 modelOperator.enumerateFilesToProjectSelector("VRMA");
                 
                 mainData.elements.projectSelector.show = true;
+                
             }else if (options.type == "g") {
                 mainData.elements.loading = true;
                 mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
@@ -1000,18 +1082,22 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 modelOperator.enumerateFilesToProjectSelector("VRMA");
                 mainData.elements.projectSelector.show = true;
             }
+            is_closepanel = true;
         }else if (ename == "connect_vroidhub") {
             mainData.vroidhubapi.generateAuthLink();
+            is_closepanel = true;
         }else if (ename == "list_vroidhub") {
             mainData.vroidhubapi.list_character_models({})
             .then(res => {
                 console.log(res);
+                is_closepanel = true;
             })
         }
-        close_tabpanel();
+        if (is_closepanel) close_tabpanel();
     }
     //==================================================
     const RibbonFuncAnimation = (ename, options) => {
+        var is_closepanel = false;
         if (ename == "newproject") {
             appConfirm(t("msg_project_new"),() => {
                 //---remove all timeline 
@@ -1022,6 +1108,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
 
                 modelLoader.setupDefaultObject();
                 modelOperator.destroy_materialFile(true);
+                is_closepanel = true;
             });
         }else if (ename == "openproject") {
             if (options.type == "f") {
@@ -1057,6 +1144,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 modelOperator.enumerateFilesToProjectSelector("PROJECT");
                 mainData.elements.projectSelector.show = true;
             }
+            is_closepanel = true;
         }else if (ename == "saveproject") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'SaveProject'},
@@ -1065,6 +1153,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {callback, disktype : options.type, savetype : "overwrite"}
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "saveasproject") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'SaveProject'},
@@ -1073,6 +1162,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {callback, disktype : options.type, savetype : "as"}
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "setuprole") {
             if (!mainData.elements.projdlg.mat_firstload) {
                 //---load material firstly.
@@ -1085,6 +1175,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {callback}
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "playfirst") {
             var js = Sub_playframecommon();
             AppQueue.add(new queueData(
@@ -1097,6 +1188,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             if (mainData.appconf.confs.animation.play_with_record_movie === true) {
                 Sub_beginrecord();
             }
+            is_closepanel = true;
         }else if (ename == "playnormal") {
             Sub_playframecommon();
             AppQueue.add(new queueData(
@@ -1106,6 +1198,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
             mainData.states.animationPlaying = !mainData.states.animationPlaying;
+            is_closepanel = true;
         }else if (ename == "stop") {
             var param = new AnimationParsingOptions();
             param.isExecuteForDOTween = 1;
@@ -1134,6 +1227,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
             mainData.states.animationPlaying = false;
+            is_closepanel = true;
         }else if (ename == "setbaseduration") {
             var param = parseFloat(options.value);
             if (isNaN(param)) return;
@@ -1144,6 +1238,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
+            is_closepanel = true;
         }else if (ename == "setloop") {
         }else if (ename == "setcurrentframe") {
             if (mainData.stetes.animationPlaying) return;
@@ -1158,6 +1253,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
             mainData.states.currentEditOperationCount++;
+            
         }else if (ename == "addkeyframe") {
             //modelOperator.addKeyFrame(mainData.states.selectedAvatar, ribbonData.elements.frame.bonelist.selection, ribbonData.elements.frame.keylist.selection, "append");
         }else if (ename == "openkeyframedlg") {
@@ -1166,14 +1262,18 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[0];
             }
             ribbonData.elements.frame.showdlg = true;
+            is_closepanel = true;
         }else if (ename == "overwritekeyframe") {
             modelOperator.addKeyFrame(mainData.states.selectedAvatar, ribbonData.elements.frame.bonelist.selection, ribbonData.elements.frame.keylist.selection, "overwrite");
+            is_closepanel = true;
         }else if (ename == "bone_select_alloff") {
             ribbonData.elements.frame.bonelist.selection.splice(0, ribbonData.elements.frame.bonelist.selection.length);
+            is_closepanel = true;
         }else if (ename == "bone_select_all") {
             for (var i = IKBoneType.IKParent; i < IKBoneType.LeftHandPose; i++) {
                 modelOperator.selectSpecifyBoneForRegister(i);
             }
+            is_closepanel = true;
         }else if (ename == "bone_select_ikparent") {
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.IKParent);
         }else if (ename == "bone_select_body") {
@@ -1261,10 +1361,12 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else if (ename == "delkeyframe") {
             appConfirm(t("msg_delframe_currentkey"),()=>{
                 modelOperator.removeKeyframe(mainData.states.selectedAvatar, timelineData.states.currentcursor);
+                is_closepanel = true;
             });
         }else if (ename == "delpropkeyframe") {
             appConfirm(t("msg_delframe_currentkey_prop"),()=>{
                 modelOperator.removeKeyframe(mainData.states.selectedAvatar, timelineData.states.currentcursor, AF_MOVETYPE.AllProperties);
+                is_closepanel = true;
             });
         }else if (ename == "delvrmakeyframe") {
             appConfirm(t("msg_delframe_currentkey_vrma"),()=>{
@@ -1282,13 +1384,15 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     timeout : 1500, 
                     multiLine : true
                 });
+                is_closepanel = true;
             });
         }else if (ename == "delemptyline") {
         }
-        close_tabpanel();
+        if (is_closepanel) close_tabpanel();
     }
     //==================================================
     const RibbonFuncSystemEffect = (ename, options) => {
+        var is_closepanel = false;
         if (ename == "addkeyframe") {
             var aro = new AnimationRegisterOptions();
             aro.targetId = "SystemEffect";
@@ -1514,10 +1618,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
         }
-        close_tabpanel();
+        if (is_closepanel) close_tabpanel();
     }
     //==================================================
     const RibbonFuncAudio = (ename, options) => {
+        var is_closepanel = false;
         var unityTarget = "";
         var audioobj = null;
         if (ribbonData.elements.audio.operatetype == "bgm") {
@@ -1560,7 +1665,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 {callback: callback, selectedTimeline: tl}
             ));
             AppQueue.start();
-            
+            is_closepanel = true;
             
         }else if (ename == "copyframe") {
         }else if (ename == "pasteframe") {
@@ -1575,6 +1680,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else if (ename == "audioadd") {
             mainData.states.fileloadtype = ribbonData.elements.audio.operatetype;
             Sub_openfile(mainData.states.fileloadtype, "AUDIOS");
+            is_closepanel = true;
         }else if (ename == "audiodel") {
             var AUTYPE = ribbonData.elements.audio.operatetype.toUpperCase();
             var val = audioobj.selection.value;
@@ -1593,6 +1699,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     ));
                     AppQueue.start();
                 }
+                is_closepanel = true;
             });
             
         }else if (ename == "audioselect") {
@@ -1643,6 +1750,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 AppQueue.start();
                 audioobj.playbtn_state = "play_circle";
             }
+            is_closepanel = true;
         }else if (ename == "audiostop") {
             AppQueue.add(new queueData(
                 {target:unityTarget,method:'StopAudio'},
@@ -1651,6 +1759,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
             audioobj.playbtn_state = "play_circle";
+            is_closepanel = true;
         }else if (ename == "audioseek") {
             var param = parseFloat(audioobj.seek);
             AppQueue.add(new queueData(
@@ -1751,7 +1860,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         elements.value.scr_size.height = newval;
     },{deep:true});
     */
-    const getCurrentModeSize = () => {
+    const getCurrentModeSize = (w, h) => {
         var tab = parseInt(ribbonData.elements.tab.style.height);
         var tabpanel = parseInt(ribbonData.elements.tabpanel.style.height);
         var ret = tab;
@@ -1760,7 +1869,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }
         return ret;
     }
-    const setupMobileSize = () => {
+    const setupMobileSize = (w, h) => {
         if ((Quasar.Screen.name == "sm") ||
             (Quasar.Screen.name == "xs")
         ){
@@ -1788,12 +1897,18 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ribbonData.elements.tabpanel.style.display = "block";
             ribbonData.elements.tabpanel.style.position = "relative";
             mainData.elements.canvas.scrollArea.height = (h - 128) + "px";
+            ribbonData.elements.tab.toggleIcon = "check_box";
         }else{
             ribbonData.elements.tabpanel.style.display = "none";
             ribbonData.elements.tabpanel.style.position = "fixed";
             mainData.elements.canvas.scrollArea.height = (h + 128) + "px";
+            ribbonData.elements.tab.toggleIcon = "check_box_outline_blank";
         }
         
+    }
+    const btn_check_show_changed = () => {
+        ribbonData.elements.tab.check_show = !ribbonData.elements.tab.check_show;
+        check_show_changed(ribbonData.elements.tab.check_show);
     }
     const tabbar_onclick = () => {
         if (!ribbonData.elements.tab.check_show) {
@@ -2195,6 +2310,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         
         //---trigger events
         language_box_changed,check_show_changed,tabbar_onclick,
+        btn_check_show_changed,
         applyScreen_onclick,originalSize_onclick,downloadVideo_onclick,getCapture_onclick,
         rotate360_onchange,rotateSpeed_onchange,useAntialias_onchange,showIKMarker_onchange,
         ikmarkerSize_onchange,

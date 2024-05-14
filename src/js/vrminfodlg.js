@@ -1,12 +1,12 @@
 const template = `
-    <q-dialog v-model="show" @hide="dialogHide" persistent>
-        <q-card class="q-dialog-plugin" style="width:800px;height:500px;">
-            <q-card-section class="row" style="width:100%" v-if="selectAvatar">
+    <q-dialog v-model="show" @hide="dialogHide" persistent :maximized="data.elements.dialog.maximized">
+        <q-card class="q-dialog-plugin" :style="data.elements.inner.styles">
+            <q-card-section class="row" style="width:100%;height:calc(100% - 52px);" v-if="selectAvatar">
                 <div class="row"  style="width:100%">
                     <div class="col-3 ">
                         <q-img :src="selectAvatar.thumbnail" alt="Thumbnail" width="128" height="128" style="width:128px"></q-img>
                     </div>
-                    <div class="col-9">
+                    <div class="col-8 offset-1">
                         <b v-text="selectAvatar.title" style="font-size: 1.5rem;"></b>
                         <table class="vrminfo-info1-table" >
                             <tr>
@@ -22,6 +22,33 @@ const template = `
                     </div>
                 </div>
                 <div class="row"  style="width:100%">
+                    <!--
+                    <div class="col-4">
+                        <span class="vv-translation">{{$t("vrmdlg_contact")}}</span>
+                    </div>
+                    <div class="col-8">
+                        <span v-text="selectAvatar.contactInformation"></span>
+                    </div>
+                    <div class="col-4">
+                        <span class="vv-translation">{{$t("vrmdlg_license")}}</span>
+                    </div>
+                    <div class="col-8">
+                        <span v-text="selectAvatar.licenseType"></span>
+                    </div>
+                    <div class="col-4">
+                        <span class="vv-translation">{{$t("vrmdlg_reference")}}</span>
+                    </div>
+                    <div class="col-8">
+                        <span v-text="selectAvatar.reference"></span>
+                    </div>
+                    <div class="col-4">
+                        <span class="vv-translation">{{$t("vrmdlg_height")}}</span>
+                    </div>
+                    <div class="col-8">
+                        <span v-text="selectAvatar.height"></span>
+                    </div>
+                    -->
+
                     <div class="col-12">
                         <table class="vrminfo-info1-table" >
                             
@@ -163,9 +190,28 @@ export function defineVrmInfoDlg(app, Quasar) {
 
             const show = Vue.ref(false);
 
+            const data = Vue.reactive({
+                elements: {
+                    dialog: {
+                        maximized : false
+                    },
+                    inner : {
+                        styles : {
+                            width: "800px",
+                            height: "500px"
+                        }
+                    }
+                }
+            });
+
             //---watch ----------------------------------------
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
                 show.value = newval;
+                if ((Quasar.Screen.name == "xs") || (Quasar.Screen.name == "sm")) {
+                    data.elements.dialog.maximized = true;
+                    data.elements.inner.styles.width = "100%";
+                    data.elements.inner.styles.height = "100%";
+                }
             });
 
             //---events --------------------------------------
@@ -212,7 +258,7 @@ export function defineVrmInfoDlg(app, Quasar) {
                 context.emit("update:model-value",show.value);
             }
             return {
-                show,wa_modelValue,
+                show,wa_modelValue,data,
                 dialogHide,
                 showAllowUserLabel,showIconAllowed,styleIconAllowed,
                 showCreditRequire,

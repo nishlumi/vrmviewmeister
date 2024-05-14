@@ -466,6 +466,26 @@ details.extended-normal[open] > .details-content {
 .otherobject-materialbox div.row {
     margin-top : 0.5rem;
 }
+
+/* mobile mode, landscape vpad view */
+.mb_land_vpad {
+    position: absolute;
+    top: 50%;
+    width : 60px;
+}
+@media (max-height: 499px) {
+    .mb_land_vpad {
+        position: absolute;
+        top: 48px;
+        width : 60px;
+    }
+}
+
+.mb_pad_icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 /*=================================================================
   Right Accordion
 */
@@ -745,10 +765,14 @@ div.screen-number-area {
     overflow: hidden;
 }
 .project-selector-mainbody {
-    height : calc(550px - 50px - 52px);
+    height : calc(100% - 50px - 52px);
+    
 }
 .projdlg2-table {
     height:calc(550px - 50px - 52px - 56px);
+}
+.projdlg2-table-mbl {
+    height:calc(88vh - 50px - 52px - 56px);
 }
 .projdlg2-table .q-table thead tr th {
     position : sticky;

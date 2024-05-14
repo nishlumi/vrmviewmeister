@@ -101,6 +101,11 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         ) { 
             timelineRef.grid_scrollx.value.scrollLeft = evt.target.scrollLeft;
         }
+        if ((timelineRef.scroll_namebox_y.value) &&
+            (evt.target != timelineRef.scroll_namebox_y.value)
+        ) {
+            timelineRef.scroll_namebox_y.value.scrollTop = evt.target.scrollTop;
+        }
     }
     /**
      * Scroll Event of header number and x-dimension of timeline 
@@ -141,6 +146,34 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         timelineRef.scroll_namebox_y.value.scrollTop += evt.deltaY;
         
         //grid_scrolly.value.scrollLeft += evt.deltaX;
+    }
+    /**
+     * mobile mode swipe timelinebox , namebox
+     */
+    const timelinebox_onswipe = ({ evt, ...newInfo }) => {
+        console.log(newInfo);
+        var newy = newInfo.distance.y * 0.5;
+        var newx = newInfo.distance.x * 0.5;
+        if (newInfo.direction == "up") {
+            timelineRef.scroll_namebox_y.value.scrollTop += newy;
+            timelineRef.scroll_keyframe_xy.value.scrollTop += newy;
+            timelineRef.grid_scrolly.value.scrollTop += newy;
+        }else if (newInfo.direction == "down") {
+            timelineRef.scroll_namebox_y.value.scrollTop -= newy;
+            timelineRef.scroll_keyframe_xy.value.scrollTop -= newy;
+            timelineRef.grid_scrolly.value.scrollTop -= newy;
+        }else if (newInfo.direction == "left") {
+            timelineRef.scroll_namebox_y.value.scrollLeft += newx;
+            timelineRef.scroll_keyframe_xy.value.scrollLeft += newx;
+            timelineRef.scroll_header_x.value.scrollLeft += newx;
+        }else if (newInfo.direction == "right") {
+            timelineRef.scroll_namebox_y.value.scrollLeft -= newx;
+            timelineRef.scroll_keyframe_xy.value.scrollLeft -= newx;
+            timelineRef.scroll_header_x.value.scrollLeft -= newx;
+        }
+        
+
+        
     }
     //===toolbar===================================
     /*const common_loadFrame = (newval) => {
@@ -272,7 +305,61 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         keyframebox_ondblclick();
     }
 
+    const panelToggleBody = (flag) => {
+        var h = parseInt(mainData.elements.canvas.scrollArea.height);
+        var newhei = {
+            fold : 0,
+            expand : 0
+        };
+        var oldhei = {
+            fold : 0,
+            expand : 0
+        };
+        var fnlhei = 0;
+
+        newhei.fold = timelineData.data.cnshei.pc.fold;
+        newhei.expand = timelineData.data.cnshei.pc.expand;
+        /*
+        if ((ID("uimode").value == "mobile") && (Quasar.Screen.name == "xs")){
+            newhei.fold = timelineData.data.cnshei.mobile.fold;
+            newhei.expand = timelineData.data.cnshei.mobile.expand;
+        }else{
+            if (ID("uimode").value == "mobile") {
+
+            }else{
+                newhei.fold = timelineData.data.cnshei.pc.fold;
+                newhei.expand = timelineData.data.cnshei.pc.expand;
+            }
+            
+        }
+        
+        if (timelineData.data.oldhei.is_expand) {
+            mainData.elements.canvas.scrollArea.height = `${h + timelineData.data.oldhei.expand}px`;
+        }else{
+            mainData.elements.canvas.scrollArea.height = `${h + timelineData.data.oldhei.fold}px`;
+        }*/
+
+        if (!flag) {
+            timelineData.elements.toggleIcon = "expand_less";
+            //newhei = 48;
+            fnlhei = newhei.fold;
+            
+            mainData.elements.canvas.scrollArea.height = `${h - newhei.fold + newhei.expand}px`;
+        }else{
+            timelineData.elements.toggleIcon = "expand_more";
+            //newhei = 250;
+            fnlhei = newhei.expand;
+
+            mainData.elements.canvas.scrollArea.height = `${h - newhei.expand + newhei.fold}px`;
+        }
+        timelineData.elements.boxStyle.height = fnlhei + "px";
+
+        timelineData.data.oldhei.is_expand = flag;
+        //timelineData.data.oldhei.fold = newhei.fold;
+        //timelineData.data.oldhei.expand = newhei.expand;
+    }
     const panelToggleBtn_onclick = () => {
+        /*
         var h = parseInt(mainData.elements.canvas.scrollArea.height);
         var newhei = 0;
         if (timelineData.elements.isExpand) {
@@ -284,9 +371,9 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             newhei = 250;
             mainData.elements.canvas.scrollArea.height = `${h - newhei + 48}px`;
         }
-        timelineData.elements.boxStyle.height = newhei + "px";
+        timelineData.elements.boxStyle.height = newhei + "px";*/
         timelineData.elements.isExpand = !timelineData.elements.isExpand;
-
+        panelToggleBody(timelineData.elements.isExpand);
     }
     const insertFrame_onclick = () => {
         console.log(timelineData.states.currentcursor);
@@ -558,6 +645,15 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             }
         };
     });
+    const mobile_timeline_show_clicked = (evt) => {
+        mainData.elements.footer = !mainData.elements.footer;
+        if (mainData.elements.footer) {
+            timelineData.elements.mobile_toggleIcon = "keyboard_arrow_down";
+        }else{
+            timelineData.elements.mobile_toggleIcon = "keyboard_arrow_up";
+        }
+
+    }
 
     //===functions================================
     /**
@@ -611,8 +707,62 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
      * 
      * @returns {Nuumber} calculated UI height of the Timeline
      */
-    const getCurrentModeSize = () => {
-        return parseInt(timelineData.elements.boxStyle.height);
+    const getCurrentModeSize = (w, h) => {
+        var ui = ID("uimode").value.toString();
+
+        if (ui == "mobile") return 0;
+        
+        if (Quasar.Screen.name != "xs") {
+            ui = "pc";
+        }
+        
+        if (timelineData.elements.isExpand) {
+            return parseInt(timelineData.data.cnshei[ui].expand);
+        }else{
+            return parseInt(timelineData.data.cnshei[ui].fold);
+        }
+        //return parseInt(timelineData.elements.boxStyle.height);
+    }
+    const setupMobileSize = (w, h) => {
+        if ((Quasar.Screen.name == "sm") ||
+            (Quasar.Screen.name == "xs")
+        ){            
+            //panelToggleBtn_onclick();
+            //timelineData.elements.isExpand = false;
+            if (ID("uimode").value == "mobile") {
+                mainData.elements.footer = false;
+                timelineData.elements.boxStyle.height = "48px";
+
+                if (w > h) {
+                    timelineData.elements.seekbar_styles.height = "48px";
+                    timelineData.elements.panel_styles.height = "calc(298px);"
+                    timelineData.elements.timeline_styles.height = "calc(298px - 48px)";
+                }else{
+                    timelineData.elements.seekbar_styles.height = "96px";
+                    timelineData.elements.panel_styles.height = "calc(298px + 48px);"
+                    timelineData.elements.timeline_styles.height = "calc(298px + 48px - 96px)";
+                }
+                
+            }else{
+                //---do all size of PC mode
+                panelToggleBody(timelineData.elements.isExpand);
+            }
+            
+        }else{
+            if (ID("uimode").value == "mobile") {
+                mainData.elements.footer = false;
+                timelineData.elements.boxStyle.height = "48px";
+                if (w > h) {
+                    timelineData.elements.seekbar_styles.height = "48px";
+                    timelineData.elements.panel_styles.height = "calc(298px);"
+                    timelineData.elements.timeline_styles.height = "calc(298px - 48px)";
+                }else{
+                    timelineData.elements.seekbar_styles.height = "96px";
+                    timelineData.elements.panel_styles.height = "calc(298px + 48px);"
+                    timelineData.elements.timeline_styles.height = "calc(298px + 48px - 96px)";
+                }
+            }
+        }
     }
 
 
@@ -640,10 +790,11 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             //---computed--------------------------
             judgeVClass,existsKeyFrame,getCurrentModeSize,chechAvatarThumbnail,checkAvatarLabel,
             keyframeHasTranslateCount,
+            setupMobileSize,
             //---events, watches-------------------
             wa_tlLength,
             //common_loadFrame,
-            scroll_header_x_onscroll,scroll_keyframe_xy_onscroll,
+            scroll_header_x_onscroll,scroll_keyframe_xy_onscroll,timelinebox_onswipe,
             gridscrollx_onscroll,gridscrolly_onscroll,timelinebox_onwheel,namebox_onwheel,
             skip_previous_onclick,skip_next_onclick,zoom_in_onclick,zoom_out_onclick,seekbar_onchange,loadFrame_onclick,
             openProperty_onclick,panelToggleBtn_onclick,
@@ -653,6 +804,8 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             namebox_onclick,namebox_readonly_onclick,
             keyframebox_onclick,keyframebox_ondblclick,keyframebox_popuptip,
             wa_frame_current,wa_selectedTimeline,
+
+            mobile_timeline_show_clicked,
             
         })
         

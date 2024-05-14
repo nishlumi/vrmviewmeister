@@ -18,7 +18,8 @@ export class appDataObjectProp {
                 width : 350,
                 miniwidth : 60,
                 breakpoint : 500,
-                behavior : "normal",
+                behavior : "default",
+                autodetectMobile : false,
             },
             contextmenu : {
                 show :false,

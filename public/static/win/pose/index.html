@@ -130,24 +130,31 @@
                         size="3em"
                     ></q-spinner>
 
-                    <q-select v-model="poseapp.header.list_selected" 
-                        :options="poseapp.header.list_origin" 
-                         filled style="margin-left:1.5rem;background-color:#FFF;" dense
-                         @update:model-value="listorigin_onchange"
-                    ></q-select>
+                    
                     <q-space></q-space>
-                    <q-tabs inline-label no-caps
-                        v-model="poseapp.states.item_mode"
-                        @update:model-value="modetab_change"
-                    >   
-                        <q-tab name="pose" icon="directions_walk" label="Pose"></q-tab>
-                        <q-tab name="motion" icon="animation" label="Motion"></q-tab>
-                    </q-tabs>
+                    
                 </q-toolbar>
             </q-header>
             <q-page-container>
                 <q-page class="pagestyle">
-                    
+                    <div class="row">
+                        <div class="col-6">
+                            <q-tabs inline-label no-caps mobile-arrows
+                                v-model="poseapp.states.item_mode"
+                                @update:model-value="modetab_change"
+                            >   
+                                <q-tab name="pose" icon="directions_walk" label="Pose"></q-tab>
+                                <q-tab name="motion" icon="animation" label="Motion"></q-tab>
+                            </q-tabs>
+                        </div>
+                        <div class="col-6 q-pl-xs">
+                            <q-select v-model="poseapp.header.list_selected" 
+                                :options="poseapp.header.list_origin" 
+                                filled style="background-color:#FFF;" dense
+                                @update:model-value="listorigin_onchange"
+                            ></q-select>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-12">
                             <q-input v-model="poseapp.search_str" 

@@ -332,6 +332,12 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
             callback.endingVRAR,
             {callback}
         );
+        AppQueue.fixedList["freecapture_unity2html"] = new queueData(
+            null,
+            "freecapture_unity2html",QD_INOUT.returnJS,
+            callback.endingVRAR,
+            {callback}
+        );
     }
     /*
     const setupDefaultObject = (mainData,timelineData,modelOperator) => {

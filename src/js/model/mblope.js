@@ -32,8 +32,8 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         mpdir.rotation.info = newInfo;
 
         var moveVal = newInfo.offset;
-        moveVal.x = moveVal.x * parseFloat(rotateRate);
-        moveVal.y = moveVal.y * parseFloat(rotateRate);
+        moveVal.x = moveVal.x * parseFloat(mainData.appconf.confs.application.vpad_rotaterate);
+        moveVal.y = moveVal.y * parseFloat(mainData.appconf.confs.application.vpad_rotaterate);
         var relpos = {x: 0, y: 0};
 
         if (newInfo.direction == "up") {
@@ -89,11 +89,11 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         if (newInfo.direction == "up") {
             mpdir.progress.icon = "arrow_downward";
             mpdir.progress.current.z += moveVal.y;
-            relpos.z = -1 * parseFloat(translateRate);
+            relpos.z = -1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else if (newInfo.direction == "down") {
             mpdir.progress.icon = "arrow_upward";
             mpdir.progress.current.z -= moveVal.y;
-            relpos.z = 1 * parseFloat(translateRate);
+            relpos.z = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else{
             mpdir.progress.icon = "radio_button_unchecked";
         }
@@ -129,19 +129,19 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         if (newInfo.direction == "up") {
             mpdir.translation.icon = "arrow_downward";
             mpdir.translation.current.y += moveVal.y;
-            relpos.y = -1 * parseFloat(translateRate);
+            relpos.y = -1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else if (newInfo.direction == "down") {
             mpdir.translation.icon = "arrow_upward";
             mpdir.translation.current.y -= moveVal.y;
-            relpos.y = 1 * parseFloat(translateRate);
+            relpos.y = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else if (newInfo.direction == "left") {
             mpdir.translation.icon = "arrow_forward";
             mpdir.translation.current.x -= moveVal.x;
-            relpos.x = 1 * parseFloat(translateRate);
+            relpos.x = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else if (newInfo.direction == "right") {
             mpdir.translation.icon = "arrow_back";
             mpdir.translation.current.x += moveVal.x;
-            relpos.x = -1 * parseFloat(translateRate);
+            relpos.x = -1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else{
             mpdir.translation.icon = "radio_button_unchecked";
         }

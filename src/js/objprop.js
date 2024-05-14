@@ -247,33 +247,99 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
 //---events, watchtes-------------------------------------------------------
     //===commonly====================================
     const rightdrawer_minimize = () => {
+        if (ID("uimode").value == "mobile") {
+            objpropData.elements.drawer.show = false;
+            return;
+        }
         objpropData.elements.drawer.miniState = !objpropData.elements.drawer.miniState;
 
+        var qw = Quasar.Screen.width;
+        var qh = Quasar.Screen.height;
+        var qn = Quasar.Screen.name;
         var w = parseInt(mainData.elements.canvas.scrollArea.width);
+
+        var dw = objpropData.elements.drawer.width;
+        var dmw = objpropData.elements.drawer.miniwidth;
         //console.log(rightdrawer.value);
-        if (objpropData.elements.drawer.miniState) {
-            mainData.elements.canvas.scrollArea.width = `${w + objpropData.elements.drawer.width - objpropData.elements.drawer.miniwidth}px`;
-        }else{
-            mainData.elements.canvas.scrollArea.width = `${w + objpropData.elements.drawer.miniwidth - objpropData.elements.drawer.width}px`;
+        //---judge
+        if (qn != "xs") {
+            if (qn == "sm") {
+                if (qh > qw) {
+                    dw = 0;
+                    dmw = 0;
+                }
+            }
+            if (objpropData.elements.drawer.miniState) {
+                mainData.elements.canvas.scrollArea.width = `${w + dw - dmw}px`;
+            }else{
+                mainData.elements.canvas.scrollArea.width = `${w + dmw - dw}px`;
+            }
         }
+        
     }
-    const getCurrentModeSize = () => {
+    const getCurrentModeSize = (w, h) => {
         if ((Quasar.Screen.name == "sm") ||
             (Quasar.Screen.name == "xs")
         ){
-            return (objpropData.elements.drawer.miniState) ? objpropData.elements.drawer.miniwidth : objpropData.elements.drawer.width;
+            if (objpropData.elements.drawer.miniState) {
+                if (h <= w) {
+                    return objpropData.elements.drawer.miniwidth;
+                }else{
+                    return 0;
+                }
+            }else{
+                if (objpropData.elements.drawer.show) {
+                    if (ID("uimode").value == "mobile") {
+                        return 0;
+                    }else{
+                        return objpropData.elements.drawer.width;
+                    }
+                }else{
+                    return 0;
+                }
+            }
         }else{
-            return (objpropData.elements.drawer.miniState) ? objpropData.elements.drawer.miniwidth : objpropData.elements.drawer.width;
+            if (objpropData.elements.drawer.show) {
+                return (objpropData.elements.drawer.miniState) ? objpropData.elements.drawer.miniwidth : objpropData.elements.drawer.width;
+            }else{
+                return (objpropData.elements.drawer.miniState) ? objpropData.elements.drawer.miniwidth : 0;
+            }
+            
             
         }
     }
-    const setupMobileSize = () => {
-        if ((Quasar.Screen.name == "sm") ||
-            (Quasar.Screen.name == "xs")
-        ){
-            objpropData.elements.drawer.behavior = "mobile";
-            objpropData.elements.drawer.show = true;
-            objpropData.elements.drawer.miniState = true;
+    const setupMobileSize = (w, h) => {
+        var w2 = w * 2;
+        if (Quasar.Screen.name == "sm") {
+            //objpropData.elements.drawer.behavior = "mobile";
+            /*if (h <= w) { //---landscape
+                objpropData.elements.drawer.show = true;
+                objpropData.elements.drawer.miniState = true;
+            }else if (h <= w2) { //---landscape by double width ?
+                objpropData.elements.drawer.show = true;
+                objpropData.elements.drawer.miniState = true;
+                if (Quasar.Screen.name == "xs") objpropData.elements.drawer.show = false;
+            }else{
+                objpropData.elements.drawer.show = false;
+                objpropData.elements.drawer.miniState = false;
+            }*/
+            if (ID("uimode").value == "mobile") {
+                objpropData.elements.drawer.show = false;
+                objpropData.elements.drawer.miniState = false;
+            }else{
+                objpropData.elements.drawer.show = true;
+                objpropData.elements.drawer.miniState = true;
+            }
+            
+        }
+        else if (Quasar.Screen.name == "xs") {
+            objpropData.elements.drawer.show = false;
+            objpropData.elements.drawer.miniState = false;
+        }else{
+            if (ID("uimode").value == "mobile") {
+                objpropData.elements.drawer.show = false;
+                //objpropData.elements.drawer.miniState = false;
+            }
         }
     }
 

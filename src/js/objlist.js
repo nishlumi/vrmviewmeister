@@ -61,31 +61,124 @@ export function defineObjlist (app,Quasar,mainData,objlistData,modelOperator) {
 
     });
     const leftdrawer_minimize = () => {
+        if (ID("uimode").value == "mobile") {
+            objlistData.elements.drawer.show = false;
+            return;
+        }
         objlistData.elements.drawer.miniState = !objlistData.elements.drawer.miniState;
 
+        var qw = Quasar.Screen.width;
+        var qh = Quasar.Screen.height;
+        var qn = Quasar.Screen.name;
+
         var w = parseInt(mainData.elements.canvas.scrollArea.width);
-        if (objlistData.elements.drawer.miniState) {
-            mainData.elements.canvas.scrollArea.width = `${w + objlistData.elements.drawer.width - objlistData.elements.drawer.miniwidth}px`;
-        }else{
-            mainData.elements.canvas.scrollArea.width = `${w + objlistData.elements.drawer.miniwidth - objlistData.elements.drawer.width}px`;
+        var dw = objlistData.elements.drawer.width;
+        var dmw = objlistData.elements.drawer.miniwidth;
+
+        
+        if (qn != "xs") {
+            if (qn == "sm") {
+                if (qh > qw) {
+                    dw = 0;
+                    dmw = 0;
+                }
+            }
+            if (objlistData.elements.drawer.miniState) {
+                mainData.elements.canvas.scrollArea.width = `${w + dw - dmw}px`;
+            }else{
+                mainData.elements.canvas.scrollArea.width = `${w + dmw - dw}px`;
+            }
         }
+
+        //---new version
+        //objlistData.elements.drawer.show = false;
+        //objlistData.elements.minidrawer.show = true;
+
+        //mainData.elements.canvas.scrollArea.width = `${w - dw + dmw}px`;
     }
-    const getCurrentModeSize = () => {
+    const leftminidrawer_minimize = () => {
+        objlistData.elements.drawer.show = true;
+        objlistData.elements.minidrawer.show = false;
+
+        var w = parseInt(mainData.elements.canvas.scrollArea.width);
+        var dw = objlistData.elements.drawer.width;
+        var dmw = objlistData.elements.drawer.miniwidth;
+
+        //---canvas width 
+        mainData.elements.canvas.scrollArea.width = `${w - dmw + dw}px`;
+    }
+    const timeline_leftdrawer_minimize = () => {
+        objlistData.elements.drawer.show = true;
+        objlistData.elements.minidrawer.show = true;
+    }
+    const getCurrentModeSize = (w, h) => {
         if ((Quasar.Screen.name == "sm") ||
             (Quasar.Screen.name == "xs")
         ){
-            return (objlistData.elements.drawer.miniState) ? objlistData.elements.drawer.miniwidth : objlistData.elements.drawer.width;
+            if (objlistData.elements.drawer.miniState) {
+                if (h <= w) {
+                    return objlistData.elements.drawer.miniwidth;
+                }else{
+                    return 0;
+                }
+            }else{
+                if (objlistData.elements.drawer.show) {
+                    if (ID("uimode").value == "mobile") {
+                        return 0;
+                    }else{
+                        return objlistData.elements.drawer.width;
+                    }
+                    
+                }else{
+                    return 0;
+                }
+            }
         }else{
-            return (objlistData.elements.drawer.miniState) ? objlistData.elements.drawer.miniwidth : objlistData.elements.drawer.width;
+            if (objlistData.elements.drawer.show) {
+                return (objlistData.elements.drawer.miniState) ? objlistData.elements.drawer.miniwidth : objlistData.elements.drawer.width;
+            }else{
+                return (objlistData.elements.drawer.miniState) ? objlistData.elements.drawer.miniwidth : 0;
+                //return objlistData.elements.drawer.width;
+            }
+
+            //else if (objlistData.elements.minidrawer.show) {
+            //    return objlistData.elements.drawer.miniwidth;
+            //}
+            
         }
     }
-    const setupMobileSize = () => {
-        if ((Quasar.Screen.name == "sm") ||
-            (Quasar.Screen.name == "xs")
-        ){
-            objlistData.elements.drawer.behavior = "mobile";
-            objlistData.elements.drawer.show = true;
-            objlistData.elements.drawer.miniState = true;
+    const setupMobileSize = (w, h) => {
+        var w2 = w * 2;
+        if (Quasar.Screen.name == "sm"){
+            //objlistData.elements.drawer.behavior = "mobile";
+            /*
+            if (h <= w) { //---landscape
+                objlistData.elements.drawer.show = true;
+                objlistData.elements.drawer.miniState = true;
+            }else if (h <= w2) { //---landscape by double width ?
+                objlistData.elements.drawer.show = true;
+                objlistData.elements.drawer.miniState = true;
+                if (Quasar.Screen.name == "xs") objlistData.elements.drawer.show = false;
+            }else{ //---real portrait
+                objlistData.elements.drawer.show = false;
+                objlistData.elements.drawer.miniState = false;
+            }*/
+            if (ID("uimode").value == "mobile") {
+                objlistData.elements.drawer.show = false;
+                objlistData.elements.drawer.miniState = false;
+            }else{
+                objlistData.elements.drawer.show = true;
+                objlistData.elements.drawer.miniState = true;
+            }
+        }
+        else if (Quasar.Screen.name == "xs") {
+            objlistData.elements.drawer.show = false;
+            objlistData.elements.drawer.miniState = false;
+        }else{
+            if (ID("uimode").value == "mobile") {
+                objlistData.elements.drawer.show = false;
+                //objlistData.elements.drawer.miniState = false;
+            }
         }
     }
     /**
@@ -177,6 +270,7 @@ export function defineObjlist (app,Quasar,mainData,objlistData,modelOperator) {
         objlistEvent : Vue.reactive({
             filtered_objectlist,objectlist_typename,objectlist_selectedclass,checkListSelStage,
             leftdrawer_minimize,getCurrentModeSize,setupMobileSize,
+            leftminidrawer_minimize,timeline_leftdrawer_minimize,
             objectlist_onclicked,
             //---context menu---
             listmenu_rename_onclick,listmenu_info_onclick,listmenu_focus_onclick,

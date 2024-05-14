@@ -16,9 +16,11 @@
 /* ---base box-----------------------------------------------------------*/
 .vvtimeline-area .vvtl-seekbar {
     width: 100%;
-    height: 48px;
+    /*height: 48px;*/
     overflow : hidden;
 }
+
+
 .vvtimeline-area .vvtl-seekbar > div {
     height : 100%;
 }
@@ -29,7 +31,7 @@
 
 .vvtimeline-area .vvtl-timeline {
     width: 100%;
-    height: calc(100% - 48px);
+    /*height: calc(100% - 48px);*/
     overflow : auto;
 }
 .vvtimeline-area .vvtl-timeline-withtoolbar {
@@ -107,9 +109,17 @@
 .vvtl-timeline .grid-headerarea {
     height : 35px;
 }
-.vvtl-timeline .grid-mainarea {
-    height : calc(100% - 50px);
-    overflow : hidden;
+@media (max-width: 599.98px) {
+    .vvtl-timeline .grid-mainarea {
+        height : calc(100% - 48px - 35px);
+        overflow : hidden;
+    }
+}
+@media (min-width: 600px) {
+    .vvtl-timeline .grid-mainarea {
+        height : calc(100% - 40px);
+        overflow : hidden;
+    }
 }
 .vvtl_timeline .grid-scrollarea {
     height : 15px;

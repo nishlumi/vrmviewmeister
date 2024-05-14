@@ -13,8 +13,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.7.0",
-            revision : "20240503-01",
+            version : "2.8.0",
+            revision : "202405xx-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -28,6 +28,10 @@ export class appMainData {
                 percent : 0,
                 current : 0,                
             },
+            landvpad : {
+                show : false,
+            },
+            initialOrientation : "landscape", //portrait, landscape
             canvas : {
                 width : 960,
                 height: 480,
@@ -413,6 +417,14 @@ export class appMainData {
             vroidhub_api : false,
 
             googledrive_gas : false,
+
+            /**
+             * check orientation screen ?
+             * @type {Boolean}
+             */
+            turnOrientation : false,
+
+            uimode: "",
         };
         this.data = {
             clipboard : {

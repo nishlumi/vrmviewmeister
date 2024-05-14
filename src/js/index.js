@@ -70,10 +70,10 @@ const app = Vue.createApp({
             unitycontainer,unityConfig, 
             setupUnity, setupFixUnityEvent, setupDefaultObject, 
             CanvasPointerEnter, CanvasPointerLeave
-        } = defineUnityCanvas(app, Quasar, mainData, ribbonData, objlistData.value, objpropData, timelineData, {
+        } = defineUnityCanvas(app, Quasar, mainData, ribbonData, objlistData, objpropData, timelineData, {
             lnk_recdownload,
         });
-        const { UnityCallback } = defineUnityCallback(mainData, ribbonData,objlistData.value,objpropData,timelineData, unityConfig.value,{
+        const { UnityCallback } = defineUnityCallback(mainData, ribbonData,objlistData,objpropData,timelineData, unityConfig.value,{
             lnk_saveproject
         });
         const { modelOperator,wa_selectedAvatar,wa_percentCurrent,cmp_percentLoad } = defineModelOperator(mainData,ribbonData,objlistData.value,objpropData,timelineData,UnityCallback,{
@@ -98,7 +98,7 @@ const app = Vue.createApp({
         const ribbonEvent = defineRibbonTab(app, Quasar, mainData, ribbonData, timelineData, modelLoader, modelOperator, UnityCallback, {
             fil_animproject,file_audio,fil_animmotion,hid_file,aud01_capture,unitycontainer,lnk_recdownload
         });
-        const {objlistEvent, leftdrawer} = defineObjlist(app, Quasar, mainData, objlistData.value,modelOperator);
+        const {objlistEvent, leftdrawer} = defineObjlist(app, Quasar, mainData, objlistData,modelOperator);
         const {objpropEvent, rightdrawer} = defineObjprop(app, Quasar, mainData, objpropData,UnityCallback,modelOperator);
         const { timelineEvent } = defineTimeline(app, Quasar, mainData, ribbonData, timelineData, UnityCallback, modelOperator, {
             scroll_header_x,scroll_namebox_y,scroll_keyframe_xy,grid_scrollx,grid_scrolly
@@ -122,18 +122,48 @@ const app = Vue.createApp({
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         //---Life cycle
         const calcUnitySize = (w, h) => {
-            objlistEvent.setupMobileSize();
-            objpropEvent.setupMobileSize();
-            ribbonEvent.setupMobileSize();
-            var left = objlistEvent.getCurrentModeSize();
-            var right = objpropEvent.getCurrentModeSize();
-            var tab = ribbonEvent.getCurrentModeSize();
-            var tl = timelineEvent.getCurrentModeSize();
+            objlistEvent.setupMobileSize(w, h);
+            objpropEvent.setupMobileSize(w, h);
+            ribbonEvent.setupMobileSize(w, h);
+            timelineEvent.setupMobileSize(w, h);
+            var left = objlistEvent.getCurrentModeSize(w, h);
+            var right = objpropEvent.getCurrentModeSize(w, h);
+            var tab = ribbonEvent.getCurrentModeSize(w, h);
+            var tl = timelineEvent.getCurrentModeSize(w, h);
+            if (ID("uimode").value == "mobile") {
+                left = 0;
+                right = 0;
+            }
             mainData.elements.canvas.scrollArea.width = `${w - left - right}px`;
             mainData.elements.canvas.scrollArea.height = `${h - tab - tl}px`;
             //modelOperator.setScreenSize(w - left - right, h - tab - tl, false);
 
+            if ((Quasar.Screen.name == "sm") ||
+                (Quasar.Screen.name == "xs")
+            ){
+                mainData.elements.projdlg.fullwidth = true;
+                mainData.elements.projdlg.fullheight = true;
+                mainData.elements.projectSelector.fullwidth = true;
+                mainData.elements.projectSelector.fullheight = true;
+            }
         }
+        const judgeDeviceResolution = () => {
+            /**
+             *  Quasar.Screen.name
+             *  xs:
+             *     width < height   = smartphone
+             *     width*2 < height = smartphone
+             *  sm:
+             * 
+             */
+        }
+        const judgeDeviceLandscape = Vue.computed(() => {
+            if (Quasar.Screen.width > Quasar.Screen.height) {
+                return true;
+            }else{
+                return false;
+            }
+        });
         Vue.onBeforeMount(() => {
             mainData.appconf.load()
             .then(res => {
@@ -172,11 +202,19 @@ const app = Vue.createApp({
                     //---firstly set config to Unity, after each initial set up
                     mainData.appconf.load()
                     .then(confres => {
+                        mainData.states.uimode = ID("uimode").value;
+
                         mainData.appconf.applyUnity(false);
                         modelOperator.newProject(false);
                         modelLoader.setupDefaultObject();
 
                         calcUnitySize(Quasar.Screen.width, Quasar.Screen.height);
+                        if (Quasar.Screen.width >= Quasar.Screen.height) {
+                            mainData.elements.initialOrientation = "landscape";
+                        }else{
+                            mainData.elements.initialOrientation = "portrait";
+                        }
+                        
                         //mainData.elements.canvas.scrollArea.width = `${Quasar.Screen.width - 300 - 225}px`;
                         //mainData.elements.canvas.scrollArea.height = `${Quasar.Screen.height - 128 - 36 - 200}px`;
                         ribbonData.elements.scr_size.width = unitycontainer.value.width; 
@@ -216,8 +254,40 @@ const app = Vue.createApp({
                     
                 });
                 window.addEventListener("resize",(evt) => {
+                    if (mainData.states.turnOrientation) {
+                        mainData.states.turnOrientation = false;
+                        //return;
+                    }
                     var w = evt.currentTarget;
-                    calcUnitySize(w.innerWidth, w.innerHeight);
+                    console.log(Quasar.Screen);
+                    Vue.nextTick(async () => {
+                        calcUnitySize(w.innerWidth, w.innerHeight);
+                    });
+                });
+                window.addEventListener("orientationchange",(evt)=> {
+                    var w = evt.currentTarget;
+                    console.log(Quasar.Screen);
+                    console.log(screen);
+                    /*alert(screen.orientation.type+"\n"+
+                        screen.availWidth + "\n" + 
+                        screen.availHeight
+                    );*/
+                    if (ID("uimode").value == "mobile") {
+                        //---after xs(portrait), off mini-mode
+                        objpropData.elements.drawer.show = false;
+                        objlistData.elements.drawer.show = false;
+                        objpropData.elements.drawer.miniState = true;
+                        objlistData.elements.drawer.miniState = true;
+                    }else{
+                        objpropData.elements.drawer.show = true;
+                        objlistData.elements.drawer.show = true;
+                        objpropData.elements.drawer.miniState = true;
+                        objlistData.elements.drawer.miniState = true;
+                    }
+                    //Vue.nextTick(async () => {
+                        calcUnitySize(w.innerWidth, w.innerHeight);
+                    //});
+                    mainData.states.turnOrientation = true;
                 });
                 if (!window.elecAPI) {
                     window.addEventListener("beforeunload",(evt) => {
@@ -267,6 +337,24 @@ const app = Vue.createApp({
             mainData.appconf.save();
 
         });
+
+        const chk_resolution_xs_and_portrait = Vue.computed(() => {
+            var w = Quasar.Screen.width;
+            var w2 = Quasar.Screen.width * 2;
+            var h = Quasar.Screen.height;
+            var ret = false;
+            if (Quasar.Screen.name == "xs") {
+                if (h <= w)  {
+                    ret = false;
+                }else if (h <= w2) {
+                    ret = true;
+                }else{
+                    ret = true;
+                }
+            }
+            
+            return ret;
+        });
         
         
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -301,7 +389,9 @@ const app = Vue.createApp({
             cmp_percentLoad,
             cmp_projectSelectorStorageGDrive,
 
-            mat_realtoon,UIMaterials
+            mat_realtoon,UIMaterials,
+            chk_resolution_xs_and_portrait,
+            judgeDeviceLandscape
         }
     }
 })

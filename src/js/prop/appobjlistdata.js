@@ -15,7 +15,7 @@ export const defineAppObjlistData = (mainData) => {
         {value:AF_TARGETTYPE.Stage, label:"Stage"},
         {value:AF_TARGETTYPE.Text3D, label:"Text 3D"},
     ];
-    const objlistData = Vue.ref({
+    const objlistData = Vue.reactive({
         elements : {
             drawer : {
                 show : true,
@@ -24,7 +24,11 @@ export const defineAppObjlistData = (mainData) => {
                 width : 225,
                 miniwidth : 60,
                 breakpoint : 500,
-                behavior : "normal",
+                behavior : "default",
+                autodetectMobile : false,
+            },
+            minidrawer : {
+                show : false,
             },
             objecttypes : {
                 selected : tmpobjecttypes[0],

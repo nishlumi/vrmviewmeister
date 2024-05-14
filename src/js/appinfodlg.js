@@ -20,29 +20,62 @@ const template = `
                     <b >Platform</b>:<span v-text="platform"></span><br>
                     <div>
                     <b>Memory</b>:<br>
-                    <table border="1" style="border-collapse:collapse;">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Used (MB)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Javascript</td>
-                                <td style="text-align:right;">
-                                    <span v-text="data.memory.js.use"></span> 
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>WebGL</td>
-                                <td style="text-align:right;">
-                                    <span v-text="data.memory.wgl.use"></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
+                    <div class="row">
+                        <div class="col-6">
+                            <table border="1" style="border-collapse:collapse;">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Used (MB)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Javascript</td>
+                                        <td style="text-align:right;">
+                                            <span v-text="data.memory.js.use"></span> 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>WebGL</td>
+                                        <td style="text-align:right;">
+                                            <span v-text="data.memory.wgl.use"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table border="1" style="border-collapse:collapse;">
+                                <thead>
+                                    <tr>
+                                        <th>Width</th>
+                                        <th>Height</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:right;">
+                                            <span v-text="data.screen.width"></span> 
+                                        </td>
+                                    
+                                        <td style="text-align:right;">
+                                            <span v-text="data.screen.height"></span>
+                                        </td>
+                                    
+                                        <td style="text-align:right;">
+                                            <span v-text="data.screen.name"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                        {{ data.screen.userAgent }}
                     </div>
 
                     <div class="absolute-bottom text-subtitle1 text-left q-ml-xs q-mb-xs"></div>
@@ -93,7 +126,12 @@ export function defineAppInfoDlg(app,Quasar) {
                         use : 0,
                         total : 0
                     }
-                    
+                },
+                screen : {
+                    width : 0,
+                    height: 0,
+                    name : "",
+                    userAgent : "",
                 }
             });
 
@@ -109,7 +147,12 @@ export function defineAppInfoDlg(app,Quasar) {
                     data.memory.js.total = (gmem.totalJSHeapSize / 1024 / 1024).toFixed();
                     data.memory.wgl.use = (gmem.usedWASMHeapSize / 1024 / 1024).toFixed();
                     data.memory.wgl.total = (gmem.totalWASMHeapSize / 1024 / 1024).toFixed();
+
+                    data.screen.userAgent = navigator.userAgent;
                 }
+                data.screen.width = Math.round(Quasar.Screen.width);
+                data.screen.height = Math.round(Quasar.Screen.height);
+                data.screen.name = Quasar.Screen.name;
             });
 
             //---events --------------------------------------

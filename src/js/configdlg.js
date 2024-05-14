@@ -2,9 +2,9 @@ import { DEFAULTMEM } from "../res/appconst.js";
 import { VVAppConfig } from "./appconf.js";
 
 const template = `
-<q-dialog v-model="show" persistent style="max-width:600px;max-height:700px;">
+<q-dialog v-model="show" persistent full-width full-height style="max-width:600px;max-height:700px;">
     <q-card>
-        <q-card-section class="q-ma-none q-pl-xs q-pr-xs" style="width:600px;height:700px;">
+        <q-card-section class="q-ma-none q-pl-xs q-pr-xs scroll" style="width:100%;height:calc(100% - 52px);">
             <q-tabs
                 v-model="tabIndex"
                 class="text-primary"

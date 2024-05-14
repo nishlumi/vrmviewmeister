@@ -42,28 +42,45 @@
 <body>
 <div id="q-app" v-cloak>
     <div id="splash" class="vvm-splash">
-        <img src="static/img/app_og_image.png" alt="splash screen" width="640" height="376">
+        <img src="static/img/app_og_image.png" alt="splash screen" style="width:100%;height:auto;" >
     </div>
-
     <q-layout view="hHh LpR fFf" style="overflow:hidden">
         <q-header v-model="mainData.elements.header" class="text-dark" reveal elevated bordered>
 <!--[] Ribbon tab panel ==========================================================================-->
-            <q-tabs
-                v-model="ribbonData.elements.tab.selectIndex"
-                class="bg-primary text-white shadow-2"
-                inline-label no-caps dense align="left"
-                :style="ribbonData.elements.tab.style"
-            >
-                <q-tab name="home" icon="home" :label="$t('ribbon_title_home')"></q-tab>
-                <q-tab name="screen" icon="web" :label="$t('ribbon_title_screen')"></q-tab>
-                <q-tab name="model" icon="emoji_people" :label="$t('ribbon_title_vrm')" ></q-tab>
-                <q-tab name="animation" icon="animation" :label="$t('ribbon_title_animation')"></q-tab>
-                <q-tab name="effect" icon="air" :label="$t('ribbon_title_systemeffect')" ></q-tab>
-                <q-tab name="audio" icon="headphones" :label="$t('ribbon_title_audio')" ></q-tab>
-            </q-tabs>
+            <q-toolbar class="bg-primary text-white q-pt-none q-pb-none" style="min-height:32px">
+                <q-btn color="yellow" flat dense :icon="ribbonData.elements.tab.toggleIcon" @click="ribbonEvent.btn_check_show_changed"></q-btn>
+                <q-tabs
+                    v-model="ribbonData.elements.tab.selectIndex"
+                    
+                    inline-label no-caps dense align="left"
+                    mobile-arrows
+                    :style="ribbonData.elements.tab.style"
+                    @click="ribbonEvent.tabbar_onclick"
+                >
+                    <q-tab name="home" icon="home" :label="$t('ribbon_title_home')"></q-tab>
+                    <q-tab name="screen" icon="web" :label="$t('ribbon_title_screen')"></q-tab>
+                    <q-tab name="model" icon="emoji_people" :label="$t('ribbon_title_vrm')" ></q-tab>
+                    <q-tab name="animation" icon="animation" :label="$t('ribbon_title_animation')"></q-tab>
+                    <q-tab name="effect" icon="air" :label="$t('ribbon_title_systemeffect')" ></q-tab>
+                    <q-tab name="audio" icon="headphones" :label="$t('ribbon_title_audio')" ></q-tab>
+                </q-tabs>
+                
+                
+                <!--<q-space></q-space>
+                <q-toggle v-model="ribbonData.elements.tab.check_show" 
+                    dark color="yellow"
+                    @update:model-value="ribbonEvent.check_show_changed"
+                >
+                    <q-tooltip><span>{{ "show ribbon panel" }}</span></q-tooltip>
+                </q-toggle>
+                -->
+            </q-toolbar>
+            <!-- class="bg-primary text-white shadow-2" -->
+            
         
             <q-tab-panels v-model="ribbonData.elements.tab.selectIndex"
                 :style="ribbonData.elements.tabpanel.style"
+                class="shadow-2"
             >
                 <!-- Home tab ------------------------------------------------------>
                 <q-tab-panel name="home" class=" q-pa-sm">
@@ -305,8 +322,18 @@
                         <div class="ribbon-toolbar">
                             <!--<span>{{ $t("ribbon_screensize_label") }}</span><br>-->
                             <div class="row">
-                                <div class="col-4"><q-input v-model="ribbonData.elements.scr_size.width" class="screensize-slider" type="number" :label="$t('width')" dense :min="400" :max="4000" :step="10"></q-input></div>
-                                <div class="col-4"><q-input v-model="ribbonData.elements.scr_size.height" class="screensize-slider" type="number" :label="$t('height')" dense :min="400" :max="4000" :step="10"></q-input></div>
+                                <div class="col-4">
+                                    <q-input v-model="ribbonData.elements.scr_size.width" class="screensize-slider" type="number" :label="$t('width')" dense :min="400" :max="4000" :step="10"></q-input>
+                                    <uswipe-input show-icon 
+                                        v-model="ribbonData.elements.scr_size.width" class="screensize-slider" type="number" :label="$t('width')" dense :min="400" :max="4000" :step="10"
+                                    ></uswipe-input>
+                                </div>
+                                <div class="col-4">
+                                    <q-input v-model="ribbonData.elements.scr_size.height" class="screensize-slider" type="number" :label="$t('height')" dense :min="400" :max="4000" :step="10"></q-input>
+                                    <uswipe-input show-icon 
+                                        v-model="ribbonData.elements.scr_size.height" class="screensize-slider" type="number" :label="$t('height')" dense :min="400" :max="4000" :step="10"
+                                    ></uswipe-input>
+                                </div>
                                 <div class="col-4"><q-btn dense color="primary" style="width:5rem" :label="$t('cons_apply')" @click="ribbonEvent.applyScreen_onclick" no-caps ></q-btn></div>
                             </div>
                             <div class="row">
@@ -357,7 +384,12 @@
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
                             <q-checkbox right-label v-model="ribbonData.elements.optionArea.rotate360" :label="$t('objlistmenu_show360')" @update:model-value="ribbonEvent.rotate360_onchange" ></q-checkbox><br>
-                            <q-input type="number" v-model="ribbonData.elements.optionArea.rotateSpeed" :label="$t('speed_to_rotate')" @update:model-value="ribbonEvent.rotateSpeed_onchange" dense :min="10" :max="50" :step="1"  ></q-input>
+                            <!--<q-input type="number" v-model="ribbonData.elements.optionArea.rotateSpeed" :label="$t('speed_to_rotate')" @update:model-value="ribbonEvent.rotateSpeed_onchange" dense :min="10" :max="50" :step="1"  ></q-input>-->
+                            <span>{{ $t('speed_to_rotate') }}</span>
+                            <uswipe-input  
+                                v-model="ribbonData.elements.optionArea.rotateSpeed" 
+                                 :min="10" :max="50" :step="1"
+                            ></uswipe-input>
                         </div>
                         <div class="ribbon-toolbar">
                             <q-checkbox right-label v-model="ribbonData.elements.optionArea.useAntialias" @update:model-value="ribbonEvent.useAntialias_onchange" :label="$t('use_antialias')" ></q-checkbox><br>
@@ -372,7 +404,7 @@
                                 :min="0.01"
                                 :max="0.2"
                                 :step="0.01"
-                                color="primary"
+                                color="primary" label
                                 @update:model-value="ribbonEvent.ikmarkerSize_onchange"
                             ></q-slider>
                         </div>
@@ -432,6 +464,11 @@
                                         </template>
                                     </q-list>
                                 </q-menu>
+                            </q-btn><br>
+                            <q-btn flat dense size="md" icon="format_shapes" @click="ribbonEvent.RibbonFuncModel('addtext3d')" no-caps>
+                                <q-tooltip>
+                                    {{ "3D" + $t('Text') }}
+                                </q-tooltip>
                             </q-btn>
                         </div>
                         <div class="ribbon-group-title">Add</div>
@@ -545,45 +582,155 @@
                     <div class="ribbon-group-sep"></div>
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
-                            <q-btn flat icon="bookmark_add" :label="$t('cons_save')+'...'" no-caps 
-                            >
-                                <q-menu>
+                            <q-btn flat icon="file_open" 
+                                :label="$t('open_project')+'...'" no-caps 
+                            ><!-- Opem menu for Post/Motion======================##  -->
+                                <q-menu anchor="top end" self="top start">
                                     <q-list>
-                                        <q-item-label><b>{{ $t('ribbon_pose_save') }}</b></q-item-label>
-                                        <q-separator></q-separator>
-                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_direct')">
-                                            <q-item-section>{{ $t('Disk')}}</q-item-section>
+                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('poselist_pose')">
+                                            <q-item-section>{{ $t('ribbon_apppose')}}</q-item-section>
+                                        </q-item>  
+                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('poselist_motion')">
+                                            <q-item-section>{{ $t('ribbon_appmotion')}}</q-item-section>
+                                        </q-item>  
+                                        <q-item clickable >
+                                            <q-item-section>VRMAnimation...</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.openvrma_file_onclick">
+                                                        <q-item-section>{{ $t('Disk') }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.openvrma_internal_onclick">
+                                                        <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
+                                                    </q-item>
+                                                    <template v-if="mainData.states.googledrive_gas">
+                                                        <q-item clickable  v-close-popup @click="ribbonEvent.openvrma_gdrive_onclick">
+                                                            <q-item-section>Google Drive</q-item-section>
+                                                            <q-item-section side><q-icon name="cloud_upload"></q-icon></q-item-section>
+                                                        </q-item>
+                                                    </template>
+                                                </q-list>
+                                            </q-menu>
                                         </q-item>                                        
-                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose')">
-                                            <q-item-section>{{ $t('Internal Storage')}}</q-item-section>
-                                        </q-item>
-                                        <template v-if="mainData.states.googledrive_gas">
-                                            <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_drive')">
-                                                <q-item-section>Google Drive</q-item-section>
-                                            </q-item>
-                                        </template>
-                                        <q-separator></q-separator>
-                                        <q-item-label><b>{{ $t('ribbon_motion_save') }}</b></q-item-label>
-                                        <q-separator></q-separator>
-                                        <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_file_onclick">
-                                            <q-item-section>{{ $t('Disk') }}</q-item-section>
-                                        </q-item>                                    
-                                        <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_internal_onclick">
-                                            <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
-                                        </q-item>
-
-                                        <template v-if="mainData.states.googledrive_gas">
-                                            <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_gdrive_onclick">
-                                                <q-item-section>Google Drive</q-item-section>
-                                            </q-item>
-                                        </template>
                                     </q-list>
                                 </q-menu>
                             </q-btn>                            
                             <br>
-                            <q-btn flat dense icon="dashboard" :label="$t('ribbon_pose_list')" no-caps 
+                            <q-btn flat icon="save" 
+                                :label="$t('save_project')+'...'" no-caps 
+                            ><!-- Save menu for Pose/Motion ======================## -->
+                                <q-menu anchor="top end" self="top start">
+                                    <q-list>
+                                        <q-item clickable >
+                                            <q-item-section>{{ $t('ribbon_apppose') + "..." }}</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+                                                    <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_direct')">
+                                                        <q-item-section>{{ $t('Disk')}}</q-item-section>
+                                                    </q-item>                                        
+                                                    <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose')">
+                                                        <q-item-section>{{ $t('Internal Storage')}}</q-item-section>
+                                                    </q-item>
+                                                    <template v-if="mainData.states.googledrive_gas">
+                                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncModel('savepose_drive')">
+                                                            <q-item-section>Google Drive</q-item-section>
+                                                            <q-item-section side><q-icon name="cloud_upload"></q-icon></q-item-section>
+                                                        </q-item>
+                                                    </template>
+                                                </q-list>
+                                            </q-menu>
+                                        </q-item>
+                                        <q-item clickable >
+                                            <q-item-section>{{ $t('ribbon_appmotion') + "..."  }}</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_file_onclick">
+                                                        <q-item-section>{{ $t('Disk') }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_internal_onclick">
+                                                        <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
+                                                    </q-item>
+                                                    <template v-if="mainData.states.googledrive_gas">
+                                                        <q-item clickable  v-close-popup @click="ribbonEvent.savemotion_gdrive_onclick">
+                                                            <q-item-section>Google Drive</q-item-section>
+                                                            <q-item-section side><q-icon name="cloud_upload"></q-icon></q-item-section>
+                                                        </q-item>
+                                                    </template>
+                                                </q-list>
+                                            </q-menu>
+                                        </q-item>
+                                        <q-item clickable>
+                                            <q-item-section>{{ $t("Motion") + ":" + $t('general_format') + "..."  }}</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+                                                    <q-item clickable disable v-close-popup @click="ribbonEvent.RibbonFuncModel('savemotion_bvh')">
+                                                        <q-item-section>{{ ".bvh" }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncModel('savemotion_anim')">
+                                                        <q-item-section>{{ ".anim" }}</q-item-section>
+                                                    </q-item>
+                                                </q-list>
+                                            </q-menu>
+                                        </q-item>
+                                        <q-item clickable>
+                                            <q-item-section>VRMAnimation...</q-item-section>
+                                            <q-item-section side><q-icon name="keyboard_arrow_right"></q-icon></q-item-section>
+                                            <q-menu anchor="top end" self="top start">
+                                                <q-list>
+
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('f','savevrma')">
+                                                        <q-item-section>{{ $t('Disk') }}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('i','savevrma')">
+                                                        <q-item-section>{{ $t('Internal Storage') }}</q-item-section>
+                                                    </q-item>
+
+                                                    <!--
+                                                    <q-item-label>{{ $t('Disk') }}</q-item-label>
+                                                    <q-separator></q-separator>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('f','savevrma')">
+                                                        <q-item-section>{{ $t('save_proj')}}</q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('f','saveasvrma')">
+                                                        <q-item-section>{{ $t('save as')}}</q-item-section>
+                                                    </q-item>
+                                                    <q-separator></q-separator>
+                                                    
+                    
+                                                    <q-item-label class="q-pa-xs">{{ $t('Internal Storage') }}</q-item-label>
+                                                    <q-separator></q-separator>
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('i','savevrma')">
+                                                        <q-item-section>{{ $t('save_proj')}}</q-item-section>
+                                                    </q-item>                                        
+                                                    <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('i','saveasvrma')">
+                                                        <q-item-section>{{ $t('save as')}}</q-item-section>
+                                                    </q-item>
+                    
+                                                    
+                                                    <template v-if="mainData.states.googledrive_gas">
+                                                        <q-item-label class="q-pa-xs">Google Drive</q-item-label>
+                                                        <q-separator></q-separator>
+                                                        <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('g','savevrma')">
+                                                            <q-item-section>{{ $t('save_proj')}}</q-item-section>
+                                                        </q-item>                                        
+                                                        <q-item clickable  v-close-popup @click="ribbonEvent.savevrma_onclick('g','saveasvrma')">
+                                                            <q-item-section>{{ $t('save as')}}</q-item-section>
+                                                        </q-item>
+                                                    </template>
+                                                    -->
+                                                </q-list>
+                                            </q-menu>
+                                        </q-item>
+                                    </q-list>
+                                </q-menu>
+                            </q-btn>
+                            <!--<q-btn flat icon="dashboard" :label="$t('ribbon_pose_list')" no-caps 
                                 @click="ribbonEvent.RibbonFuncModel('poselist')"
-                            ></q-btn>
+                            ></q-btn>-->
                         </div>
                         <div class="ribbon-group-title">Pose/Motion</div>
                     </div>
@@ -758,6 +905,9 @@
                                 @click="ribbonEvent.setmaxframe_onchange"
                                 :disable="ribbonEvent.chk_enableKeyframeButton"
                             ></q-btn>
+                            <uswipe-input show-icon 
+                                v-model="ribbonData.elements.frame.max" :min="1" :max="99999" :step="1"
+                            ></uswipe-input>
                         </div>
                         <div class="ribbon-group-title">Frame operation</div>
                     </div>
@@ -814,6 +964,10 @@
                                         <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncAnimation('delpropkeyframe')">
                                             <q-item-section>{{ $t('tl_utl_del3') }}</q-item-section>
                                         </q-item>
+                                        <q-separator></q-separator>
+                                        <q-item clickable v-close-popup @click="ribbonEvent.RibbonFuncAnimation('delvrmakeyframe')">
+                                            <q-item-section>{{ $t('tl_utl_del4') }}</q-item-section>
+                                        </q-item>
                                     </q-list>
                                 </q-menu>
                             </q-btn>
@@ -853,26 +1007,32 @@
                     <div v-if="ribbonData.elements.syseff.pagetab == 1">
                         <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar">
-                                <q-checkbox right-label v-model="ribbonData.elements.syseff.bloom.checked" label="On" @update:model-value="ribbonEvent.bloom_checked_onchange" >
+                                <q-checkbox right-label dense v-model="ribbonData.elements.syseff.bloom.checked" label="On" @update:model-value="ribbonEvent.bloom_checked_onchange" >
                                 </q-checkbox><br>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.bloom.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.bloom_intensity_onchange" dense :min="0" :max="100" :step="0.1" class="syseff-inputbox"></q-input>
+                                <uswipe-input show-icon 
+                                    v-model.number="ribbonData.elements.syseff.bloom.intensity"  @update:model-value="ribbonEvent.bloom_intensity_onchange" dense :min="0" :max="100" :step="0.1"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-group-title">Bloom</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
-                        <div class="ribbon-group ">
+                        <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar" style="margin-left:1rem;width:10rem">
-                                <q-checkbox right-label v-model="ribbonData.elements.syseff.chroma.checked" label="On" @update:model-value="ribbonEvent.chroma_checked_onchange" >
+                                <q-checkbox right-label dense v-model="ribbonData.elements.syseff.chroma.checked" label="On" @update:model-value="ribbonEvent.chroma_checked_onchange" >
                                 </q-checkbox><br>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.chroma.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.chroma_intensity_onchange" dense :min="0" :max="1" :step="0.1" class="syseff-inputbox"></q-input>
+                                <uswipe-input show-icon class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.chroma.intensity"  @update:model-value="ribbonEvent.chroma_intensity_onchange" dense :min="0" :max="1" :step="0.1"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-group-title">Chromatic Abberation</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
-                        <div class="ribbon-group">
+                        <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar" style="width:10rem;">
-                                <div>
-                                    <q-checkbox right-label v-model="ribbonData.elements.syseff.colorgrd.checked" label="On" @update:model-value="ribbonEvent.colorgrd_checked_onchange" >
+                                <div class="q-mb-sm">
+                                    <q-checkbox right-label dense v-model="ribbonData.elements.syseff.colorgrd.checked" label="On" @update:model-value="ribbonEvent.colorgrd_checked_onchange" >
                                     </q-checkbox>
                                 </div>
                                 <ucolor-picker v-model="ribbonData.elements.syseff.colorgrd.filter"
@@ -884,13 +1044,21 @@
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.colorgrd.temperature" :label="$t('temperature')" @update:model-value="ribbonEvent.colorgrd_temperature_onchange" dense :min="-100" :max="100" :step="0.25" class="syseff-inputbox" ></q-input>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.colorgrd.tint" :label="$t('tint')" @update:model-value="ribbonEvent.colorgrd_tint_onchange" dense :min="-100" :max="100" :step="0.25" class="syseff-inputbox" ></q-input>
                             </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox" 
+                                    v-model.number="ribbonData.elements.syseff.colorgrd.temperature"  @update:model-value="ribbonEvent.colorgrd_temperature_onchange"  :min="-100" :max="100" :step="0.25"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox" 
+                                    v-model.number="ribbonData.elements.syseff.colorgrd.tint"  @update:model-value="ribbonEvent.colorgrd_tint_onchange"  :min="-100" :max="100" :step="0.25"
+                                ></uswipe-input>
+                            </div>
                             <div class="ribbon-group-title">Color grading</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
-                        <div class="ribbon-group">
+                        <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar">
                                 <div>
-                                    <q-checkbox right-label v-model="ribbonData.elements.syseff.depthov.checked" label="On" @update:model-value="ribbonEvent.depthov_checked_onchange" >
+                                    <q-checkbox right-label dense v-model="ribbonData.elements.syseff.depthov.checked" label="On" @update:model-value="ribbonEvent.depthov_checked_onchange" >
                                     </q-checkbox>
                                 </div>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.depthov.focusdistance" :label="$t('focusdistance')" @update:model-value="ribbonEvent.depthov_focusdistance_onchange" dense :min="0.1" :max="50" :step="0.05" class="syseff-inputbox-long" >
@@ -898,6 +1066,9 @@
                                         {{ $t('focusdistance') }}
                                     </q-tooltip>
                                 </q-input>
+                                <uswipe-input show-icon  syseff-inputbox-long
+                                    v-model.number="ribbonData.elements.syseff.depthov.focusdistance" @update:model-value="ribbonEvent.depthov_focusdistance_onchange" dense :min="0.1" :max="50" :step="0.05"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left:1rem;">
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.depthov.aperture" :label="$t('aperture')" @update:model-value="ribbonEvent.depthov_aperture_onchange" dense :min="0.1" :max="32" :step="0.1" class="syseff-inputbox-long" ></q-input>
@@ -907,15 +1078,23 @@
                                     </q-tooltip>
                                 </q-input>
                             </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox" 
+                                    v-model.number="ribbonData.elements.syseff.depthov.aperture"  @update:model-value="ribbonEvent.depthov_aperture_onchange" dense :min="0.1" :max="32" :step="0.1"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox" 
+                                    v-model.number="ribbonData.elements.syseff.depthov.focallength"  @update:model-value="ribbonEvent.depthov_focallength_onchange" dense :min="1" :max="50" :step="1"
+                                ></uswipe-input>
+                            </div>
                             <div class="ribbon-group-title">Depth Of Field</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
                     </div>
                     <div class="ribbon-group" v-if="ribbonData.elements.syseff.pagetab == 2">
-                        <div class="ribbon-group">
+                        <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar">
                                 <div>
-                                    <q-checkbox right-label v-model="ribbonData.elements.syseff.grain.checked" label="On" @update:model-value="ribbonEvent.grain_checked_onchange" >
+                                    <q-checkbox right-label dense v-model="ribbonData.elements.syseff.grain.checked" label="On" @update:model-value="ribbonEvent.grain_checked_onchange" >
                                     </q-checkbox>
                                 </div>
                             </div>
@@ -923,17 +1102,28 @@
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.grain.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.grain_intensity_onchange" dense :min="0" :max="1" :step="0.1" class="syseff-inputbox" ></q-input>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.grain.size" :label="$t('size')" @update:model-value="ribbonEvent.grain_size_onchange" dense :min="0.3" :max="3" :step="0.1" class="syseff-inputbox"></q-input>
                             </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.grain.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.grain_intensity_onchange" :min="0" :max="1" :step="0.1"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.grain.size" :label="$t('size')" @update:model-value="ribbonEvent.grain_size_onchange" :min="0.3" :max="3" :step="0.1"
+                                ></uswipe-input>
+                            </div>
                             <div class="ribbon-group-title">Grain</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
                         <div class="ribbon-group" style="margin-left: 1rem;">
                             <div class="ribbon-toolbar">
                                 <div>
-                                    <q-checkbox right-label v-model="ribbonData.elements.syseff.vignette.checked" label="On" @update:model-value="ribbonEvent.vignette_checked_onchange" >
+                                    <q-checkbox right-label dense v-model="ribbonData.elements.syseff.vignette.checked" label="On" @update:model-value="ribbonEvent.vignette_checked_onchange" >
                                     </q-checkbox>
                                 </div>
                                 <div>
                                     <q-input type="number" v-model.number="ribbonData.elements.syseff.vignette.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.vignette_intensity_onchange" dense :min="0" :max="1" :step="0.1" class="syseff-inputbox"></q-input>
+                                    <uswipe-input show-icon class="syseff-inputbox"
+                                        v-model.number="ribbonData.elements.syseff.vignette.intensity"  @update:model-value="ribbonEvent.vignette_intensity_onchange" dense :min="0" :max="1" :step="0.1"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left:1rem;">
@@ -941,8 +1131,27 @@
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.vignette.roundness" :label="$t('roundness')" @update:model-value="ribbonEvent.vignette_round_onchange" dense :min="0" :max="1" :step="0.01" class="syseff-inputbox"></q-input>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.vignette.smoothness"  @update:model-value="ribbonEvent.vignette_smooth_onchange" dense :min="0.1" :max="1" :step="0.01"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.vignette.roundness" @update:model-value="ribbonEvent.vignette_round_onchange" dense :min="0" :max="1" :step="0.01"
+                                ></uswipe-input>
+                            </div>
+                            <div class="ribbon-group-title">Vignette</div>
+                        </div>
+                        <div class="ribbon-group" style="margin-left: 1rem;">
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.vignette.center.x" label="center X" @update:model-value="ribbonEvent.vignette_center_onchange" dense :min="-3" :max="5" :step="0.01" class="syseff-inputbox" ></q-input>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.vignette.center.y" label="center Y" @update:model-value="ribbonEvent.vignette_center_onchange" dense :min="-3" :max="5" :step="0.01" class="syseff-inputbox"></q-input>
+                            </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.vignette.center.x" @update:model-value="ribbonEvent.vignette_center_onchange" :min="-3" :max="5" :step="0.01"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.vignette.center.y"  @update:model-value="ribbonEvent.vignette_center_onchange" :min="-3" :max="5" :step="0.01"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left:1rem;width:8rem;">
                                 <ucolor-picker v-model="ribbonData.elements.syseff.vignette.color"
@@ -971,6 +1180,14 @@
                                         {{ $t('Sample count') }}
                                     </q-tooltip>
                                 </q-input>
+                            </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.moblur.shutterangle" @update:model-value="ribbonEvent.moblur_shutterangle_onchange" :min="0" :max="360" :step="1"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.moblur.samplecount"  @update:model-value="ribbonEvent.moblur_samplecount_onchange" :min="4" :max="32" :step="1"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-group-title">Motion blur</div>
                         </div>
@@ -1311,14 +1528,18 @@
         </q-header>
         
 <!--[] ObjectList ================================================================================= -->
+<!-- 
+    
+
+-->
         <q-drawer
             side="left"
             v-model="objlistData.elements.drawer.show"
-            :mini="!objlistData.elements.drawer.show || objlistData.elements.drawer.miniState"
+            
             bordered
             :width="objlistData.elements.drawer.width"
-            :mini-width="objlistData.elements.drawer.miniwidth"
             :breakpoint="objlistData.elements.drawer.breakpoint"
+            behavior="mobile"
             content-class="bg-grey-3"
         >
             <q-list bordered>
@@ -1339,6 +1560,60 @@
                     </q-item-section>
                 </q-item>
             </q-list>
+            <template v-slot:mini>
+                <q-list bordered>
+                    <q-item v-ripple dense>
+                        <q-item-section avatar>
+                            <q-icon color="primary" name="chevron_left" 
+                                @click="objlistEvent.leftdrawer_minimize"
+                            ></q-icon>
+                        </q-item-section>
+                    </q-item>
+                    
+                </q-list>
+                <q-icon name="height" size="md"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="mobilePadEvent.progress_onswipe_left"
+                    :class="mainData.elements.mobilepad.left.cpadCSS"
+                    class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.left.progress.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <q-icon name="swap_horiz" size="sm"></q-icon><q-icon name="swap_vert" size="sm"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse="mobilePadEvent.translation_onswipe_left"
+                    :class="mainData.elements.mobilepad.left.cpadCSS"
+                    class="mblpad_translation cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                            <q-icon :name="mainData.elements.mobilepad.left.translation.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <q-icon name="zoom_in_map" size="sm"></q-icon><q-icon name="zoom_out_map" size="sm"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="mobilePadEvent.targetzoom_onswipe_left"
+                    :class="mainData.elements.mobilepad.left.cpadCSS"
+                    class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.left.targetzoom.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <div class="q-mt-sm row">
+                    <div class="col-12">
+                        <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                    </div>
+                </div>
+            </template>
+
             <div v-show="!objlistData.elements.drawer.miniState">
                 <!--
                       
@@ -1446,6 +1721,7 @@
             </div>
         </q-drawer>
         
+        
 <!--[] Center panel ================================================================================= -->
         <q-page-container>
         <q-page>
@@ -1484,12 +1760,13 @@
         <q-drawer
             side="right" 
             v-model="objpropData.elements.drawer.show"
-            :mini="!objpropData.elements.drawer.show || objpropData.elements.drawer.miniState"
+            
             bordered
             :width="objpropData.elements.drawer.width"
-            :mini-width="objpropData.elements.drawer.miniwidth"
+            
             :breakpoint="objpropData.elements.drawer.breakpoint"
             content-class="bg-grey-3"
+            behavior="mobile"
         >
             <q-list bordered>
             <q-item v-ripple dense>
@@ -1501,7 +1778,60 @@
                 <q-item-section>Properties</q-item-section>
             </q-item>
             </q-list>
-            <div v-show="!objpropData.elements.drawer.miniState">
+            <template v-slot:mini>
+                <q-list bordered>
+                    <q-item v-ripple dense>
+                        <q-item-section avatar>
+                            <q-icon color="primary" name="chevron_right"
+                                @click="objpropEvent.rightdrawer_minimize"
+                            ></q-icon>
+                        </q-item-section>
+                        <q-item-section>Properties</q-item-section>
+                    </q-item>
+                </q-list>
+                <q-icon name="height" size="md"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="mobilePadEvent.progress_onswipe_right"
+                    :class="mainData.elements.mobilepad.right.cpadCSS"
+                    class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.right.progress.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <q-icon name="swap_horiz" size="sm"></q-icon><q-icon name="swap_vert" size="sm"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse="mobilePadEvent.translation_onswipe_right"
+                    :class="mainData.elements.mobilepad.right.cpadCSS"
+                    class="mblpad_translation cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                            <q-icon :name="mainData.elements.mobilepad.right.translation.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <q-icon name="zoom_in_map" size="sm"></q-icon><q-icon name="zoom_out_map" size="sm"></q-icon><br>
+                <q-card
+                    v-touch-pan.prevent.mouse.up.down="mobilePadEvent.targetzoom_onswipe_right"
+                    :class="mainData.elements.mobilepad.right.cpadCSS"
+                    class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                >
+                    <div class="text-center">
+                        <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.right.targetzoom.icon" size="md"></q-icon>
+                        </div>
+                    </div>
+                </q-card>
+                <div class="q-mt-sm row">
+                    <div class="col-12">
+                        <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                    </div>
+                </div>
+            </template>
+            <div><!--v-show="!objpropData.elements.drawer.miniState"-->
             <q-expansion-item
                 expand-separator switch-toggle-side dense
                 :label="$t('common')"
@@ -1515,12 +1845,15 @@
                         <div class="row">
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.position3d.x" @update:model-value="objpropEvent.OnChange_Position3D" type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                                <uswipe-input v-model.number="objpropData.elements.common.position3d.x" @update:model-value="objpropEvent.OnChange_Position3D"  dense show-icon :min="-99.9999999" :max="99.9999999" :step="0.01"></uswipe-input>
                             </div>
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.position3d.y" @update:model-value="objpropEvent.OnChange_Position3D" type="number" label="Y" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                                <uswipe-input v-model.number="objpropData.elements.common.position3d.y" @update:model-value="objpropEvent.OnChange_Position3D"  dense show-icon :min="-99.9999999" :max="99.9999999" :step="0.01"></uswipe-input>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.position3d.z" @update:model-value="objpropEvent.OnChange_Position3D" type="number" label="Z" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                                <uswipe-input v-model.number="objpropData.elements.common.position3d.z" @update:model-value="objpropEvent.OnChange_Position3D" dense show-icon :min="-99.9999999" :max="99.9999999" :step="0.01"></uswipe-input>
                             </div>
                         </div>
                         <div class="row">
@@ -1532,12 +1865,15 @@
                         <div class="row">
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.rotation3d.x" @update:model-value="objpropEvent.OnChange_Rotation3D" type="number" label="X" dense :min="0.0" :max="360.0" :step="1"></q-input>
+                                <uswipe-input show-icon loop-value v-model.number="objpropData.elements.common.rotation3d.x" @update:model-value="objpropEvent.OnChange_Rotation3D" :min="0.0" :max="360.0" :step="1"></uswipe-input>
                             </div>
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.rotation3d.y" @update:model-value="objpropEvent.OnChange_Rotation3D" type="number" label="Y" dense :min="0.0" :max="360.0" :step="1"></q-input>
+                                <uswipe-input show-icon loop-value v-model.number="objpropData.elements.common.rotation3d.y" @update:model-value="objpropEvent.OnChange_Rotation3D" :min="0.0" :max="360.0" :step="1"></uswipe-input>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.rotation3d.z" @update:model-value="objpropEvent.OnChange_Rotation3D" type="number" label="Z" dense :min="0.0" :max="360.0" :step="1"></q-input>
+                                <uswipe-input show-icon loop-value v-model.number="objpropData.elements.common.rotation3d.z" @update:model-value="objpropEvent.OnChange_Rotation3D" :min="0.0" :max="360.0" :step="1"></uswipe-input>
                             </div>
                         </div>
                         <div class="row">
@@ -1554,11 +1890,13 @@
                         <div class="row">
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.scale3d.x" @update:model-value="objpropEvent.OnChange_Scale3D" type="number" label="X" dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.scale3d.x" @update:model-value="objpropEvent.OnChange_Scale3D" type="number"  dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></uswipe-input>
                             </div>
                             <template v-if="objpropData.elements.common.scaleIsOnlyX === false">                            
                                 <template v-if="!objpropEvent.checkStage">
                                     <div class="col-4 q-pr-sm">
                                         <q-input v-model.number="objpropData.elements.common.scale3d.y" @update:model-value="objpropEvent.OnChange_Scale3D" type="number" label="Y" dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.common.scale3d.y" @update:model-value="objpropEvent.OnChange_Scale3D" type="number" dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></uswipe-input>
                                     </div>
                                 </template>
                                 <template v-else>
@@ -1569,21 +1907,58 @@
                                 
                                 <div class="col-4">
                                     <q-input v-model.number="objpropData.elements.common.scale3d.z" @update:model-value="objpropEvent.OnChange_Scale3D" type="number" label="Z" dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.common.scale3d.z" @update:model-value="objpropEvent.OnChange_Scale3D" type="number"  dense  :min="objpropData.elements.common.scale.min" :max="objpropData.elements.common.scale.max" :step="1"></uswipe-input>
                                 </div>
                             </template>
                         </div>
-                        <div class="row">
+                        <template v-if="!objpropEvent.checkStage">
+                            <div class="row">
+                                <div class="col-3 q-pt-sm">
+                                    {{ $t('rigid_title') }}
+                                </div>
+                                <div class="col-9">
+                                    <q-toggle v-model="objpropData.elements.common.useCollision" 
+                                        color="primary" 
+                                        :label="$t('rigid_collision')"
+                                        @update:model-value="objpropEvent.OnChange_UseCollision"
+                                    ></q-toggle>
+                                </div>
+                                <div class="col-9 offset-xs-3">
+                                    <q-toggle v-model="objpropData.elements.common.useGravity" 
+                                        color="primary" 
+                                        :label="$t('rigid_gravity')"
+                                        @update:model-value="objpropEvent.OnChange_UseGravity"
+                                    ></q-toggle>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3 q-pt-sm">
+                                    
+                                </div>
+                                <div class="col-4">
+                                    <q-input v-model.number="objpropData.elements.common.drag" @update:model-value="objpropEvent.OnChange_RigidDrag" type="number" :label="$t('rigid_drag')" dense  :min="0" :max="20" :step="0.05"></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.common.drag" @update:model-value="objpropEvent.OnChange_RigidDrag"  :min="0" :max="20" :step="0.05"></uswipe-input>
+                                </div>
+                                <div class="col-4 offset-sm-1">
+                                    <q-input v-model.number="objpropData.elements.common.angularDrag" @update:model-value="objpropEvent.OnChange_RigidDrag" type="number" :label="$t('rigid_adrag')" dense  :min="0" :max="20" :step="0.05"></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.common.angularDrag" @update:model-value="objpropEvent.OnChange_RigidDrag" :min="0" :max="20" :step="0.05"></uswipe-input>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="row" v-if="!objpropEvent.checkStage">
                             <div class="col-3 q-pt-sm">
                                 <div>{{ $t('Jump') }}</div>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.jumpNum" @update:model-value="objpropEvent.OnChange_JumpNum" type="number" :label="$t('jumpcount')" dense  :min="0" :max="99" :step="1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.jumpNum" @update:model-value="objpropEvent.OnChange_JumpNum" :min="0" :max="99" :step="1"></uswipe-input>
                             </div>
                             <div class="col-4 offset-sm-1">
                                 <q-input v-model.number="objpropData.elements.common.jumpPower" @update:model-value="objpropEvent.OnChange_JumpPower" type="number" :label="$t('jumppower')" dense  :min="-10" :max="10" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.jumpPower" @update:model-value="objpropEvent.OnChange_JumpPower" :min="-10" :max="10" :step="0.1"></uswipe-input>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" v-if="!objpropEvent.checkStage">
                             <div class="col-12">
                                 <q-tabs
                                     v-model="objpropData.elements.common.effectTabSelected"
@@ -1595,9 +1970,15 @@
                                 <q-tab-panels v-model="objpropData.elements.common.effectTabSelected" animated>
                                     <q-tab-panel name="punch">
                                         <div class="row">
-                                            <div class="col-12">
+                                            <div class="col-5">
                                                 <q-checkbox v-model="objpropData.elements.common.punch.isEnable" label="On" @update:model-value="objpropEvent.OnChange_PunchColumn">
                                             </div>
+                                            <div class="col-7">
+                                                <q-checkbox v-model="objpropData.elements.common.punch_edited" :label="$t('cons_modify')" ></q-checkbox>
+                                                <!--<q-btn color="primary" :label="$t('cons_apply')" @click="objpropEvent.OnChange_PunchColumn"></q-btn>-->
+                                            </div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-12">
                                                 <q-radio v-model="objpropData.elements.common.punch.translationType" :options="objpropData.elements.common.punchTypeOptions" :val="3" label="Position" dense class="q-pr-xs" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-radio>
                                                 <q-radio v-model="objpropData.elements.common.punch.translationType" :options="objpropData.elements.common.punchTypeOptions" :val="4" label="Rotation" dense class="q-pr-xs" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-radio>
@@ -1605,26 +1986,36 @@
                                             </div>
                                             <div class="col-4 q-pr-sm">
                                                 <q-input v-model.number="objpropData.elements.common.punch.punch.x"  type="number" label="X" dense :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.punch.x"  :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                             <div class="col-4 q-pr-sm">
                                                 <q-input v-model.number="objpropData.elements.common.punch.punch.y"  type="number" label="Y" dense :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.punch.y" :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                             <div class="col-4">
                                                 <q-input v-model.number="objpropData.elements.common.punch.punch.z"  type="number" label="Z" dense :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.punch.z" :min="0" :max="360" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                             <div class="col-5">
                                                 <q-input v-model.number="objpropData.elements.common.punch.vibrato"  type="number" :label="$t('vibrato')" dense :min="0" :max="99" :step="1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.vibrato" :min="0" :max="99" :step="1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                             <div class="col-5 offset-sm-2">
                                                 <q-input v-model.number="objpropData.elements.common.punch.elasiticity"  type="number" :label="$t('elasiticity')" dense :min="0" :max="1" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.punch.elasiticity" :min="0" :max="1" :step="0.1" :disable="!objpropData.elements.common.punch.isEnable" @update:model-value="objpropEvent.OnChange_PunchColumn"></uswipe-input>
                                             </div>
                                         </div>
                                     </q-tab-panel>
                                     <q-tab-panel name="shake">
                                         <div class="row">
-                                            <div class="col-12">
+                                            <div class="col-5">
                                                 <q-checkbox v-model="objpropData.elements.common.shake.isEnable" label="On" @update:model-value="objpropEvent.OnChange_ShakeColumn">
                                             </div>
+                                            <div class="col-7">
+                                                <q-checkbox v-model="objpropData.elements.common.shake_edited" :label="$t('cons_modify')" ></q-checkbox>
+                                            </div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-12">
                                                 <q-radio v-model="objpropData.elements.common.shake.translationType" :options="objpropData.elements.common.shakeTypeOptions" :val="3" label="Position" dense class="q-pr-xs" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-radio>
                                                 <q-radio v-model="objpropData.elements.common.shake.translationType" :options="objpropData.elements.common.shakeTypeOptions" :val="4" label="Rotation" dense class="q-pr-xs" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-radio>
@@ -1632,12 +2023,15 @@
                                             </div>
                                             <div class="col-4 q-pr-sm">
                                                 <q-input v-model.number="objpropData.elements.common.shake.strength"  type="number" :label="$t('jumppower')" dense :min="0" :max="4" :step="0.01" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.shake.strength" :min="0" :max="4" :step="0.01" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></uswipe-input>
                                             </div>
                                             <div class="col-4 q-pr-sm">
                                                 <q-input v-model.number="objpropData.elements.common.shake.vibrato"  type="number" :label="$t('vibrato')" dense :min="0" :max="99" :step="1" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.shake.vibrato"  type="number" :label="$t('vibrato')" dense :min="0" :max="99" :step="1" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></uswipe-input>
                                             </div>
                                             <div class="col-4">
                                                 <q-input v-model.number="objpropData.elements.common.shake.randomness"  type="number" :label="$t('randomness')" dense :min="0" :max="100" :step="1" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></q-input>
+                                                <uswipe-input show-icon v-model.number="objpropData.elements.common.shake.randomness" :min="0" :max="100" :step="1" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn"></uswipe-input>
                                             </div>
                                             <div class="col-12">
                                                 <q-checkbox v-model="objpropData.elements.common.shake.fadeOut" :label="$t('fadeOut')" :disable="!objpropData.elements.common.shake.isEnable" @update:model-value="objpropEvent.OnChange_ShakeColumn">
@@ -1664,9 +2058,11 @@
                         <div class="row">
                             <div class="col-6 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.position2d.x" @update:model-value="objpropEvent.OnChange_Position2D" type="number" label="X" dense :min="0" :max="100" :step="1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.position2d.x" @update:model-value="objpropEvent.OnChange_Position2D" :min="0" :max="100" :step="1"></uswipe-input>
                             </div>
                             <div class="col-6 col3_input">
                                 <q-input v-model.number="objpropData.elements.common.position2d.y" @update:model-value="objpropEvent.OnChange_Position2D" type="number" label="Y" dense :min="0" :max="100" :step="1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.position2d.y" @update:model-value="objpropEvent.OnChange_Position2D" :min="0" :max="100" :step="1"></uswipe-input>
                             </div>
                         </div>
                         <div class="row">
@@ -1681,17 +2077,20 @@
                             </div>-->
                             <div class="col-4 offset-sm-2">
                                 <q-input v-model.number="objpropData.elements.common.rotation2d.z" @update:model-value="objpropEvent.OnChange_Rotation2D" type="number" label="Z" dense :min="0" :max="360" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.rotation2d.z" @update:model-value="objpropEvent.OnChange_Rotation2D" :min="0" :max="360" :step="0.1"></uswipe-input>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" v-if="objpropEvent.checkUImage">
                             <div class="col-4">
                                 {{ $t('size') }}
                             </div>
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.size2d.x" @update:model-value="objpropEvent.OnChange_Size2D" type="number" label="X" dense :min="0" :max="9999" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.size2d.x" @update:model-value="objpropEvent.OnChange_Size2D" :min="0" :max="9999" :step="0.1"></uswipe-input>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.size2d.y" @update:model-value="objpropEvent.OnChange_Size2D" type="number" label="Y" dense :min="0" :max="9999" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.size2d.y" @update:model-value="objpropEvent.OnChange_Size2D" :min="0" :max="9999" :step="0.1"></uswipe-input>
                             </div>
                         </div>
                         <div class="row">
@@ -1700,9 +2099,11 @@
                             </div>
                             <div class="col-4 q-pr-sm">
                                 <q-input v-model.number="objpropData.elements.common.scale2d.x" @update:model-value="objpropEvent.OnChange_Scale2D" type="number" label="X" dense :min="0" :max="99" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.scale2d.x" @update:model-value="objpropEvent.OnChange_Scale2D" :min="0" :max="99" :step="0.1"></uswipe-input>
                             </div>
                             <div class="col-4">
                                 <q-input v-model.number="objpropData.elements.common.scale2d.y" @update:model-value="objpropEvent.OnChange_Scale2D" type="number" label="Y" dense :min="0" :max="99" :step="0.1"></q-input>
+                                <uswipe-input show-icon v-model.number="objpropData.elements.common.scale2d.y" @update:model-value="objpropEvent.OnChange_Scale2D" :min="0" :max="99" :step="0.1"></uswipe-input>
                             </div>
                         </div>
                     </q-card-section>
@@ -1733,6 +2134,10 @@
                                         :min="0" :max="10" :step="1"
                                         @update:model-value="objpropEvent.OnChange_HeadLock"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model="objpropData.elements.vrmui.headLock"
+                                        :min="0" :max="10" :step="1"
+                                        @update:model-value="objpropEvent.OnChange_HeadLock"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row">
@@ -1784,6 +2189,13 @@
                                         </div>
                                     </fieldset>
                                     
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <q-btn flat color="primary" icon="mdi-mirror" :label="$t('reverse pose')"
+                                        @click="objpropEvent.OnClicked_MirrorPose"
+                                    ></q-btn>
                                 </div>
                             </div>
                         </q-card-section>
@@ -2183,41 +2595,107 @@
                     </template>
                     <q-card>
                         <q-card-section style="padding:2px;">
-                            <div class="row">
-                                <div class="col-9">
-                                    <q-checkbox left-label v-model="objpropData.elements.vrmui.blink.enable" :label="$t('blink_enable')" 
-                                        @update:model-value="objpropEvent.OnChange_Blink_enable" dense
-                                    ></q-checkbox>
-                                </div>
+                            <div>
+                                <q-tabs
+                                    v-model="objpropData.elements.vrmui.blendshapeOption.selected"
+                                    class="text-primary" dense
+                                >
+                                    <q-tab name="blink" :label="$t('blink')" dense></q-tab>
+                                    <q-tab name="lipsync" :label="$t('Lip sync')" dense></q-tab>
+                                </q-tabs>
+                                <q-tab-panels v-model="objpropData.elements.vrmui.blendshapeOption.selected" animated>
+                                    <q-tab-panel name="blink">
+                                        <div class="row">
+                                            <div class="col-9">
+                                                <q-checkbox left-label v-model="objpropData.elements.vrmui.blink.enable" :label="$t('blink_enable')" 
+                                                    @update:model-value="objpropEvent.OnChange_Blink_enable" dense
+                                                ></q-checkbox>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <q-input v-model="objpropData.elements.vrmui.blink.interval" type="number" :label="$t('blink_interval')" :min="0" :max="10" :step="0.1"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_interval" dense
+                                                ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.blink.interval" :min="0" :max="10" :step="0.1"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_interval" 
+                                                ></uswipe-input>
+                                            </div>
+                                            <div class="col-5 offset-xs-1">
+                                                <q-input v-model="objpropData.elements.vrmui.blink.opening" type="number" :label="$t('blink_opening')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_opening" dense
+                                                ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.blink.opening" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_opening" 
+                                                ></uswipe-input>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <q-input v-model="objpropData.elements.vrmui.blink.closing" type="number" :label="$t('blink_closing')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_closing" dense
+                                                ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.blink.closing" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_closing" 
+                                                ></uswipe-input>
+                                            </div>
+                                            <div class="col-5 offset-xs-1">
+                                                <q-input v-model="objpropData.elements.vrmui.blink.closeTime" type="number" :label="$t('blink_closetime')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_closeTime" dense
+                                                ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.blink.closeTime" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Blink_closeTime" 
+                                                ></uswipe-input>
+                                            </div>
+                                        </div>
+                                    </q-tab-panel>
+                                    <q-tab-panel name="lipsync">
+                                        <div class="row">
+                                            <div class="col-9">
+                                                <q-checkbox left-label v-model="objpropData.elements.vrmui.lipsync.enable" :label="$t('lipsync_enable')" 
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_enable" dense
+                                                ></q-checkbox>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <q-input v-model="objpropData.elements.vrmui.lipsync.interval" type="number" :label="$t('lipsync_interval')" :min="0" :max="10" :step="0.1"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_interval" dense
+                                                ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.lipsync.interval" :min="0" :max="10" :step="0.1"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_interval"
+                                                ></uswipe-input>
+                                            </div>
+                                            <div class="col-5 offset-xs-1">
+                                                <q-input v-model="objpropData.elements.vrmui.lipsync.opening" type="number" :label="$t('lipsync_opening')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_opening" dense
+                                                ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.lipsync.opening" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_opening"
+                                                ></uswipe-input>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <q-input v-model="objpropData.elements.vrmui.lipsync.closing" type="number" :label="$t('lipsync_closing')" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_closing" dense
+                                                ></q-input>
+                                                <uswipe-input show-icon v-model="objpropData.elements.vrmui.lipsync.closing" :min="0" :max="10" :step="0.01"
+                                                    @update:model-value="objpropEvent.OnChange_Lipsync_closing" 
+                                                ></uswipe-input>
+                                            </div>
+                                            <div class="col-5 offset-xs-1">
+                                                
+                                            </div>
+                                        </div>
+                                    </q-tab-panel>
+                                </q-tab-panels>
                             </div>
-                            <div class="row">
-                                <div class="col-5">
-                                    <q-input v-model="objpropData.elements.vrmui.blink.interval" type="number" :label="$t('blink_interval')" :min="0" :max="10" :step="0.1"
-                                        @update:model-value="objpropEvent.OnChange_Blink_interval" dense
-                                    ></q-input>
-                                </div>
-                                <div class="col-5 offset-xs-1">
-                                    <q-input v-model="objpropData.elements.vrmui.blink.opening" type="number" :label="$t('blink_opening')" :min="0" :max="10" :step="0.01"
-                                        @update:model-value="objpropEvent.OnChange_Blink_opening" dense
-                                    ></q-input>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-5">
-                                    <q-input v-model="objpropData.elements.vrmui.blink.closing" type="number" :label="$t('blink_closing')" :min="0" :max="10" :step="0.01"
-                                        @update:model-value="objpropEvent.OnChange_Blink_closing" dense
-                                    ></q-input>
-                                </div>
-                                <div class="col-5 offset-xs-1">
-                                    <q-input v-model="objpropData.elements.vrmui.blink.closeTime" type="number" :label="$t('blink_closetime')" :min="0" :max="10" :step="0.01"
-                                        @update:model-value="objpropEvent.OnChange_Blink_closeTime" dense
-                                    ></q-input>
-                                </div>
-                            </div>
+                            
                             <div class="area_blendshape">
                                 <q-tabs
                                     v-model="objpropData.elements.vrmui.blendshapeTab"
-                                    class="text-primary"
+                                    class="text-primary" dense
                                 >
                                     <q-tab name="renderer" :label="$t('bs_renderer')" dense></q-tab>
                                     <q-tab name="proxy" :label="$t('bs_proxy')" dense></q-tab>
@@ -2341,7 +2819,7 @@
             
             <!-- Other Object ==================================================================== -->
             
-            <template v-if="objpropEvent.checkOObject">
+            <template v-if="objpropEvent.checkOObject || objpropEvent.checkVRM">
                 <q-expansion-item
                     expand-separator switch-toggle-side dense
                 >
@@ -2366,24 +2844,61 @@
                             <fieldset>
                                 <legend>{{ $t('preview') }}</legend>
                                 <div class="row">
+                                    <template v-if="objpropEvent.checkVRM">
+                                        <!--<div class="col-8">
+                                            <q-file fill bottom-slots dense
+                                                v-model="objpropData.elements.vrmui.vrmanim.file"
+                                                accept=".vrma"
+                                                @update:model-value="objpropEvent.objectVRMAnimation_onselected"
+                                            >
+                                                <template v-slot:prepend>
+                                                    <q-icon name="animation" @click.stop.prevent></q-icon>
+                                                </template>
+                                                <template v-slot:append>
+                                                    <q-icon name="close" @click.stop.prevent="objpropEvent.objectVRMAnimationClear" class="cursor-pointer"></q-icon>
+                                                </template>
+                                            </q-file>
+                                        </div>
+                                        <div class="col-4">
+                                            <q-toggle v-model="objpropData.elements.vrmui.vrmanim.isenable" 
+                                                color="primary"
+                                                @update:model-value="objpropEvent.objectVRMAnimationToggleEnable"
+                                                :disable="!objpropData.elements.objectui.animation.isenable"
+                                            ></q-toggle>
+                                        </div>-->
+                                        <div class="col-12">
+                                            <q-select v-model="objpropData.elements.vrmui.vrmanim.list.selected" 
+                                                :options="objpropData.elements.vrmui.vrmanim.list.options"
+                                                label="VRMAnimation" filled
+                                                @update:model-value="objpropEvent.objectVRMAnimation_onselected"
+                                            ></q-select>
+                                        </div>
+                                    </template>
+
                                     <div class="col-12">
                                         <q-select v-model="objpropData.elements.objectui.animation.clipselected"
                                             :options="objpropData.elements.objectui.animation.cliplist"
                                             dense @update:model-value="objpropEvent.objectAnimationClip_onselected"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
                                         ></q-select>
                                     </div>
+                                    
                                     <div class="col-3">
                                         <q-btn color="primary" flat round :icon="objpropData.elements.objectui.animation.play_icon" 
                                             @click="objpropEvent.objectAnimation_onplay"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
                                         ></q-btn>
                                     </div>
                                     <div class="col-3">
-                                        <q-btn color="primary" flat round icon="stop" @click="objpropEvent.objectAnimation_onstop"></q-btn>
+                                        <q-btn color="primary" flat round icon="stop" 
+                                            @click="objpropEvent.objectAnimation_onstop"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
+                                        ></q-btn>
                                     </div>
                                     <div class="col-4 offset-md-1">
                                         <q-select v-model="objpropData.elements.objectui.animation.wrapmodeSelected"
                                             :options="objpropData.elements.objectui.animation.wrapmodeOptions"
-                                            dense filled 
+                                            dense filled :disable="!objpropData.elements.objectui.animation.isenable"
                                             @update:model-value="objpropEvent.objectAnimationLoop_onchange"
                                         ></q-select>
                                     </div>
@@ -2394,6 +2909,7 @@
                                             :min="0" :max="objpropData.elements.objectui.animation.maxPosition" :step="0.001"
                                             color="primary" dense label
                                             @update:model-value="objpropEvent.objectAnimationSeek_onseek"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
                                         ></q-slider>
                                     </div>
                                     <div class="col-12 q-mt-sm q-pr-sm">
@@ -2403,6 +2919,7 @@
                                             :min="0.1" :max="4" :step="0.1"
                                             color="primary" dense label
                                             @update:model-value="objpropEvent.objectAnimationSpeed_onseek"
+                                            :disable="!objpropData.elements.objectui.animation.isenable"
                                         ></q-slider>
                                     </div>
                                 </div>
@@ -2413,6 +2930,7 @@
                                         :options="objpropData.elements.objectui.animation.flagOptions" 
                                         :label="$t('object_animation_formotion')"
                                         @update:model-value="objpropEvent.objectAnimationRegister_onchange"
+                                        :disable="!objpropData.elements.objectui.animation.isenable"
                                     ></q-select>
                                 </div>
                             </div>
@@ -2459,7 +2977,7 @@
                                 <div class="col-11 offset-md-1">
                                     <q-slider
                                         v-model.number="objpropData.elements.lightui.power"
-                                        :min="1" :max="30" :step="0.1"
+                                        :min="0.1" :max="20" :step="0.01"
                                         color="primary" dense label
                                         @update:model-value="objpropEvent.lightPower_onchange"
                                     ></q-slider>
@@ -2472,7 +2990,7 @@
                                 <div class="col-11 offset-md-1">
                                     <q-slider
                                         v-model.number="objpropData.elements.lightui.range"
-                                        :min="1" :max="100" :step="0.1"
+                                        :min="0.1" :max="15" :step="0.01"
                                         color="primary" dense label
                                         @update:model-value="objpropEvent.lightRange_onchange"
                                     ></q-slider>
@@ -2603,6 +3121,10 @@
                                         type="number" :min="1" :max="100" :step="0.25" dense
                                         @update:model-value="objpropEvent.cameraFov_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.fov" 
+                                        :min="1" :max="100" :step="0.25" 
+                                        @update:model-value="objpropEvent.cameraFov_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row prop-row-box-width">
@@ -2614,6 +3136,10 @@
                                         type="number" :min="11" :max="19" :step="1" dense
                                         @update:model-value="objpropEvent.cameraDepth_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.depth" 
+                                        :min="11" :max="19" :step="1" 
+                                        @update:model-value="objpropEvent.cameraDepth_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row prop-row-box-width">
@@ -2630,12 +3156,20 @@
                                                 type="number" :min="0" :max="1" :step="0.05" dense
                                                 @update:model-value="objpropEvent.cameraViewport_onchange"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.vp.position.x" 
+                                                :min="0" :max="1" :step="0.05" 
+                                                @update:model-value="objpropEvent.cameraViewport_onchange"
+                                            ></uswipe-input>
                                         </div>
                                         <div class="col-3">
                                             <q-input v-model.number="objpropData.elements.cameraui.vp.position.y" 
                                                 type="number" :min="0" :max="1" :step="0.05" dense
                                                 @update:model-value="objpropEvent.cameraViewport_onchange"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.vp.position.y" 
+                                                :min="0" :max="1" :step="0.05" 
+                                                @update:model-value="objpropEvent.cameraViewport_onchange"
+                                            ></uswipe-input>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2645,12 +3179,20 @@
                                                 type="number" :min="0" :max="1" :step="0.05" dense
                                                 @update:model-value="objpropEvent.cameraViewport_onchange"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.vp.size.x" 
+                                                :min="0" :max="1" :step="0.05" 
+                                                @update:model-value="objpropEvent.cameraViewport_onchange"
+                                            ></uswipe-input>
                                         </div>
                                         <div class="col-3">
                                             <q-input v-model.number="objpropData.elements.cameraui.vp.size.y" 
                                                 type="number" :min="0" :max="1" :step="0.05" dense
                                                 @update:model-value="objpropEvent.cameraViewport_onchange"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.vp.size.y" 
+                                                :min="0" :max="1" :step="0.05" 
+                                                @update:model-value="objpropEvent.cameraViewport_onchange"
+                                            ></uswipe-input>
                                         </div>
                                     </div>
                                 </div>
@@ -2677,12 +3219,20 @@
                                                 type="number" :min="0" :max="1000" :step="1" dense
                                                 @update:model-value="objpropEvent.cameraRenderTexture_resize"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.renderTexture.x" 
+                                                :min="0" :max="1000" :step="1" 
+                                                @update:model-value="objpropEvent.cameraRenderTexture_resize"
+                                            ></uswipe-input>
                                         </div>
                                         <div class="col-3">
                                             <q-input v-model.number="objpropData.elements.cameraui.renderTexture.y" 
                                                 type="number" :min="0" :max="1000" :step="1" dense
                                                 @update:model-value="objpropEvent.cameraRenderTexture_resize"
                                             ></q-input>
+                                            <uswipe-input show-icon v-model.number="objpropData.elements.cameraui.renderTexture.y" 
+                                                 :min="0" :max="1000" :step="1" 
+                                                @update:model-value="objpropEvent.cameraRenderTexture_resize"
+                                            ></uswipe-input>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -3488,24 +4038,40 @@
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="X"
                                                                     @update:model-value="ui.event"
                                                                 ></q-input>
+                                                                <uswipe-input show-icon v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].x" 
+                                                                    :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" 
+                                                                    @update:model-value="ui.event"
+                                                                ></uswipe-input>
                                                             </div>
                                                             <div class="col-5 offset-sm-1">
                                                                 <q-input v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].y" 
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="Y"
                                                                     @update:model-value="ui.event"
                                                                 ></q-input>
+                                                                <uswipe-input show-icon v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].y" 
+                                                                    :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" 
+                                                                    @update:model-value="ui.event"
+                                                                ></uswipe-input>
                                                             </div>
                                                             <div class="col-5 offset-sm-1">
                                                                 <q-input v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].z" 
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="Z"
                                                                     @update:model-value="ui.event"
                                                                 ></q-input>
+                                                                <uswipe-input show-icon v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].z" 
+                                                                    :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" 
+                                                                    @update:model-value="ui.event"
+                                                                ></uswipe-input>
                                                             </div>
                                                             <div class="col-5 offset-sm-1">
                                                                 <q-input v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].w" 
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="W"
                                                                     @update:model-value="ui.event"
                                                                 ></q-input>
+                                                                <uswipe-input show-icon v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].w" 
+                                                                    :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" 
+                                                                    @update:model-value="ui.event"
+                                                                ></uswipe-input>
                                                             </div>
                                                         </div>
                                                     </template>
@@ -3662,6 +4228,11 @@
                                         @update:model-value="objpropEvent.effectColliderSize_onchange"
                                         :readonly="!objpropData.elements.effectui.colliderOn"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.effectui.colliderSize" 
+                                        :min="0" :max="4" :step="0.01" 
+                                        @update:model-value="objpropEvent.effectColliderSize_onchange"
+                                        :disable="!objpropData.elements.effectui.colliderOn"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                         </q-card-section>
@@ -3871,24 +4442,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveAmplitude.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveAmplitude_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -3900,24 +4487,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveFrequency.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveFrequency_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -3929,24 +4532,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSteepness.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSteepness_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -3958,24 +4577,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveSpeed.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveSpeed_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -3987,24 +4622,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionAB.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionAB_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4016,24 +4667,40 @@
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="X"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.x" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.y" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Y"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.y" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.z" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="Z"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.z" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></uswipe-input>
                                     </div>
                                     <div class="col-5 offset-sm-1">
                                         <q-input v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.w" 
                                             type="number" :min="-10" :max="10" :step="0.01" dense label="W"
                                             @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.stage_sea.waveDirectionCD.w" 
+                                            :min="-10" :max="10" :step="0.01" 
+                                            @update:model-value="objpropEvent.seastg_WaveDirectionCD_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                             </template>
@@ -4094,6 +4761,10 @@
                                             :min="0" :max="1" :step="0.01"
                                             @update:model-value="objpropEvent.skySunsize_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.sunsize"  
+                                            :min="0" :max="1" :step="0.01"
+                                            @update:model-value="objpropEvent.skySunsize_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row" v-if="objpropEvent.checkSkyShaderProcedural">
@@ -4102,6 +4773,10 @@
                                             :min="1" :max="10" :step="0.1"
                                             @update:model-value="objpropEvent.skySunsizeConvergence_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.sunsize_convergence"  
+                                            :min="1" :max="10" :step="0.1"
+                                            @update:model-value="objpropEvent.skySunsizeConvergence_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row" v-if="objpropEvent.checkSkyShaderProcedural">
@@ -4110,6 +4785,10 @@
                                             :min="0" :max="5" :step="0.1"
                                             @update:model-value="objpropEvent.skyAtmosphere_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.atmosphere_thickness"  
+                                            :min="0" :max="5" :step="0.1"
+                                            @update:model-value="objpropEvent.skyAtmosphere_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4118,6 +4797,10 @@
                                             :min="0" :max="8" :step="0.1"
                                             @update:model-value="objpropEvent.skyExposure_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.exposure"  
+                                            :min="0" :max="8" :step="0.1"
+                                            @update:model-value="objpropEvent.skyExposure_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -4126,6 +4809,10 @@
                                             :min="0" :max="360" :step="1"
                                             @update:model-value="objpropEvent.skyRotation_onchange"
                                         ></q-input>
+                                        <uswipe-input show-icon v-model.number="objpropData.elements.stageui.skyparam.rotation" 
+                                            :min="0" :max="360" :step="1" loop-value
+                                            @update:model-value="objpropEvent.skyRotation_onchange"
+                                        ></uswipe-input>
                                     </div>
                                 </div>
                                 <div class="row q-mb-sm">
@@ -4177,16 +4864,28 @@
                                     <q-input v-model.number="objpropData.elements.stageui.dlight_rotation.x" type="number" label="X" dense :min="0" :max="360" :step="0.1"
                                         @update:model-value="objpropEvent.dlightRotation_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.dlight_rotation.x" 
+                                        :min="0" :max="360" :step="0.1" loop-value
+                                        @update:model-value="objpropEvent.dlightRotation_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-4 col3_input">
                                     <q-input v-model.number="objpropData.elements.stageui.dlight_rotation.y" type="number" label="Y" dense :min="0" :max="360" :step="0.1"
                                         @update:model-value="objpropEvent.dlightRotation_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.dlight_rotation.y"
+                                        :min="0" :max="360" :step="0.1" loop-value
+                                        @update:model-value="objpropEvent.dlightRotation_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-4">
                                     <q-input v-model.number="objpropData.elements.stageui.dlight_rotation.z" type="number" label="Z" dense :min="0" :max="360" :step="0.1"
                                         @update:model-value="objpropEvent.dlightRotation_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.dlight_rotation.z" 
+                                        :min="0" :max="360" :step="0.1" loop-value
+                                        @update:model-value="objpropEvent.dlightRotation_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row q-mb-sm">
@@ -4196,7 +4895,7 @@
                                 <div class="col-11 offset-1">
                                     <q-slider
                                         v-model.number="objpropData.elements.stageui.dlight_power"
-                                        :min="1" :max="5" :step="0.1"
+                                        :min="0.1" :max="5" :step="0.01"
                                         color="primary" dense label
                                         @update:model-value="objpropEvent.dlightPower_onchange"
                                     ></q-slider>
@@ -4209,7 +4908,7 @@
                                 <div class="col-11 offset-1">
                                     <q-slider
                                         v-model.number="objpropData.elements.stageui.dlight_strength"
-                                        :min="0" :max="1" :step="0.1"
+                                        :min="0" :max="1" :step="0.01"
                                         color="primary" dense label
                                         @update:model-value="objpropEvent.dlightStrength_onchange"
                                     ></q-slider>
@@ -4314,11 +5013,19 @@
                                     <q-input v-model.number="objpropData.elements.stageui.winddirection.xz" type="number" :label="$t('horizontal')" dense :min="0" :max="360" :step="1"
                                         @update:model-value="objpropEvent.windDirectionXZ_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.winddirection.xz" 
+                                        :min="0" :max="360" :step="1" loop-value
+                                        @update:model-value="objpropEvent.windDirectionXZ_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-4">
                                     <q-input v-model.number="objpropData.elements.stageui.winddirection.y" type="number" :label="$t('vertical')" dense :min="0" :max="360" :step="1"
                                         @update:model-value="objpropEvent.windDirectionY_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.winddirection.y" 
+                                        :min="0" :max="360" :step="1" loop-value
+                                        @update:model-value="objpropEvent.windDirectionY_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row q-mb-sm">
@@ -4326,11 +5033,19 @@
                                     <q-input v-model.number="objpropData.elements.stageui.windpower" type="number" :label="$t('Wind power')" dense :min="-100" :max="100" :step="0.1"
                                         @update:model-value="objpropEvent.windPower_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.windpower" 
+                                        :min="-100" :max="100" :step="0.1"
+                                        @update:model-value="objpropEvent.windPower_onchange"
+                                    ></uswipe-input>
                                 </div>
                                 <div class="col-5 offset-1">
                                     <q-input v-model.number="objpropData.elements.stageui.windfrequency" type="number" :label="$t('Wind frequency')" dense :min="0" :max="1" :step="0.01"
                                         @update:model-value="objpropEvent.windFrequency_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.stageui.windfrequency" 
+                                        :min="0" :max="1" :step="0.01"
+                                        @update:model-value="objpropEvent.windFrequency_onchange"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="row">
@@ -4354,7 +5069,7 @@
             </template>
             
             <!-- Text ==================================================================== -->
-            <template v-if="objpropEvent.checkText">
+            <template v-if="objpropEvent.checkText || objpropEvent.checkText3D">
                 <q-expansion-item
                     expand-separator switch-toggle-side dense
                 >
@@ -4395,23 +5110,170 @@
                             </div>
                             <div class="row">
                                 <div class="col-5">
-                                    <q-input v-model.number="objpropData.elements.textui.size" type="number" :min="7" :max="128" :step="1" :label="$t('size')"
+                                    <q-input v-model.number="objpropData.elements.textui.size" 
+                                        type="number" :label="$t('size')"
+                                        :min="7" :max="128" :step="1" 
                                         @update:model-value="objpropEvent.textFontsize_onchange"
                                     ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.textui.size" 
+                                        :min="7" :max="128" :step="1" 
+                                        @update:model-value="objpropEvent.textFontsize_onchange"
+                                    ></uswipe-input>
                                 </div>
+                                <!--
                                 <div class="offset-sm-1 col-6">
                                     <q-select v-model="objpropData.elements.textui.fontstyleselected" 
                                         :options="objpropData.elements.textui.fontstyleOptions" 
                                         :label="$t('font style')" dense
                                         @update:model-value="objpropEvent.textStyle_onchange"
                                     ></q-select>
+                                </div>-->
+                            </div>
+                            <div class="row">
+                                <div class="col-7">
+                                    <q-checkbox 
+                                        v-model="objpropData.elements.textui.fontstylesRich.b"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        <q-icon name="format_bold"></q-icon>
+                                    </q-checkbox>
+                                    <q-checkbox 
+                                        v-model="objpropData.elements.textui.fontstylesRich.i"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        <q-icon name="format_italic"></q-icon>
+                                    </q-checkbox>
+                                    <q-checkbox 
+                                        v-model="objpropData.elements.textui.fontstylesRich.u"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        <q-icon name="format_underlined"></q-icon>
+                                    </q-checkbox>
+                                    <q-checkbox 
+                                        v-model="objpropData.elements.textui.fontstylesRich.s"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        <q-icon name="format_strikethrough"></q-icon>
+                                    </q-checkbox>
+                                </div>
+                                <div class="col-5">
+                                    <q-radio v-model="objpropData.elements.textui.fontstylesRich.UL" val="-"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        --
+                                    </q-radio>
+                                    <q-radio v-model="objpropData.elements.textui.fontstylesRich.UL" val="U"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        AZ
+                                    </q-radio>
+                                    <q-radio v-model="objpropData.elements.textui.fontstylesRich.UL" val="L"
+                                        @update:model-value="objpropEvent.textStyleRich_onchange"
+                                    >
+                                        az
+                                    </q-radio>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
+                                    <q-select v-model="objpropData.elements.textui.text_overflow" 
+                                        :options="objpropData.elements.textui.text_overflow_options" 
+                                        :label="$t('text_overflow')" dense
+                                        @update:model-value="objpropEvent.textOverflow_onchange"
+                                    ></q-select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <q-radio v-model="objpropData.elements.textui.colortype" 
+                                        val="s" :label="$t('Solid color')"
+                                        @update:model-value="objpropEvent.textcolortype_onchange"
+                                    ></q-radio>
+                                </div>
+                                <div class="col-6">
+                                    <q-radio v-model="objpropData.elements.textui.colortype" 
+                                        val="g" :label="$t('gradient_colortype')"
+                                        @update:model-value="objpropEvent.textcolortype_onchange"
+                                    ></q-radio>
+                                </div>
+                                <div class="col-12" v-if="objpropData.elements.textui.colortype == 's'">
                                     <ucolor-picker v-model="objpropData.elements.textui.colorselected"
                                         :label="$t('color')"
                                         @change="objpropEvent.textColor_onchange"
+                                    ></ucolor-picker>
+                                </div>
+                                <template v-else-if="objpropData.elements.textui.colortype == 'g'">
+                                    <div class="col-12">
+                                        <b>{{ $t('color_gradient') }}</b>
+                                    </div>
+                                    <div class="col-6">
+                                        <ucolor-picker v-model="objpropData.elements.textui.colorGradient.tl"
+                                            label="Top Left"
+                                            @change="objpropEvent.textcolorGradient_onchange($event,'tl')"
+                                        ></ucolor-picker>
+                                    </div>
+                                    <div class="col-6">
+                                        <ucolor-picker v-model="objpropData.elements.textui.colorGradient.tr"
+                                            label="Top Right"
+                                            @change="objpropEvent.textcolorGradient_onchange($event,'tr')"
+                                        ></ucolor-picker>
+                                    </div>
+                                    <div class="col-6">
+                                        <ucolor-picker v-model="objpropData.elements.textui.colorGradient.bl"
+                                            label="Bottom Left"
+                                            @change="objpropEvent.textcolorGradient_onchange($event,'bl')"
+                                        ></ucolor-picker>
+                                    </div>
+                                    <div class="col-6">
+                                        <ucolor-picker v-model="objpropData.elements.textui.colorGradient.br"
+                                            label="Bottom Right"
+                                            @change="objpropEvent.textcolorGradient_onchange($event,'br')"
+                                        ></ucolor-picker>
+                                    </div>
+                                </template>
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-4 q-pt-xs">
+                                    {{ $t('textarea_size') }}
+                                </div>
+                                <div class="col-4 q-pr-sm">
+                                    <q-input v-model.number="objpropData.elements.textui.area_size.x" 
+                                        @update:model-value="objpropEvent.textAreasize_onchange" 
+                                        type="number" label="X" dense 
+                                        :min="1" :max="999" :step="1"
+                                    ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.textui.area_size.x" 
+                                        @update:model-value="objpropEvent.textAreasize_onchange" 
+                                        :min="1" :max="999" :step="1"
+                                    ></uswipe-input>
+                                </div>
+                                <div class="col-4">
+                                    <q-input v-model.number="objpropData.elements.textui.area_size.y" 
+                                        @update:model-value="objpropEvent.textAreasize_onchange" 
+                                        type="number" label="Y" dense 
+                                        :min="1" :max="999" :step="1"
+                                    ></q-input>
+                                    <uswipe-input show-icon v-model.number="objpropData.elements.textui.area_size.y" 
+                                        @update:model-value="objpropEvent.textAreasize_onchange" 
+                                        :min="1" :max="999" :step="1"
+                                    ></uswipe-input>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">{{ $t("outline") }}</div>
+                                <div class="col-12">
+                                    <q-slider
+                                        v-model.number="objpropData.elements.textui.outlineWidth"
+                                        :min="0" :max="1" :step="0.05"
+                                        color="primary" dense label
+                                        @update:model-value="objpropEvent.textOutlineWidth_onchange"
+                                    ></q-slider>
+                                </div>
+                                <div class="col-12">
+                                    <ucolor-picker v-model="objpropData.elements.textui.outlineColor"
+                                        :label="$t('color')"
+                                        @change="objpropEvent.textOutlineColor_onchange"
                                     ></ucolor-picker>
                                 </div>
                             </div>
@@ -4481,97 +5343,246 @@
             </q-menu>
             -->
         </q-drawer>
-
+        <template v-if="chk_resolution_xs_and_portrait">
+            <div class="column items-center" style="margin-bottom: 32px;">
+                <q-fab color="purple" icon="keyboard_arrow_up" direction="up">
+                    <q-fab-action color="primary"  icon="mail"></q-fab-action>
+                    <q-fab-action color="secondary"  icon="alarm"></q-fab-action>
+                </q-fab>
+            </div>
+        </template>
 <!--[] Timeline  ================================================================================= -->
-        <q-footer v-model="mainData.elements.footer" class="bg-grey-1" bordered :style="timelineData.elements.boxStyle">
+        <q-footer class="bg-grey-1" :style="timelineData.elements.boxStyle">
+            <q-toolbar :class="timelineData.states.toppanelCSS">
+                
+                <q-btn flat round :icon="ribbonData.elements.frame.play_normal.icon" no-caps 
+                    @click="ribbonEvent.RibbonFuncAnimation('playnormal')"
+                ></q-btn>
+                
+                <q-btn flat round icon="add_task" 
+                    @click="ribbonEvent.menu_addkeyframe_onclick"
+                >
+                    <q-tooltip>{{ $t('tl_utl_reg1') }}</q-tooltip>
+                </q-btn>
+                
+                <q-space></q-space>
+                <q-btn flat round icon="chevron_right" no-caps 
+                    @click="objlistData.elements.drawer.show=!objlistData.elements.drawer.show"
+                ></q-btn>
+                <q-btn round :icon="timelineData.elements.mobile_toggleIcon" color="primary"
+                    @click="timelineEvent.mobile_timeline_show_clicked"
+                >
+                    <q-tooltip>Timeline</q-tooltip>
+                </q-btn>
+                <q-btn flat round icon="chevron_left" no-caps 
+                    @click="objpropData.elements.drawer.show=!objpropData.elements.drawer.show"
+                ></q-btn>
+                <q-space></q-space>
+                <q-btn flat round icon="visibility" 
+                    @click="ribbonEvent.RibbonFuncHome('vpad')"
+                >
+                    <q-tooltip>V-pad</q-tooltip><!-- -->
+                </q-btn>
+            </q-toolbar>
+        </q-footer>
+        <!--<q-dialog v-model="mainData.elements.footer" 
+            position="bottom"  class="bg-grey-1" :style="timelineData.elements.boxStyle"
+            transition-show="slide-up" transition-hide="slide-down"
+        >-->
+        <div v-if="mainData.elements.footer" class="bg-grey-1 fixed-bottom" 
+            :style="timelineData.elements.panel_styles"
+            style="max-height:calc(100% - 60px)"
+        >
+            <q-card style="height:100%;">
             <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
-                <div class="vvtl-seekbar">
-                    <div class="grid-oneline">
-                        <div class="oneline-namebox">
-                            <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
-                                <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
-                            </q-btn>
-                            <q-btn flat round icon="skip_next" @click="timelineEvent.skip_next_onclick">
-                                <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
-                            </q-btn>
-                            <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
-                                <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
-                            </q-btn>
-                            <q-btn flat round icon="zoom_in" @click="timelineEvent.zoom_in_onclick">
-                                <q-tooltip>{{ $t('tl_util_zoomin') }}</q-tooltip>
-                            </q-btn>
-                            <q-btn flat round icon="play_circle_filled" no-caps 
-                                @click="ribbonEvent.RibbonFuncAnimation('playfirst')"
-                            ></q-btn>
-                            <q-btn flat round :icon="ribbonData.elements.frame.play_normal.icon" no-caps 
-                                @click="ribbonEvent.RibbonFuncAnimation('playnormal')"
-                            ></q-btn>
-                            <q-btn flat round icon="stop" no-caps 
-                                @click="ribbonEvent.RibbonFuncAnimation('stop')"
-                            ></q-btn>
-                            
-                            <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
-                                <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
-                            </q-btn>
-                            <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
-                                <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
-                            </q-btn>
-                        </div>
-                        <div class="oneline-seekbox q-pr-sm">
-                            <div class="row">
-                                <div class="col-1">
-                                    <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
-                                        <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
+                <div class="vvtl-seekbar" :style="timelineData.elements.seekbar_styles">
+                    <template v-if="judgeDeviceLandscape">
+                        <div class="grid-oneline">
+                            <div class="seekbar-buttonbox">
+                                <!--
+                                <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
+                                    <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
+                                </q-btn>
+                                <q-btn flat round icon="skip_next" @click="timelineEvent.skip_next_onclick">
+                                    <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
+                                </q-btn>
+                                -->
+                                <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
+                                    <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
+                                </q-btn>
+                                <q-btn flat round icon="zoom_in" @click="timelineEvent.zoom_in_onclick">
+                                    <q-tooltip>{{ $t('tl_util_zoomin') }}</q-tooltip>
+                                </q-btn>
+                                <span class="seekbar-button-separator"></span>
+                                <q-btn flat round icon="play_circle_filled" no-caps 
+                                        @click="ribbonEvent.RibbonFuncAnimation('playfirst')"
+                                ></q-btn>
+                                <q-btn flat round icon="stop" no-caps 
+                                    @click="ribbonEvent.RibbonFuncAnimation('stop')"
+                                ></q-btn>
+    
+                                <span class="seekbar-button-separator"></span>
+                                <template v-if="mainData.appconf.confs.animation.recover_pose_whenselected == false">
+                                    <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
+                                        <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
-                                        <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
-                                    </q-btn>
-                                </div>
-                                <div class="col-1 q-pl-md">
-                                    <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
-                                        <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
-                                    </q-btn-->
-                                </div>
-                                <div class="col-1">
-                                    <!--q-input v-model.number="timelineData.elements.childKey.val" 
-                                        type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
-                                        @update:model-value="timelineEvent.OnChange_childKeyVal"
-                                    ></q-input-->
-                                    
-                                </div>
-                                <div class="col-1 q-pl-md">                                    
-                                    <!--q-btn flat round icon="playlist_remove" 
-                                        :disable="timelineData.elements.childKey.disable_remove"
-                                        @click="timelineEvent.deleteChildKey_onclick"
-                                    >
-                                        <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
-                                    </q-btn-->
-                                </div>
-                                <div class="col-8 q-pl-md" style="padding-top : 1.1rem;">
+                                </template>
+                                <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
+                                    <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
+                                </q-btn>
+                                
+                                
+                                <q-btn flat round icon="delete"
+                                    @click="ribbonEvent.RibbonFuncAnimation('delkeyframe')"
+                                >
+                                    <q-tooltip>{{ $t('tl_utl_del1') }}</q-tooltip>
+                                </q-btn>
+                                <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
+                                    <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
+                                </q-btn>
+                                <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
+                                    <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
+                                </q-btn>
+                                
+    
+                                
+                                <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
+                                    <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
+                                </q-btn-->
+                                <!--q-input v-model.number="timelineData.elements.childKey.val" 
+                                    type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
+                                    @update:model-value="timelineEvent.OnChange_childKeyVal"
+                                ></q-input-->
+                                
+                                <!--q-btn flat round icon="playlist_remove" 
+                                    :disable="timelineData.elements.childKey.disable_remove"
+                                    @click="timelineEvent.deleteChildKey_onclick"
+                                >
+                                    <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
+                                </q-btn-->
+                            </div>
+                            <div class="seekbar-currentframe">
+                                <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
+                            </div>
+                            <div class="seekbar-seekbox q-pl-md q-pr-md">
+                                
+                                <div style="padding-top : 1.1rem;">
                                     <q-slider
                                         v-model.number="timelineData.elements.seekbar"
                                         :min="1"
                                         :max="mainData.data.project.timelineFrameLength"
                                         :step="1" 
-                                        color="primary"
+                                        color="primary" 
                                         @update:model-value="timelineEvent.seekbar_onchange"
                                     ></q-slider>
                                 </div>
+                                
+                                
                             </div>
-                            
                         </div>
-                        <div class="oneline-dlgbox">
-                            <q-btn flat round :icon="timelineData.elements.toggleIcon" @click="timelineEvent.panelToggleBtn_onclick">
-                            </q-btn>
+                    </template>
+                    <template v-else>
+                        <div class="row" style="overflow:hidden;height:auto;">
+                            <div class="col-12">
+                                <!--
+                                <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
+                                    <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
+                                </q-btn>
+                                <q-btn flat round icon="skip_next" @click="timelineEvent.skip_next_onclick">
+                                    <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
+                                </q-btn>
+                                -->
+                                <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
+                                    <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
+                                </q-btn>
+                                <q-btn flat round icon="zoom_in" @click="timelineEvent.zoom_in_onclick">
+                                    <q-tooltip>{{ $t('tl_util_zoomin') }}</q-tooltip>
+                                </q-btn>
+                                <span class="seekbar-button-separator"></span>
+                                <q-btn flat round icon="play_circle_filled" no-caps 
+                                        @click="ribbonEvent.RibbonFuncAnimation('playfirst')"
+                                ></q-btn>
+                                <q-btn flat round icon="stop" no-caps 
+                                    @click="ribbonEvent.RibbonFuncAnimation('stop')"
+                                ></q-btn>
+    
+                                <span class="seekbar-button-separator"></span>
+                                <template v-if="mainData.appconf.confs.animation.recover_pose_whenselected == false">
+                                    <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
+                                        <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
+                                    </q-btn>
+                                </template>
+                                <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
+                                    <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
+                                </q-btn>
+                                
+                                
+                                <q-btn flat round icon="delete"
+                                    @click="ribbonEvent.RibbonFuncAnimation('delkeyframe')"
+                                >
+                                    <q-tooltip>{{ $t('tl_utl_del1') }}</q-tooltip>
+                                </q-btn>
+                                <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
+                                    <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
+                                </q-btn>
+                                <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
+                                    <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
+                                </q-btn>
+                                
+    
+                                
+                                <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
+                                    <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
+                                </q-btn-->
+                                <!--q-input v-model.number="timelineData.elements.childKey.val" 
+                                    type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
+                                    @update:model-value="timelineEvent.OnChange_childKeyVal"
+                                ></q-input-->
+                                
+                                <!--q-btn flat round icon="playlist_remove" 
+                                    :disable="timelineData.elements.childKey.disable_remove"
+                                    @click="timelineEvent.deleteChildKey_onclick"
+                                >
+                                    <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
+                                </q-btn-->
+                                
+                            </div>
                         </div>
-                    </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
+                            </div>
+                            <div class="col-8 q-pl-md q-pr-md">
+                                
+                                <div style="padding-top : 1.1rem;">
+                                    <q-slider 
+                                        v-model.number="timelineData.elements.seekbar"
+                                        :min="1"
+                                        :max="mainData.data.project.timelineFrameLength"
+                                        :step="1" 
+                                        color="primary" 
+                                        @update:model-value="timelineEvent.seekbar_onchange"
+                                    ></q-slider>
+                                </div>
+                                
+                                
+                            </div>
+                            <!--
+                            <div class="oneline-dlgbox">
+                                <q-btn flat round :icon="timelineData.elements.toggleIcon" @click="timelineEvent.panelToggleBtn_onclick">
+                                </q-btn>
+                            </div>
+                            -->
+                        </div>
+    
+                    </template>
                 </div>
-                <div class="vvtl-timeline" v-if="timelineData.elements.isExpand">
+                <div class="vvtl-timeline" :style="timelineData.elements.timeline_styles" v-if="timelineData.elements.isExpand">
                     <div class="grid-oneline grid-headerarea">
                         <div class="oneline-namebox">
                             <div class="namebox-child"></div>
                         </div>
-                        <div class="oneline-timelinebox" ref="scroll_header_x">
+                        <div class="oneline-timelinebox" ref="scroll_header_x" @scroll="timelineEvent.scroll_header_x_onscroll">
                             <!-- frame number -->
                             <template v-if="timelineData.data.headercounts != null">
                                 <div class="timelinebox-content">
@@ -4590,13 +5601,18 @@
                             </template>
                         </div>
                     </div>
-                    <div class="grid-oneline grid-mainarea">
+                    <div class="grid-oneline grid-mainarea" >
                         <!-- timeline name(cast name) -->
-                        <div class="oneline-namebox" ref="scroll_namebox_y"  @wheel="timelineEvent.namebox_onwheel">
+                        <div class="oneline-namebox" style="padding-bottom:0"
+                            ref="scroll_namebox_y"  
+                            @wheel="timelineEvent.namebox_onwheel"
+                            v-touch-pan.prevent.mouse="timelineEvent.timelinebox_onswipe"
+                        >
                             <div v-for="(val) in timelineData.data.timelines" :key="val.roleName"
                                 class="namebox-child" :dataIndex="val.roleName" 
                                 @click="timelineEvent.namebox_onclick(val)" :class="val.selected"
                             >
+                                
                                 <q-btn flat round size="0.75rem" color="primary" :icon="val.readonlyIcon" 
                                     class="btn-visibility"
                                     @click.stop="timelineEvent.namebox_readonly_onclick(val)" 
@@ -4607,20 +5623,36 @@
                                     @click.stop="val.enabled=!val.enabled" 
                                 ></q-btn>
                                 -->
+                                
                                 <img
                                     :src="timelineEvent.chechAvatarThumbnail(val)"
                                     :width="32" ratio="1/1" style="float:left;"
                                 >
-                                <span v-text="timelineEvent.checkAvatarLabel(val)"></span>
+                                <div v-text="timelineEvent.checkAvatarLabel(val)" style="height:35px;overflow:hidden;"></div>
+                                <q-tooltip>
+                                    <img
+                                        :src="timelineEvent.chechAvatarThumbnail(val)"
+                                        :width="32" ratio="1/1" 
+                                    >
+                                    <span v-text="timelineEvent.checkAvatarLabel(val)"></span>
+                                </q-tooltip>
                             </div>
+                            
                             <!--<q-scroll-area style="width: 100%; height: 100%;"
                                 ref="scr_main_name_height"
                             >
                             </q-scroll-area>-->
                             
                         </div>
-                        <div class="oneline-timelinebox" ref="scroll_keyframe_xy"  @wheel="timelineEvent.timelinebox_onwheel">
-                            <!-- timeline key frames -->
+                        <div class="oneline-timelinebox" style="overflow-x:auto;" 
+                            ref="scroll_keyframe_xy" 
+                            
+                            @wheel="timelineEvent.timelinebox_onwheel"
+                            v-touch-pan.prevent.mouse="timelineEvent.timelinebox_onswipe"
+                        >
+                            <!-- timeline key frames 
+                                @scroll="timelineEvent.scroll_keyframe_xy_onscroll" 
+                            -->
                             <div v-for="(item) in timelineData.data.timelines" :key="item.roleName"
                                  :dataIndex="item.roleName" :class="item.selected"
                             >
@@ -4635,7 +5667,11 @@
                                             @pointerenter="timelineEvent.keyframebox_popuptip(item, frameitem)"
                                         ><b>{{ timelineEvent.keyframeHasTranslateCount(item, frameitem) }}</b>
                                             <q-tooltip anchor="top middle" self="bottom left" class="bg-secondary text-dark text-body1">
-                                                <b style="font-size:12pt">{{ (frameindex+1) }}</b><br>
+                                                [<b style="font-size:12pt">{{ (frameindex+1) }}</b>] :
+                                                <b style="font-size:12pt">{{ timelineData.states.popup.time.current }}</b>/
+                                                <b>{{ timelineData.states.popup.time.whole }}</b>: 
+                                                <strong class="q-ml-md">{{ timelineData.states.popup.memo }}</strong><br>
+                                                <br>
                                                 <span>{{ $t("duration") }}: {{ timelineData.states.popup.duration }}</span><br>
                                                 <span>{{ $t("easing") }}: {{ timelineData.states.popup.easing }}</span><br>
                                                 <span>{{ $t("contents_to_register") }} /IK-Marker :</span>
@@ -4667,7 +5703,7 @@
                     </div>
                     <div class="grid-oneline grid-scrollarea">
                         
-                        <div class="grid-scrollbarx scroll-on" ref="grid_scrollx" @scroll="timelineEvent.gridscrollx_onscroll">
+                        <div class="grid-scrollbarx scroll-on common_ui_off" ref="grid_scrollx" @scroll="timelineEvent.gridscrollx_onscroll">
                             <div class="scroll-content">
                                 <template v-if="timelineData.data.headercounts != null">
                                     <div v-for="(item,index) in timelineData.data.headercounts" :key="index" 
@@ -4682,7 +5718,8 @@
                     </div>
                 </div>
             </div>
-        </q-footer>
+            </q-card>
+        </div>
 <!--[] Dialog etc  ================================================================================= -->
         <q-dialog v-model="mainData.elements.loading" persistent style="z-index:4001;">
             <q-card class="my-card">
@@ -4728,6 +5765,7 @@
             :select-avatar="mainData.elements.vrminfodlg.selectedAvatar"
             @apply="modelLoader.OnOk_VrminfoDlg"
         ></vrminfo-dlg>
+        <!-- ### Project Dialog ############################ -->
         <q-dialog v-model="mainData.elements.projdlg.show" 
             class="projdlg_style"
             :maximized="mainData.elements.projdlg.maximized"
@@ -4759,20 +5797,23 @@
                         </q-btn>
                         -->
                     </template>
+                    <template v-if="projectdlgEvent.checkVRMASelected">
+                        <q-btn flat round dense icon="delete" @click="projectdlgEvent.btn_delVRMA_onclick"><q-tooltip v-text="$t('cons_delete')"></q-tooltip></q-btn>
+                    </template>
                     <q-space></q-space>
                     <q-btn flat round dense icon="close" @click="mainData.elements.projdlg.show = false"></q-btn>
 
                     <input type="file" ref="fil_animmotion" accept=".json,.vvmmot" class="common_ui_off" @change="projectdlgEvent.fil_animation_onchange">
                     <a ref="lnk_savemotion" download="" class="common_ui_off"></a>
                 </q-toolbar>
-                <q-card-section class="q-ma-none q-pa-none">
+                <q-card-section class="q-ma-none q-pa-none scroll" style="height:calc(100% - 50px)">
                     <q-tabs
                         v-model="mainData.elements.projdlg.tab"
                          inline-label no-caps dense
                          align="justify"
                     >
                         <q-tab name="pinfo":label="$t('project_info')"></q-tab>
-                        <!--<q-tab name="role" :label="$t('edit_role')"></q-tab>-->
+                        <q-tab name="vrmas" label="VRMAnimation"></q-tab>
                         <q-tab name="avatar" :label="$t('select_avatar')"></q-tab>
                         <q-tab name="material" :label="$t('material')"></q-tab>
                     </q-tabs>
@@ -4818,35 +5859,54 @@
                                 </div>
                             </div>
                         </q-tab-panel>
-                        <!--
-                        <q-tab-panel name="role" class="q-pa-xs">
+                        
+                        <q-tab-panel name="vrmas" class="q-pa-xs">
                             <q-table class="projdlg-table q-ma-none q-pa-none"
-                                :rows="mainData.elements.projdlg.editroles"
-                                :columns="mainData.elements.projdlg.editroleColumns"
-                                :visible-columns="mainData.elements.projdlg.editroleVisiblecCol"
-                                row-key="id" dense
+                                :rows="mainData.elements.projdlg.vrmaList"
+                                :columns="mainData.elements.projdlg.vrmaTableColumns"
+                                :visible-columns="mainData.elements.projdlg.vrmaTableVisiblecCol"
+                                row-key="path" dense
                                 selection="single"
-                                :pagination="mainData.elements.projdlg.editrolePagenation"
+                                :pagination="mainData.elements.projdlg.vrmaTablePagenation"
                                 :rows-per-page-options="[10]"
                             >
                                 <template v-slot:body="props">
                                     <q-tr :props="props">
                                         <q-td>
-                                            <q-radio v-model="mainData.elements.projdlg.roleselection" :val="props.row.name"></q-radio>
+                                            <q-radio v-model="mainData.elements.projdlg.vrmaselection" :val="props.row.filepath"></q-radio>
                                         </q-td>
-                                        <q-td key="name" :props="props"><span v-text="props.row.name"></span></q-td>
-                                        <q-td key="type" :props="props"><span v-text="props.row.type"></span></q-td>
-                                        <q-td key="roleTitle" :props="props">
-                                            {{ props.row.roleTitle }}
-                                            <q-popup-edit v-model="props.row.roleTitle" buttons v-slot="scope" @update:model-value="projectdlgEvent.oneditok_roleTitle(scope,props.row)" :title="$t('new role title')" v-if="props.row.name != 'Stage'">
-                                                <q-input v-model="scope.value" dense autofocus @keyup.enter="scope.set" filled></q-input>
-                                            </q-popup-edit>
+                                        <q-td key="filename" :props="props"><span v-text="props.row.filename"></span></q-td>
+                                        <q-td key="clipCount" :props="props"><span v-text="props.row.clipCount"></span></q-td>
+                                        <q-td key="filepath" :props="props"><span v-text="props.row.filepath"></span></q-td>
+                                        <q-td key="storageType" :props="props"><span v-text="props.row.storageType"></span></q-td>
+                                        <q-td>
+                                            <q-checkbox v-model="props.row.save" @update:model-value="projectdlgEvent.vrmarow_save_onchecked(props.row.save, props.row)"></q-checkbox>
                                         </q-td>
                                     </q-tr>
                                 </template>
                             </q-table>
+                            <!--<table>
+                                <thead>
+                                    <tr>
+                                        <th>{{ "filename" }}</th>
+                                        <th>{{ "clip count" }}</th>
+                                        <th>{{ "path" }}</th>
+                                        <th>{{ "storage type" }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr v-for="(vrma,index) in mainData.elements.projdlg.vrmaList" :key="index">
+                                        <td>{{ vrma.filename }}</td>
+                                        <td>{{ vrma.clips.length }}</td>
+                                        <td>{{ vrma.originalFile.path }}</td>
+                                        <td>{{ vrma.originalFile.storageType }}</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>-->
                         </q-tab-panel>
-                        -->
+                        
                         <q-tab-panel name="avatar" class="q-pa-xs"><!--==========================================-->
                             <q-table class="projdlg-table q-ma-none q-pa-none"
                                 :rows="mainData.elements.projdlg.selavatars"
@@ -5116,8 +6176,55 @@
         <vpad-dlg v-model="mainData.elements.vpaddlg.show"
             :rotate-rate="mainData.appconf.confs.application.vpad_rotaterate"
             :translate-rate="mainData.appconf.confs.application.vpad_translaterate"
+            :uimode="mainData.states.uimode"
+            :posbottom="0"
             @resetcamera="ribbonEvent.RibbonFuncScreen('resetcamera')"
         ></vpad-dlg>
+        <q-card id="mb_land_vpad" class="mb_land_vpad" v-if="mainData.elements.landvpad.show">
+            
+            <q-card
+                v-touch-pan.prevent.mouse.up.down="mobilePadEvent.progress_onswipe_left"
+                :class="mainData.elements.mobilepad.left.cpadCSS"
+                class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+            >
+                <div class="text-center">
+                    <q-icon name="height" size="xs" class="mb_pad_icon"></q-icon>
+                    <div class="row items-center">
+                    <q-icon :name="mainData.elements.mobilepad.left.progress.icon" size="md"></q-icon>
+                    </div>
+                </div>
+            </q-card>
+            
+            <q-card
+                v-touch-pan.prevent.mouse="mobilePadEvent.translation_onswipe_left"
+                :class="mainData.elements.mobilepad.left.cpadCSS" 
+                class="mblpad_translation cursor-pointer shadow-1 relative-position row flex-center"
+            >
+                <div class="text-center">
+                    <q-icon name="open_with" size="xs" class="mb_pad_icon"></q-icon>
+                    <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.left.translation.icon" size="md"></q-icon>
+                    </div>
+                </div>
+            </q-card>            
+            <q-card
+                v-touch-pan.prevent.mouse.up.down="mobilePadEvent.targetzoom_onswipe_left"
+                :class="mainData.elements.mobilepad.left.cpadCSS"
+                class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+            >
+                <div class="text-center">
+                    <q-icon name="zoom_in_map" size="xs" class="mb_pad_icon"></q-icon>
+                    <div class="row items-center">
+                    <q-icon :name="mainData.elements.mobilepad.left.targetzoom.icon" size="md"></q-icon>
+                    </div>
+                </div>
+            </q-card>
+            <div class="q-mt-xs row">
+                <div class="col-12">
+                    <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                </div>
+            </div>
+        </q-card>
         <keyframe-dlg v-model="mainData.elements.keyframedlg.show"
             :frame-index="timelineData.states.currentcursor"
             :timeline="mainData.states.selectedTimeline"
@@ -5162,11 +6269,15 @@
                                 <q-tooltip>{{$t('rename')}}</q-tooltip>
                             </q-btn>
                         </template>
+                    </template>
+                    <template v-if="(mainData.elements.projectSelector.selectDB == 'scene') || (mainData.elements.projectSelector.selectDB == 'vrma')">
                         <q-btn flat round icon="file_download" :disable="mainData.elements.projectSelector.selected == ''"
                             @click="projectSelectorEvent.onclick_download_projectSelector"
                         >
                             <q-tooltip v-text="$t('download as file')"></q-tooltip>
                         </q-btn>
+                    </template>
+                    <template v-if="mainData.elements.projectSelector.selectDB == 'scene'">
                         <template v-if="!cmp_projectSelectorStorageGDrive">
                             <q-btn flat round icon="file_upload"
                                 @click="projectSelectorEvent.onclick_upload_projectSelector"
@@ -5191,7 +6302,7 @@
                     <div class="row">
                         <div class="col-12" v-if="mainData.elements.projectSelector.files.length > 0">
 
-                            <q-table class="projdlg2-table q-ma-none q-pa-none"
+                            <q-table class="projdlg2-table-mbl q-ma-none q-pa-none"
                                 :rows="mainData.elements.projectSelector.files"
                                 :columns="mainData.elements.projectSelector.columns"
                                 :visible-columns="mainData.elements.projectSelector.visiblecCol"
@@ -5227,6 +6338,7 @@
         
     </q-layout>
 
+    
     <input type="file" ref="hid_file" class="common_ui_off">
     <input type="file" ref="fil_animproject" accept=".json,.vvmproj" class="common_ui_off">
     <input type="file" ref="file_audio" accept=".wav,.ogg,.mp3" class="common_ui_off">

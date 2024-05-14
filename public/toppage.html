@@ -48,7 +48,7 @@
         <q-header v-model="mainData.elements.header" class="text-dark" reveal elevated bordered>
 <!--[] Ribbon tab panel ==========================================================================-->
             <q-toolbar class="bg-primary text-white q-pt-none q-pb-none" style="min-height:32px">
-                
+                <q-btn color="yellow" flat dense :icon="ribbonData.elements.tab.toggleIcon" @click="ribbonEvent.btn_check_show_changed"></q-btn>
                 <q-tabs
                     v-model="ribbonData.elements.tab.selectIndex"
                     
@@ -64,13 +64,16 @@
                     <q-tab name="effect" icon="air" :label="$t('ribbon_title_systemeffect')" ></q-tab>
                     <q-tab name="audio" icon="headphones" :label="$t('ribbon_title_audio')" ></q-tab>
                 </q-tabs>
-                <q-space></q-space>
+                
+                
+                <!--<q-space></q-space>
                 <q-toggle v-model="ribbonData.elements.tab.check_show" 
                     dark color="yellow"
                     @update:model-value="ribbonEvent.check_show_changed"
                 >
                     <q-tooltip><span>{{ "show ribbon panel" }}</span></q-tooltip>
                 </q-toggle>
+                -->
             </q-toolbar>
             <!-- class="bg-primary text-white shadow-2" -->
             
@@ -319,8 +322,18 @@
                         <div class="ribbon-toolbar">
                             <!--<span>{{ $t("ribbon_screensize_label") }}</span><br>-->
                             <div class="row">
-                                <div class="col-4"><q-input v-model="ribbonData.elements.scr_size.width" class="screensize-slider" type="number" :label="$t('width')" dense :min="400" :max="4000" :step="10"></q-input></div>
-                                <div class="col-4"><q-input v-model="ribbonData.elements.scr_size.height" class="screensize-slider" type="number" :label="$t('height')" dense :min="400" :max="4000" :step="10"></q-input></div>
+                                <div class="col-4">
+                                    <q-input v-model="ribbonData.elements.scr_size.width" class="screensize-slider" type="number" :label="$t('width')" dense :min="400" :max="4000" :step="10"></q-input>
+                                    <uswipe-input show-icon 
+                                        v-model="ribbonData.elements.scr_size.width" class="screensize-slider" type="number" :label="$t('width')" dense :min="400" :max="4000" :step="10"
+                                    ></uswipe-input>
+                                </div>
+                                <div class="col-4">
+                                    <q-input v-model="ribbonData.elements.scr_size.height" class="screensize-slider" type="number" :label="$t('height')" dense :min="400" :max="4000" :step="10"></q-input>
+                                    <uswipe-input show-icon 
+                                        v-model="ribbonData.elements.scr_size.height" class="screensize-slider" type="number" :label="$t('height')" dense :min="400" :max="4000" :step="10"
+                                    ></uswipe-input>
+                                </div>
                                 <div class="col-4"><q-btn dense color="primary" style="width:5rem" :label="$t('cons_apply')" @click="ribbonEvent.applyScreen_onclick" no-caps ></q-btn></div>
                             </div>
                             <div class="row">
@@ -371,7 +384,12 @@
                     <div class="ribbon-group">
                         <div class="ribbon-toolbar">
                             <q-checkbox right-label v-model="ribbonData.elements.optionArea.rotate360" :label="$t('objlistmenu_show360')" @update:model-value="ribbonEvent.rotate360_onchange" ></q-checkbox><br>
-                            <q-input type="number" v-model="ribbonData.elements.optionArea.rotateSpeed" :label="$t('speed_to_rotate')" @update:model-value="ribbonEvent.rotateSpeed_onchange" dense :min="10" :max="50" :step="1"  ></q-input>
+                            <!--<q-input type="number" v-model="ribbonData.elements.optionArea.rotateSpeed" :label="$t('speed_to_rotate')" @update:model-value="ribbonEvent.rotateSpeed_onchange" dense :min="10" :max="50" :step="1"  ></q-input>-->
+                            <span>{{ $t('speed_to_rotate') }}</span>
+                            <uswipe-input  
+                                v-model="ribbonData.elements.optionArea.rotateSpeed" 
+                                 :min="10" :max="50" :step="1"
+                            ></uswipe-input>
                         </div>
                         <div class="ribbon-toolbar">
                             <q-checkbox right-label v-model="ribbonData.elements.optionArea.useAntialias" @update:model-value="ribbonEvent.useAntialias_onchange" :label="$t('use_antialias')" ></q-checkbox><br>
@@ -887,6 +905,9 @@
                                 @click="ribbonEvent.setmaxframe_onchange"
                                 :disable="ribbonEvent.chk_enableKeyframeButton"
                             ></q-btn>
+                            <uswipe-input show-icon 
+                                v-model="ribbonData.elements.frame.max" :min="1" :max="99999" :step="1"
+                            ></uswipe-input>
                         </div>
                         <div class="ribbon-group-title">Frame operation</div>
                     </div>
@@ -986,26 +1007,32 @@
                     <div v-if="ribbonData.elements.syseff.pagetab == 1">
                         <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar">
-                                <q-checkbox right-label v-model="ribbonData.elements.syseff.bloom.checked" label="On" @update:model-value="ribbonEvent.bloom_checked_onchange" >
+                                <q-checkbox right-label dense v-model="ribbonData.elements.syseff.bloom.checked" label="On" @update:model-value="ribbonEvent.bloom_checked_onchange" >
                                 </q-checkbox><br>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.bloom.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.bloom_intensity_onchange" dense :min="0" :max="100" :step="0.1" class="syseff-inputbox"></q-input>
+                                <uswipe-input show-icon 
+                                    v-model.number="ribbonData.elements.syseff.bloom.intensity"  @update:model-value="ribbonEvent.bloom_intensity_onchange" dense :min="0" :max="100" :step="0.1"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-group-title">Bloom</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
-                        <div class="ribbon-group ">
+                        <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar" style="margin-left:1rem;width:10rem">
-                                <q-checkbox right-label v-model="ribbonData.elements.syseff.chroma.checked" label="On" @update:model-value="ribbonEvent.chroma_checked_onchange" >
+                                <q-checkbox right-label dense v-model="ribbonData.elements.syseff.chroma.checked" label="On" @update:model-value="ribbonEvent.chroma_checked_onchange" >
                                 </q-checkbox><br>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.chroma.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.chroma_intensity_onchange" dense :min="0" :max="1" :step="0.1" class="syseff-inputbox"></q-input>
+                                <uswipe-input show-icon class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.chroma.intensity"  @update:model-value="ribbonEvent.chroma_intensity_onchange" dense :min="0" :max="1" :step="0.1"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-group-title">Chromatic Abberation</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
-                        <div class="ribbon-group">
+                        <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar" style="width:10rem;">
-                                <div>
-                                    <q-checkbox right-label v-model="ribbonData.elements.syseff.colorgrd.checked" label="On" @update:model-value="ribbonEvent.colorgrd_checked_onchange" >
+                                <div class="q-mb-sm">
+                                    <q-checkbox right-label dense v-model="ribbonData.elements.syseff.colorgrd.checked" label="On" @update:model-value="ribbonEvent.colorgrd_checked_onchange" >
                                     </q-checkbox>
                                 </div>
                                 <ucolor-picker v-model="ribbonData.elements.syseff.colorgrd.filter"
@@ -1017,13 +1044,21 @@
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.colorgrd.temperature" :label="$t('temperature')" @update:model-value="ribbonEvent.colorgrd_temperature_onchange" dense :min="-100" :max="100" :step="0.25" class="syseff-inputbox" ></q-input>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.colorgrd.tint" :label="$t('tint')" @update:model-value="ribbonEvent.colorgrd_tint_onchange" dense :min="-100" :max="100" :step="0.25" class="syseff-inputbox" ></q-input>
                             </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox" 
+                                    v-model.number="ribbonData.elements.syseff.colorgrd.temperature"  @update:model-value="ribbonEvent.colorgrd_temperature_onchange"  :min="-100" :max="100" :step="0.25"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox" 
+                                    v-model.number="ribbonData.elements.syseff.colorgrd.tint"  @update:model-value="ribbonEvent.colorgrd_tint_onchange"  :min="-100" :max="100" :step="0.25"
+                                ></uswipe-input>
+                            </div>
                             <div class="ribbon-group-title">Color grading</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
-                        <div class="ribbon-group">
+                        <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar">
                                 <div>
-                                    <q-checkbox right-label v-model="ribbonData.elements.syseff.depthov.checked" label="On" @update:model-value="ribbonEvent.depthov_checked_onchange" >
+                                    <q-checkbox right-label dense v-model="ribbonData.elements.syseff.depthov.checked" label="On" @update:model-value="ribbonEvent.depthov_checked_onchange" >
                                     </q-checkbox>
                                 </div>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.depthov.focusdistance" :label="$t('focusdistance')" @update:model-value="ribbonEvent.depthov_focusdistance_onchange" dense :min="0.1" :max="50" :step="0.05" class="syseff-inputbox-long" >
@@ -1031,6 +1066,9 @@
                                         {{ $t('focusdistance') }}
                                     </q-tooltip>
                                 </q-input>
+                                <uswipe-input show-icon  syseff-inputbox-long
+                                    v-model.number="ribbonData.elements.syseff.depthov.focusdistance" @update:model-value="ribbonEvent.depthov_focusdistance_onchange" dense :min="0.1" :max="50" :step="0.05"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left:1rem;">
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.depthov.aperture" :label="$t('aperture')" @update:model-value="ribbonEvent.depthov_aperture_onchange" dense :min="0.1" :max="32" :step="0.1" class="syseff-inputbox-long" ></q-input>
@@ -1040,15 +1078,23 @@
                                     </q-tooltip>
                                 </q-input>
                             </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox" 
+                                    v-model.number="ribbonData.elements.syseff.depthov.aperture"  @update:model-value="ribbonEvent.depthov_aperture_onchange" dense :min="0.1" :max="32" :step="0.1"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox" 
+                                    v-model.number="ribbonData.elements.syseff.depthov.focallength"  @update:model-value="ribbonEvent.depthov_focallength_onchange" dense :min="1" :max="50" :step="1"
+                                ></uswipe-input>
+                            </div>
                             <div class="ribbon-group-title">Depth Of Field</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
                     </div>
                     <div class="ribbon-group" v-if="ribbonData.elements.syseff.pagetab == 2">
-                        <div class="ribbon-group">
+                        <div class="ribbon-group q-pt-none">
                             <div class="ribbon-toolbar">
                                 <div>
-                                    <q-checkbox right-label v-model="ribbonData.elements.syseff.grain.checked" label="On" @update:model-value="ribbonEvent.grain_checked_onchange" >
+                                    <q-checkbox right-label dense v-model="ribbonData.elements.syseff.grain.checked" label="On" @update:model-value="ribbonEvent.grain_checked_onchange" >
                                     </q-checkbox>
                                 </div>
                             </div>
@@ -1056,17 +1102,28 @@
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.grain.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.grain_intensity_onchange" dense :min="0" :max="1" :step="0.1" class="syseff-inputbox" ></q-input>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.grain.size" :label="$t('size')" @update:model-value="ribbonEvent.grain_size_onchange" dense :min="0.3" :max="3" :step="0.1" class="syseff-inputbox"></q-input>
                             </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.grain.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.grain_intensity_onchange" :min="0" :max="1" :step="0.1"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.grain.size" :label="$t('size')" @update:model-value="ribbonEvent.grain_size_onchange" :min="0.3" :max="3" :step="0.1"
+                                ></uswipe-input>
+                            </div>
                             <div class="ribbon-group-title">Grain</div>
                         </div>
                         <div class="ribbon-group-sep"></div>
                         <div class="ribbon-group" style="margin-left: 1rem;">
                             <div class="ribbon-toolbar">
                                 <div>
-                                    <q-checkbox right-label v-model="ribbonData.elements.syseff.vignette.checked" label="On" @update:model-value="ribbonEvent.vignette_checked_onchange" >
+                                    <q-checkbox right-label dense v-model="ribbonData.elements.syseff.vignette.checked" label="On" @update:model-value="ribbonEvent.vignette_checked_onchange" >
                                     </q-checkbox>
                                 </div>
                                 <div>
                                     <q-input type="number" v-model.number="ribbonData.elements.syseff.vignette.intensity" :label="$t('intensity')" @update:model-value="ribbonEvent.vignette_intensity_onchange" dense :min="0" :max="1" :step="0.1" class="syseff-inputbox"></q-input>
+                                    <uswipe-input show-icon class="syseff-inputbox"
+                                        v-model.number="ribbonData.elements.syseff.vignette.intensity"  @update:model-value="ribbonEvent.vignette_intensity_onchange" dense :min="0" :max="1" :step="0.1"
+                                    ></uswipe-input>
                                 </div>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left:1rem;">
@@ -1074,8 +1131,27 @@
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.vignette.roundness" :label="$t('roundness')" @update:model-value="ribbonEvent.vignette_round_onchange" dense :min="0" :max="1" :step="0.01" class="syseff-inputbox"></q-input>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.vignette.smoothness"  @update:model-value="ribbonEvent.vignette_smooth_onchange" dense :min="0.1" :max="1" :step="0.01"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.vignette.roundness" @update:model-value="ribbonEvent.vignette_round_onchange" dense :min="0" :max="1" :step="0.01"
+                                ></uswipe-input>
+                            </div>
+                            <div class="ribbon-group-title">Vignette</div>
+                        </div>
+                        <div class="ribbon-group" style="margin-left: 1rem;">
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.vignette.center.x" label="center X" @update:model-value="ribbonEvent.vignette_center_onchange" dense :min="-3" :max="5" :step="0.01" class="syseff-inputbox" ></q-input>
                                 <q-input type="number" v-model.number="ribbonData.elements.syseff.vignette.center.y" label="center Y" @update:model-value="ribbonEvent.vignette_center_onchange" dense :min="-3" :max="5" :step="0.01" class="syseff-inputbox"></q-input>
+                            </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.vignette.center.x" @update:model-value="ribbonEvent.vignette_center_onchange" :min="-3" :max="5" :step="0.01"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.vignette.center.y"  @update:model-value="ribbonEvent.vignette_center_onchange" :min="-3" :max="5" :step="0.01"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-toolbar" style="margin-left:1rem;width:8rem;">
                                 <ucolor-picker v-model="ribbonData.elements.syseff.vignette.color"
@@ -1104,6 +1180,14 @@
                                         {{ $t('Sample count') }}
                                     </q-tooltip>
                                 </q-input>
+                            </div>
+                            <div class="ribbon-toolbar" style="margin-left:1rem;">
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.moblur.shutterangle" @update:model-value="ribbonEvent.moblur_shutterangle_onchange" :min="0" :max="360" :step="1"
+                                ></uswipe-input>
+                                <uswipe-input show-icon style="margin-top:1.5rem" class="syseff-inputbox"
+                                    v-model.number="ribbonData.elements.syseff.moblur.samplecount"  @update:model-value="ribbonEvent.moblur_samplecount_onchange" :min="4" :max="32" :step="1"
+                                ></uswipe-input>
                             </div>
                             <div class="ribbon-group-title">Motion blur</div>
                         </div>
@@ -1444,14 +1528,19 @@
         </q-header>
         
 <!--[] ObjectList ================================================================================= -->
+<!-- 
+    
+
+-->
         <q-drawer
             side="left"
             v-model="objlistData.elements.drawer.show"
             :mini="!objlistData.elements.drawer.show || objlistData.elements.drawer.miniState"
+            :mini-width="objlistData.elements.drawer.miniwidth"
             bordered
             :width="objlistData.elements.drawer.width"
-            :mini-width="objlistData.elements.drawer.miniwidth"
             :breakpoint="objlistData.elements.drawer.breakpoint"
+            :behavior="objlistData.elements.drawer.behavior"
             content-class="bg-grey-3"
         >
             <q-list bordered>
@@ -1495,7 +1584,7 @@
                         </div>
                     </div>
                 </q-card>
-                <q-icon name="swap_horiz" size="sm"></q-icon><q-icon name="swap_vert" size="sm"></q-icon><br>
+                <q-icon name="open_with" size="sm"></q-icon><br>
                 <q-card
                     v-touch-pan.prevent.mouse="mobilePadEvent.translation_onswipe_left"
                     :class="mainData.elements.mobilepad.left.cpadCSS"
@@ -1519,6 +1608,11 @@
                         </div>
                     </div>
                 </q-card>
+                <div class="q-mt-sm row">
+                    <div class="col-12">
+                        <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                    </div>
+                </div>
             </template>
 
             <div v-show="!objlistData.elements.drawer.miniState">
@@ -1627,6 +1721,67 @@
         
             </div>
         </q-drawer>
+        <!--q-drawer v-if="!objlistData.elements.drawer.show"
+            side="left"
+            v-model="objlistData.elements.minidrawer.show"
+            :mini="objlistData.elements.minidrawer.show"
+            :mini-width="objlistData.elements.drawer.miniwidth"
+            :width="objlistData.elements.drawer.miniwidth"
+            bordered
+            content-class="bg-grey-3"
+        >
+            <q-list bordered>
+                <q-item v-ripple dense>
+                    <q-item-section avatar>
+                        <q-icon color="primary" name="chevron_left" 
+                            @click="objlistEvent.leftminidrawer_minimize"
+                        ></q-icon>
+                    </q-item-section>
+                </q-item>
+                
+            </q-list>
+            <q-icon name="height" size="md"></q-icon><br>
+            <q-card
+                v-touch-pan.prevent.mouse.up.down="mobilePadEvent.progress_onswipe_left"
+                :class="mainData.elements.mobilepad.left.cpadCSS"
+                class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+            >
+                <div class="text-center">
+                    <div class="row items-center">
+                    <q-icon :name="mainData.elements.mobilepad.left.progress.icon" size="md"></q-icon>
+                    </div>
+                </div>
+            </q-card>
+            <q-icon name="swap_horiz" size="sm"></q-icon><q-icon name="swap_vert" size="sm"></q-icon><br>
+            <q-card
+                v-touch-pan.prevent.mouse="mobilePadEvent.translation_onswipe_left"
+                :class="mainData.elements.mobilepad.left.cpadCSS"
+                class="mblpad_translation cursor-pointer shadow-1 relative-position row flex-center"
+            >
+                <div class="text-center">
+                    <div class="row items-center">
+                        <q-icon :name="mainData.elements.mobilepad.left.translation.icon" size="md"></q-icon>
+                    </div>
+                </div>
+            </q-card>
+            <q-icon name="zoom_in_map" size="sm"></q-icon><q-icon name="zoom_out_map" size="sm"></q-icon><br>
+            <q-card
+                v-touch-pan.prevent.mouse.up.down="mobilePadEvent.targetzoom_onswipe_left"
+                :class="mainData.elements.mobilepad.left.cpadCSS"
+                class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+            >
+                <div class="text-center">
+                    <div class="row items-center">
+                    <q-icon :name="mainData.elements.mobilepad.left.targetzoom.icon" size="md"></q-icon>
+                    </div>
+                </div>
+            </q-card>
+            <div class="q-mt-sm row">
+                <div class="col-12">
+                    <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                </div>
+            </div>
+        </q-drawer-->
         
 <!--[] Center panel ================================================================================= -->
         <q-page-container>
@@ -1672,6 +1827,7 @@
             :mini-width="objpropData.elements.drawer.miniwidth"
             :breakpoint="objpropData.elements.drawer.breakpoint"
             content-class="bg-grey-3"
+            :behavior="objpropData.elements.drawer.behavior"
         >
             <q-list bordered>
             <q-item v-ripple dense>
@@ -1706,7 +1862,7 @@
                         </div>
                     </div>
                 </q-card>
-                <q-icon name="swap_horiz" size="sm"></q-icon><q-icon name="swap_vert" size="sm"></q-icon><br>
+                <q-icon name="open_with" size="sm"></q-icon><br>
                 <q-card
                     v-touch-pan.prevent.mouse="mobilePadEvent.translation_onswipe_right"
                     :class="mainData.elements.mobilepad.right.cpadCSS"
@@ -1730,6 +1886,11 @@
                         </div>
                     </div>
                 </q-card>
+                <div class="q-mt-sm row">
+                    <div class="col-12">
+                        <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                    </div>
+                </div>
             </template>
             <div v-show="!objpropData.elements.drawer.miniState">
             <q-expansion-item
@@ -5243,11 +5404,19 @@
             </q-menu>
             -->
         </q-drawer>
-
+        <template v-if="chk_resolution_xs_and_portrait">
+            <div class="column items-center" style="margin-bottom: 32px;">
+                <q-fab color="purple" icon="keyboard_arrow_up" direction="up">
+                    <q-fab-action color="primary"  icon="mail"></q-fab-action>
+                    <q-fab-action color="secondary"  icon="alarm"></q-fab-action>
+                </q-fab>
+            </div>
+        </template>
 <!--[] Timeline  ================================================================================= -->
         <q-footer v-model="mainData.elements.footer" class="bg-grey-1" bordered :style="timelineData.elements.boxStyle">
+            
             <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
-                <div class="vvtl-seekbar">
+                <div class="vvtl-seekbar" :style="timelineData.elements.seekbar_styles">
                     <div class="grid-oneline">
                         <div class="seekbar-buttonbox">
                             <!--
@@ -5345,7 +5514,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="vvtl-timeline" v-if="timelineData.elements.isExpand">
+                <div class="vvtl-timeline" :style="timelineData.elements.timeline_styles" v-if="timelineData.elements.isExpand">
                     <div class="grid-oneline grid-headerarea">
                         <div class="oneline-namebox">
                             <div class="namebox-child"></div>
@@ -5371,7 +5540,10 @@
                     </div>
                     <div class="grid-oneline grid-mainarea">
                         <!-- timeline name(cast name) -->
-                        <div class="oneline-namebox" ref="scroll_namebox_y"  @wheel="timelineEvent.namebox_onwheel">
+                        <div class="oneline-namebox" ref="scroll_namebox_y" style="padding-bottom:0"
+                            @wheel="timelineEvent.namebox_onwheel"
+                            v-touch-pan.prevent.mouse="timelineEvent.timelinebox_onswipe"
+                        >
                             <div v-for="(val) in timelineData.data.timelines" :key="val.roleName"
                                 class="namebox-child" :dataIndex="val.roleName" 
                                 @click="timelineEvent.namebox_onclick(val)" :class="val.selected"
@@ -5390,7 +5562,14 @@
                                     :src="timelineEvent.chechAvatarThumbnail(val)"
                                     :width="32" ratio="1/1" style="float:left;"
                                 >
-                                <span v-text="timelineEvent.checkAvatarLabel(val)"></span>
+                                <div v-text="timelineEvent.checkAvatarLabel(val)" style="height:35px;overflow:hidden;"></div>
+                                <q-tooltip>
+                                    <img
+                                        :src="timelineEvent.chechAvatarThumbnail(val)"
+                                        :width="32" ratio="1/1" 
+                                    >
+                                    <span v-text="timelineEvent.checkAvatarLabel(val)"></span>
+                                </q-tooltip>
                             </div>
                             <!--<q-scroll-area style="width: 100%; height: 100%;"
                                 ref="scr_main_name_height"
@@ -5398,7 +5577,12 @@
                             </q-scroll-area>-->
                             
                         </div>
-                        <div class="oneline-timelinebox" style="overflow-x:auto;" ref="scroll_keyframe_xy" @scroll="timelineEvent.scroll_keyframe_xy_onscroll" @wheel="timelineEvent.timelinebox_onwheel">
+                        <div class="oneline-timelinebox" 
+                            ref="scroll_keyframe_xy" 
+                            @scroll="timelineEvent.scroll_keyframe_xy_onscroll" 
+                            @wheel="timelineEvent.timelinebox_onwheel"
+                            v-touch-pan.prevent.mouse="timelineEvent.timelinebox_onswipe"
+                        >
                             <!-- timeline key frames -->
                             <div v-for="(item) in timelineData.data.timelines" :key="item.roleName"
                                  :dataIndex="item.roleName" :class="item.selected"
@@ -5552,7 +5736,7 @@
                     <input type="file" ref="fil_animmotion" accept=".json,.vvmmot" class="common_ui_off" @change="projectdlgEvent.fil_animation_onchange">
                     <a ref="lnk_savemotion" download="" class="common_ui_off"></a>
                 </q-toolbar>
-                <q-card-section class="q-ma-none q-pa-none">
+                <q-card-section class="q-ma-none q-pa-none scroll" style="height:calc(100% - 50px)">
                     <q-tabs
                         v-model="mainData.elements.projdlg.tab"
                          inline-label no-caps dense
