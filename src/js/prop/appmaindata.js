@@ -13,8 +13,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.8.0",
-            revision : "20240515-01",
+            version : "2.9.0",
+            revision : "20240526-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -70,6 +70,13 @@ export class appMainData {
                  * @type {VVAvatar}
                  */
                 selectedAvatar : null
+            },
+            capturedlg : {
+                show: false,
+            },
+            posemotiondlg : {
+                show: false,
+                mode : "p",
             },
             projdlg : {
                 show : false,
@@ -345,6 +352,7 @@ export class appMainData {
             win_mediapipe : null,
             win_bonetransform : null,
             win_keyframe : null,
+            win_gravitybone: null,
             footer : true
         };
         this.states = {

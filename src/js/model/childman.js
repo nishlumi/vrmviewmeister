@@ -70,6 +70,14 @@ export class ChildManager {
         }else if (data.windowName == "keyframe") {
             var js = JSON.parse(data.data);
             this.keyframeFiltering(data.funcName,js);
+        }else if (data.windowName == "gravitybone") {
+            if (data.funcName == "on_afterchange") {
+                var js = JSON.parse(data.data);
+                this.gravitybone_on_afterchange(js);
+            }else if (data.funcName == "reload_onclick") {
+                var js = JSON.parse(data.data);
+                this.gravitybone_reload_onclick(js);
+            }
         }
     }
     //----------------------------------------------------------------------------------------------------
@@ -832,6 +840,37 @@ export class ChildManager {
                 
             },
             {oldindex: -1}
+        ));
+        AppQueue.start();
+    }
+    //----------------------------------------------------------------------------------------------------
+    // Gravity bone window
+    //----------------------------------------------------------------------------------------------------
+    gravitybone_on_afterchange(param) {
+        for (var i = 0; i < param.powerlist.length; i++) {
+            AppQueue.add(new queueData(
+                {target:param.avatarId,method:'SetGravityPower',param:param.powerlist[i]},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        for (var i = 0; i < param.dirlist.length; i++) {
+            AppQueue.add(new queueData(
+                {target:param.avatarId,method:'SetGravityDirFromOuter',param:param.dirlist[i]},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        AppQueue.start();
+    }
+    gravitybone_reload_onclick(param) {
+        AppQueue.add(new queueData(
+            {target:param.avatarId,method:'ListGravityInfoFromOuter'},
+            "list_gravitybone",QD_INOUT.returnJS,
+            (val) => {
+                var js = JSON.parse(val);
+                AppDB.temp.setItem("grapp_list_gravitybone",js);
+            }
         ));
         AppQueue.start();
     }

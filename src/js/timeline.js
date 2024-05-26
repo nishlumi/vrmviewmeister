@@ -735,12 +735,12 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
 
                 if (w > h) {
                     timelineData.elements.seekbar_styles.height = "48px";
-                    timelineData.elements.panel_styles.height = "calc(298px);"
-                    timelineData.elements.timeline_styles.height = "calc(298px - 48px)";
+                    timelineData.elements.panel_styles.height = "calc(100% - 60px)";
+                    timelineData.elements.timeline_styles.height = "calc(100% - 48px)"; //"calc(298px - 48px - 48px)";
                 }else{
                     timelineData.elements.seekbar_styles.height = "96px";
-                    timelineData.elements.panel_styles.height = "calc(298px + 48px);"
-                    timelineData.elements.timeline_styles.height = "calc(298px + 48px - 96px)";
+                    timelineData.elements.panel_styles.height = "calc(100% - 60px)"; //"calc(298px + 48px);"
+                    timelineData.elements.timeline_styles.height = "calc(100% - 96px)"; //"calc(298px - 96px)";
                 }
                 
             }else{
@@ -755,7 +755,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
                 if (w > h) {
                     timelineData.elements.seekbar_styles.height = "48px";
                     timelineData.elements.panel_styles.height = "calc(298px);"
-                    timelineData.elements.timeline_styles.height = "calc(298px - 48px)";
+                    timelineData.elements.timeline_styles.height = "calc(298px - 48px - 48px)";
                 }else{
                     timelineData.elements.seekbar_styles.height = "96px";
                     timelineData.elements.panel_styles.height = "calc(298px + 48px);"

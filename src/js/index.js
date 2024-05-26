@@ -33,6 +33,8 @@ import { defineNavigationDlg } from "./navwin.js";
 import { VRoidHubConnector } from "./model/vroidhub.js";
 import { defineMobileOperator } from "./model/mblope.js";
 import { defineUswipeInput } from "../uswipeinput.js";
+import { definePoseMotionDlg } from "./posedlg.js";
+import { defineCaptureDlg } from "./capturedlg.js";
 
 var loc = localStorage.getItem("appLocale");
 //loc = await AppDB.app.getItem("appLocale");
@@ -118,6 +120,7 @@ const app = Vue.createApp({
         UnityCallback.refs["lnk_savemotion"] = lnk_savemotion;
 
         Vue.provide("UNITYCONFIG",unityConfig.value);
+        Vue.provide("UNITYCALLBACK",UnityCallback);
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         //---Life cycle
@@ -306,6 +309,7 @@ const app = Vue.createApp({
                     if (mainData.elements.win_screenshot) mainData.elements.win_screenshot.close();
                     if (mainData.elements.win_vplayer) mainData.elements.win_vplayer.close();
                     if (mainData.elements.win_keyframe) mainData.elements.win_keyframe.close();
+                    if (mainData.elements.win_gravitybone) mainData.elements.win_gravitybone.close();
                 });
 
 
@@ -437,6 +441,8 @@ defineConfigDlg(app,Quasar);
 defineVpadDlg(app,Quasar);
 defineKeyframeDlg(app,Quasar);
 defineNavigationDlg(app, Quasar);
+definePoseMotionDlg(app, Quasar);
+defineCaptureDlg(app, Quasar);
 
 app.use(i18n);
 //---Start app

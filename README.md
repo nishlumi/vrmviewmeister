@@ -11,11 +11,6 @@ However, users should be able to create it much easier than creating it directly
 This application is made by web application. Therefore, the feature is that it can be used anywhere with a web browser.
 (There may be technical restrictions)
 
-本アプリはMMDのようにVRoid(VRM)でアニメーションを手軽に作ることを目指したアプリです。
-本格的な3Dアニメーションを目指したわけではないので、本アプリで作ったアニメーションは（今のところ）
-本アプリでしか再生できませんが、Unityのエディタ上で直接作るより遥かに手軽にできるはずです。
-それからウェブアプリになっているため、ウェブブラウザでどこでも使えるのが特徴です。
-（技術的な面で制限がかかる機能もあります）
 
 
 
@@ -34,7 +29,7 @@ http://nishlumi-vrmviewmdoc.readthedocs.io/
 
 ## For WebApp
 
-* On Linux/macOS, please do `chmod` command before executing.
+* On Linux/macOS, please do `chmod z_mng/*.sh` command before executing.
 
 1. `npm install`
 2. `npm run prepare1`
@@ -53,7 +48,7 @@ http://nishlumi-vrmviewmdoc.readthedocs.io/
 
 * You can also use `npm run fullbuild`.
 
-6. `npm run dev`
+
 
 ## For Electron
 
@@ -68,6 +63,22 @@ http://nishlumi-vrmviewmdoc.readthedocs.io/
 * maxOS: `npm run build:mac`
 
 * Linux: `npm run build:linux`
+
+
+# Run the WebApp
+
+1. `npm run watch`
+2. `npm run dev`
+
+* This command can be tested running with http://localhost.
+* The port number is listed in package.json.
+
+Optional:
+
+3. `npm run ssldev`
+
+* This command can be tested running with https on your local host.
+* The port number is listed in bs-config.js or Console.
 
 
 # Caution

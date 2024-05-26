@@ -20,6 +20,7 @@ function createWindow() {
         if (
             (url.indexOf("static/win/bonetran/") > -1) ||
             (url.indexOf("static/win/capture/") > -1) ||
+            (url.indexOf("static/win/gravitybone/") > -1) ||
             (url.indexOf("static/win/mp/") > -1) ||
             (url.indexOf("static/win/pose/") > -1) || 
             (url.indexOf("static/win/vplayer/") > -1) ||

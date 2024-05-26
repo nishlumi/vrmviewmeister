@@ -2250,6 +2250,7 @@ export class appModelOperator {
             this.select_objectItem(this.mainData.states.selectedAvatar.id,true);
             if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
                 this.returnBoneTransformReloadBtn({avatarId:this.mainData.states.selectedAvatar.id});
+                this.returnGravityBoneReloadBtn({avatarId:this.mainData.states.selectedAvatar.id});
             }
             //---for appling to UI the duration and easing 
             var aro = new AnimationRegisterOptions();
@@ -2698,6 +2699,23 @@ export class appModelOperator {
         ));
         AppQueue.start();
     }
+    returnGravityBoneReloadBtn(data) {
+        if (this.mainData.states.selectedAvatar.id != data.avatarId) return;
+        if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) return;
+
+        AppQueue.add(new queueData(
+            {target:this.mainData.states.selectedAvatar.id,method:'ListGravityInfoFromOuter'},
+            "list_gravitybone",QD_INOUT.returnJS,
+            (val) => {
+                var js = JSON.parse(val);
+                AppDB.temp.setItem("grapp_list_gravitybone",js);
+                AppDB.temp.setItem("grapp_avatar_id",this.mainData.states.selectedAvatar.id);
+                AppDB.temp.setItem("grapp_avatar_title",this.mainData.states.selectedAvatar.title);
+                AppDB.temp.setItem("grapp_avatar_type",this.mainData.states.selectedAvatar.type);
+            }
+        ));
+        AppQueue.start();
+    }
 
     analyzeBVH (text) {
         var filearr = text.split(/\r|\n|\r\n/);
@@ -2857,8 +2875,12 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
         AppDB.temp.setItem("bonetran_avatar_id",newval.id);
         AppDB.temp.setItem("bonetran_avatar_title",newval.title);
         AppDB.temp.setItem("bonetran_avatar_type",newval.type);
+        AppDB.temp.setItem("grapp_avatar_id",newval.id);
+        AppDB.temp.setItem("grapp_avatar_title",newval.title);
+        AppDB.temp.setItem("grapp_avatar_type",newval.type);
         if (newval.type == AF_TARGETTYPE.VRM) {
             modelOperator.returnBoneTransformReloadBtn({avatarId:newval.id});
+            modelOperator.returnGravityBoneReloadBtn({avatarId:newval.id});
             //AppDB.temp.setItem("kfa_hoge",JSON.original(mainData.states.selectedTimeline));
         }
         modelOperator.returnKeyframeWindowChangeTimeline();

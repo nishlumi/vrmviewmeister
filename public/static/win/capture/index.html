@@ -20,6 +20,10 @@
         <q-layout view="hHh LpR lff" style="width:inherit;height: inherit;">
             <q-header v-model="capapp.header.show" reveal elevated bordered>
                 <q-toolbar class="bg-primary text-white">
+                    <template v-if="chkMobile">
+                        <q-btn flat round dense icon="menu" @click="capapp.left.show=!capapp.left.show">
+                        </q-btn>
+                    </template>
                     <q-btn flat round dense icon="refresh" @click="refresh_onclick">
                         <q-tooltip v-text="_T('refresh')"></q-tooltip>
                     </q-btn>
@@ -46,28 +50,31 @@
                 :breakpoint="500"
             >
                 <div class="row q-ml-xs q-mr-xs">
-                    <q-date v-model="capapp.left.filter_date"
-                        :options="capapp.left.date_options" minimal
-                        @update:model-value="datefilter_onchange"
-                    >
-                        
-                    </q-date>
-                    <!--
-                        <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
-                        </div>
-
-                    <q-input filled v-model="capapp.left.filter_date" mask="date" :rules="['date']">
+                    <div class="col-12">
+                        <!--q-date v-model="capapp.left.filter_date"
+                            :options="capapp.left.date_options" minimal
+                            @update:model-value="datefilter_onchange"
+                        >
+                        </q-date-->
+                        <q-input filled v-model="capapp.left.filter_date" mask="date" :rules="['date']">
                         <template v-slot:append>
-                        <q-icon name="event" class="cursor-pointer">
+                            <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            
+                                <q-date v-model="capapp.left.filter_date"
+                                :options="capapp.left.date_options"
+                                @update:model-value="datefilter_onchange"
+                                >
+                                <div class="row items-center justify-end">
+                                    <q-btn v-close-popup label="Close" color="primary" flat />
+                                </div>
+                                </q-date>
                             </q-popup-proxy>
-                        </q-icon>
+                            </q-icon>
                         </template>
-                    </q-input>-->
+                        </q-input>
+                    </div>
                 </div>
-                <div style="height:calc(100% - 294px);overflow:auto;">
+                <div style="height:calc(100% - 76px);overflow:auto;">
                     <q-list bordered>
                         <q-item clickable v-ripple 
                                 v-for="(item,index) in capapp.left.list.options" :key="index"

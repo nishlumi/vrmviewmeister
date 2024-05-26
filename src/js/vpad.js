@@ -142,7 +142,7 @@ export function defineVpadDlg(app, Quasar) {
                             right : "-9999px",
                             width : "420px",
                             height : "250px",
-                            zIndex : 5003,
+                            zIndex : 2900,
                             backgroundColor : "#FFFFFF"
                         },
                         position : {

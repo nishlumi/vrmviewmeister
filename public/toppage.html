@@ -5695,6 +5695,15 @@
             :select-avatar="mainData.elements.vrminfodlg.selectedAvatar"
             @apply="modelLoader.OnOk_VrminfoDlg"
         ></vrminfo-dlg>
+        <posemotion-dlg
+            v-model="mainData.elements.posemotiondlg.show"
+            :mode="mainData.elements.posemotiondlg.mode"
+            :appconf="mainData.appconf"
+            :cast="mainData.states.selectedCast"
+        ></posemotion-dlg>
+        <capture-dlg
+            v-model="mainData.elements.capturedlg.show"
+        ></capture-dlg>
         <!-- ### Project Dialog ############################ -->
         <q-dialog v-model="mainData.elements.projdlg.show" 
             class="projdlg_style"

@@ -111,7 +111,7 @@
 }
 @media (max-width: 599.98px) {
     .vvtl-timeline .grid-mainarea {
-        height : calc(100% - 48px - 35px);
+        height : calc(100% - 35px);
         overflow : hidden;
     }
 }
