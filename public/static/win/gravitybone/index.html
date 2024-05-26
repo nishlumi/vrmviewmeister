@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="same-origin">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Gravity bone</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/jsuites/jspreadsheet.css" rel="stylesheet">
+    <link href="../../lib/jsuites/jsuites.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/index.css">
+    <style>
+        .spr-panel-top {
+            position: absolute;
+            top : 0;
+            left : 0;
+            background-color: #FFFFFF;
+            width : 100%;
+            height : 100%;
+            z-index: 100;
+        }
+        .spr-panel-back {
+            position: absolute;
+            top : 0;
+            left : 0;
+            background-color: #FFFFFF;
+            width : 100%;
+            height : 100%;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="q-app" v-cloak>
+        <div :class="data.elements.panelCSS" style="width:100%;height:calc(100% - 40px);">
+            <div class="row basic-dialog-toolbar" v-show="chk_objtype">
+                <!--q-btn flat round dense icon="bookmark_added" :label="$t('apply gravity')" @click="apply_onclick">
+                </q-btn-->
+                <q-btn flat round dense icon="refresh" style="margin-left:1rem;" @click="reload_onclick">
+                    <q-tooltip v-text="_T('refresh')"></q-tooltip>
+                </q-btn>
+            </div>
+            
+            <div class="basic-dialog-contentarea">
+                <div :class="data.elements.sprPanelCSS.forVRM">
+                    <div id="spreadsheet_gbone" ref="gspr"></div>
+                </div>                
+                <div :class="data.elements.sprPanelCSS.forOther">
+                    <h1>Not VRM</h1>
+                </div>
+            </div>
+            
+        </div>
+    
+    </div>
+
+    <script src="../../lib/vue/vue.global.prod.js"></script>
+    <script src="../../lib/vue/vue-i18n.global.prod.js"></script>
+    <script src="../../lib/quasar/quasar.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/ja.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/eo.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/en-US.umd.prod.js"></script>
+    <script src="../../lib/localforage.min.js"></script>
+    <script src="../../lib/jsuites/jspreadsheet.js"></script>
+    <script src="../../lib/jsuites/jsuites.js"></script>
+
+    <script src="../../js/util.js"></script>
+
+    <script src="../../js/client_cldgravity.js" type="module"></script>
+</body>
+</html>

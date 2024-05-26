@@ -569,41 +569,63 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         AppQueue.start();
         return true;
     },{deep:true});
-    const OnClicked_editIKPosition = async () => {
-        //mainData.elements.bonetrandlg.show = true;
+    const OnClicked_editIKPosition = async () => {        
 
-        modelOperator.returnBoneTransformReloadBtn({avatarId: mainData.states.selectedAvatar.id});
+        if (mainData.appconf.confs.application.is_externalwin_bonetran === true) {
+            modelOperator.returnBoneTransformReloadBtn({avatarId: mainData.states.selectedAvatar.id});
 
-        if (mainData.elements.win_bonetransform && !mainData.elements.win_bonetransform.closed) {
-
+            if (mainData.elements.win_bonetransform && !mainData.elements.win_bonetransform.closed) {
+    
+            }else{
+                mainData.elements.win_bonetransform = window.open("./static/win/bonetran/index.html",
+                    "bonetran",
+                    "width=865,height=500,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                );
+            }
+    
+            if (VFileHelper.checkNativeAPI) { 
+                var title = mainData.elements.win_bonetransform.document.title
+                await window.elecAPI.focusWindow(title);
+            }else{
+                mainData.elements.win_bonetransform.blur();
+                window.focus();
+                window.blur();
+                mainData.elements.win_bonetransform.focus();
+            }
         }else{
-            mainData.elements.win_bonetransform = window.open("./static/win/bonetran/index.html",
-                "bonetran",
-                "width=865,height=500,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
-            );
+            mainData.elements.bonetrandlg.show = true;
         }
-
-        if (VFileHelper.checkNativeAPI) { 
-            var title = mainData.elements.win_bonetransform.document.title
-            await window.elecAPI.focusWindow(title);
-        }else{
-            mainData.elements.win_bonetransform.blur();
-            window.focus();
-            window.blur();
-            mainData.elements.win_bonetransform.focus();
-        }
+        
     
         
     }
-    const OnClicked_editGravity = () => {
-        mainData.elements.gravitybonedlg.show = true;
-        /*AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'ListGravityInfoFromOuter'},
-            "open_gravitywindow",QD_INOUT.returnJS,
-            callback.open_gravitywindow,
-            {callback}
-        ));
-        AppQueue.start();*/
+    const OnClicked_editGravity = async () => {
+
+        if (mainData.appconf.confs.application.is_externaiwin_gravitybone === true) {
+            modelOperator.returnGravityBoneReloadBtn({avatarId: mainData.states.selectedAvatar.id});
+
+            if (mainData.elements.win_gravitybone && !mainData.elements.win_gravitybone.closed) {
+    
+            }else{
+                mainData.elements.win_gravitybone = window.open("./static/win/gravitybone/index.html",
+                    "gravitybone",
+                    "width=865,height=500,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                );
+            }
+    
+            if (VFileHelper.checkNativeAPI) { 
+                var title = mainData.elements.win_gravitybone.document.title
+                await window.elecAPI.focusWindow(title);
+            }else{
+                mainData.elements.win_gravitybone.blur();
+                window.focus();
+                window.blur();
+                mainData.elements.win_gravitybone.focus();
+            }
+        }else{
+            mainData.elements.gravitybonedlg.show = true;
+        }
+        
     }
     const OnChanged_IKHandleSelected = (val) => {
         AppQueue.add(new queueData(

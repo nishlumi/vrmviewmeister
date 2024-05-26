@@ -73,7 +73,15 @@ export function defineGravityboneDlg(app, Quasar) {
             //---watch ----------------------------------------
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
                 show.value = newval;
-                data.value.elements.win.styles.bottom = "0px";
+                if (ID("uimode").value == "mobile") {
+                    data.value.elements.win.styles["top"] = `${Quasar.Screen.height * 0.1}px`;
+                    delete data.value.elements.win.styles["bottom"];
+                    data.value.elements.win.styles.width = `${Quasar.Screen.width * 0.95}px`;
+                    data.value.elements.win.styles["max-height"] = `${Quasar.Screen.height * 0.95}px`;
+                }else{
+                    data.value.elements.win.styles.bottom = "0px";
+                }
+                
                 data.value.elements.win.styles.right = "0px";
             });
             const wa_show = Vue.watch(() => show.value, (newval) => {

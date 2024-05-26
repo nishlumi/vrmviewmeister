@@ -19,7 +19,11 @@ export class VVConfigTemplate {
             not_autoload_over_mb : 50,
             enable_backup : true,
             backup_project_interval : 1,
+            is_externalwin_capture: true,
             is_externalwin_keyframe : false,
+            is_externalwin_pose : true,
+            is_externalwin_bonetran : true,
+            is_externaiwin_gravitybone: false,
             vpad_rotaterate : 0.1,
             vpad_translaterate : 1,
             vrar_moverate : 0.1,
@@ -362,7 +366,12 @@ export class VVAppConfig{
             null
         ));
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.Canvas,method:'SetValFromOuter',param:
+            {target:AppQueue.unity.Camera,method:'SetTargetAndCameraDistance',param:parseFloat(this.confs.application.distance_camera_viewpoint)},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetValFromOuter',param:
                 `int,${"distance_camera_viewpoint"},${this.confs.application.distance_camera_viewpoint}`
             },
             "",QD_INOUT.toUNITY,

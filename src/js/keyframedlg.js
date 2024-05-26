@@ -19,7 +19,7 @@ const template = `
             <q-btn flat round dense size="md" icon="clear" @click="close_onclick"></q-btn>
         </div>
     </div>
-    <div style="width:100%;height:calc(100% - 40px);" :class="kfapp.elements.panelCSS" class="q-pa-sm">
+    <div style="width:100%;height:calc(100% - 40px);overflow:auto;" :class="kfapp.elements.panelCSS" class="q-pa-sm">
         
         <div class="row">
             <div class="col-12">
@@ -226,7 +226,7 @@ export function defineKeyframeDlg(app, Quasar) {
                             position : "absolute",
                             bottom : "-9999px",
                             right : "-9999px",
-                            width : "350px",
+                            "max-width" : "350px",
                             height : "480px",
                             zIndex : 5004,
                             backgroundColor : "#FFFFFF"
@@ -361,7 +361,14 @@ export function defineKeyframeDlg(app, Quasar) {
             //---watch-----------------------------------
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
                 show.value = newval;
-                kfapp.value.elements.win.styles.bottom = "0px";
+                if (ID("uimode").value == "mobile") {
+                    kfapp.value.elements.win.styles.top = `${Quasar.Screen.height * 0.1}px`;
+                    kfapp.value.elements.win.styles.width = `${Quasar.Screen.width * 0.95}px`;
+                    kfapp.value.elements.win.styles["max-height"] = `${Quasar.Screen.height * 0.95}px`;
+                }else{
+                    kfapp.value.elements.win.styles.bottom = "0px";
+                }
+                
                 kfapp.value.elements.win.styles.right = "0px";
             
                 kfapp.value.elements.win.position.x = 0;

@@ -1740,6 +1740,11 @@ export class UnityCallbackFunctioner {
             "",QD_INOUT.toUNITY,
             null
         ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Camera,method:'ShowTargetObject',param: callback.mainData.appconf.confs.application.show_camera_target_object},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
         //AppQueue.start();
     }
     async saveTPoseInfo(val, options) {

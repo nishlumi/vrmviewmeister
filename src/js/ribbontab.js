@@ -78,6 +78,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
 
         var param = ribbonData.elements.capture.isTransparent ? 1 : 0;
 
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Camera,method:'ShowTargetObject',param: "0"},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
         if (mainData.appconf.confs.application.UseHTMLCanvasForScreenShot) {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.Camera,method:'EnableHandleShowCamera',param:0},
@@ -93,6 +98,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else{
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.Camera,method:'CaptureScreen',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'ShowTargetObject',param: mainData.appconf.confs.application.show_camera_target_object},
                 "",QD_INOUT.toUNITY,
                 null
             ));
@@ -511,25 +521,30 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             Sub_getcapture(options.isTransparent);
             is_closepanel = true;
         }else if (ename == "listcapture") {
-            sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
+            if (mainData.appconf.confs.application.is_externalwin_capture === true) {
+                sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
 
-            if (mainData.elements.win_screenshot && !mainData.elements.win_screenshot.closed) {
-
+                if (mainData.elements.win_screenshot && !mainData.elements.win_screenshot.closed) {
+    
+                }else{
+                    mainData.elements.win_screenshot = window.open("./static/win/capture/index.html","capturewindow",
+                        `width=${parseInt(window.outerWidth * 0.7)},height=${parseInt(window.outerHeight * 0.7)},alwaysRaised=yes,resizable=yes,autoHideMenuBar=true`
+                    );
+                }
+                    
+                if (VFileHelper.checkNativeAPI) { 
+                    var title = mainData.elements.win_screenshot.document.title
+                    window.elecAPI.focusWindow(title);
+                }else{
+                    mainData.elements.win_screenshot.blur();
+                    window.focus();
+                    window.blur();
+                    mainData.elements.win_screenshot.focus();
+                }
             }else{
-                mainData.elements.win_screenshot = window.open("./static/win/capture/index.html","capturewindow",
-                    `width=${parseInt(window.outerWidth * 0.7)},height=${parseInt(window.outerHeight * 0.7)},alwaysRaised=yes,resizable=yes,autoHideMenuBar=true`
-                );
+                mainData.elements.capturedlg.show = true;
             }
-                
-            if (VFileHelper.checkNativeAPI) { 
-                var title = mainData.elements.win_screenshot.document.title
-                window.elecAPI.focusWindow(title);
-            }else{
-                mainData.elements.win_screenshot.blur();
-                window.focus();
-                window.blur();
-                mainData.elements.win_screenshot.focus();
-            }
+            
             is_closepanel = true;
         //}else if (ename == "settransparent") {
         }else if (ename == "beginrecord") {
@@ -861,26 +876,38 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 is_closepanel = true;
             },"");
         }else if (ename == "poselist_pose") {
-            sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
-            
-            if (mainData.elements.win_pose && !mainData.elements.win_pose.closed) {
-                //mainData.elements.win_pose.location.reload(true);
+            if (ID("uimode").value == "mobile") {
+                mainData.elements.posemotiondlg.mode = "p";
+                mainData.elements.posemotiondlg.show = true;
             }else{
-                mainData.elements.win_pose = window.open("static/win/pose/index.html?mode=p","posewindow",
-                    "width=780,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
-                );
+                if (mainData.appconf.confs.application.is_externalwin_pose) {
+                    sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
+            
+                    if (mainData.elements.win_pose && !mainData.elements.win_pose.closed) {
+                        //mainData.elements.win_pose.location.reload(true);
+                    }else{
+                        mainData.elements.win_pose = window.open("static/win/pose/index.html?mode=p","posewindow",
+                            "width=780,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                        );
+                    }
+                    
+                    if (VFileHelper.checkNativeAPI) { 
+                        var title = mainData.elements.win_pose.document.title
+                        window.elecAPI.focusWindow(title);
+                    }else{
+                        mainData.elements.win_pose.blur();
+                        window.focus();
+                        window.blur();
+                        mainData.elements.win_pose.focus();
+                    }
+                    is_closepanel = true;
+                }else{
+                    mainData.elements.posemotiondlg.mode = "p";
+                    mainData.elements.posemotiondlg.show = true;
+                }
+                
             }
             
-            if (VFileHelper.checkNativeAPI) { 
-                var title = mainData.elements.win_pose.document.title
-                window.elecAPI.focusWindow(title);
-            }else{
-                mainData.elements.win_pose.blur();
-                window.focus();
-                window.blur();
-                mainData.elements.win_pose.focus();
-            }
-            is_closepanel = true;
             
         }else if (ename == "resetposition") {
             AppQueue.add(new queueData(
@@ -954,26 +981,36 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             });
 
         }else if (ename == "poselist_motion") {
-            sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
-            
-            if (mainData.elements.win_pose && !mainData.elements.win_pose.closed) {
-                //mainData.elements.win_pose.location.reload(true);
+            if (ID("uimode").value == "mobile") {
+                mainData.elements.posemotiondlg.mode = "m";
+                mainData.elements.posemotiondlg.show = true;
             }else{
-                mainData.elements.win_pose = window.open("static/win/pose/index.html?mode=m","posewindow",
-                    "width=780,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
-                );
+                if (mainData.appconf.confs.application.is_externalwin_pose) {
+                    sessionStorage.setItem("UseDarkTheme",mainData.appconf.confs.application.UseDarkTheme ? "1" : "0");
+                
+                    if (mainData.elements.win_pose && !mainData.elements.win_pose.closed) {
+                        //mainData.elements.win_pose.location.reload(true);
+                    }else{
+                        mainData.elements.win_pose = window.open("static/win/pose/index.html?mode=m","posewindow",
+                            "width=780,height=700,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                        );
+                    }
+                    
+                    if (VFileHelper.checkNativeAPI) { 
+                        var title = mainData.elements.win_pose.document.title
+                        window.elecAPI.focusWindow(title);
+                    }else{
+                        mainData.elements.win_pose.blur();
+                        window.focus();
+                        window.blur();
+                        mainData.elements.win_pose.focus();
+                    }
+                    is_closepanel = true;
+                }else{
+                    mainData.elements.posemotiondlg.mode = "m";
+                    mainData.elements.posemotiondlg.show = true;
+                }
             }
-            
-            if (VFileHelper.checkNativeAPI) { 
-                var title = mainData.elements.win_pose.document.title
-                window.elecAPI.focusWindow(title);
-            }else{
-                mainData.elements.win_pose.blur();
-                window.focus();
-                window.blur();
-                mainData.elements.win_pose.focus();
-            }
-            is_closepanel = true;
         }else if (ename == "openmotion") {
             if (options.type == "f") {
                 Sub_openfile("mot","MOTION");

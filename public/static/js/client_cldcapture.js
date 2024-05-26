@@ -74,6 +74,7 @@ const app = Vue.createApp({
                         capapp.value.left.date_options.push(onlydate);
                     }
                 }
+                loadData(new Date().toFormatText(true,false));
                 return true;
             });
         }
@@ -199,6 +200,13 @@ const app = Vue.createApp({
         const chkShareNavigator = Vue.computed(() => {
             return ("share" in navigator);
         });
+        const chkMobile = Vue.computed(() => {
+            if (Quasar.Screen.name == "xs") {
+                return true;
+            }else{
+                return false;
+            }
+        });
         
         Vue.onBeforeMount(() => {
             var darktheme = sessionStorage.getItem("UseDarkTheme");
@@ -234,7 +242,7 @@ const app = Vue.createApp({
             selectListItem,
             datefilter_onchange,
             //---computed---
-            list_actived,chkShareNavigator,
+            list_actived,chkShareNavigator,chkMobile,
             //---other method---
             loadData,loadSetting,
         };

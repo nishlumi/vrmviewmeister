@@ -709,6 +709,66 @@ div.screen-number-area {
     width : 0;
     height: 1rem;
 }
+.posedlg-panel {
+    width : 100%;
+    height : 100%;
+}
+.pagestyle {
+    height : 600px;
+    overflow: hidden;
+}
+.poseliststyle {
+    height : calc(100% - 40px);
+    overflow: auto;
+}
+.posecard-grid {
+    display : grid;
+    row-gap:  0.5vmin;
+    column-gap : 1rem;
+    grid-template-rows: auto; /*minmax(2rem,auto);*/
+    grid-auto-flow: dense;
+    grid-auto-rows : auto; /*minmax(2rem,auto);*/
+    width : 100%;
+    height : -moz-fit-content;
+    height : fit-content;
+}
+.posecard-grid.fit-width {
+    grid-template-columns: 100%;
+    max-width : 100%;
+}
+@media only screen and (min-width: 600px) {
+    .posecard-grid.fit-width {
+        grid-template-columns: 100%;
+        max-width : 100%;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .posecard-grid.fit-width {
+        grid-template-columns: 1fr 1fr ;
+        padding-left : 2px;
+        padding-right : 2px;
+    }
+}
+@media only screen and (min-width: 1440px) {
+    .posecard-grid.fit-width {
+        grid-template-columns: 1fr 1fr 1fr;
+        padding-left : 1px;
+        padding-left : 2px;
+        padding-right : 2px;
+    }
+}
+@media only screen and (min-width: 1920px) {
+    .posecard-grid.fit-width {
+        grid-template-columns: 1fr 1fr 1fr;
+        padding-left : 1px;
+        padding-left : 2px;
+        padding-right : 2px;
+    }
+}
+.posecard-itembase {
+    width : 100%;
+
+}
 
 
 /*==============================================================
