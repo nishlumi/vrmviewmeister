@@ -286,21 +286,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 AppQueue.isExecuting = false;
                 is_closepanel = true;
             });
-            /*
-            navigator.serviceWorker.getRegistration()
-            .then(registration => {
-                registration.unregister();
-            });
-            caches.keys().then(function(keys) {
-                var promises = [];
-                // clear all cache
-                keys.forEach(function(cacheName) {
-                    if (cacheName) {
-                        promises.push(caches.delete(cacheName));
-                    }
-                });
-            });
-            */
+            
         }else if (ename == "clearcachewebgl") {
             appConfirm(t("msg_clearcache"),()=>{
                 AppQueue.list.splice(0,AppQueue.list.length);
@@ -312,6 +298,21 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 AppDB.clearAll();
                 //AppDB.clearHistory();
                 is_closepanel = true;
+                
+                navigator.serviceWorker.getRegistration()
+                .then(registration => {
+                    registration.unregister();
+                });
+                caches.keys().then(function(keys) {
+                    var promises = [];
+                    // clear all cache
+                    keys.forEach(function(cacheName) {
+                        if (cacheName) {
+                            promises.push(caches.delete(cacheName));
+                        }
+                    });
+                });
+                
             });
         }else if (ename == "clearcacheconf") {
             appConfirm(t("msg_clearcache"),()=>{
