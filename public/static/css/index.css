@@ -379,7 +379,7 @@ details.extended-normal[open] > .details-content {
 }
 .syseff-inputbox {
     width : 7rem;
-    max-width: 10rem;
+    max-width: 7rem;
 }
 .syseff-inputbox-long {
     width : 10rem;

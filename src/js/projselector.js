@@ -307,7 +307,11 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                             mainData.states.fileloadname = originalresult.name;
                             mainData.states.fileloadtype = "v";
                             mainData.states.loadingfileHandle = originalvos;
-                            if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
+                            if (
+                                (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE)
+                                ||
+                                (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION)
+                             ) {
                                 AppQueue.add(new queueData(
                                     {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
                                     "firstload_vrm",QD_INOUT.returnJS,
@@ -317,6 +321,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                                         loadingfileHandle : originalresult}
                                 ));
                             }else{
+                                //---projectselector type INTERNAL is same as HISTORY
                                 AppQueue.add(new queueData(
                                     {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
                                     "firstload_vrm",QD_INOUT.returnJS,

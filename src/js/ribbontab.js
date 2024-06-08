@@ -1665,9 +1665,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         if (ribbonData.elements.audio.operatetype == "bgm") {
             unityTarget = AppQueue.unity.AudioBGM;
             audioobj = ribbonData.elements.audio.bgm;
+            return;
         }else if (ribbonData.elements.audio.operatetype == "se") {
             unityTarget = AppQueue.unity.AudioSE;
             audioobj = ribbonData.elements.audio.se;
+            return;
         }else{
             return;
         }

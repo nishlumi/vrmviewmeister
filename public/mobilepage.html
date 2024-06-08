@@ -1066,7 +1066,7 @@
                                         {{ $t('focusdistance') }}
                                     </q-tooltip>
                                 </q-input>
-                                <uswipe-input show-icon  syseff-inputbox-long
+                                <uswipe-input show-icon 
                                     v-model.number="ribbonData.elements.syseff.depthov.focusdistance" @update:model-value="ribbonEvent.depthov_focusdistance_onchange" dense :min="0.1" :max="50" :step="0.05"
                                 ></uswipe-input>
                             </div>
@@ -2130,14 +2130,14 @@
                                         {{ $t('Head IK move level') }}
                                     </div>
                                     <div class="offset-md-1 col-5">
-                                        <q-input v-model="objpropData.elements.vrmui.headLock" type="number"
+                                        <!--<q-input v-model="objpropData.elements.vrmui.headLock" type="number"
                                             :min="0" :max="10" :step="1"
                                             @update:model-value="objpropEvent.OnChange_HeadLock"
                                         ></q-input>
                                         <uswipe-input show-icon v-model="objpropData.elements.vrmui.headLock"
                                             :min="0" :max="10" :step="1"
                                             @update:model-value="objpropEvent.OnChange_HeadLock"
-                                        ></uswipe-input>
+                                        ></uswipe-input>-->
                                     </div>
                                 </div>
                                 <div class="row">

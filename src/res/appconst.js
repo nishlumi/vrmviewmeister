@@ -101,6 +101,7 @@ export const FILEOPTION = {
  * Storage type
  */
 export const STORAGE_TYPE = {
+    HISTORY: "hist",
     INTERNAL : "int",
     LOCAL : "loc",
     GOOGLEDRIVE : "ggd",

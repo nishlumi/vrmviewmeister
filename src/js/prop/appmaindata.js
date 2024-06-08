@@ -13,8 +13,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.9.0",
-            revision : "20240526-01",
+            version : "2.9.1",
+            revision : "20240608-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -304,6 +304,9 @@ export class appMainData {
                 maximized : false,
                 fullwidth : false,
                 fullheight : false,
+                /**
+                 * @type {STORAGE_TYPE}
+                 */
                 selectStorageType : STORAGE_TYPE.INTERNAL,
                 /**
                  * @type {FILEOPTION.*.types}

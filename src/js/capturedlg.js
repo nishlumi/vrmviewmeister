@@ -69,16 +69,16 @@ const template = `
             <div style="height:calc(100% - 76px);overflow:auto;">
                 <q-list bordered>
                     <q-item clickable v-ripple 
-                            v-for="(item,index) in capapp.left.list.options" :key="index"
-                            :active="list_actived(item)"
-                            active-class="list-item-selected"
-                            @click="selectListItem(item)"
-                        >
-                            <q-item-section>
-                                <q-item-label>{{ item.text }}</q-item-label>
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
+                        v-for="(item,index) in capapp.left.list.options" :key="index"
+                        :active="list_actived(item)"
+                        active-class="list-item-selected"
+                        @click="selectListItem(item)"
+                    >
+                        <q-item-section>
+                            <q-item-label>{{ item.text }}</q-item-label>
+                        </q-item-section>
+                    </q-item>
+                    
                 </q-list>
             </div>
             
