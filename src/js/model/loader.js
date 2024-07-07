@@ -130,6 +130,9 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 text = tmpfile.data;
             }
             var jsdata = JSON.parse(text);
+            if (typeof jsdata ==  "string") {
+                jsdata = JSON.parse(jsdata);
+            }
             var msgadd = `${jsdata.frames[jsdata.frames.length-1].index}`;
             if (mainData.data.project.timelineFrameLength < jsdata.frames[jsdata.frames.length-1].index) {
                 appConfirm(t("msg_openmotion_error3")+msgadd,() => {
@@ -780,6 +783,16 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             mainData.states.googledrive_gas = true;
         }else{
             mainData.states.googledrive_gas = false;
+        }
+
+        if (mainData.appconf.confs.application.use_gamepad === true) { 
+            if (mainData.appconf.confs.application.gamepad_using_html === true) {
+                mainData.states.inputman.enabled = true;
+            }else{
+                mainData.states.inputman.enabled = false;    
+            }
+        }else{
+            mainData.states.inputman.enabled = false;
         }
 
         //---backup functions

@@ -1,3 +1,4 @@
+import { VFileHelper } from "../../public/static/js/filehelper";
 
 const template = `
     <q-dialog v-model="show" @hide="dialogHide">
@@ -81,6 +82,14 @@ const template = `
                     <div class="absolute-bottom text-subtitle1 text-left q-ml-xs q-mb-xs"></div>
             </q-card-section>
             <q-card-actions align="right">
+                <template v-if="!appNative">
+                    <template v-if="data.other.urlname == '/'">
+                        <q-btn color="secondary" @click="toMUI_onclick">{{ $t("url_to_normal") }}</q-btn>
+                    </template>
+                    <template v-else-if="data.other.urlname == '/mui'">
+                        <q-btn color="secondary" @click="toMUI_onclick">{{ $t("url_to_mobile") }}</q-btn>
+                    </template>
+                </template>
                 <q-btn flat @click="show=false">OK</q-btn>
             </q-card-actions>
         </q-card>
@@ -132,6 +141,9 @@ export function defineAppInfoDlg(app,Quasar) {
                     height: 0,
                     name : "",
                     userAgent : "",
+                },
+                other: {
+                    urlname : "/mui",
                 }
             });
 
@@ -153,18 +165,33 @@ export function defineAppInfoDlg(app,Quasar) {
                 data.screen.width = Math.round(Quasar.Screen.width);
                 data.screen.height = Math.round(Quasar.Screen.height);
                 data.screen.name = Quasar.Screen.name;
+                if (location.pathname == "/mui") {
+                    data.other.urlname = "/";
+                }else{
+                    data.other.urlname = "/mui";
+                } 
             });
 
             //---events --------------------------------------
             const dialogHide = (evt) => {
                 context.emit("update:model-value",show.value);
             }
+            const toMUI_onclick = () => {
+                location.href = data.other.urlname;
+            }
+
+            //---computed---------------------------------------
+            const appNative = Vue.computed(() => {
+                return VFileHelper.checkNativeAPI;
+            })
 
             
             return {
                 show,data,
                 wa_modelValue,
                 dialogHide,
+                toMUI_onclick,
+                appNative
                 
                 
             }

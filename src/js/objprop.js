@@ -569,6 +569,77 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         AppQueue.start();
         return true;
     },{deep:true});
+    const OnChange_NaturalRotationBody = (flag, bonename) => {
+        if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) return false;
+        if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
+
+        var param = `${flag == true ? 1 : 0},${bonename}`;
+        AppQueue.add(new queueData(
+            {target:mainData.states.selectedAvatar.id,method:'SetIKGoalRotation2NaturalFromOuter',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+    }
+    const OnChange_NaturalRotation_LeftHand = (val) => {
+        OnChange_NaturalRotationBody(val, "leftarm");
+        if (!val) {
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'ApplyRotationHuman2IK',param:"leftarm"},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        
+        AppQueue.start();
+    }
+    const OnChange_NaturalRotation_RightHand = (val) => {
+        OnChange_NaturalRotationBody(val, "rightarm");
+        if (!val) {
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'ApplyRotationHuman2IK',param:"rightarm"},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        
+        AppQueue.start();
+    }
+    const OnChange_NaturalRotation_LeftFoot = (val) => {
+        OnChange_NaturalRotationBody(val, "leftleg");
+        if (!val) {
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'ApplyRotationHuman2IK',param:"leftleg"},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        
+        AppQueue.start();
+    }
+    const OnChange_NaturalRotation_RightFoot = (val) => {
+        OnChange_NaturalRotationBody(val, "rightleg");
+        if (!val) {
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'ApplyRotationHuman2IK',param:"rightleg"},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        
+        AppQueue.start();
+    }
+    const OnClick_ApplyNaturalRotation = () => {
+        if (objpropData.elements.vrmui.ikGoalNaruralRotation.leftHand) {
+        }
+        if (objpropData.elements.vrmui.ikGoalNaruralRotation.rightHand) {
+        }
+        if (objpropData.elements.vrmui.ikGoalNaruralRotation.leftFoot) {
+        }
+        if (objpropData.elements.vrmui.ikGoalNaruralRotation.rightFoot) {
+        }
+        AppQueue.start();
+    }
+
     const OnClicked_editIKPosition = async () => {        
 
         if (mainData.appconf.confs.application.is_externalwin_bonetran === true) {
@@ -2585,7 +2656,11 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             OnChange_Position2D,OnChange_Rotation2D,OnChange_Scale2D,OnChange_Size2D,
             OnChange_JumpNum,OnChange_JumpPower,OnChange_PunchColumn,OnChange_ShakeColumn,
             OnChange_RigidDrag,OnChange_UseCollision,OnChange_UseGravity,
-            wa_propVRMMoveMode,OnClicked_editIKPosition,OnClicked_editGravity,OnClicked_MirrorPose,
+
+            wa_propVRMMoveMode,
+            OnChange_NaturalRotation_LeftHand,OnChange_NaturalRotation_RightHand,OnChange_NaturalRotation_LeftFoot,OnChange_NaturalRotation_RightFoot,
+            OnClick_ApplyNaturalRotation,
+            OnClicked_editIKPosition,OnClicked_editGravity,OnClicked_MirrorPose,
             OnChange_LeftHand,OnChange_RightHand,OnChange_FingerStretch,
             onchange_expression_searchstr,onchange_bs_searchstr,OnChange_BlendShape, OnChange_BlendShape_Checked,
             OnChange_Blink_enable,OnChange_Blink_interval,OnChange_Blink_opening,OnChange_Blink_closing,OnChange_Blink_closeTime,

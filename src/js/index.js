@@ -171,6 +171,16 @@ const app = Vue.createApp({
             mainData.appconf.load()
             .then(res => {
                 mainData.appconf.applyUnity(false);
+
+                if (mainData.appconf.confs.application.use_gamepad === true) { 
+                    if (mainData.appconf.confs.application.gamepad_using_html === true) {
+                        mainData.states.inputman.enabled = true;
+                    }else{
+                        mainData.states.inputman.enabled = false;    
+                    }
+                }else{
+                    mainData.states.inputman.enabled = false;
+                }
             });
 
             ribbonData.elements.language_box.selected = loc;
@@ -303,6 +313,7 @@ const app = Vue.createApp({
                 }
                 
                 window.addEventListener("unload",(evt) => {
+                    window.clearInterval(mainData.states.inputstep.id);
                     if (mainData.elements.win_bonetransform) mainData.elements.win_bonetransform.close();
                     if (mainData.elements.win_mediapipe) mainData.elements.win_mediapipe.close();
                     if (mainData.elements.win_pose) mainData.elements.win_pose.close();
@@ -328,6 +339,34 @@ const app = Vue.createApp({
             });
             */
         });
+        const inputstep = (timestamp) => {
+            /*
+            if (!mainData.states.inputstep.start) {
+                mainData.states.inputstep.start = timestamp;
+            }
+            const elapsed = timestamp - mainData.states.inputstep.start;
+            if (mainData.states.inputstep.prevstamp !== timestamp) {
+                
+
+                //mainData.states.inputstep.done = true;
+            }
+            if (elapsed < 2000) {
+                mainData.states.inputstep.prevstamp = timestamp;
+                if (!mainData.states.inputstep.done) {
+                    
+                }
+            }*/
+            
+            mainData.states.inputman.update();
+            
+            
+            window.requestAnimationFrame(inputstep);
+        }
+        window.requestAnimationFrame(inputstep);
+        /*mainData.states.inputstep.id = window.setInterval(()=> {
+            mainData.states.inputman.update();
+        },10);*/
+
         Vue.onUpdated(() => {
             
         });

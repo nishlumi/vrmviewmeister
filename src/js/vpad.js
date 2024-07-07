@@ -12,21 +12,21 @@ const template = `
     </div>
     <div :class="data.elements.panelCSS" style="width:100%;height:calc(100% - 40px);">
     <div class="row">
-            <div class="col-4" style="text-align:center">{{ $t('rotation') }}</div>
-            <div class="col-2" style="text-align:center">{{ $t('progress') }}</div>
-            <div class="col-2" style="text-align:center">{{ $t('targetzoom_camera') }}</div>
-            <div class="col-4" style="text-align:center">{{ $t('translate') }}</div>
+            <div class="col-4 offset-1" style="text-align:center"><q-icon name="open_with" size="sm"></q-icon></div>
+            <div class="col-2" style="text-align:center"><q-icon name="height" size="md"></q-icon></div>
+            <!--<div class="col-2" style="text-align:center">{{ $t('targetzoom_camera') }}</div>-->
+            <div class="col-4" style="text-align:center"><q-icon name="360" size="sm"></q-icon></div>
         </div>
         <div class="row">
-            <div class="col-4">
+            <div class="col-4 offset-1">
                 <q-card
-                    v-touch-pan.prevent.mouse="onswipe_rotation"
+                    v-touch-pan.prevent.mouse="onswipe_translation"
                     :class="data.elements.cpadCSS"
-                    class="vpad_rotation cursor-pointer  shadow-1 relative-position row flex-center"
+                    class="vpad_translation cursor-pointer shadow-1 relative-position row flex-center"
                 >
                     <div class="text-center">
                         <div class="row items-center">
-                        <q-icon :name="data.elements.rotation.icon" size="md"></q-icon>
+                            <q-icon :name="data.elements.translation.icon" size="md"></q-icon>
                         </div>
                     </div>
                 </q-card>
@@ -44,7 +44,7 @@ const template = `
                     </div>
                 </q-card>
             </div>
-            <div class="col-2">
+            <!--div class="col-2">
                 <q-card
                     v-touch-pan.prevent.mouse.up.down="onswipe_targetzoom"
                     :class="data.elements.cpadCSS"
@@ -56,40 +56,109 @@ const template = `
                         </div>
                     </div>
                 </q-card>
-            </div>
+            </div-->
             <div class="col-4">
                 <q-card
-                    v-touch-pan.prevent.mouse="onswipe_translation"
+                    v-touch-pan.prevent.mouse="onswipe_rotation"
                     :class="data.elements.cpadCSS"
-                    class="vpad_translation cursor-pointer shadow-1 relative-position row flex-center"
+                    class="vpad_rotation cursor-pointer  shadow-1 relative-position row flex-center"
                 >
                     <div class="text-center">
                         <div class="row items-center">
-                            <q-icon :name="data.elements.translation.icon" size="md"></q-icon>
+                        <q-icon :name="data.elements.rotation.icon" size="md"></q-icon>
                         </div>
                     </div>
                 </q-card>
             </div>
         </div>
         <div class="row">
-            <div class="col-12 q-pl-sm q-pr-sm">
+            <div class="col-4 q-pl-sm">
                 <q-btn flat round @click="onclick_reset_center_target">
                     <q-tooltip>{{ $t('reset_zaxis')}}</q-tooltip>
                     <q-icon name="flip_camera_android" size="md"></q-icon>
                 </q-btn>
                 <q-btn flat dense icon="restart_alt" 
-                    :label="$t('ribbon_screen_camerareset')" 
-                    @click="resetcamera_onclick" no-caps ></q-btn>
-
-                <!--<q-btn flat round v-touch-repeat.mouse="onrepeat_targetzoomin">
-                    <q-tooltip>{{ $t('zoomin_camera_et_target')}}</q-tooltip>
-                    <q-icon name="zoom_in_map" size="md"></q-icon>
+                    label="Reset" 
+                    @click="resetcamera_onclick" no-caps 
+                    class="q-mr-sm"
+                >
+                    <q-tooltip>{{$t('ribbon_screen_camerareset')}}</q-tooltip>
                 </q-btn>
-                <q-btn flat round  v-touch-repeat.mouse="onrepeat_targetzoomout">
-                    <q-tooltip>{{ $t('zoomout_camera_et_target')}}</q-tooltip>
-                    <q-icon name="zoom_out_map" size="md"></q-icon>
-                </q-btn>-->
+            
+            </div>
+            <div class="col-4 q-pl-xs q-pr-sm">
+                <q-btn  :icon="data.elements.tgl_changetarget.icon"
+                    @click="changetarget_onchange(data.elements.tgl_changetarget.selected)">
+                    <q-tooltip>{{ data.elements.tgl_changetarget.tooltip }}</q-tooltip>
+                </q-btn>
+                <q-field borderless label="Target" stack-label>
+                    <template v-slot:control>
+                    <div class="self-center full-width no-outline" tabindex="0">{{ data.elements.tgl_changetarget.tooltip }}</div>
+                    </template>
+                </q-field>
+            </div>
+            <div class="col-4 q-pl-xs q-pr-sm">
+                <template v-if="data.elements.tgl_changetarget.selected == 'o'">
+                    <q-btn  :icon="data.elements.tgl_changespace.icon"
+                        @click="changespace_onchange(data.elements.tgl_changespace.selected)">
+                        <q-tooltip>{{ data.elements.tgl_changespace.tooltip }}</q-tooltip>
+                    </q-btn>
+                    <q-field borderless label="Space" stack-label>
+                        <template v-slot:control>
+                        <div class="self-center full-width no-outline" tabindex="0">{{ data.elements.tgl_changespace.tooltip }}</div>
+                        </template>
+                    </q-field>
+                </template>
+
+                <!--
+                <q-btn-toggle
+                    v-model="data.elements.tgl_changetarget.selected"
+                    toggle-color="primary" no-caps
+                    :options="data.elements.tgl_changetarget.options"
+                    @update:model-value="changetarget_onchange"
+                >
+                    <template v-slot:one>
+                        <div class="row items-center no-wrap">
+                            <q-icon name="videocam">
+                                <q-tooltip>Main camera</q-tooltip>
+                            </q-icon>
+                        </div>
+                    </template>
+            
+                    <template v-slot:two>
+                        <div class="row items-center no-wrap">
+                            <q-icon name="dashboard_customize">
+                                <q-tooltip>Object</q-tooltip>
+                            </q-icon>
+                        </div>
+                    </template>
+                </q-btn-toggle>
+                <template v-if="data.elements.tgl_changetarget.selected == 'o'">
+                    <q-btn-toggle class="q-ml-md"
+                        v-model="data.elements.tgl_changespace.selected"
+                        toggle-color="primary" no-caps
+                        :options="data.elements.tgl_changespace.options"
+                        @update:model-value="changespace_onchange"
+                    >
+                        <template v-slot:one>
+                            <div class="row items-center no-wrap">
+                                <q-icon name="public">
+                                    <q-tooltip>World</q-tooltip>
+                                </q-icon>
+                            </div>
+                        </template>
                 
+                        <template v-slot:two>
+                            <div class="row items-center no-wrap">
+                                <q-icon name="self_improvement">
+                                    <q-tooltip>Local</q-tooltip>
+                                </q-icon>
+                            </div>
+                        </template>
+                    </q-btn-toggle>
+                </template>
+                -->
+
             </div>
             
             
@@ -178,6 +247,24 @@ export function defineVpadDlg(app, Quasar) {
                         info : null,
                         power : 2,
                         current : new UnityVector3(0, 0, 0)
+                    },
+                    tgl_changetarget: {
+                        options : [
+                            {value:"c", slot:"one"},
+                            {value:"o", slot:"two"}
+                        ],
+                        selected: "c",
+                        icon : "videocam", //videocam, dashboard_customize
+                        tooltip: "Main Camera", //Main camera Object
+                    },
+                    tgl_changespace: {
+                        options : [
+                            {value:"w", slot:"one"},
+                            {value:"l", slot:"two"}
+                        ],
+                        selected: "w",
+                        icon : "public", //public, self_improvement
+                        tooltip: "World" //World, Local
                     },
                     panelCSS : {
                         "q-dark" : false,
@@ -304,11 +391,10 @@ export function defineVpadDlg(app, Quasar) {
                 relpos.y = moveVal.y;
 
                 //var param = data.value.elements.rotation.current.x + "," + (data.value.elements.rotation.current.y * -1);
+                //newly: synchronize with Gamepad (rotation) old:RotateCameraPosFromOuter
                 var param = relpos.x + "," + (relpos.y * -1);
-                
-                //console.log(param);
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.Camera,method:'RotateCameraPosFromOuter',param:param},
+                    {target:AppQueue.unity.Camera,method:'GamepadRightStickFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -325,21 +411,22 @@ export function defineVpadDlg(app, Quasar) {
                 //data.value.elements.translation.current.x = 0;
                 //data.value.elements.translation.current.y = 0;
                 if (newInfo.direction == "up") {
-                    data.value.elements.progress.icon = "arrow_downward";
-                    data.value.elements.progress.current.z += moveVal.y;
-                    relpos.z = -1 * parseFloat(translateRate.value);
-                }else if (newInfo.direction == "down") {
                     data.value.elements.progress.icon = "arrow_upward";
+                    data.value.elements.progress.current.z += moveVal.y;
+                    relpos.y = 1 * parseFloat(translateRate.value);
+                }else if (newInfo.direction == "down") {
+                    data.value.elements.progress.icon = "arrow_downward";
                     data.value.elements.progress.current.z -= moveVal.y;
-                    relpos.z = 1 * parseFloat(translateRate.value);
+                    relpos.y = -1 * parseFloat(translateRate.value);
                 }else{
                     data.value.elements.progress.icon = "radio_button_unchecked";
                 }
 
                 //var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
-                var param = [relpos.x, relpos.y, relpos.z].join(",");
+                //newly: synchronize with Gamepad (top, down)
+                var param = [relpos.x, relpos.y].join(",");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.XR,method:'TranslateCameraPosFromOuter',param:param},
+                    {target:AppQueue.unity.XR,method:'GamepadDpadFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -358,29 +445,31 @@ export function defineVpadDlg(app, Quasar) {
                 //data.value.elements.translation.current.x = 0;
                 //data.value.elements.translation.current.y = 0;
                 if (newInfo.direction == "up") {
-                    data.value.elements.translation.icon = "arrow_downward";
-                    data.value.elements.translation.current.y += moveVal.y;
-                    relpos.y = -1 * parseFloat(translateRate.value);
-                }else if (newInfo.direction == "down") {
                     data.value.elements.translation.icon = "arrow_upward";
+                    data.value.elements.translation.current.y += moveVal.y;
+                    relpos.z = 1 * parseFloat(translateRate.value);
+                }else if (newInfo.direction == "down") {
+                    data.value.elements.translation.icon = "arrow_downward";
                     data.value.elements.translation.current.y -= moveVal.y;
-                    relpos.y = 1 * parseFloat(translateRate.value);
+                    relpos.z = -1 * parseFloat(translateRate.value);
                 }else if (newInfo.direction == "left") {
-                    data.value.elements.translation.icon = "arrow_forward";
-                    data.value.elements.translation.current.x -= moveVal.x;
-                    relpos.x = 1 * parseFloat(translateRate.value);
-                }else if (newInfo.direction == "right") {
                     data.value.elements.translation.icon = "arrow_back";
-                    data.value.elements.translation.current.x += moveVal.x;
+                    data.value.elements.translation.current.x -= moveVal.x;
                     relpos.x = -1 * parseFloat(translateRate.value);
+                }else if (newInfo.direction == "right") {
+                    data.value.elements.translation.icon = "arrow_forward";
+                    data.value.elements.translation.current.x += moveVal.x;
+                    relpos.x = 1 * parseFloat(translateRate.value);
                 }else{
                     data.value.elements.translation.icon = "radio_button_unchecked";
                 }
 
                 //var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
-                var param = [relpos.x, relpos.y, relpos.z].join(",");
+                
+                //---newly: synchronize with GamePad (front, back, left, right of translation)
+                var param = [relpos.x, relpos.z].join(",");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.XR,method:'TranslateCameraPosFromOuter',param:param},
+                    {target:AppQueue.unity.XR,method:'GamepadLeftStickFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -409,6 +498,7 @@ export function defineVpadDlg(app, Quasar) {
                 }
 
                 //var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
+
                 var param = [relpos.x, relpos.y, relpos.z].join(",");
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.XR,method:'MoveCamera2TargetDistance',param:relpos.z},
@@ -490,6 +580,51 @@ export function defineVpadDlg(app, Quasar) {
             }
             const resetcamera_onclick = () => {
                 context.emit("resetcamera","resetcamera");
+            }
+            const changetarget_onchange = (val) => {
+                console.log(val);
+                if (val == "o") {
+                    var param = "L1";
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                        "",QD_INOUT.toUNITY,
+                        null
+                    ));
+                    AppQueue.start();
+                    data.value.elements.tgl_changetarget.selected = "c";
+                    data.value.elements.tgl_changetarget.icon = "videocam";
+                    data.value.elements.tgl_changetarget.tooltip = "Main camera";
+                }else if (val == "c") {
+                    var param = "R1";
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                        "",QD_INOUT.toUNITY,
+                        null
+                    ));
+                    AppQueue.start();
+                    data.value.elements.tgl_changetarget.selected = "o";
+                    data.value.elements.tgl_changetarget.icon = "dashboard_customize";
+                    data.value.elements.tgl_changetarget.tooltip = "Object";
+                }
+            }
+            const changespace_onchange = (val) => {
+                var param = "select";
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+                AppQueue.start();
+                var val = data.value.elements.tgl_changespace.selected;
+                if (val == "w") { //---to local
+                    data.value.elements.tgl_changespace.selected = "l";
+                    data.value.elements.tgl_changespace.icon = "self_improvement";
+                    data.value.elements.tgl_changespace.tooltip = "Local";
+                }else if (val == "l") { //---to world
+                    data.value.elements.tgl_changespace.selected = "w";
+                    data.value.elements.tgl_changespace.icon = "public";
+                    data.value.elements.tgl_changespace.tooltip = "World";
+                }
             }
 
             //-------------------------------------------------------------------
@@ -608,6 +743,9 @@ export function defineVpadDlg(app, Quasar) {
                 onclick_reset_center_target,
                 onrepeat_targetzoomin, onrepeat_targetzoomout,
                 resetcamera_onclick,
+
+                changetarget_onchange,
+                changespace_onchange,
 
                 //onclick_translation,
                 //onclick_translation_zero,

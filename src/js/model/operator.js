@@ -624,6 +624,37 @@ export class appModelOperator {
             ));
         }
 
+        //---edited VRM's natural rotate?
+        if (this.objpropData.elements.vrmui.ikGoalNaruralRotation.leftHand) {
+            AppQueue.add(new queueData(
+                {target:this.mainData.states.selectedAvatar.id,method:'ApplyRotationHuman2IK',param:"leftarm"},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        if (this.objpropData.elements.vrmui.ikGoalNaruralRotation.rightHand) {
+            AppQueue.add(new queueData(
+                {target:this.mainData.states.selectedAvatar.id,method:'ApplyRotationHuman2IK',param:"rightarm"},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        if (this.objpropData.elements.vrmui.ikGoalNaruralRotation.leftFoot) {
+            AppQueue.add(new queueData(
+                {target:this.mainData.states.selectedAvatar.id,method:'ApplyRotationHuman2IK',param:"leftleg"},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        if (this.objpropData.elements.vrmui.ikGoalNaruralRotation.rightFoot) {
+            AppQueue.add(new queueData(
+                {target:this.mainData.states.selectedAvatar.id,method:'ApplyRotationHuman2IK',param:"rightleg"},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+
+
         //---timeline ui
         var fdata = new VVTimelineFrameData(aro.index,{
             //targetId : this.parent.states.selectedAvatar.id,
@@ -1325,9 +1356,33 @@ export class appModelOperator {
                     {target:selected.avatar.id,method:'ListFingerPoseClass'},
                     "getfingerposeclass",QD_INOUT.returnJS,
                     this.UnityCallback.getfingerposeclass,
-                    {avatar: tmpav, callback : this.UnityCallback}
-                    
+                    {avatar: tmpav, callback : this.UnityCallback}                    
                 ));
+                AppQueue.add(new queueData(
+                    {target:selected.avatar.id,method:'GetIKGoalRotation2NaturalFromOuter',param:"leftarm"},
+                    "getnaturalrot",QD_INOUT.returnJS,
+                    this.UnityCallback.getnaturalrotation,
+                    {avatar: tmpav, callback : this.UnityCallback, bonename:"leftarm"}                    
+                ));
+                AppQueue.add(new queueData(
+                    {target:selected.avatar.id,method:'GetIKGoalRotation2NaturalFromOuter',param:"rightarm"},
+                    "getnaturalrot",QD_INOUT.returnJS,
+                    this.UnityCallback.getnaturalrotation,
+                    {avatar: tmpav, callback : this.UnityCallback, bonename:"rightarm"}                    
+                ));
+                AppQueue.add(new queueData(
+                    {target:selected.avatar.id,method:'GetIKGoalRotation2NaturalFromOuter',param:"leftleg"},
+                    "getnaturalrot",QD_INOUT.returnJS,
+                    this.UnityCallback.getnaturalrotation,
+                    {avatar: tmpav, callback : this.UnityCallback, bonename:"leftleg"}                    
+                ));
+                AppQueue.add(new queueData(
+                    {target:selected.avatar.id,method:'GetIKGoalRotation2NaturalFromOuter',param:"rightleg"},
+                    "getnaturalrot",QD_INOUT.returnJS,
+                    this.UnityCallback.getnaturalrotation,
+                    {avatar: tmpav, callback : this.UnityCallback, bonename:"rightleg"}                    
+                ));
+                
                 /*AppQueue.add(new queueData(
                     {target:selected.avatar.id,method:'GetTextureConfig',param:""},
                     "gettextureconfig",QD_INOUT.returnJS,

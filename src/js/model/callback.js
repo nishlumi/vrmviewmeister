@@ -710,6 +710,25 @@ export class UnityCallbackFunctioner {
             }
         }
     }
+    async getnaturalrotation(val, options) {
+        /**
+         * @type {UnityCallbackFunctioner}
+         */
+        const callback = options.callback;
+        const mainData = callback.mainData;
+        const objpropData = callback.objpropData;
+        const vrmui = objpropData.elements.vrmui;
+
+        if (options.bonename == "leftarm") {
+            vrmui.ikGoalNaruralRotation.leftHand = val == 1 ? true : false;
+        }else if (options.bonename == "rightarm") { 
+            vrmui.ikGoalNaruralRotation.rightHand = val == 1 ? true : false;
+        }else if (options.bonename == "leftleg") {
+            vrmui.ikGoalNaruralRotation.leftFoot = val == 1 ? true : false;
+        }else if (options.bonename == "rightleg") { 
+            vrmui.ikGoalNaruralRotation.rightFoot = val == 1 ? true : false;
+        }
+    }
     async after_setvrma(val, options) {
         /**
          * @type {UnityCallbackFunctioner}

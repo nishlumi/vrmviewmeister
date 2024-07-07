@@ -13,7 +13,8 @@ export class appDataTimeline {
                 height : "48px",
             },
             timeline_styles : {
-                height : "calc(100% - 48px)"
+                height : "calc(100% - 48px)",
+                zIndex : "100",
             },
             boxStyle : {
                 height : "250px",

@@ -169,10 +169,10 @@ const app = Vue.createApp({
                 
                 if (poseapp.value.states.item_mode == "pose") {
                     opt.types = fileoption.POSE.types;
-                    opt.suggestedName = poseapp.value.list.selected.name + ".vvmpose";
+                    opt.suggestedName = poseapp.value.list.selected.name + (poseapp.value.list.selected.name.toLowerCase().indexOf(".vvmpose") > 0? "" : ".vvmpose");
                 }else if (poseapp.value.states.item_mode == "motion") {
                     opt.types = fileoption.MOTION.types;
-                    opt.suggestedName = poseapp.value.list.selected.name + ".vvmmot";
+                    opt.suggestedName = poseapp.value.list.selected.name + (poseapp.value.list.selected.name.toLowerCase().indexOf(".vvmmot") > 0 ? "" : ".vvmmot");
                 }
                 
 

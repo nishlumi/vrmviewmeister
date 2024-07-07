@@ -12,6 +12,7 @@ export const SHADERINDEX = {
     ICE : 7,
     PIX : 8,
     CUTOUT : 9,
+    TRANSPARENT : 10
 }
 export const UITYPE = {
     RADIO : "radio",
@@ -253,6 +254,9 @@ export function defineMaterialPropertyUI(app,Quasar,objpropData, objpropEvent) {
     const mat_customcutout = [
         new MaterialUIItem(shaderarr[SHADERINDEX.CUTOUT],UITYPE.COLOR,"colorselected", t('Color filter'), objpropEvent.objectShaderColor_onchange,null),        
     ];
+    const mat_transparent = [
+
+    ];
 
     const UIMaterials = [
         mat_standard,
@@ -265,7 +269,8 @@ export function defineMaterialPropertyUI(app,Quasar,objpropData, objpropEvent) {
         mat_comicshader,
         mat_iceshader,
         mat_pixeilizeshader,
-        mat_customcutout
+        mat_customcutout,
+        mat_transparent
     ];
     return {
         UIMaterials
