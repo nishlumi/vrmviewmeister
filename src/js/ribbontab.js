@@ -436,10 +436,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             is_closepanel = true;
         }else if (ename == "vpad") {
             if (ID("uimode").value == "mobile") {
-                if (Quasar.Screen.width > Quasar.Screen.height) {
-                    mainData.elements.landvpad.show = !mainData.elements.landvpad.show;
+                //if (Quasar.Screen.width > Quasar.Screen.height) {
+                    mainData.elements.landvpad.showLeft = !mainData.elements.landvpad.showLeft;
+                    mainData.elements.landvpad.showRight = !mainData.elements.landvpad.showRight;
                     return;
-                }
+                //}
             }
             mainData.elements.vpaddlg.show = !mainData.elements.vpaddlg.show;
         }else if (ename == "shownav") {
@@ -1131,6 +1132,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 is_closepanel = true;
             })
         }
+
         if (is_closepanel) close_tabpanel();
     }
     //==================================================

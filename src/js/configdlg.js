@@ -42,7 +42,7 @@ const template = `
                                         <q-input v-model="appconf.confs.application.MouseWheelSpeed" type="number" :in="1" :max="5" :step="0.1" dense></q-input>
                                     </div>
                                 </div>
-                                <q-separator class="q-mt-sm"></q-separator>
+                                <q-separator class="q-mt-sm q-mb-md"></q-separator>
                                 <div class="row">
                                     <div class="col-12">
                                         <b>{{ $t("MainCamera Configuration") }}</b>
@@ -50,22 +50,36 @@ const template = `
                                 </div>
                                 <div class="row q-pt-sm" style="margin-left:1rem;">
                                     <div class="col-7 col-md-3">
-                                        <span class="">{{ $t('msg_CameraKeymoveSpeed')}}</span>
-                                    </div>
-                                    <div class="col-4 col-md-2">
-                                        <q-input v-model="appconf.confs.application.CameraKeymoveSpeed" type="number" :min="0.01" :max="0.25" :step="0.01" dense></q-input>
-                                    </div>
-                                    <div class="col-7 col-md-3">
-                                        <span class="">{{ $t('msg_CameraKeyrotateSpeed')}}</span>
-                                    </div>
-                                    <div class="col-4 col-md-2">
-                                        <q-input v-model="appconf.confs.application.CameraKeyrotateSpeed" type="number" :min="0.01" :max="2" :step="0.01" dense></q-input>
-                                    </div>
-                                    <div class="col-7 col-md-3">
                                         <span class="">{{ $t('msg_distance_camera_viewpoint')}}</span>
                                     </div>
                                     <div class="col-4 col-md-2">
                                         <q-input v-model="appconf.confs.application.distance_camera_viewpoint" type="number" min="0.1" max="5" step="0.1" dense></q-input>
+                                    </div>
+                                    <div class="col-1 col-md-7">
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <q-checkbox v-model="appconf.confs.application.focus_camera_onselect" :label="$t('msg_focus_camera_onselect')"></q-checkbox>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <q-checkbox v-model="appconf.confs.application.show_camera_target_object" :label="$t('msg_show_camera_target_object')"></q-checkbox>
+                                    </div>
+                                </div>
+                                
+                                <div class="row" style="margin-left:1rem;">
+                                    <div class="col-12">
+                                        <b>{{ $t('msg_CameraKeyArea') }}</b>
+                                    </div>
+                                    <div class="col-3 offset-1">
+                                        <span class="">{{ $t('msg_vpad_rotaterate')}}</span>
+                                    </div>
+                                    <div class="col-2">
+                                        <q-input v-model="appconf.confs.application.CameraKeyrotateSpeed" type="number" :min="0.01" :max="2" :step="0.01" dense></q-input>
+                                    </div>
+                                    <div class="col-3 offset-1">
+                                        <span class="">{{ $t('msg_vpad_translaterate')}}</span>
+                                    </div>
+                                    <div class="col-2">
+                                        <q-input v-model="appconf.confs.application.CameraKeymoveSpeed" type="number" :min="0.01" :max="0.25" :step="0.01" dense></q-input>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-left:1rem;">
@@ -76,13 +90,13 @@ const template = `
                                         <span class="">{{ $t('msg_vpad_rotaterate')}}</span>
                                     </div>
                                     <div class="col-2">
-                                        <q-input v-model="appconf.confs.application.vpad_rotaterate" type="number" :min="0.01" :max="0.1" :step="0.01" dense></q-input>
+                                        <q-input v-model.number="appconf.confs.application.vpad_rotaterate" type="number" :min="0.01" :max="0.1" :step="0.01" dense></q-input>
                                     </div>
                                     <div class="col-3 offset-1">
                                         <span class="">{{ $t('msg_vpad_translaterate')}}</span>
                                     </div>
                                     <div class="col-2">
-                                        <q-input v-model="appconf.confs.application.vpad_translaterate" type="number" :min="0.1" :max="2" :step="0.01" dense></q-input>
+                                        <q-input v-model.number="appconf.confs.application.vpad_translaterate" type="number" :min="0.1" :max="2" :step="0.01" dense></q-input>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-left:1rem;">
@@ -103,15 +117,8 @@ const template = `
                                     </div>
                                 </div>
 
-                                <div class="row" style="margin-left:1rem;">
-                                    <div class="col-12 col-md-6">
-                                        <q-checkbox v-model="appconf.confs.application.focus_camera_onselect" :label="$t('msg_focus_camera_onselect')"></q-checkbox>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <q-checkbox v-model="appconf.confs.application.show_camera_target_object" :label="$t('msg_show_camera_target_object')"></q-checkbox>
-                                    </div>                                    
-                                </div>
-                                <q-separator class="q-mt-sm"></q-separator>
+                                
+                                <q-separator class="q-mt-sm q-mb-md"></q-separator>
                                 <div class="row">
                                     <div class="col-12">
                                         <b>{{ $t("UI Configuration") }}</b>
@@ -122,7 +129,7 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.application.UseDarkTheme" :label="$t('msg_UseDarkTheme')"></q-checkbox>
                                     </div>
                                 </div>
-                                <q-separator class="q-mt-sm"></q-separator>
+                                <q-separator class="q-mt-sm q-mb-md"></q-separator>
                                 <div class="row">
                                     <div class="col-12">
                                         <b>{{ $t("Dialog Configuration") }}</b>
@@ -145,7 +152,7 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.application.is_externaiwin_gravitybone" :label="$t('msg_is_externaiwin_gravitybone')"></q-checkbox>
                                     </div>
                                 </div>
-                                <q-separator class="q-mt-sm"></q-separator>
+                                <q-separator class="q-mt-sm q-mb-md"></q-separator>
                                 <div class="row">
                                     <div class="col-12">
                                         <b>{{ $t("Other Configuration") }}</b>
@@ -154,6 +161,16 @@ const template = `
                                 <div class="row" style="margin-left:1rem;">
                                     <div class="col-12 col-md-6">
                                         <q-checkbox v-model="appconf.confs.application.UseHTMLCanvasForScreenShot" :label="$t('msg_UseHTMLCanvasForScreenShot')"></q-checkbox>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-left:1rem;">
+                                    <div class="col-12 col-md-6">
+                                        <q-checkbox v-model="appconf.confs.application.use_gamepad" :label="$t('msg_use_gamepad')"></q-checkbox>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <q-checkbox v-model="appconf.confs.application.gamepad_using_html" :label="$t('msg_gamepad_using_html')"
+                                            :disable="!appconf.confs.application.use_gamepad"
+                                        ></q-checkbox>
                                     </div>
                                 </div>
                             </q-item-section>
@@ -247,6 +264,15 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.model.interlock_body_legs" :label="$t('msg_interlock_body_legs')"></q-checkbox>
                                     </div>
                                 </div>
+                                <!--div class="row">
+                                    <div class="col-8">
+                                        <span>{{ $t('msg_related_arm') }}</span>
+                                    </div>
+                                    <div class="col-11 offset-md-1">
+                                        <q-checkbox v-model="appconf.confs.model.related_left_armhand" label="LeftLowerArm ~ Hand"></q-checkbox>
+                                        <q-checkbox v-model="appconf.confs.model.related_right_armhand" label="RightLowerArm ~ Hand"></q-checkbox>
+                                    </div>
+                                </div-->
                                 <div class="row">
                                     <div class="col-12">
                                         <strong>VR/AR</strong>

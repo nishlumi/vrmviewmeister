@@ -467,25 +467,6 @@ details.extended-normal[open] > .details-content {
     margin-top : 0.5rem;
 }
 
-/* mobile mode, landscape vpad view */
-.mb_land_vpad {
-    position: absolute;
-    top: 50%;
-    width : 60px;
-}
-@media (max-height: 499px) {
-    .mb_land_vpad {
-        position: absolute;
-        top: 48px;
-        width : 60px;
-    }
-}
-
-.mb_pad_icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
 /*=================================================================
   Right Accordion
 */
@@ -875,6 +856,41 @@ div.screen-number-area {
     height : 50px;
     border-radius : 4px;
 }
+
+/* mobile mode, landscape vpad view */
+.mb_land_vpad {
+    position: absolute;
+    top: 50%;
+    left: 2rem;
+    width : 80px;
+}
+.mb_land_vpad_right {
+    position: absolute;
+    top: 65%;
+    right: 2rem;
+    width : 80px;
+}
+@media (max-height: 499px) {
+    .mb_land_vpad {
+        position: absolute;
+        top: 25%; /*48px;*/
+        left: 2rem;
+        width : 80px;
+    }
+    .mb_land_vpad_right {
+        position: absolute;
+        top: 50%;
+        right: 2rem;
+        width : 80px;
+    }
+    
+}
+.mb_pad_icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 
 /*==============================================================
   navigation window

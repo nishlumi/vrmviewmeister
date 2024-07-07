@@ -4,6 +4,7 @@ import { AF_TARGETTYPE, FILEOPTION, INTERNAL_FILE, STORAGE_TYPE, UserAnimationEa
 import { VOSFile } from "../../../public/static/js/filehelper.js";
 import { VRoidHubConnector } from "../model/vroidhub.js";
 import { UnityVector3 } from "./cls_unityrel.js";
+import { InputManageCallback, InputManager } from "../model/gamepadctrl.js";
 
 export class appMainData {
     constructor(appName, appDesc) {
@@ -13,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.9.1",
-            revision : "20240608-02",
+            version : "2.10.0",
+            revision : "20240707-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -29,7 +30,8 @@ export class appMainData {
                 current : 0,                
             },
             landvpad : {
-                show : false,
+                showLeft : false,
+                showRight: false
             },
             initialOrientation : "landscape", //portrait, landscape
             canvas : {
@@ -252,6 +254,16 @@ export class appMainData {
                         "text-white" : false,
                         "bg-grey-1" : true,
                         "text-dark" : true,
+                    },
+                    tgl_changetarget : {
+                        selected: "c", //c, o
+                        icon : "videocam", //videocam, dashboard_customize
+                        tooltip: "Main Camera", //Main camera Object
+                    },
+                    tgl_changespace : {
+                        selected: "w", //w, l
+                        icon : "public", //public, self_improvement
+                        tooltip: "World" //World, Local
                     }
                 },
                 right : {
@@ -288,6 +300,16 @@ export class appMainData {
                         "text-white" : false,
                         "bg-grey-1" : true,
                         "text-dark" : true,
+                    },
+                    tgl_changetarget : {
+                        selected: "c", //c, o
+                        icon : "videocam", //videocam, dashboard_customize
+                        tooltip: "Main Camera", //Main camera Object
+                    },
+                    tgl_changespace : {
+                        selected: "w", //w, l
+                        icon : "public", //public, self_improvement
+                        tooltip: "World" //World, Local
                     }
                 },
             },
@@ -436,6 +458,14 @@ export class appMainData {
             turnOrientation : false,
 
             uimode: "",
+
+            inputstep: {
+                id : null,
+                start:null,
+                prevstamp : null,
+                done: false
+            },
+            inputman : new InputManager(),
         };
         this.data = {
             clipboard : {
@@ -486,6 +516,85 @@ export const defineAppMainData = () => {
      */
     const mainData = Vue.reactive(new appMainData(t("appName"), t("appDescription")));
     
+    //---setup gamepad events
+    mainData.states.inputman.callbacks.push(
+        new InputManageCallback({},true,false,(values) => {
+            var param = `${values.x},${values.y * -1}`;
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadLeftStickFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        })
+    );
+    mainData.states.inputman.callbacks.push(
+        new InputManageCallback({},false,true,(values) => {
+            var param = `${values.x},${values.y * -1}`;
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadRightStickFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        })
+    );
+    mainData.states.inputman.callbacks.push(
+        new InputManageCallback({Up:true},false,false,(values) => {
+            var param = `0,1`;
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadDpadFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        })
+    );
+    mainData.states.inputman.callbacks.push(
+        new InputManageCallback({Down:true},false,false,(values) => {
+            var param = `0,-1`;
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadDpadFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        })
+    );
+    mainData.states.inputman.callbacks.push(
+        new InputManageCallback({L1:true},false,false,(values) => {
+            var param = "L1";
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        })
+    );
+    mainData.states.inputman.callbacks.push(
+        new InputManageCallback({R1:true},false,false,(values) => {
+            var param = "R1";
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        })
+    );
+    mainData.states.inputman.callbacks.push(
+        new InputManageCallback({Select:true},false,false,(values) => {
+            var param = "select";
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+        })
+    );
+
     const fil_animproject = Vue.ref(null);
     const file_audio = Vue.ref(null);
     const fil_animmotion = Vue.ref(null);

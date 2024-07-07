@@ -28,6 +28,8 @@ export class VVConfigTemplate {
             vpad_translaterate : 1,
             vrar_moverate : 0.1,
             vrar_rotaterate : 1,
+            use_gamepad: true,
+            gamepad_using_html: false
         };
         this.model = {
             use_animation_generic_when_otherobject :false,
@@ -49,6 +51,8 @@ export class VVConfigTemplate {
             vrar_camera_initpos_x : 0,
             vrar_camera_initpos_y : 0,
             vrar_camera_initpos_z : 0,
+            related_left_armhand : true,
+            related_right_armhand : true
         };
         this.animation = {
             initial_framecount : 60,
@@ -392,6 +396,11 @@ export class VVAppConfig{
             "",QD_INOUT.toUNITY,
             null
         ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Camera,method:'EnableGamePadFromOuter',param:this.confs.application.use_gamepad === true ? "1" : "0"},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
 
         //---File tab
 
@@ -501,6 +510,16 @@ export class VVAppConfig{
             {target:AppQueue.unity.ManageAnimation,method:'SetValFromOuter',param:
                 `str,${"vrar_camera_initpos"},${vrarcamerapos}`
             },
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetRelatedArm2Hand',param:this.confs.model.related_left_armhand ? "l,1" : "l,0"},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetRelatedArm2Hand',param:this.confs.model.related_right_armhand ? "r,1" : "r,0"},
             "",QD_INOUT.toUNITY,
             null
         ));

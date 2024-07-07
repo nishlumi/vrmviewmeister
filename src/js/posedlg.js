@@ -471,10 +471,10 @@ export function definePoseMotionDlg(app, Quasar) {
                     
                     if (poseapp.value.states.item_mode == "pose") {
                         opt.types = fileoption.POSE.types;
-                        opt.suggestedName = poseapp.value.list.selected.name + ".vvmpose";
+                        opt.suggestedName = poseapp.value.list.selected.name + (poseapp.value.list.selected.name.toLowerCase().indexOf(".vvmpose") > 0 ? "" : ".vvmpose");
                     }else if (poseapp.value.states.item_mode == "motion") {
                         opt.types = fileoption.MOTION.types;
-                        opt.suggestedName = poseapp.value.list.selected.name + ".vvmmot";
+                        opt.suggestedName = poseapp.value.list.selected.name + (poseapp.value.list.selected.name.toLowerCase().indexOf(".vvmmot") > 0 ? "" : ".vvmmot");
                     }
                     
 
@@ -909,11 +909,14 @@ export function definePoseMotionDlg(app, Quasar) {
                 loadData();
                 loadSetting();
 
-                if (poseapp.value.appconf.confs.fileloader.gdrive.enabled && 
-                    (poseapp.value.appconf.confs.fileloader.gdrive.url != "")
-                ) {
-                    poseapp.value.header.list_origin.push({label:t("Google Drive"),value:"gdrive"});
+                if ("fileloader" in poseapp.value.appconf.confs) {
+                    if (poseapp.value.appconf.confs.fileloader.gdrive.enabled && 
+                        (poseapp.value.appconf.confs.fileloader.gdrive.url != "")
+                    ) {
+                        poseapp.value.header.list_origin.push({label:t("Google Drive"),value:"gdrive"});
+                    }
                 }
+                
                 poseapp.value.header.list_origin.push({label:t("Application"),value:"appserver"});
                 //console.log(opener);
                 //VFileHelper.flags.isEnableFSAA = false;

@@ -58,10 +58,10 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         relpos.x = moveVal.x;
         relpos.y = moveVal.y;
 
-        var param = relpos.x + "," + (relpos.y * -1);
-        
+        //newly: synchronize with Gamepad (rotation) old:RotateCameraPosFromOuter
+        var param = relpos.x + "," + (relpos.y * -1);        
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.Camera,method:'RotateCameraPosFromOuter',param:param},
+            {target:AppQueue.unity.Camera,method:'GamepadRightStickFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -87,20 +87,21 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         var relpos = {x: 0, y: 0, z:0};
 
         if (newInfo.direction == "up") {
-            mpdir.progress.icon = "arrow_downward";
-            mpdir.progress.current.z += moveVal.y;
-            relpos.z = -1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
-        }else if (newInfo.direction == "down") {
             mpdir.progress.icon = "arrow_upward";
+            mpdir.progress.current.z += moveVal.y;
+            relpos.y = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
+        }else if (newInfo.direction == "down") {
+            mpdir.progress.icon = "arrow_downward";
             mpdir.progress.current.z -= moveVal.y;
-            relpos.z = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
+            relpos.y = -1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else{
             mpdir.progress.icon = "radio_button_unchecked";
         }
 
-        var param = [relpos.x, relpos.y, relpos.z].join(",");
+        //newly: synchronize with Gamepad (top, down)
+        var param = [relpos.x, relpos.y].join(",");
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.XR,method:'TranslateCameraPosFromOuter',param:param},
+            {target:AppQueue.unity.XR,method:'GamepadDpadFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -127,29 +128,31 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         //data.value.elements.translation.current.x = 0;
         //data.value.elements.translation.current.y = 0;
         if (newInfo.direction == "up") {
-            mpdir.translation.icon = "arrow_downward";
-            mpdir.translation.current.y += moveVal.y;
-            relpos.y = -1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
-        }else if (newInfo.direction == "down") {
             mpdir.translation.icon = "arrow_upward";
+            mpdir.translation.current.y += moveVal.y;
+            relpos.z = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
+        }else if (newInfo.direction == "down") {
+            mpdir.translation.icon = "arrow_downward";
             mpdir.translation.current.y -= moveVal.y;
-            relpos.y = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
+            relpos.z = -1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else if (newInfo.direction == "left") {
-            mpdir.translation.icon = "arrow_forward";
-            mpdir.translation.current.x -= moveVal.x;
-            relpos.x = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
-        }else if (newInfo.direction == "right") {
             mpdir.translation.icon = "arrow_back";
-            mpdir.translation.current.x += moveVal.x;
+            mpdir.translation.current.x -= moveVal.x;
             relpos.x = -1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
+        }else if (newInfo.direction == "right") {
+            mpdir.translation.icon = "arrow_forward";
+            mpdir.translation.current.x += moveVal.x;
+            relpos.x = 1 * parseFloat(mainData.appconf.confs.application.vpad_translaterate);
         }else{
             mpdir.translation.icon = "radio_button_unchecked";
         }
 
         //var param = data.value.elements.translation.current.x + "," + data.value.elements.translation.current.y + "," + data.value.elements.progress.current.z;
-        var param = [relpos.x, relpos.y, relpos.z].join(",");
+
+        //---newly: synchronize with GamePad (front, back, left, right of translation)
+        var param = [relpos.x, relpos.z].join(",");
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.XR,method:'TranslateCameraPosFromOuter',param:param},
+            {target:AppQueue.unity.XR,method:'GamepadLeftStickFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -199,6 +202,57 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
     const targetzoom_onswipe_right = ({evt, ...newInfo}) => {
         targetzoom_body("right",newInfo);
     }
+
+    const changetarget_onchange = () => {
+
+        const mpdir = mainData.elements.mobilepad.left;        
+        var val = mpdir.tgl_changetarget.selected;
+        if (val == "o") { //---to main camera
+            var param = "L1";
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+            mpdir.tgl_changetarget.selected = "c";
+            mpdir.tgl_changetarget.icon = "videocam";
+            mpdir.tgl_changetarget.tooltip = "Main camera";
+        }else if (val == "c") { //---to object
+            var param = "R1";
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+            mpdir.tgl_changetarget.selected = "o";
+            mpdir.tgl_changetarget.icon = "dashboard_customize";
+            mpdir.tgl_changetarget.tooltip = "Object";
+        }
+    }
+    const changespace_onchange = () => {
+        const mpdir = mainData.elements.mobilepad.left;
+
+        var param = "select";
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+
+        var val = mpdir.tgl_changespace.selected;
+        if (val == "w") { //---to local
+            mpdir.tgl_changespace.selected = "l";
+            mpdir.tgl_changespace.icon = "self_improvement";
+            mpdir.tgl_changespace.tooltip = "Local";
+        }else if (val == "l") { //---to world
+            mpdir.tgl_changespace.selected = "w";
+            mpdir.tgl_changespace.icon = "public";
+            mpdir.tgl_changespace.tooltip = "World";
+        }
+    }
     
 
     return {
@@ -210,7 +264,9 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
             translation_onswipe_left,
             translation_onswipe_right,
             targetzoom_onswipe_left,
-            targetzoom_onswipe_right
+            targetzoom_onswipe_right,
+            changetarget_onchange,
+            changespace_onchange
         }
     }
 }

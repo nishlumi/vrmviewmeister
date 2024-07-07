@@ -19,7 +19,7 @@ export class appDataObjectProp {
                 miniwidth : 60,
                 breakpoint : 500,
                 behavior : "default",
-                autodetectMobile : false,
+                autodetectMobile : false,                
             },
             contextmenu : {
                 show :false,
@@ -61,6 +61,12 @@ export class appDataObjectProp {
                     partSelected : template.tmpIKBoneType[0],
                     partOptions : template.tmpIKBoneType,
                     assignSelected : null
+                },
+                ikGoalNaruralRotation : {
+                    leftHand : false,
+                    rightHand : false,
+                    leftFoot : false,
+                    rightFoot : false
                 },
                 lefthand : {
                     poseOptions : template.templete_handpose,
@@ -187,7 +193,8 @@ export class appDataObjectProp {
                         {label : "Comic", value : "Custom/ComicShader"},
                         {label : "Ice", value : "Custom/IceShader"},
                         {label : "Pixelize", value : "Custom/PixelizeTexture"},
-                        {label : "Cutout", value : "Unlit/CustomCutout"}
+                        {label : "Cutout", value : "Unlit/CustomCutout"},
+                        {label : "Transparent", value : "Unlit/Transparent"}
                     ],
                     shaderselected : null,
                     colorselected: "#FFFFFFFF",

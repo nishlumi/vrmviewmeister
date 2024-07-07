@@ -13,6 +13,9 @@
     <meta name="description" content="Very easy viewer and animation tool for VRM">
     <meta name="keywords" content="VRM,VRoid,Animation,Preview">
 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
     <meta name="hostname" content="<$ hostname $>">
 
     <meta property="og:url" content="https://vrmviewmeister.azurewebsites.net" >
@@ -1760,7 +1763,7 @@
         <q-drawer
             side="right" 
             v-model="objpropData.elements.drawer.show"
-            
+
             bordered
             :width="objpropData.elements.drawer.width"
             
@@ -1844,7 +1847,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-4 q-pr-sm">
-                                    <q-input v-model.number="objpropData.elements.common.position3d.x" @update:model-value="objpropEvent.OnChange_Position3D" type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                                    <q-input v-model.number="objpropData.elements.common.position3d.x" @update:model-value="objpropEvent.OnChange_Position3D" type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01" ></q-input>
                                     <uswipe-input v-model.number="objpropData.elements.common.position3d.x" @update:model-value="objpropEvent.OnChange_Position3D"  dense show-icon :min="-99.9999999" :max="99.9999999" :step="0.01"></uswipe-input>
                                 </div>
                                 <div class="col-4 q-pr-sm">
@@ -2125,19 +2128,24 @@
                                         <q-toggle v-model="objpropData.elements.vrmui.movemode" color="primary"></q-toggle>
                                     </div>
                                 </div>
-                                <div class="row common_ui_off" >
-                                    <div class="col-6">
-                                        {{ $t('Head IK move level') }}
+                                <div class="row" >
+                                    <div class="col-8">
+                                        {{ $t('use_naturalrotation') }}
                                     </div>
-                                    <div class="offset-md-1 col-5">
-                                        <!--<q-input v-model="objpropData.elements.vrmui.headLock" type="number"
-                                            :min="0" :max="10" :step="1"
-                                            @update:model-value="objpropEvent.OnChange_HeadLock"
-                                        ></q-input>
-                                        <uswipe-input show-icon v-model="objpropData.elements.vrmui.headLock"
-                                            :min="0" :max="10" :step="1"
-                                            @update:model-value="objpropEvent.OnChange_HeadLock"
-                                        ></uswipe-input>-->
+                                    <!--div class="col-4">
+                                        <q-btn flat round dense color="primary" icon="sync" @click="objpropEvent.OnClick_ApplyNaturalRotation"></q-btn>
+                                    </div-->
+                                    <div class="offset-sm-1 col-5">
+                                        <q-checkbox right-label v-model="objpropData.elements.vrmui.ikGoalNaruralRotation.leftHand" @update:model-value="objpropEvent.OnChange_NaturalRotation_LeftHand" :label="$t('LeftHand')" ></q-checkbox>
+                                    </div>
+                                    <div class="col-5">
+                                        <q-checkbox right-label v-model="objpropData.elements.vrmui.ikGoalNaruralRotation.rightHand" @update:model-value="objpropEvent.OnChange_NaturalRotation_RightHand" :label="$t('RightHand')" ></q-checkbox>
+                                    </div>
+                                    <div class="offset-sm-1 col-5">
+                                        <q-checkbox right-label v-model="objpropData.elements.vrmui.ikGoalNaruralRotation.leftFoot" @update:model-value="objpropEvent.OnChange_NaturalRotation_LeftFoot" :label="$t('LeftFoot')" ></q-checkbox>
+                                    </div>
+                                    <div class="col-5">
+                                        <q-checkbox right-label v-model="objpropData.elements.vrmui.ikGoalNaruralRotation.rightFoot" @update:model-value="objpropEvent.OnChange_NaturalRotation_RightFoot" :label="$t('RightFoot')" ></q-checkbox>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -5352,7 +5360,7 @@
             </div>
         </template>
 <!--[] Timeline  ================================================================================= -->
-        <q-footer class="bg-grey-1" :style="timelineData.elements.boxStyle">
+        <q-footer class="bg-grey-1" :style="timelineData.elements.boxStyle" >
             <q-toolbar :class="timelineData.states.toppanelCSS">
                 
                 <q-btn flat round :icon="ribbonData.elements.frame.play_normal.icon" no-caps 
@@ -5391,7 +5399,7 @@
         >-->
         <div v-if="mainData.elements.footer" class="bg-grey-1 fixed-bottom" 
             :style="timelineData.elements.panel_styles"
-            style="max-height:298px;height:calc(100% - 60px);padding-bottom:48px;"
+            style="max-height:298px;height:calc(100% - 60px);padding-bottom:48px;z-index:100;"
         >
             <q-card style="height:100%;">
             <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
@@ -6190,12 +6198,12 @@
             :posbottom="0"
             @resetcamera="ribbonEvent.RibbonFuncScreen('resetcamera')"
         ></vpad-dlg>
-        <q-card id="mb_land_vpad" class="mb_land_vpad" v-if="mainData.elements.landvpad.show">
+        <q-card id="mb_land_vpad" class="mb_land_vpad" v-if="mainData.elements.landvpad.showLeft">
             
             <q-card
                 v-touch-pan.prevent.mouse.up.down="mobilePadEvent.progress_onswipe_left"
                 :class="mainData.elements.mobilepad.left.cpadCSS"
-                class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
+                class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center q-mb-md"
             >
                 <div class="text-center">
                     <q-icon name="height" size="xs" class="mb_pad_icon"></q-icon>
@@ -6216,22 +6224,42 @@
                         <q-icon :name="mainData.elements.mobilepad.left.translation.icon" size="md"></q-icon>
                     </div>
                 </div>
-            </q-card>            
+            </q-card>
+            
+            
+            <div class="q-mt-md row">
+                <div class="col-12">
+                    <q-btn label="Focus"  @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                </div>
+            </div>
+            <div class="q-mt-md row">
+                <div class="col-12">
+                    <q-btn style="width:100%" :icon="mainData.elements.mobilepad.left.tgl_changetarget.icon"
+                        @click="mobilePadEvent.changetarget_onchange">
+                        <q-tooltip>{{ mainData.elements.mobilepad.left.tgl_changetarget.tooltip }}</q-tooltip>
+                    </q-btn>
+                </div>
+            </div>
+        </q-card>
+        <q-card id="mb_land_vpad_right" class="mb_land_vpad_right" v-if="mainData.elements.landvpad.showRight">
             <q-card
-                v-touch-pan.prevent.mouse.up.down="mobilePadEvent.targetzoom_onswipe_left"
+                v-touch-pan.prevent.mouse="mobilePadEvent.rotate_onswipe_left"
                 :class="mainData.elements.mobilepad.left.cpadCSS"
                 class="mblpad_progress cursor-pointer shadow-1 relative-position row flex-center"
             >
                 <div class="text-center">
-                    <q-icon name="zoom_in_map" size="xs" class="mb_pad_icon"></q-icon>
+                    <q-icon name="360" size="xs" class="mb_pad_icon"></q-icon>
                     <div class="row items-center">
-                    <q-icon :name="mainData.elements.mobilepad.left.targetzoom.icon" size="md"></q-icon>
+                    <q-icon :name="mainData.elements.mobilepad.left.rotation.icon" size="md"></q-icon>
                     </div>
                 </div>
             </q-card>
-            <div class="q-mt-xs row">
+            <div class="q-mt-md row">
                 <div class="col-12">
-                    <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                    <q-btn style="width:100%" :icon="mainData.elements.mobilepad.left.tgl_changespace.icon"
+                        @click="mobilePadEvent.changespace_onchange">
+                        <q-tooltip>{{ mainData.elements.mobilepad.left.tgl_changespace.tooltip }}</q-tooltip>
+                    </q-btn>
                 </div>
             </div>
         </q-card>
