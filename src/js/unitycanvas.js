@@ -60,7 +60,8 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
                 container.className = "unity-mobile";
                 // Avoid draining fillrate performance on mobile devices,
                 // and default/override low DPI mode on mobile browsers.
-                config.devicePixelRatio = 1;
+                //config.devicePixelRatio = 1;
+                unityConfig.value.config["devicePixelRatio"] = 1;
                 mobileWarning.style.display = "block";
                 setTimeout(() => {
                     mobileWarning.style.display = "none";

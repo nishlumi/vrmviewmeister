@@ -208,12 +208,33 @@ details.extended-normal[open] > .details-content {
     
     background-color: #FFF;
     z-index : 9999;
-    display: inline-flex; 
+    display: inline-grid;
     justify-content: center;
     align-items: center; 
 }
+@media (orientation: portrait) {
+    #splash img {
+        width:100%;
+        height:auto;
+    }
+}
+@media (orientation: landscape) and (max-height: 450px) {
+    #splash img {
+        width:auto;
+        
+        max-height: 200px;
+    }
+}
+@media (orientation: landscape) and (min-height: 451px) {
+    #splash img {
+        width:auto;
+        
+        max-height: 100%;
+    }
+}
+
 #splash.fadeout {
-    animation: fadein-keyframes 3s ease 0s 1 forwards;
+    animation: fadein-keyframes 1s ease 0s 1 forwards;
 }
 
 

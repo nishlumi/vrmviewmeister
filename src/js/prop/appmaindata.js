@@ -14,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.10.0",
-            revision : "20240707-01",
+            version : "2.10.1",
+            revision : "20240715-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -24,6 +24,7 @@ export class appMainData {
             header : true,
             appinfodlg : false,
             loading : false,
+            loadmsg : "",
             loadingTypePercent : false,
             percentLoad : {
                 percent : 0,

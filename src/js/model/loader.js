@@ -847,6 +847,15 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             });
         }
     }
+    const checkCacheStorageUnity = async () => {
+        try {
+            const names = await caches.keys();
+            return names.includes("UnityCache_Unity_VRM View Meister");
+        }catch(err) {
+            console.error(err);
+            return false;
+        }
+    }
     const downloadAddressableAssetBundles = () => {
         var assets = ["default","effect"];
         for (var o of assets) {
@@ -883,7 +892,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             onclick_imageSelectorImage,onclick_imageSelectorUImage,
             onload_effectDirectory,onchange_configdlg,
             schedulingBackup,
-            checkSWUpdate,
+            checkSWUpdate,checkCacheStorageUnity,
             downloadAddressableAssetBundles,
             //load_materialFile,destroy_materialFile,
             canvasdiv_scroll,navigationdlg_onmovecursor,

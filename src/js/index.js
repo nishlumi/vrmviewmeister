@@ -192,8 +192,14 @@ const app = Vue.createApp({
             }
         });
         Vue.onMounted( async () => {
+            const HasUnityCash = await modelLoader.checkCacheStorageUnity();
+            if (HasUnityCash === true) {
+                mainData.elements.loadmsg = "Now loading...";
+            }else{
+                mainData.elements.loadmsg = "First access. Now installing the WebApp...";
+            }
             mainData.vroidhubapi.load()
-            .then(res => {
+            .then(async res => {
                 mainData.states.vroidhub_api = res === true ? true : false;
             });
             var ishit = Quasar.LocalStorage.getItem("callback_code");
@@ -208,7 +214,7 @@ const app = Vue.createApp({
                 }
             }
             setupUnity()
-            .then(res => {
+            .then(async res => {
                 modelLoader.checkSWUpdate();
                 setupFixUnityEvent(modelOperator,UnityCallback);
                 Vue.nextTick(async () => {

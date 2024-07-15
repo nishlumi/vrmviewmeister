@@ -6,14 +6,22 @@ const template = `
             v-touch-pan.prevent.mouse.up.down="card_onswipe"
             class="cursor-pointer shadow-1 relative-position row flex-center"
         >
-            <div class="text-right" style="overflow:hidden;">
-                <div class="row items-right q-pl-xs q-pr-xs">
-                    <template v-if="showIcon == true">
-                        <q-icon :name="appdata.elements.icon" size="sm"></q-icon>
-                    </template>
-                    <template v-else>
-                        <span v-text="modelValue"></span>
-                    </template>
+            <div class="text-center" style="width:100%;overflow:hidden;">
+                <div class="row items-center">
+                    <div class="col-2">
+                        <q-icon name="chevron_left" v-ripple @click.stop="chevronleft_onclick"></q-icon>
+                    </div>
+                    <div class="col-8">
+                        <template v-if="showIcon == true">
+                            <q-icon :name="appdata.elements.icon" size="sm"></q-icon>
+                        </template>
+                        <template v-else>
+                            <span v-text="modelValue"></span>
+                        </template>
+                    </div>
+                    <div class="col-2">
+                        <q-icon name="chevron_right" v-ripple @click.stop="chevronright_onclick"></q-icon>
+                    </div>
                 </div>
             </div>
         </q-card>
@@ -23,14 +31,22 @@ const template = `
             v-touch-pan.prevent.mouse.left.right="card_onswipe"
             class="cursor-pointer shadow-1 relative-position row flex-center"
         >
-            <div class="text-right" style="overflow:hidden;">
-                <div class="row items-right q-pl-xs q-pr-xs">
-                    <template v-if="showIcon == true">
-                        <q-icon :name="appdata.elements.icon" size="sm"></q-icon>
-                    </template>
-                    <template v-else>
-                        <span v-text="modelValue"></span>
-                    </template>
+            <div class="text-center" style="width:100%;overflow:hidden;">
+                <div class="row items-center">
+                    <div class="col-2">
+                        <q-icon name="chevron_left" v-ripple @click.stop="chevronleft_onclick"></q-icon>
+                    </div>
+                    <div class="col-8">
+                        <template v-if="showIcon == true">
+                            <q-icon :name="appdata.elements.icon" size="sm"></q-icon>
+                        </template>
+                        <template v-else>
+                            <span v-text="modelValue"></span>
+                        </template>
+                    </div>
+                    <div class="col-2">
+                        <q-icon name="chevron_right" v-ripple @click.stop="chevronright_onclick"></q-icon>
+                    </div>
                 </div>
             </div>
         </q-card>
@@ -40,15 +56,25 @@ const template = `
             v-touch-pan.prevent.mouse="card_onswipe"
             class="cursor-pointer shadow-1 relative-position row flex-center"
         >
-            <div class="text-right" style="overflow:hidden;">
-                <div class="row items-right q-pl-xs q-pr-xs" >
-                    <template v-if="showIcon == true">
-                        <q-icon :name="appdata.elements.icon" size="sm"></q-icon>
-                    </template>
-                    <template v-else>
-                        <span v-text="modelValue"></span>
-                    </template>
+            <div class="text-center" style="width:100%;overflow:hidden;">
+                
+                <div class="row items-center" >
+                    <div class="col-2">
+                        <q-icon name="chevron_left" v-ripple @click.stop="chevronleft_onclick"></q-icon>
+                    </div>
+                    <div class="col-8">
+                        <template v-if="showIcon == true">
+                            <q-icon :name="appdata.elements.icon" size="sm"></q-icon>
+                        </template>
+                        <template v-else>
+                            <span v-text="modelValue"></span>
+                        </template>
+                    </div>
+                    <div class="col-2">
+                        <q-icon name="chevron_right" v-ripple @click.stop="chevronright_onclick"></q-icon>
+                    </div>
                 </div>
+                
             </div>
         </q-card>
     </template>
@@ -136,6 +162,34 @@ export function defineUswipeInput(app, Quasar) {
 
                 context.emit("update:modelValue",appdata.elements.val);
             }
+            const chevronleft_onclick = () => {
+                if (disable.value == true) return;
+                appdata.elements.val -= step.value;
+                appdata.elements.icon = "remove";
+
+                if (appdata.elements.val < min.value) {
+                    if (loopValue.value == true) {
+                        appdata.elements.val = max.value;
+                    }else{
+                        appdata.elements.val = min.value;
+                    }                    
+                }
+                context.emit("update:modelValue",appdata.elements.val);
+            }
+            const chevronright_onclick = () => {
+                if (disable.value == true) return;
+                appdata.elements.val += step.value;
+                appdata.elements.icon = "add";
+
+                if (appdata.elements.val > max.value) {
+                    if (loopValue.value == true) {
+                        appdata.elements.val = min.value;
+                    }else{
+                        appdata.elements.val = max.value;
+                    }
+                }
+                context.emit("update:modelValue",appdata.elements.val);
+            }
 
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
                 appdata.elements.val = modelValue.value;
@@ -144,7 +198,9 @@ export function defineUswipeInput(app, Quasar) {
             return {
                 wa_modelValue,
                 appdata,
-                card_onswipe
+                card_onswipe,
+                chevronleft_onclick,
+                chevronright_onclick
             };
         }
     });
