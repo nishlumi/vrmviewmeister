@@ -6148,7 +6148,10 @@
         <vpad-dlg v-model="mainData.elements.vpaddlg.show"
             :rotate-rate="mainData.appconf.confs.application.vpad_rotaterate"
             :translate-rate="mainData.appconf.confs.application.vpad_translaterate"
+            :target="mainData.elements.mobilepad.left.tgl_changetarget"
+            :space="mainData.elements.mobilepad.left.tgl_changespace"
             @resetcamera="ribbonEvent.RibbonFuncScreen('resetcamera')"
+            @applychangeflags="modelLoader.applychange_vpadflags"
         ></vpad-dlg>
         <keyframe-dlg v-model="mainData.elements.keyframedlg.show"
             :frame-index="timelineData.states.currentcursor"

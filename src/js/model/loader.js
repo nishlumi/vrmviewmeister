@@ -880,6 +880,22 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
     const navigationdlg_onmovecursor = (pos) => {
         document.getElementById("unity-container").scroll({top: pos.y, left: pos.x, behavior: "smooth"});
     }
+
+    const applychange_vpadflags = (evt) => {
+        mainData.elements.mobilepad.left.tgl_changetarget.selected = evt.target.selected;
+        mainData.elements.mobilepad.left.tgl_changetarget.icon = evt.target.icon;
+        mainData.elements.mobilepad.left.tgl_changetarget.tooltip = evt.target.tooltip;
+        mainData.elements.mobilepad.right.tgl_changetarget.selected = evt.target.selected;
+        mainData.elements.mobilepad.right.tgl_changetarget.icon = evt.target.icon;
+        mainData.elements.mobilepad.right.tgl_changetarget.tooltip = evt.target.tooltip;
+
+        mainData.elements.mobilepad.left.tgl_changespace.selected = evt.space.selected;
+        mainData.elements.mobilepad.left.tgl_changespace.icon = evt.space.icon;
+        mainData.elements.mobilepad.left.tgl_changespace.tooltip = evt.space.tooltip;
+        mainData.elements.mobilepad.right.tgl_changespace.selected = evt.space.selected;
+        mainData.elements.mobilepad.right.tgl_changespace.icon = evt.space.icon;
+        mainData.elements.mobilepad.right.tgl_changespace.tooltip = evt.space.tooltip;
+    }
     
 
     //---finalize-------------------------------------
@@ -896,7 +912,8 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             downloadAddressableAssetBundles,
             //load_materialFile,destroy_materialFile,
             canvasdiv_scroll,navigationdlg_onmovecursor,
-            saveToInternalStorage
+            saveToInternalStorage,
+            applychange_vpadflags
         },
         dnd : {
             drop_evt,dragleave_evt,dragenter_evt,dragover_evt

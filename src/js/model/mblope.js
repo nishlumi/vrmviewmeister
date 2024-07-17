@@ -61,7 +61,7 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         //newly: synchronize with Gamepad (rotation) old:RotateCameraPosFromOuter
         var param = relpos.x + "," + (relpos.y * -1);        
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.Camera,method:'GamepadRightStickFromOuter',param:param},
+            {target:AppQueue.unity.Camera,method:'VpadRightStickFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -101,7 +101,7 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         //newly: synchronize with Gamepad (top, down)
         var param = [relpos.x, relpos.y].join(",");
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.XR,method:'GamepadDpadFromOuter',param:param},
+            {target:AppQueue.unity.XR,method:'VpadDpadFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -152,7 +152,7 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         //---newly: synchronize with GamePad (front, back, left, right of translation)
         var param = [relpos.x, relpos.z].join(",");
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.XR,method:'GamepadLeftStickFromOuter',param:param},
+            {target:AppQueue.unity.XR,method:'VpadLeftStickFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));
@@ -210,7 +210,7 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         if (val == "o") { //---to main camera
             var param = "L1";
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                {target:AppQueue.unity.Camera,method:'VpadKeyFromOuter',param:param},
                 "",QD_INOUT.toUNITY,
                 null
             ));
@@ -221,7 +221,7 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         }else if (val == "c") { //---to object
             var param = "R1";
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                {target:AppQueue.unity.Camera,method:'VpadKeyFromOuter',param:param},
                 "",QD_INOUT.toUNITY,
                 null
             ));
@@ -236,7 +236,7 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
 
         var param = "select";
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+            {target:AppQueue.unity.Camera,method:'VpadKeyFromOuter',param:param},
             "",QD_INOUT.toUNITY,
             null
         ));

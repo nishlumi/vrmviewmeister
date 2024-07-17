@@ -192,16 +192,25 @@ export function defineVpadDlg(app, Quasar) {
             posright : {
                 type: Number,
                 default: 0
+            },
+            target : {
+                type: Object,
+                default: null
+            },
+            space : {
+                type: Object,
+                default: null
             }
         },
         emits : [
             "update:model-value",
-            "resetcamera"
+            "resetcamera",
+            "applychangeflags"
         ],
         setup(props, context) {
             const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
-            const {modelValue, rotateRate, translateRate,uimode,posbottom,posright } = Vue.toRefs(props);
+            const {modelValue, rotateRate, translateRate,uimode,posbottom,posright,target,space } = Vue.toRefs(props);
             const data = Vue.ref({
                 elements : {
                     win : {
@@ -348,6 +357,22 @@ export function defineVpadDlg(app, Quasar) {
                 data.value.elements.cpadCSS["bg-grey-1"] = !newval;
                 data.value.elements.cpadCSS["text-dark"] = !newval;
             }); 
+            const wa_target = Vue.watch(() => target.value,(newval) => {
+                if (newval != null) {
+                    data.value.elements.tgl_changetarget.selected = newval.selected;
+                    data.value.elements.tgl_changetarget.icon = newval.icon;
+                    data.value.elements.tgl_changetarget.tooltip = newval.tooltip;
+
+                }
+            },{deep:true});
+            const wa_space = Vue.watch(() => space.value,(newval) => {
+                if (newval != null) {
+                    data.value.elements.tgl_changespace.selected = newval.selected;
+                    data.value.elements.tgl_changespace.icon = newval.icon;
+                    data.value.elements.tgl_changespace.tooltip = newval.tooltip;
+
+                }
+            },{deep:true});
 
 
             //---------------------------------------------------------------------
@@ -394,7 +419,7 @@ export function defineVpadDlg(app, Quasar) {
                 //newly: synchronize with Gamepad (rotation) old:RotateCameraPosFromOuter
                 var param = relpos.x + "," + (relpos.y * -1);
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.Camera,method:'GamepadRightStickFromOuter',param:param},
+                    {target:AppQueue.unity.Camera,method:'VpadRightStickFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -426,7 +451,7 @@ export function defineVpadDlg(app, Quasar) {
                 //newly: synchronize with Gamepad (top, down)
                 var param = [relpos.x, relpos.y].join(",");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.XR,method:'GamepadDpadFromOuter',param:param},
+                    {target:AppQueue.unity.XR,method:'VpadDpadFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -469,7 +494,7 @@ export function defineVpadDlg(app, Quasar) {
                 //---newly: synchronize with GamePad (front, back, left, right of translation)
                 var param = [relpos.x, relpos.z].join(",");
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.XR,method:'GamepadLeftStickFromOuter',param:param},
+                    {target:AppQueue.unity.XR,method:'VpadLeftStickFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -586,7 +611,7 @@ export function defineVpadDlg(app, Quasar) {
                 if (val == "o") {
                     var param = "L1";
                     AppQueue.add(new queueData(
-                        {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                        {target:AppQueue.unity.Camera,method:'VpadKeyFromOuter',param:param},
                         "",QD_INOUT.toUNITY,
                         null
                     ));
@@ -597,7 +622,7 @@ export function defineVpadDlg(app, Quasar) {
                 }else if (val == "c") {
                     var param = "R1";
                     AppQueue.add(new queueData(
-                        {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                        {target:AppQueue.unity.Camera,method:'VpadKeyFromOuter',param:param},
                         "",QD_INOUT.toUNITY,
                         null
                     ));
@@ -606,11 +631,15 @@ export function defineVpadDlg(app, Quasar) {
                     data.value.elements.tgl_changetarget.icon = "dashboard_customize";
                     data.value.elements.tgl_changetarget.tooltip = "Object";
                 }
+                context.emit("applychangeflags",{
+                    "target":data.value.elements.tgl_changetarget,
+                    "space" :data.value.elements.tgl_changespace
+                });
             }
             const changespace_onchange = (val) => {
                 var param = "select";
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
+                    {target:AppQueue.unity.Camera,method:'VpadKeyFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -625,6 +654,10 @@ export function defineVpadDlg(app, Quasar) {
                     data.value.elements.tgl_changespace.icon = "public";
                     data.value.elements.tgl_changespace.tooltip = "World";
                 }
+                context.emit("applychangeflags",{
+                    "target":data.value.elements.tgl_changetarget,
+                    "space" :data.value.elements.tgl_changespace
+                });
             }
 
             //-------------------------------------------------------------------
@@ -754,7 +787,7 @@ export function defineVpadDlg(app, Quasar) {
                 //element--------------
                 vpdlg,vpdlg_bar,
                 //watch----------------
-                wa_modelValue,wa_dark,
+                wa_modelValue,wa_dark,wa_target,wa_space,
             }
         }
     });
