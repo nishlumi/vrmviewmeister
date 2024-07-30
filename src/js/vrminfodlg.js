@@ -89,6 +89,7 @@ const template = `
                                 </td>
                                 <td>
                                     <q-icon :name="showIconAllowed(selectAvatar.violentUssage)" :class="styleIconAllowed(selectAvatar.violentUssage)" size="2rem"></q-icon>
+                                    <span v-text="showTipAllowed(selectAvatar.violentUssage)"></span>
                                 </td>
                                 <td>
                                     <q-icon name="self_improvement" size="2rem" ></q-icon>
@@ -96,6 +97,7 @@ const template = `
                                 </td>
                                 <td>
                                     <q-icon :name="showIconAllowed(selectAvatar.potilicalUssage)" :class="styleIconAllowed(selectAvatar.potilicalUssage)" size="2rem"></q-icon>
+                                    <span v-text="showTipAllowed(selectAvatar.potilicalUssage)"></span>
                                 </td>
                             </tr>
                             <tr>
@@ -105,6 +107,7 @@ const template = `
                                 </td>
                                 <td>
                                     <q-icon :name="showIconAllowed(selectAvatar.sexualUssage)" :class="styleIconAllowed(selectAvatar.sexualUssage)" size="2rem"></q-icon>
+                                    <span v-text="showTipAllowed(selectAvatar.sexualUssage)"></span>
                                 </td>
                                 <td>
                                     <q-icon name="masks" size="2rem" ></q-icon>
@@ -112,6 +115,7 @@ const template = `
                                 </td>
                                 <td>
                                     <q-icon :name="showIconAllowed(selectAvatar.antisocialUssage)" :class="styleIconAllowed(selectAvatar.antisocialUssage)" size="2rem"></q-icon>
+                                    <span v-text="showTipAllowed(selectAvatar.antisocialUssage)"></span>
                                 </td>
                             </tr>
                             <tr>
@@ -120,7 +124,7 @@ const template = `
                                     <span class="vv-translation">{{$t("vrminfo_commercialUssage")}}</span>
                                 </td>
                                 <td>
-                                    <q-icon :name="showIconAllowed(selectAvatar.commercialUssage)" :class="styleIconAllowed(selectAvatar.commercialUssage)" size="2rem"></q-icon>
+                                    <span v-text="showCommercialMean(selectAvatar.commercialUssage)"></span>
                                 </td>
                                 <td>
                                     <q-icon name="announcement" size="2rem" ></q-icon>
@@ -137,6 +141,7 @@ const template = `
                                 </td>
                                 <td>
                                     <q-icon :name="showIconAllowed(selectAvatar.allowRedistribution)" :class="styleIconAllowed(selectAvatar.allowRedistribution)" size="2rem"></q-icon>
+                                    <span v-text="showTipAllowed(selectAvatar.allowRedistribution)"></span>
                                 </td>
                                 <td>
                                     <q-icon name="edit" size="2rem" ></q-icon>
@@ -144,6 +149,7 @@ const template = `
                                 </td>
                                 <td>
                                     <q-icon :name="showIconAllowed(selectAvatar.allowModification)" :class="styleIconAllowed(selectAvatar.allowModification)" size="2rem"></q-icon>
+                                    <span v-text="showTipAllowed(selectAvatar.allowModification)"></span>
                                 </td>
                             </tr>
                             <tr>
@@ -240,10 +246,26 @@ export function defineVrmInfoDlg(app, Quasar) {
                     return ussage_judge[flag ? 1 : 0];
                 }
             });
+            const showTipAllowed = Vue.computed(() => {
+                return (flag) => {
+                    var ussage_judge = [
+                        "NO","YES"
+                    ];
+                    return ussage_judge[flag ? 1 : 0];
+                }
+            });
             const showCreditRequire = Vue.computed(() => {
                 return (val) => {
                     const reqmsg = [
                         t("vrminfo_credit_req"),t("vrminfo_credit_none")
+                    ]
+                    return reqmsg[val];
+                }
+            });
+            const showCommercialMean = Vue.computed(() => {
+                return (val) => {
+                    const reqmsg = [
+                        t("vrminfo_commercial_nonprofit"),t("vrminfo_commercial_profit"),t("vrminfo_commercial_corpo")
                     ]
                     return reqmsg[val];
                 }
@@ -260,8 +282,8 @@ export function defineVrmInfoDlg(app, Quasar) {
             return {
                 show,wa_modelValue,data,
                 dialogHide,
-                showAllowUserLabel,showIconAllowed,styleIconAllowed,
-                showCreditRequire,
+                showAllowUserLabel,showIconAllowed,styleIconAllowed,showTipAllowed,
+                showCreditRequire,showCommercialMean,
                 OkBtn_Onclick,Cancel_Onclick,
             }
         }

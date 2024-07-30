@@ -1,7 +1,7 @@
 import { VVAnimationProject, VVAvatar, VVCast, VVTimelineTarget } from './prop/cls_vvavatar.js';
 import { AnimationParsingOptions, AnimationRegisterOptions } from './prop/cls_unityrel.js';
 import { appModelOperator } from './model/operator.js';
-import { AF_MOVETYPE, AF_TARGETTYPE, UserAnimationEase } from '../res/appconst.js';
+import { AF_MOVETYPE, AF_TARGETTYPE, IKBoneType, UserAnimationEase } from '../res/appconst.js';
 import { UnityCallbackFunctioner } from './model/callback.js';
 import { appDataTimeline } from './prop/apptimelinedata.js';
 import { appMainData } from './prop/appmaindata.js';
@@ -615,13 +615,19 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
                 }*/
                 var result = arr.reduce((acc, curr, i) => {
                     return i % 3 === 2 ? `${acc}${curr},<br>` : `${acc}${curr},`;
-                  }, "");
+                }, "");
 
+                //ribbonData.elements.frame.bonelist.selection.splice(0, ribbonData.elements.frame.bonelist.selection.length);
                 for (var i = 0; i < arr.length; i++) {
                     var v = arr[i];
                     timelineData.states.popup.ikmarkers.push(v.toLowerCase());
+                    var ikbone = IKBoneType[v];
+                    //---select bone checkbox in keyframe register panel
+                    if ((0 <= ikbone) && (ikbone <= 16)) {
+                        //modelOperator.selectSpecifyBoneForRegister(ikbone);
+                    }
                 }
-                console.log(timelineData.states.popup.ikmarkers);
+                //console.log(timelineData.states.popup.ikmarkers);
                 //timelineData.states.popup.ikmarkers = result.slice(0, -1);
             }
         ));

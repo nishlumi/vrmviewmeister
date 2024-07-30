@@ -424,63 +424,91 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             Title : "SystemEffect"
         });
         syse.isFixed = true;
-        mainData.data.vrms.push(syse);
-        var role_syse = new VVCast("SystemEffect","SystemEffect");
-        role_syse.avatarId = syse.id;
-        role_syse.avatar = syse;
-        role_syse.type = AF_TARGETTYPE.SystemEffect;
-        mainData.data.project.casts.push(role_syse);
-        //+++this.elements.timeline.appendTimeline(role_syse);
-        var TLsyse = new VVTimelineTarget(role_syse);
-        TLsyse.fixed = true;
-        timelineData.data.timelines.push(TLsyse);
+        var ishit = mainData.data.vrms.findIndex(v => {
+            if (v.id == syse.id) return true;
+            return false;
+        });
+        if (ishit == -1) {
+            mainData.data.vrms.push(syse);
+            var role_syse = new VVCast("SystemEffect","SystemEffect");
+            role_syse.avatarId = syse.id;
+            role_syse.avatar = syse;
+            role_syse.type = AF_TARGETTYPE.SystemEffect;
+            mainData.data.project.casts.push(role_syse);
+            //+++this.elements.timeline.appendTimeline(role_syse);
+            var TLsyse = new VVTimelineTarget(role_syse);
+            TLsyse.fixed = true;
+            timelineData.data.timelines.push(TLsyse);
+        }
     
         var bgm = new VVAvatar("Audio",{
             id : "BGM",
             Title : "BGM"
         });
         bgm.isFixed = true;
-        mainData.data.vrms.push(bgm);
-        var role_bgm = new VVCast("BGM","BGM");
-        role_bgm.avatarId = bgm.id;
-        role_bgm.avatar = bgm;
-        role_bgm.type = AF_TARGETTYPE.Audio;
-        mainData.data.project.casts.push(role_bgm);
-        //+++this.elements.timeline.appendTimeline(role_bgm);
-        var TLbgm = new VVTimelineTarget(role_bgm);
-        TLbgm.fixed = true;
-        timelineData.data.timelines.push(TLbgm);
+        ishit = mainData.data.vrms.findIndex(v => {
+            if (v.id == bgm.id) return true;
+            return false;
+        });
+        if (ishit == -1) {
+            mainData.data.vrms.push(bgm);
+            var role_bgm = new VVCast("BGM","BGM");
+            role_bgm.avatarId = bgm.id;
+            role_bgm.avatar = bgm;
+            role_bgm.type = AF_TARGETTYPE.Audio;
+            mainData.data.project.casts.push(role_bgm);
+            //+++this.elements.timeline.appendTimeline(role_bgm);
+            var TLbgm = new VVTimelineTarget(role_bgm);
+            TLbgm.fixed = true;
+            timelineData.data.timelines.push(TLbgm);
+        }
+        
     
         var se = new VVAvatar("Audio",{
             id : "SE",
             Title : "SE"
         });
         se.isFixed = true;
-        mainData.data.vrms.push(se);
-        var role_se = new VVCast("SE","SE");
-        role_se.avatarId = se.id;
-        role_se.avatar = se;
-        role_se.type = AF_TARGETTYPE.Audio;
-        mainData.data.project.casts.push(role_se);
-        //+++this.elements.timeline.appendTimeline(role_se);
-        var TLse = new VVTimelineTarget(role_se);
-        TLse.fixed = true;
-        timelineData.data.timelines.push(TLse);
-    
-        var ret = modelOperator.addObject("Stage",{
-            id : "Stage",
-            Title : "Stage",
-            roleName : "Stage",
-            roleTitle : "Stage"
+        ishit = mainData.data.vrms.findIndex(v => {
+            if (v.id == se.id) return true;
+            return false;
         });
-        StageType.isFixed = true;
-        //elements.objectlist.selected = ret.avatar.id;
-        //modelOperator.select_objectItem("Stage");
-        ret.role.type = AF_TARGETTYPE.Stage;
-        var TLstage = new VVTimelineTarget(ret.role);
-        TLstage.fixed = true;
-        timelineData.data.timelines.push(TLstage);
-        mainData.states.selectedAvatar = ret.avatar;
+        if (ishit == -1) {
+            mainData.data.vrms.push(se);
+            var role_se = new VVCast("SE","SE");
+            role_se.avatarId = se.id;
+            role_se.avatar = se;
+            role_se.type = AF_TARGETTYPE.Audio;
+            mainData.data.project.casts.push(role_se);
+            //+++this.elements.timeline.appendTimeline(role_se);
+            var TLse = new VVTimelineTarget(role_se);
+            TLse.fixed = true;
+            timelineData.data.timelines.push(TLse);
+        }
+        
+    
+        ishit = mainData.data.vrms.findIndex(v => {
+            if (v.id == "Stage") return true;
+            return false;
+        });
+        if (ishit == -1) {
+            var ret = modelOperator.addObject("Stage",{
+                id : "Stage",
+                Title : "Stage",
+                roleName : "Stage",
+                roleTitle : "Stage"
+            },"",false);
+            StageType.isFixed = true;
+            
+            //elements.objectlist.selected = ret.avatar.id;
+            //modelOperator.select_objectItem("Stage");
+            ret.role.type = AF_TARGETTYPE.Stage;
+            var TLstage = new VVTimelineTarget(ret.role);
+            TLstage.fixed = true;
+            timelineData.data.timelines.push(TLstage);
+            mainData.states.selectedAvatar = ret.avatar;
+        }
+        
         
         //console.log(mainData.data);
     }

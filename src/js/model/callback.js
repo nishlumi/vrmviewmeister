@@ -251,47 +251,52 @@ export class UnityCallbackFunctioner {
         var loadingfileHandle = options.loadingfileHandle || null;
 
 
-        var ischeck = modelOperator.getVRMFromTitle(mainData.data.preview.title);
-        if (ischeck) {
-            appAlert(callback.t("msg_already_added_collider"));
+        if (mainData.data.preview) {
+            var ischeck = modelOperator.getVRMFromTitle(mainData.data.preview.title);
+            if (ischeck) {
+                appAlert(callback.t("msg_already_added_collider"));
+                mainData.data.preview = null;
+                loadingfileHandle = null;
+        
+                return;
+            }
+    
+            var arr = js.split(",");
+            var role = modelOperator.addVRM(AF_TARGETTYPE.VRM,mainData.data.preview,arr);
+            //var role = modelOperator.getRoleFromAvatar(mainData.data.preview.id);
+    
+            //#########
+            //---this path is NOT real path. filename to search AppDB(history)
+            role.path = (loadingfileHandle) ? loadingfileHandle.name : "";
+            //modeloperator.select_objectItem(mainData.data.preview.id);
+            mainData.states.selectedAvatar = mainData.data.preview;
+            
+            //[creation point] VVTimelineTarget
+            var ishit = timelineData.data.timelines.find(item => {
+                if ((item.target.roleName == role.roleName) || (item.target.roleTitle == role.roleTitle)) return true;
+                return false;
+            });
+            if (ishit) {
+                ishit.setTarget(role);
+            }else{
+                timelineData.data.timelines.push(new VVTimelineTarget(role));
+            }
             mainData.data.preview = null;
             loadingfileHandle = null;
     
-            return;
-        }
-
-        var arr = js.split(",");
-        var role = modelOperator.addVRM(AF_TARGETTYPE.VRM,mainData.data.preview,arr);
-        //var role = modelOperator.getRoleFromAvatar(mainData.data.preview.id);
-
-        //#########
-        //---this path is NOT real path. filename to search AppDB(history)
-        role.path = (loadingfileHandle) ? loadingfileHandle.name : "";
-        //modeloperator.select_objectItem(mainData.data.preview.id);
-        mainData.states.selectedAvatar = mainData.data.preview;
-        
-        //[creation point] VVTimelineTarget
-        var ishit = timelineData.data.timelines.find(item => {
-            if ((item.target.roleName == role.roleName) || (item.target.roleTitle == role.roleTitle)) return true;
-            return false;
-        });
-        if (ishit) {
-            ishit.setTarget(role);
-        }else{
-            timelineData.data.timelines.push(new VVTimelineTarget(role));
-        }
-        mainData.data.preview = null;
-        loadingfileHandle = null;
-
-
-        //---call VRM IK limitation
-        callback.callVRM_Limitedfunction(mainData,ribbonData);
-
-        //AppQueue.start();
-        if (mainData.elements.loadingTypePercent) {
-            if (mainData.elements.percentLoad.current <= 1.0) {
-                mainData.elements.percentLoad.current += mainData.elements.percentLoad.percent;
+    
+            //---call VRM IK limitation
+            callback.callVRM_Limitedfunction(mainData,ribbonData);
+    
+            //AppQueue.start();
+            if (mainData.elements.loadingTypePercent) {
+                if (mainData.elements.percentLoad.current <= 1.0) {
+                    mainData.elements.percentLoad.current += mainData.elements.percentLoad.percent;
+                }
             }
+    
+        }else{
+            console.error("firstload_vrm:preview vrm is not Null.");
         }
     }
     async firstload_audio (val, options) {
@@ -333,7 +338,6 @@ export class UnityCallbackFunctioner {
         if (selavatar) {
             modelOperator.del_objectItem(selavatar);
         }
-        
     }
     //----------------------------------------------------------------------------
     //---properties functions
@@ -1689,7 +1693,7 @@ export class UnityCallbackFunctioner {
 
         var arr = val.split(",");
         //0: power
-        stageui.winpower = parseFloat(arr[0]);
+        stageui.windpower = parseFloat(arr[0]);
         //1: frequency
         stageui.windfrequency = parseFloat(arr[1]);
         //2: duration min
@@ -1796,6 +1800,12 @@ export class UnityCallbackFunctioner {
         var role = js[0];
         var cursor = js[2];
 
+        var clipboard = options.clipboard;
+        if (!clipboard) {
+            clipboard = mainData.data.clipboard.frame;
+        }
+
+
         if (role == "null") {
             appAlert(callback.t("msg_error_paste"));
         }else{
@@ -1805,7 +1815,7 @@ export class UnityCallbackFunctioner {
             });
             if (tl) {
                 //---source data
-                var cp = tl.getFrameByKey(mainData.data.clipboard.frame.index);
+                var cp = tl.getFrameByKey(clipboard.index);
                 //---destination
                 var fk = tl.getFrameByKey(cursor);
                 if (fk) {
@@ -1819,8 +1829,8 @@ export class UnityCallbackFunctioner {
                     });
                     tl.insertFrame(tmpfk.key, tmpfk);
                 }
-                if (mainData.data.clipboard.frame.mode == "cut") {
-                    tl.removeFrameByKey(mainData.data.clipboard.frame.index);
+                if (clipboard.mode == "cut") {
+                    tl.removeFrameByKey(clipboard.index);
                 }
                 //---preview this frame
                 //callback.timelineEvent.common_loadFrame(parseInt(cursor));
@@ -1911,80 +1921,86 @@ export class UnityCallbackFunctioner {
         modelLoader.setupDefaultObject();
         
         //---Return is AnimationProject.
-        var js = JSON.parse(val);
+        try {
+            var js = JSON.parse(val);
+            if (typeof js != "object") throw new Error("returned value is not JSON.");
 
-        var proj = new VVAnimationProject(js);
-        mainData.data.project.setFromUnity(proj);
-        mainData.data.project.preloadFiles = options.preload;
-
-        //---apply UI
-        mainData.elements.projdlg.pinfo.fps = proj.fps;
-        var bd = parseFloat(proj.baseDuration);
-        if (isNaN(bd)) {
-            ribbonData.elements.frame.baseDuration = 0.01;
-        }else{
-            ribbonData.elements.frame.baseDuration = fullRound(bd,1000);
-        }
-        
-        //---set up meta
-        mainData.elements.projdlg.pinfo.name = proj.meta.name;
-        mainData.elements.projdlg.pinfo.description = proj.meta.description;
-        mainData.elements.projdlg.pinfo.license = proj.meta.license;
-        mainData.elements.projdlg.pinfo.url = proj.meta.referurl;
-        mainData.elements.projdlg.pinfo.baseDuration = proj.baseDuration;
-
-        //---load project material
-        modelOperator.listload_materialFile("p",proj.materialManager);
-
-        if (mainData.elements.percentLoad.percent == 0) {
-            //---calculate percent for objects number to load.
-            const inputDatapathFromHistory = async (db, rawpath, objtype) => {
-                var result = await db.getItem(rawpath);
-                if (result) {
-
-                }
-                return result;
+            var proj = new VVAnimationProject(js);
+            mainData.data.project.setFromUnity(proj);
+            mainData.data.project.preloadFiles = options.preload;
+    
+            //---apply UI
+            mainData.elements.projdlg.pinfo.fps = proj.fps;
+            var bd = parseFloat(proj.baseDuration);
+            if (isNaN(bd)) {
+                ribbonData.elements.frame.baseDuration = 0.01;
+            }else{
+                ribbonData.elements.frame.baseDuration = fullRound(bd,1000);
             }
-            const casts = proj.casts;
-            var fullCount = 0;
-            for (var c = 0; c < casts.length; c++) {
-                var INTF = "";
-                if (casts[c].type == AF_TARGETTYPE.VRM) {
-                    INTF = INTERNAL_FILE.VRM;
-                    fullCount++;
-                }else if (casts[c].type == AF_TARGETTYPE.OtherObject) { 
-                    INTF = INTERNAL_FILE.OBJECTS;
-                    var castfile = await inputDatapathFromHistory(AppDB[INTF],casts[c].path,casts[c].type);
-                    if (castfile) {
+            
+            //---set up meta
+            mainData.elements.projdlg.pinfo.name = proj.meta.name;
+            mainData.elements.projdlg.pinfo.description = proj.meta.description;
+            mainData.elements.projdlg.pinfo.license = proj.meta.license;
+            mainData.elements.projdlg.pinfo.url = proj.meta.referurl;
+            mainData.elements.projdlg.pinfo.baseDuration = proj.baseDuration;
+    
+            //---load project material
+            modelOperator.listload_materialFile("p",proj.materialManager);
+    
+            if (mainData.elements.percentLoad.percent == 0) {
+                //---calculate percent for objects number to load.
+                const inputDatapathFromHistory = async (db, rawpath, objtype) => {
+                    var result = await db.getItem(rawpath);
+                    if (result) {
+    
+                    }
+                    return result;
+                }
+                const casts = proj.casts;
+                var fullCount = 0;
+                for (var c = 0; c < casts.length; c++) {
+                    var INTF = "";
+                    if (casts[c].type == AF_TARGETTYPE.VRM) {
+                        INTF = INTERNAL_FILE.VRM;
+                        fullCount++;
+                    }else if (casts[c].type == AF_TARGETTYPE.OtherObject) { 
+                        INTF = INTERNAL_FILE.OBJECTS;
+                        var castfile = await inputDatapathFromHistory(AppDB[INTF],casts[c].path,casts[c].type);
+                        if (castfile) {
+                            fullCount++;
+                        }
+                    }else if (casts[c].type == AF_TARGETTYPE.Image) {
+                        INTF = INTERNAL_FILE.IMAGES;
+                        fullCount++;
+                    }else if (casts[c].type == AF_TARGETTYPE.UImage) {
+                        INTF = INTERNAL_FILE.IMAGES;
                         fullCount++;
                     }
-                }else if (casts[c].type == AF_TARGETTYPE.Image) {
-                    INTF = INTERNAL_FILE.IMAGES;
-                    fullCount++;
-                }else if (casts[c].type == AF_TARGETTYPE.UImage) {
-                    INTF = INTERNAL_FILE.IMAGES;
-                    fullCount++;
+                }
+                if (fullCount == 0) {
+                    mainData.elements.percentLoad.percent = 0;
+                }else{
+                    mainData.elements.percentLoad.percent = (100.0 / parseFloat(fullCount)) / 100;
                 }
             }
-            if (fullCount == 0) {
-                mainData.elements.percentLoad.percent = 0;
-            }else{
-                mainData.elements.percentLoad.percent = (100.0 / parseFloat(fullCount)) / 100;
+            
+    
+            //---apply value to UI
+            await modelOperator.LoadAndApplyToTimelineUI(mainData.data.project);
+            callback.timelineData.states.currentcursor = 1;
+    
+            modelOperator.setTitle(mainData.states.currentProjectFilename);
+    
+            if (mainData.elements.percentLoad.percent == 0) {
+                mainData.elements.loadingTypePercent = false;
+                mainData.elements.loading = false;
+                modelOperator.common_loadFrame(1,{childkey:-1});
             }
+        }catch(e) {
+            console.error(e);
         }
         
-
-        //---apply value to UI
-        await modelOperator.LoadAndApplyToTimelineUI(mainData.data.project);
-        callback.timelineData.states.currentcursor = 1;
-
-        modelOperator.setTitle(mainData.states.currentProjectFilename);
-
-        if (mainData.elements.percentLoad.percent == 0) {
-            mainData.elements.loadingTypePercent = false;
-            mainData.elements.loading = false;
-            modelOperator.common_loadFrame(1,{childkey:-1});
-        }
     }
     async saveproject(val,options) {
         /**
@@ -2415,7 +2431,7 @@ export class UnityCallbackFunctioner {
 
             appPrompt(callback.t("msg_motion_save"),(fname)=>{
                 googlemeta["name"] = fname + (fname.indexOf(FILEEXTENSION_MOTION) > -1 ? "" : FILEEXTENSION_MOTION)
-                enterSave(val);
+                enterSave(js);
             });
         }
 

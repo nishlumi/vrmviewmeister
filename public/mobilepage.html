@@ -777,17 +777,40 @@
                         </div>
                     </template>
                     <div class="ribbon-group-sep"></div>
-                    <div class="ribbon-group common_ui_off">
+                    <div class="ribbon-group xcommon_ui_off">
                         <div class="ribbon-toolbar">
                             <q-btn flat dense icon="supervised_user_circle" :label="$t('connect_vroidhub')" no-caps 
                                 @click="ribbonEvent.RibbonFuncModel('connect_vroidhub')"
                             ></q-btn>
                             <br>
-                            <q-btn flat dense icon="list" :label="$t('ribbon_capture_list')" no-caps 
+                            <q-btn flat dense icon="list" :label="$t('ribbon_capture_list')+'...'" no-caps 
                                 :disable="!mainData.states.vroidhub_api"
-                                @click="ribbonEvent.RibbonFuncModel('list_vroidhub')"
-                            ></q-btn>
+                                
+                            >
+                                <q-menu>
+                                    <q-list>
+                                        <q-item clickable v-close-popup
+                                            @click="ribbonEvent.RibbonFuncModel('list_models_vroidhub')"
+                                        >
+                                            <q-item-section>{{ $t('Usercreated_vrh') }}</q-item-section>
+                                        </q-item>
+                                        <q-separator></q-separator>
+                                        <q-item clickable v-close-popup
+                                            @click="ribbonEvent.RibbonFuncModel('list_hearts_vroidhub')"
+                                        >
+                                            <q-item-section>{{ $t('hearted_vrh') }}</q-item-section>
+                                        </q-item>
+                                        <q-separator></q-separator>
+                                        <q-item clickable v-close-popup
+                                            @click="ribbonEvent.RibbonFuncModel('list_staffpicks_vroidhub')"
+                                        >
+                                            <q-item-section>{{ $t('staffpicked_vrh')}}</q-item-section>
+                                        </q-item>
+                                    </q-list>
+                                </q-menu>
+                            </q-btn>
                         </div>
+                        
                         <div class="ribbon-group-title">VRoidHub</div>
                     </div>
 
@@ -1468,11 +1491,13 @@
                     </div>
                     <div class="col-7">
                         <q-toolbar class="bg-white text-primary">
-                            <q-btn flat round dense :disable="true" icon="group_off" @click="ribbonEvent.RibbonFuncAnimation('bone_select_alloff')"><q-tooltip>{{ $t('bone_select_alloff') }}</q-tooltip></q-btn>
-                            <q-btn flat round dense :disable="true" icon="accessibility_new" @click="ribbonEvent.RibbonFuncAnimation('bone_select_all')"><q-tooltip>{{ $t('bone_select_all') }}</q-tooltip></q-btn>
-                            <q-btn flat round dense :disable="true" icon="transfer_within_a_station" @click="ribbonEvent.RibbonFuncAnimation('bone_select_ikparent')"><q-tooltip>{{ $t('bone_select_ikparent') }}</q-tooltip></q-btn>
-                            <q-btn flat round dense :disable="true" icon="sensor_occupied" @click="ribbonEvent.RibbonFuncAnimation('bone_select_body')"><q-tooltip>{{ $t('bone_select_body') }}</q-tooltip></q-btn>
-                            <q-btn flat round dense :disable="true" icon="airline_seat_legroom_normal" @click="ribbonEvent.RibbonFuncAnimation('bone_select_hips')"><q-tooltip>{{ $t('bone_select_hips') }}</q-tooltip></q-btn>
+                            <q-btn flat round dense :disable="ribbonData.states.boneDisabled" icon="group_off" @click="ribbonEvent.RibbonFuncAnimation('bone_select_alloff')"><q-tooltip>{{ $t('bone_select_alloff') }}</q-tooltip></q-btn>
+                            <template v-if="ribbonData.states.boneForVRM == true">
+                                <q-btn flat round dense :disable="ribbonData.states.boneDisabled" icon="accessibility_new" @click="ribbonEvent.RibbonFuncAnimation('bone_select_all')"><q-tooltip>{{ $t('bone_select_all') }}</q-tooltip></q-btn>
+                                <q-btn flat round dense :disable="ribbonData.states.boneDisabled" icon="visibility" @click="ribbonEvent.RibbonFuncAnimation('bone_select_eye')"><q-tooltip>{{ $t('bone_select_eye') }}</q-tooltip></q-btn>
+                                <q-btn flat round dense :disable="ribbonData.states.boneDisabled" icon="sensor_occupied" @click="ribbonEvent.RibbonFuncAnimation('bone_select_body')"><q-tooltip>{{ $t('bone_select_body') }}</q-tooltip></q-btn>
+                                <q-btn flat round dense :disable="ribbonData.states.boneDisabled" icon="airline_seat_legroom_normal" @click="ribbonEvent.RibbonFuncAnimation('bone_select_hips')"><q-tooltip>{{ $t('bone_select_hips') }}</q-tooltip></q-btn>
+                            </template>
                         </q-toolbar>
                     </div>
                 </div>
@@ -1520,7 +1545,7 @@
                                     :key="index"
                                 >
                                     <q-item-section side top>
-                                        <q-checkbox  v-model="ribbonData.elements.frame.bonelist.selection" :disable="true" :val="item.id"></q-checkbox>
+                                        <q-checkbox  v-model="ribbonData.elements.frame.bonelist.selection" :disable="ribbonData.states.boneDisabled" :val="item.id"></q-checkbox>
                                     </q-item-section>
                             
                                     <q-item-section>
@@ -6380,7 +6405,68 @@
                 </q-card-actions>
             </q-card>
         </q-dialog>
-
+        <q-dialog style="z-index:2000;"
+            v-model="mainData.elements.vroidhubSelector.show"
+            :maximized="mainData.elements.vroidhubSelector.maximized"
+            :full-width="mainData.elements.vroidhubSelector.fullwidth"
+            :full-height="mainData.elements.vroidhubSelector.fullheight"
+        >
+            <q-card :style="mainData.elements.vroidhubSelector.style">
+                <q-toolbar class="bg-primary text-white">
+                    <q-btn flat round dense icon="refresh" 
+                        @click="vroidhubSelectorEvent.list_reloaded"
+                    >
+                        <q-tooltip v-text="$t('refresh')"></q-tooltip>
+                    </q-btn>
+                    <q-circular-progress
+                        v-if="mainData.elements.vroidhubSelector.loading"
+                        indeterminate
+                        :thickness="0.2"
+                        color="lime"
+                        center-color="grey-8"
+                        track-color="transparent"
+                        class="q-ma-md"
+                    ></q-circular-progress>
+                    
+                    <q-toolbar-title>VRoidHub [{{ mainData.elements.vroidhubSelector.kind }}]</q-toolbar-title>
+                </q-toolbar>
+                <q-card-section class="q-ma-none q-pa-none project-selector-mainbody scroll">
+                    <div class="row" v-if="mainData.elements.vroidhubSelector.files.length > 0">
+                        <div class="col-12">
+                            <div class="row items-start">
+                                <div class="col-6 col-sm-4 col-md-3" v-for="item in mainData.elements.vroidhubSelector.files">
+                                    <q-img 
+                                        :src="vroidhubSelectorEvent.cmp_item_thumbnail(item)"
+                                        spinner-color="red" v-ripple 
+                                        class="q-pa-xs"
+                                        @click="vroidhubSelectorEvent.item_onclick(item)"
+                                    >
+                                        <div class="absolute-top-left text-h4">
+                                            <q-icon :name="item.selectStyle"></q-icon>
+                                        </div>
+                                        <div class="absolute-bottom text-subtitle1 text-center">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    {{ item.data.character.name }}<br>
+                                                    {{ item.data.character.user.name }}
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                        <q-tooltip>{{ item.data.name }}</q-tooltip>
+                                    </q-img>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </q-card-section>
+                <q-card-actions align="right">
+                    <q-btn flat class="bg-primary text-white" label="OK" @click="vroidhubSelectorEvent.onclick_ok_vroidhubSelector" :disabled="mainData.elements.vroidhubSelector.selected == ''"></q-btn>
+                    <q-btn flat :label="$t('cons_cancel')" @click="mainData.elements.vroidhubSelector.show=false"></q-btn>
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
         
         
     </q-layout>
@@ -6405,7 +6491,7 @@
     <script src="static/lib/quasar/lang/ja.umd.prod.js"></script>
     <script src="static/lib/quasar/lang/eo.umd.prod.js"></script>
     <script src="static/lib/quasar/lang/en-US.umd.prod.js"></script>
-    <script src="static/lib/interactjs/interact.min.js"></script>
+    <!--script src="static/lib/interactjs/interact.min.js"></script-->
     <script src="static/lib/localforage.min.js"></script>
     <script src="static/lib/jsuites/jspreadsheet.js"></script>
     <script src="static/lib/jsuites/jsuites.js"></script>

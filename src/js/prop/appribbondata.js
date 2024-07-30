@@ -192,7 +192,8 @@ export class appDataRibbon {
             }
         };
         this.states = {
-            
+            boneDisabled : false,
+            boneForVRM : false,
         };
         this.data = {
 

@@ -81,7 +81,7 @@
                 <div class="col-2">
                     <q-icon name="east" style="margin-left:25%;margin-top:25%;"></q-icon>
                 </div>
-                <div class="col-6">
+                <div class="col-5">
                     <q-input v-model="data.elements.destinationFrameIndex" dense filled 
                         :label="_T('destination_frame')" type="number"
                         :min="1" :max="data.states.maxframeNumber" :step="1"
@@ -89,11 +89,25 @@
                         :disable="data.states.disable"
                     ></q-input>
                 </div>
-                <div class="col-4 q-pl-md">
-                    <q-btn round icon="move_down" size="md"
+                <div class="col-5 q-pl-md">
+                    <q-btn flat round icon="move_down" size="sm"
                         @click="editframeno_onclick"
                         :disable="data.states.disableFrameBtn"
-                    ></q-btn>
+                    >
+                        <q-tooltip>{{ _T('cons_move') }}</q-tooltip>
+                    </q-btn>
+                    <q-btn flat round icon="content_copy" size="sm"
+                        @click="duplicatekeyframes_onclick" class="q-ml-sm"
+                        :disable="data.states.disableFrameBtn"
+                    >
+                        <q-tooltip>{{ _T('cons_duplicate') }}</q-tooltip>
+                    </q-btn>
+                    <q-btn flat round icon="delete" size="sm"
+                        @click="removekeyframes_onclick" class="q-pl-sm"
+                        
+                    >
+                        <q-tooltip>{{ _T('tl_utl_del1') }}</q-tooltip>
+                    </q-btn>
                 </div>
             </div>
             <q-tabs v-model="data.elements.tab.selection"
@@ -191,14 +205,14 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-4 q-pr-sm">
-                            <q-input v-model.number="data.elements.position.x" @update:model-value="transform_onchange" type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                        <div class="col-3 q-pr-sm">
+                            <q-input v-model.number="data.elements.position.x"  type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
                         </div>
-                        <div class="col-4 q-pr-sm">
-                            <q-input v-model.number="data.elements.position.y" @update:model-value="transform_onchange" type="number" label="Y" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                        <div class="col-3 q-pr-sm">
+                            <q-input v-model.number="data.elements.position.y"  type="number" label="Y" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
                         </div>
-                        <div class="col-4">
-                            <q-input v-model.number="data.elements.position.z" @update:model-value="transform_onchange" type="number" label="Z" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                        <div class="col-3">
+                            <q-input v-model.number="data.elements.position.z"  type="number" label="Z" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
                         </div>
                     </div>
                     <div class="row">
@@ -208,14 +222,24 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-4 q-pr-sm">
-                            <q-input v-model.number="data.elements.rotation.x" @update:model-value="transform_onchange" type="number" label="X" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                        <div class="col-3 q-pr-sm">
+                            <q-input v-model.number="data.elements.rotation.x"  type="number" label="X" dense :min="-180.0" :max="180.0" :step="1"></q-input>
                         </div>
-                        <div class="col-4 q-pr-sm">
-                            <q-input v-model.number="data.elements.rotation.y" @update:model-value="transform_onchange" type="number" label="Y" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                        <div class="col-3 q-pr-sm">
+                            <q-input v-model.number="data.elements.rotation.y"  type="number" label="Y" dense :min="-180.0" :max="180.0" :step="1"></q-input>
                         </div>
-                        <div class="col-4">
-                            <q-input v-model.number="data.elements.rotation.z" @update:model-value="transform_onchange" type="number" label="Z" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                        <div class="col-3">
+                            <q-input v-model.number="data.elements.rotation.z"  type="number" label="Z" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                        </div>
+                        <div class="col-2 offset-1">
+                            <q-btn round icon="send" size="md"
+                                @click="transform_onchange"
+                                
+                            >
+                                <q-tooltip>
+                                    {{ _T('cons_apply') }}
+                                </q-tooltip>
+                            </q-btn>
                         </div>
                     </div>
                 </q-tab-panel>

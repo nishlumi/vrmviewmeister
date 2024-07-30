@@ -30,7 +30,7 @@ import messages from "../locales";
 import { defineChildManager } from "./model/childman.js";
 import { defineMaterialPropertyUI } from "./prop/cls_matprop.js";
 import { defineNavigationDlg } from "./navwin.js";
-import { VRoidHubConnector } from "./model/vroidhub.js";
+import { defineVroidhubSelector, VRoidHubConnector } from "./model/vroidhub.js";
 import { defineMobileOperator } from "./model/mblope.js";
 import { defineUswipeInput } from "../uswipeinput.js";
 import { definePoseMotionDlg } from "./posedlg.js";
@@ -114,6 +114,8 @@ const app = Vue.createApp({
         const { 
             mat_realtoon,UIMaterials
         } = defineMaterialPropertyUI(app, Quasar, objpropData, objpropEvent);
+
+        const {vroidhubSelectorEvent} = defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelLoader, modelOperator, UnityCallback);
 
         //===set up the other referrence
         UnityCallback.timelineEvent = timelineEvent;
@@ -431,6 +433,7 @@ const app = Vue.createApp({
             timelineEvent,
             projectdlgEvent,
             projectSelectorEvent,
+            vroidhubSelectorEvent,
 
             //---method, properties
             modelLoader, modelOperator, dnd,UnityCallback, childman,

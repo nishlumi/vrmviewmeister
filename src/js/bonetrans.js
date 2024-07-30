@@ -5,7 +5,7 @@ import { VVAvatar } from "./prop/cls_vvavatar.js";
 
 const template = `
 <div ref="btpdlg" v-show="show" :class="data.elements.panelCSS" class="rounded-borders shadow-2" :style="data.elements.win.styles">
-    <div ref="btpdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
+    <div ref="btpdlg_bar" v-touch-pan.prevent.mouse="handlePan" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
         <div class="row">
             <div>{{ $t('title_bonetransform') }}</div>
             <q-space></q-space>
@@ -114,20 +114,24 @@ export function defineBonetranDlg(app, Quasar) {
                     {target:avatar.value.id,method:'GetIKTransformAll'},
                     "alliktransform",QD_INOUT.returnJS,
                     (val) => {
+                        const mathr = (val) => {
+                            const deci = 100000;
+                            return Math.round(val * deci) / deci;
+                        }
                         var js = JSON.parse(val);
 
                         for (var i = 0; i < js.list.length; i++) {
                             data.value.elements.spreadsheet.setValueFromCoords(
                                 1, i,
-                                js.list[i].position.x
+                                mathr(js.list[i].position.x)
                             );
                             data.value.elements.spreadsheet.setValueFromCoords(
                                 2, i,
-                                js.list[i].position.y
+                                mathr(js.list[i].position.y)
                             );
                             data.value.elements.spreadsheet.setValueFromCoords(
                                 3, i,
-                                js.list[i].position.z
+                                mathr(js.list[i].position.z)
                             );
                             data.value.elements.spreadsheet.setValueFromCoords(
                                 4, i,
@@ -245,8 +249,18 @@ export function defineBonetranDlg(app, Quasar) {
                 mirrorLR(IKBoneType.RightLeg, IKBoneType.LeftLeg);
             }
 
+            const handlePan = ({ evt, ...newInfo }) => {
+                var dx = newInfo.delta.x;
+                var dy = newInfo.delta.y;
+                data.value.elements.win.position.x += dx;
+                data.value.elements.win.position.y += dy;
+            
+                btpdlg.value.style.transform =
+                    `translate(${data.value.elements.win.position.x}px, ${data.value.elements.win.position.y}px)`;
+            }
 
             Vue.onMounted(() => {
+                /*
                 interact(btpdlg_bar.value).draggable({
                     modifiers: [
                         interact.modifiers.restrict({
@@ -267,6 +281,7 @@ export function defineBonetranDlg(app, Quasar) {
                         },
                     },
                 });
+                */
 
                 //---spreadsheet
                 var bonedata = [];
@@ -317,7 +332,7 @@ export function defineBonetranDlg(app, Quasar) {
 
             return {
                 show,data,
-                close_onclick,
+                close_onclick,handlePan,
                 reload_onclick,apply_onclick,mirrorpose_onclick,
                 //element--------------
                 btpdlg,btpdlg_bar,spr,

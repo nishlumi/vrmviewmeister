@@ -12,7 +12,7 @@ import { AF_TARGETTYPE, UserAnimationEase } from "../res/appconst.js";
  */
 const template = `
 <div ref="nvdlg" v-show="show" class="rounded-borders shadow-2" :style="nvapp.elements.win.styles">
-    <div ref="nvdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
+    <div ref="nvdlg_bar" v-touch-pan.prevent.mouse="handlePan" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
         <div class="row">
             <div>{{ $t('navigation window') }}</div>
             <q-space></q-space>
@@ -336,10 +336,22 @@ export function defineNavigationDlg(app, Quasar) {
                     draw_selectRect(cvlay_cursor.value, ctx.cur, selrect, nvapp.data.menseki.sa);
                 }
             }
+
+            const handlePan = ({ evt, ...newInfo }) => {
+                var dx = newInfo.delta.x;
+                var dy = newInfo.delta.y;
+                nvapp.elements.win.position.x += event.dx
+                nvapp.elements.win.position.y += event.dy
+            
+                nvdlg.value.style.transform =
+                    `translate(${nvapp.elements.win.position.x}px, ${nvapp.elements.win.position.y}px)`;
+            }
+
             //===lifecycle=================================================================
             Vue.onBeforeMount(() => {
             });
             Vue.onMounted(() => {
+                /*
                 interact(nvdlg_bar.value).draggable({
                     modifiers: [
                         interact.modifiers.restrict({
@@ -360,6 +372,7 @@ export function defineNavigationDlg(app, Quasar) {
                         },
                     },
                 });
+                */
                 
 
                 ctx.bg = cvlay_bg.value.getContext("2d");
@@ -385,6 +398,7 @@ export function defineNavigationDlg(app, Quasar) {
                 reloadWebGL,setupSelectRect,getMenseki,checkResolution,
                 draw_preview,draw_selectRect,
                 //---event---
+                handlePan,
                 close_onclick,originalsize_onclick,resetcamera_onclick,
                 canvas_cursor_pointerdown,canvas_cursor_pointermove,
             }

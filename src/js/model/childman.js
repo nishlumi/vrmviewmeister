@@ -690,6 +690,12 @@ export class ChildManager {
             case "editframeno_onclick":
                 this.keyframe_editframeno_onclick(dt.params);
                 break;
+            case "duplicatekeyframes_onclick":
+                this.keyframe_duplicatekeyframes_onclick(dt.params);
+                break;
+            case "removekeyframes_onclick":
+                this.keyframe_removekeyframes_onclick(dt.params);
+                break;
             case "copysumduration_onclick":
                 this.keyframe_copysumduration_onclick(dt.param);
                 break;
@@ -824,6 +830,44 @@ export class ChildManager {
                 },
                 {oldindex: parseInt(params[i].oldindex), newindex: parseInt(params[i].newindex)}
             ));
+        }
+        AppQueue.start();
+        this.mainData.states.currentEditOperationCount++;
+    }
+    keyframe_duplicatekeyframes_onclick(params) {
+        for (var i = 0; i < params.length; i++) {
+            var param = `${params[i].roleName},${params[i].type},${params[i].oldindex},0`;
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'CopyFrame',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            var param2 = `${params[i].roleName},${params[i].type},${params[i].newindex}`;
+            var clipboard = {
+                mode : "copy",
+                index : params[i].oldindex,
+                roleName : params[i].roleName,
+                roleType : params[i].type
+            };
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'PasteFrame',param:param2},
+                "paste_keyframe",QD_INOUT.returnJS,
+                this.UnityCallback.paste_keyframe,
+                {callback:this.UnityCallback,clipboard}
+            ));            
+        }
+        AppQueue.start();
+        this.mainData.states.currentEditOperationCount++;
+    }
+    keyframe_removekeyframes_onclick(params) {
+        for (var i = 0; i < params.length; i++) {
+            var avatarId = params[i].roleName;
+            var avatarType = params[i].type;
+            var cur_frame = params[i].oldindex;
+            this.modelOperator.removeKeyframes(avatarId, avatarType, cur_frame, {
+                movetype: AF_MOVETYPE.Rest,
+                isBatch: true
+            });
         }
         AppQueue.start();
         this.mainData.states.currentEditOperationCount++;

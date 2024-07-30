@@ -39,19 +39,30 @@
 </head>
 <body>
     <div id="q-app" v-cloak>
-        <q-header  reveal elevated bordered>
-
-        </q-header>
-        <q-page-container>
-            <q-page>
+        <div class="row q-pt-sm navwin-layerparent">
+            <div class="col-12 navwin-layergrid">
                 <div class="navwin-layer1">
-                    <canvas ref="cvlay_bg"></canvas>
+                    <canvas ref="cvlay_bg"
+                        :width="nvapp.elements.canvas.width" 
+                        :height="nvapp.elements.canvas.height"
+                    ></canvas>
                 </div>
                 <div class="navwin-layer2">
-                    <canvas ref="cvlay_cursor"></canvas>
+                    <canvas ref="cvlay_cursor"
+                        :width="nvapp.elements.canvas.width" 
+                        :height="nvapp.elements.canvas.height"
+                        @pointerdown="canvas_cursor_pointerdown"
+                        @pointermove="canvas_cursor_pointermove"
+                    ></canvas>
                 </div>
-            </q-page>
-        </q-page-container>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <q-btn flat dense color="primary" :label="$t('ribbon_recover_screensize')" @click="originalsize_onclick" no-caps ></q-btn>
+                <q-btn flat dense icon="restart_alt" color="primary" :label="$t('ribbon_screen_camerareset')" @click="resetcamera_onclick" no-caps ></q-btn>
+            </div>
+        </div>
     </div>
 
     <script src="../../lib/vue/vue.global.prod.js"></script>

@@ -615,7 +615,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.start();
-            is_closepanel = true;
+            is_closepanel = false;
         }else if (ename == "showikmarker") {
             var param = options.isOn ? 1 : 0;
             AppQueue.add(new queueData(
@@ -633,7 +633,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             }
 
             AppQueue.start();
-            is_closepanel = true;
+            is_closepanel = false;
         }else if (ename == "ikmarkersize") {
             var param = parseFloat(options.size);
             AppQueue.add(new queueData(
@@ -1123,14 +1123,101 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             }
             is_closepanel = true;
         }else if (ename == "connect_vroidhub") {
-            mainData.vroidhubapi.generateAuthLink();
+            mainData.vroidhubapi.generateAuthLink(mainData);
             is_closepanel = true;
-        }else if (ename == "list_vroidhub") {
-            mainData.vroidhubapi.list_character_models({})
+        }else if (ename == "list_models_vroidhub") {
+            var options = {};
+            
+            mainData.vroidhubapi.list_character_models(options)
             .then(res => {
                 console.log(res);
-                is_closepanel = true;
-            })
+                if (res.cd == 0) {
+                    mainData.vroidhubdata["list_models"] = res;
+                    is_closepanel = true;
+    
+                    mainData.elements.vroidhubSelector.kindName = "My models";
+                    mainData.elements.vroidhubSelector.kind = "models";
+                    if ("maxid" in res.next) mainData.elements.vroidhubSelector.next.maxid = res.next.maxid;
+                    if ("previd" in res.next) mainData.elements.vroidhubSelector.next.previd = res.next.previd;
+                    mainData.elements.vroidhubSelector.rand = res.rand;
+    
+                    mainData.elements.vroidhubSelector.files = res.data.map(v => {
+                        return {
+                            data: v,
+                            selectStyle: ""
+                        }
+                    });
+                    mainData.elements.vroidhubSelector.show = !mainData.elements.vroidhubSelector.show;
+                }else if (res.cd == 401){
+                    appAlert(t("msg_vrh401"));
+                }
+                
+            });
+        }else if (ename == "list_hearts_vroidhub") {
+            var options = {};
+            
+            mainData.vroidhubapi.list_hearts(options)
+            .then(res => {
+                console.log(res);
+                if (res.cd == 0) {
+                    mainData.vroidhubdata["list_models"] = res;
+                    is_closepanel = true;
+
+                    mainData.elements.vroidhubSelector.kindName = "Hearts";
+                    mainData.elements.vroidhubSelector.kind = "hearts";
+
+                    mainData.elements.vroidhubSelector.files = res.data.map(v => {
+                        return {
+                            data: v,
+                            selectStyle: ""
+                        }
+                    });
+                    mainData.elements.vroidhubSelector.show = !mainData.elements.vroidhubSelector.show;
+                }else if (res.cd == 401){
+                    appAlert(t("msg_vrh401"));
+                }
+            });
+        }else if (ename == "list_staffpicks_vroidhub") {
+            var options = {};
+            
+            mainData.vroidhubapi.list_staff_picks(options)
+            .then(res => {
+                console.log(res);
+                if (res.cd == 0) {
+                    mainData.vroidhubdata["list_models"] = res;
+                    is_closepanel = true;
+
+                    mainData.elements.vroidhubSelector.kindName = "Staff picks";
+                    mainData.elements.vroidhubSelector.kind = "staffpicks";
+                    mainData.elements.vroidhubSelector.files = res.data.map(v => {
+                        return {
+                            data: v,
+                            selectStyle: ""
+                        }
+                    });
+                    mainData.elements.vroidhubSelector.show = !mainData.elements.vroidhubSelector.show;
+                }else if (res.cd == 401){
+                    appAlert(t("msg_vrh401"));
+                }
+            });
+        }else if (ename == "download_vroidhub"){
+            appPrompt("character model id?", async (val) => {
+                if (val) {
+                    var ret = await mainData.vroidhubapi.request_download_licenses({
+                        character_model_id: val
+                    });
+                    console.log(ret);
+                    mainData.vroidhubdata["license"] = ret;
+                }
+            });
+        }else if (ename == "realdownload_vroidhub"){
+            appPrompt("real character model id?", async (val) => {
+                if (val) {
+                    var ret = await mainData.vroidhubapi.download_model(val);
+                    console.log(ret);
+                    mainData.vroidhubdata["real"] = ret;
+                }
+            });
         }
 
         if (is_closepanel) close_tabpanel();
@@ -1151,40 +1238,53 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 is_closepanel = true;
             });
         }else if (ename == "openproject") {
-            if (options.type == "f") {
-                Sub_openfile("ap","PROJECT");
-            }else if (options.type == "i") {
-                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
-                mainData.elements.projectSelector.selectTypeName = FILEOPTION.PROJECT.types[0].description;
-                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.PROJECT;
-                mainData.elements.projectSelector.selectType = FILEOPTION.PROJECT.types;
-                modelOperator.enumerateFilesToProjectSelector("PROJECT");
-                /*
-                mainData.elements.projectSelector.files.splice(0,mainData.elements.projectSelector.files.length);
-                AppDB.scene_meta.iterate((value,key,num)=>{
-                    console.log(key,value,num);
-                    mainData.elements.projectSelector.files.push({
-                        fullname : value.fullname,
-                        name : value.name,
-                        size : value.size,
-                        createdDate : value.createdDate.toLocaleString(),
-                        updatedDate : value.updatedDate.toLocaleString(),
-                    });
-                })
-                .then(res => {
-                    //mainData.elements.projectSelector.selected = mainData.elements.projectSelector.files[0];
-                });*/
-                mainData.elements.projectSelector.show = true;
-            }else if (options.type == "g") {
-                mainData.elements.loading = true;
-                mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
-                mainData.elements.projectSelector.selectTypeName = FILEOPTION.PROJECT.types[0].description;
-                mainData.elements.projectSelector.selectDB = INTERNAL_FILE.PROJECT;
-                mainData.elements.projectSelector.selectType = FILEOPTION.PROJECT.types;
-                modelOperator.enumerateFilesToProjectSelector("PROJECT");
-                mainData.elements.projectSelector.show = true;
+            if (mainData.states.currentEditOperationCount == 0) {
+                if (options.type == "f") {
+                    Sub_openfile("ap","PROJECT");
+                }else if (options.type == "i") {
+                    mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
+                    mainData.elements.projectSelector.selectTypeName = FILEOPTION.PROJECT.types[0].description;
+                    mainData.elements.projectSelector.selectDB = INTERNAL_FILE.PROJECT;
+                    mainData.elements.projectSelector.selectType = FILEOPTION.PROJECT.types;
+                    modelOperator.enumerateFilesToProjectSelector("PROJECT");
+                    /*
+                    mainData.elements.projectSelector.files.splice(0,mainData.elements.projectSelector.files.length);
+                    AppDB.scene_meta.iterate((value,key,num)=>{
+                        console.log(key,value,num);
+                        mainData.elements.projectSelector.files.push({
+                            fullname : value.fullname,
+                            name : value.name,
+                            size : value.size,
+                            createdDate : value.createdDate.toLocaleString(),
+                            updatedDate : value.updatedDate.toLocaleString(),
+                        });
+                    })
+                    .then(res => {
+                        //mainData.elements.projectSelector.selected = mainData.elements.projectSelector.files[0];
+                    });*/
+                    mainData.elements.projectSelector.show = true;
+                }else if (options.type == "g") {
+                    mainData.elements.loading = true;
+                    mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.GOOGLEDRIVE;
+                    mainData.elements.projectSelector.selectTypeName = FILEOPTION.PROJECT.types[0].description;
+                    mainData.elements.projectSelector.selectDB = INTERNAL_FILE.PROJECT;
+                    mainData.elements.projectSelector.selectType = FILEOPTION.PROJECT.types;
+                    modelOperator.enumerateFilesToProjectSelector("PROJECT");
+                    mainData.elements.projectSelector.show = true;
+                }
+                is_closepanel = true;
+            }else{
+                appConfirm(t("msg_openproject_warning"),()=> {
+                    //---reset and re-create project
+                    modelOperator.newProject();
+                    AppQueue.start();
+
+                    modelLoader.setupDefaultObject();
+                    modelOperator.destroy_materialFile(true);
+                    
+                });
             }
-            is_closepanel = true;
+            
         }else if (ename == "saveproject") {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'SaveProject'},
@@ -1310,16 +1410,19 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ribbonData.elements.frame.bonelist.selection.splice(0, ribbonData.elements.frame.bonelist.selection.length);
             is_closepanel = true;
         }else if (ename == "bone_select_all") {
-            for (var i = IKBoneType.IKParent; i < IKBoneType.LeftHandPose; i++) {
+            for (var i = IKBoneType.IKParent; i < IKBoneType.RightLeg+1; i++) {
                 modelOperator.selectSpecifyBoneForRegister(i);
             }
             is_closepanel = true;
         }else if (ename == "bone_select_ikparent") {
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.IKParent);
-        }else if (ename == "bone_select_body") {
+        }else if (ename == "bone_select_eye") {
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.EyeViewHandle);
-            modelOperator.selectSpecifyBoneForRegister(IKBoneType.Head);
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.LookAt);
+        }else if (ename == "bone_select_body") {
+            //modelOperator.selectSpecifyBoneForRegister(IKBoneType.EyeViewHandle);
+            modelOperator.selectSpecifyBoneForRegister(IKBoneType.Head);
+            //modelOperator.selectSpecifyBoneForRegister(IKBoneType.LookAt);
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.Chest);
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.Aim);
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.LeftShoulder);
@@ -1364,11 +1467,12 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             };
         }else if (ename == "pasteframe") {
             var param = `${mainData.states.selectedCast.roleName},${mainData.states.selectedCast.type},${timelineData.states.currentcursor}`;
+            var clipboard = mainData.data.clipboard.frame;
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'PasteFrame',param:param},
                 "paste_keyframe",QD_INOUT.returnJS,
                 callback.paste_keyframe,
-                {callback}
+                {callback,clipboard}
             ));
             AppQueue.start();
         }else if (ename == "addallkeyframe") {

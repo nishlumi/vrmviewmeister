@@ -193,14 +193,25 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                     }
 
                     //---call Unity
-                    AppQueue.add(new queueData(
-                        {target:AppQueue.unity.ManageAnimation,method:'LoadProject',param:JSON.stringify(originalresult)},
-                        "openproject",QD_INOUT.returnJS,
-                        callback.openproject,
-                        {callback, preload: originalresult.preloadFiles}
-                    ));
-                    AppQueue.start();
+                    //---execute new project from HTML
+                    //modelOperator.newProject();
+
+                    //modelLoader.setupDefaultObject();
+                    //modelOperator.destroy_materialFile(true);
+                    //---execute from Unity at here
+                    modelOperator.newProjectAndOpenProject(originalresult);
                     mainData.elements.projectSelector.show = false;
+                    /*then((nppret) => {
+                        AppQueue.add(new queueData(
+                            {target:AppQueue.unity.ManageAnimation,method:'LoadProject',param:JSON.stringify(originalresult)},
+                            "openproject",QD_INOUT.returnJS,
+                            callback.openproject,
+                            {callback, preload: originalresult.preloadFiles}
+                        ));
+                        AppQueue.start();
+                        
+                    });*/
+                    
                 }else{
                     var isJudge = true;
                     if (VFileHelper.flags.isHistoryFSAA && VFileHelper.flags.isEnableFSAA) {
@@ -254,6 +265,8 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                                         if (vos.storageType == STORAGE_TYPE.LOCAL) {
                                             ishit_local = true;
                                         }else if (vos.storageType == STORAGE_TYPE.INTERNAL) {
+                                            ishit_local = false;
+                                        }else if (vos.storageType == STORAGE_TYPE.VROIDHUB) {
                                             ishit_local = false;
                                         }
                                     }else{

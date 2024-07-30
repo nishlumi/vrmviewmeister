@@ -1,6 +1,6 @@
 import { AnimationRegisterOptions, AnimationTransformRegisterOptions } from "./prop/cls_unityrel.js";
 import { VVAvatar,  VVCast,  VVTimelineTarget } from "./prop/cls_vvavatar.js";
-import { AF_TARGETTYPE, UserAnimationEase } from "../res/appconst.js";
+import { AF_MOVETYPE, AF_TARGETTYPE, UserAnimationEase } from "../res/appconst.js";
 
 /*
     KeyFrame Editing dialog
@@ -12,7 +12,7 @@ import { AF_TARGETTYPE, UserAnimationEase } from "../res/appconst.js";
  */
 const template = `
 <div ref="kfdlg" v-show="show" class="rounded-borders shadow-2" :style="kfapp.elements.win.styles">
-    <div ref="kfdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
+    <div ref="kfdlg_bar" v-touch-pan.prevent.mouse="handlePan" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
         <div class="row">
             <div>{{ $t('edit keyframe') }}</div>
             <q-space></q-space>
@@ -55,7 +55,7 @@ const template = `
             <div class="col-2">
                 <q-icon name="east" style="margin-left:25%;margin-top:25%;"></q-icon>
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <q-input v-model="kfapp.elements.destinationFrameIndex" dense filled 
                     :label="$t('destination_frame')" type="number"
                     :min="1" :max="maxframeNumber" :step="1"
@@ -63,11 +63,27 @@ const template = `
                     :disable="kfapp.states.disable"
                 ></q-input>
             </div>
-            <div class="col-4 q-pl-md">
-                <q-btn round icon="move_down" size="md"
+        </div>
+        <div class="row">
+            <div class="col-6 offset-6">
+                <q-btn flat round icon="move_down" size="md"
                     @click="editframeno_onclick"
                     :disable="kfapp.states.disableFrameBtn"
-                ></q-btn>
+                >
+                    <q-tooltip>{{ $t('cons_move') }}</q-tooltip>
+                </q-btn>
+                <q-btn flat round icon="content_copy" size="md"
+                    @click="duplicatekeyframes_onclick" class="q-pl-sm"
+                    :disable="kfapp.states.disableFrameBtn"
+                >
+                    <q-tooltip>{{ $t('cons_duplicate') }}</q-tooltip>
+                </q-btn>
+                <q-btn flat round icon="delete" size="md"
+                    @click="removekeyframes_onclick" class="q-pl-sm"
+                    
+                >
+                    <q-tooltip>{{ $t('tl_utl_del1') }}</q-tooltip>
+                </q-btn>
             </div>
         </div>
         <q-tabs v-model="kfapp.elements.tab.selection"
@@ -165,14 +181,14 @@ const template = `
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-4 q-pr-sm">
-                        <q-input v-model.number="kfapp.elements.position.x" @update:model-value="transform_onchange" type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                    <div class="col-3 q-pr-sm">
+                        <q-input v-model.number="kfapp.elements.position.x"  type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
                     </div>
-                    <div class="col-4 q-pr-sm">
-                        <q-input v-model.number="kfapp.elements.position.y" @update:model-value="transform_onchange" type="number" label="Y" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                    <div class="col-3 q-pr-sm">
+                        <q-input v-model.number="kfapp.elements.position.y"  type="number" label="Y" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
                     </div>
-                    <div class="col-4">
-                        <q-input v-model.number="kfapp.elements.position.z" @update:model-value="transform_onchange" type="number" label="Z" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                    <div class="col-3">
+                        <q-input v-model.number="kfapp.elements.position.z" type="number" label="Z" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
                     </div>
                 </div>
                 <div class="row">
@@ -182,14 +198,24 @@ const template = `
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-4 q-pr-sm">
-                        <q-input v-model.number="kfapp.elements.rotation.x" @update:model-value="transform_onchange" type="number" label="X" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                    <div class="col-3 q-pr-sm">
+                        <q-input v-model.number="kfapp.elements.rotation.x"  type="number" label="X" dense :min="-180.0" :max="180.0" :step="1"></q-input>
                     </div>
-                    <div class="col-4 q-pr-sm">
-                        <q-input v-model.number="kfapp.elements.rotation.y" @update:model-value="transform_onchange" type="number" label="Y" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                    <div class="col-3 q-pr-sm">
+                        <q-input v-model.number="kfapp.elements.rotation.y"  type="number" label="Y" dense :min="-180.0" :max="180.0" :step="1"></q-input>
                     </div>
-                    <div class="col-4">
-                        <q-input v-model.number="kfapp.elements.rotationz" @update:model-value="transform_onchange" type="number" label="Z" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                    <div class="col-3">
+                        <q-input v-model.number="kfapp.elements.rotation.z"  type="number" label="Z" dense :min="-180.0" :max="180.0" :step="1"></q-input>
+                    </div>
+                    <div class="col-2 offset-1">
+                        <q-btn round icon="send" size="md"
+                            @click="transform_onchange"
+                            
+                        >
+                            <q-tooltip>
+                                {{ $t('cons_apply') }}
+                            </q-tooltip>
+                        </q-btn>
                     </div>
                 </div>
             </q-tab-panel>
@@ -218,6 +244,8 @@ export function defineKeyframeDlg(app, Quasar) {
             const {modelValue, frameIndex, timeline,maxframeNumber,vrms } = Vue.toRefs(props);
             const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
+            const UnityCallback = Vue.inject("UNITYCALLBACK");
+
             const show = Vue.ref(false);
             const kfapp = Vue.ref({
                 elements : {
@@ -226,8 +254,8 @@ export function defineKeyframeDlg(app, Quasar) {
                             position : "absolute",
                             bottom : "-9999px",
                             right : "-9999px",
-                            "max-width" : "350px",
-                            height : "480px",
+                            "width" : "320px",
+                            height : "520px",
                             zIndex : 5004,
                             backgroundColor : "#FFFFFF"
                         },
@@ -847,6 +875,110 @@ export function defineKeyframeDlg(app, Quasar) {
                 AppQueue.start();
                 
             }
+            const duplicatekeyframes_onclick = () => {
+                //---calculate future begin ~ end
+                var tbegin = parseInt(kfapp.value.elements.targetFrameIndexBegin);
+                var tend = parseInt(kfapp.value.elements.targetFrameIndexEnd);
+                var fut_begin = parseInt(kfapp.value.elements.destinationFrameIndex);
+                var fut_end = (tend - tbegin) + parseInt(kfapp.value.elements.destinationFrameIndex);
+
+                const funcbody = (cur_frame, fut_frame) => {
+                    var param = `${timeline.value.target.roleName},${timeline.value.target.type},${cur_frame},0`;
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'CopyFrame',param:param},
+                        "",QD_INOUT.toUNITY,
+                        null
+                    ));
+                    var param2 = `${timeline.value.target.roleName},${timeline.value.target.type},${fut_frame}`;
+                    var clipboard = {
+                        mode : "copy",
+                        index : cur_frame,
+                        roleName : timeline.value.target.roleName,
+                        roleType : timeline.value.target.type
+                    };
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'PasteFrame',param:param2},
+                        "paste_keyframe",QD_INOUT.returnJS,
+                        UnityCallback.paste_keyframe,
+                        {callback: UnityCallback,clipboard}
+                    ));
+                }
+
+                var cnt = TargetFrameLength();
+                if (tbegin < fut_begin) {
+                    for (var i = cnt-1; i >= 0; i--) {
+                        var cur_frame = getSingleTargetFrameIndex(i);
+                        // 1 ~ 10 ... 1 3 5 7
+                        // to 11
+                        // 1 - 1 + 11 = 11
+                        // 7 - 1 + 11 = 17
+                        var fut_frame = cur_frame - tbegin + fut_begin;
+                        funcbody(cur_frame, fut_frame);
+                    } 
+                }else{
+                    for (var i = 0; i < cnt; i++) {
+                        var cur_frame = getSingleTargetFrameIndex(i);
+                        var fut_frame = cur_frame - tbegin + fut_begin;
+                        funcbody(cur_frame, fut_frame);
+                    }
+                }
+                AppQueue.start();
+            }
+            const removekeyframes_onclick = () => {
+                //---calculate future begin ~ end
+                var tbegin = parseInt(kfapp.value.elements.targetFrameIndexBegin);
+                var tend = parseInt(kfapp.value.elements.targetFrameIndexEnd);
+                var fut_begin = parseInt(kfapp.value.elements.destinationFrameIndex);
+                var fut_end = (tend - tbegin) + parseInt(kfapp.value.elements.destinationFrameIndex);
+
+                const funcbody = (cur_frame, fut_frame) => {
+                    var aro = new AnimationRegisterOptions();
+                    aro.targetId = timeline.value.target.avatarId;
+                    aro.targetType = timeline.value.target.type;
+                    aro.index = cur_frame;
+                    aro.registerMoveTypes = AF_MOVETYPE.Rest;
+                    //---timeline ui    
+                    timeline.value.clearFrame(cur_frame, aro.registerMoveTypes);
+
+                    if (aro.targetType == AF_TARGETTYPE.VRM) {
+                        //---VRM properties clear: equipment
+                        timeline.value.target.avatar.UnequipAll(true);
+                        UnityCallback.modelOperator.objpropData.elements.vrmui.equip.equipments.splice(
+                            0, 
+                            UnityCallback.modelOperator.objpropData.elements.vrmui.equip.equipments.length
+                        );
+                    }
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'UnregisterFrame',param:JSON.stringify(aro)},
+                        "",QD_INOUT.toUNITY,
+                        null
+                    ));
+                }
+
+                appConfirm(t("msg_delframe_keyinrange"),()=>{
+                    var cnt = TargetFrameLength();
+                    if (tbegin < fut_begin) {
+                        for (var i = cnt-1; i >= 0; i--) {
+                            var cur_frame = getSingleTargetFrameIndex(i);
+                            // 1 ~ 10 ... 1 3 5 7
+                            // to 11
+                            // 1 - 1 + 11 = 11
+                            // 7 - 1 + 11 = 17
+                            var fut_frame = cur_frame - tbegin + fut_begin;
+                            funcbody(cur_frame, fut_frame);
+                        } 
+                    }else{
+                        for (var i = 0; i < cnt; i++) {
+                            var cur_frame = getSingleTargetFrameIndex(i);
+                            var fut_frame = cur_frame - tbegin + fut_begin;
+                            funcbody(cur_frame, fut_frame);
+                        }
+                    }
+                    AppQueue.start();
+                });
+
+                
+            }
             const copysumduration_onclick = () => {
                 var param = `${kfapp.value.elements.copySrcVrm.selected.value},${kfapp.value.elements.copySrcVrm.startFrame},${kfapp.value.elements.copySrcVrm.endFrame}`;
                 AppQueue.add(new queueData(
@@ -863,6 +995,16 @@ export function defineKeyframeDlg(app, Quasar) {
                 AppQueue.start();
             }
 
+            const handlePan = ({ evt, ...newInfo }) => {
+                var dx = newInfo.delta.x;
+                var dy = newInfo.delta.y;
+                kfapp.value.elements.win.position.x += dx;
+                kfapp.value.elements.win.position.y += dy;
+            
+                kfdlg.value.style.transform =
+                    `translate(${kfapp.value.elements.win.position.x}px, ${kfapp.value.elements.win.position.y}px)`;
+            }
+
             Vue.onMounted(() => {
                 for (var obj in UserAnimationEase) {
                     kfapp.value.elements.easing.options.push({
@@ -872,6 +1014,7 @@ export function defineKeyframeDlg(app, Quasar) {
                 }
                 kfapp.value.elements.easing.selected = kfapp.value.elements.easing.options[0];
 
+                /*
                 interact(kfdlg_bar.value).draggable({
                     modifiers: [
                         interact.modifiers.restrict({
@@ -892,6 +1035,7 @@ export function defineKeyframeDlg(app, Quasar) {
                         },
                     },
                 });
+                */
             });
 
             return {
@@ -906,7 +1050,10 @@ export function defineKeyframeDlg(app, Quasar) {
                 memo_onchange,easing_onchange,duration_onchange,
                 transform_onchange,
                 frameno_onchange,targetframebeginno_onchange,targetframeendno_onchange,editframeno_onclick,
-                copysumduration_onclick
+                copysumduration_onclick,
+                duplicatekeyframes_onclick,
+                removekeyframes_onclick,
+                handlePan
             }
         }
     });

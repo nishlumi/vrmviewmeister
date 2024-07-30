@@ -85,6 +85,8 @@ const app = Vue.createApp({
                         styleclass : {
                             "list-item-selected" : false
                         },
+                        isLoaded:true,
+                        id: "",
                         data : value
                     });
                 }).then(()=>{
@@ -107,6 +109,8 @@ const app = Vue.createApp({
                         styleclass : {
                             "list-item-selected" : false
                         },
+                        isLoaded:true,
+                        id: "",
                         data: value
                     });
                 }).then(()=>{
@@ -126,9 +130,59 @@ const app = Vue.createApp({
         const refresh_onclick = () => {
             listorigin_onchange(poseapp.value.header.list_selected);
         }
-        const apply_onclick = () => {
+        const apply_onclick = async () => {
             if (poseapp.value.list.selected) {
                 
+                if (
+                    (!poseapp.value.list.selected.isLoaded) &&
+                    (
+                        (poseapp.value.header.list_selected.value == "appserver") ||
+                        (poseapp.value.header.list_selected.value == "gdrive")
+                    )
+                ){
+                    var baseurl = poseapp.value.appconf.confs.fileloader.gdrive.url;
+                    var apikey = poseapp.value.appconf.confs.fileloader.gdrive.apikey;
+                    var urlparams = new URLSearchParams();
+
+                    //---decide URL
+                    if (poseapp.value.header.list_selected.value == "appserver") {
+                        baseurl = SAMPLEURL;
+                        apikey = SAMPLEKEY;
+                    }
+                          
+                    
+                    //---setting URL parameters
+                    urlparams.append("mode","load");
+                    urlparams.append("apikey",apikey);
+
+                    urlparams.append("fileid",poseapp.value.list.selected.id);
+                    if (poseapp.value.states.item_mode == "pose") {
+                        urlparams.append("extension","vvmpose");
+                    }else if (poseapp.value.states.item_mode == "motion") {
+                        urlparams.append("extension","vvmmot");
+                    }
+
+                    poseapp.value.header.loading = true;
+                    //poseapp.value.list.options.splice(0, poseapp.value.list.options.length);
+                    //---application google drive
+                    //var finalurl = `${baseurl}?mode=enumdir&apikey=${apikey}&extension=${extension}&withdata=1`;
+                    var finalurl = baseurl;
+                    finalurl += "?" + urlparams.toString();
+
+                    var fetchret = await fetch(finalurl);
+                    if (fetchret.ok) {
+                        var fetchjs = await fetchret.json();
+                        if (typeof fetchjs.data == "object") {
+                            poseapp.value.list.selected.data = fetchjs.data;
+                        }else{
+                            poseapp.value.list.selected.data = JSON.parse(fetchjs.data);
+                        }
+                        poseapp.value.list.selected.isLoaded = true;
+                        
+                    }
+                    poseapp.value.header.loading = false;
+                }
+
                 //opener._REFMYAPP.returnPoseDialogValue(sel.data);
                 var js = new ChildReturner();
                 js.origin = location.origin;
@@ -352,6 +406,8 @@ const app = Vue.createApp({
                                         styleclass : {
                                             "list-item-selected" : false
                                         },
+                                        isLoaded:false,
+                                        id: obj.id,
                                         data : posedata
                                     });
                                 }else if (poseapp.value.states.item_mode == "motion") {
@@ -369,6 +425,8 @@ const app = Vue.createApp({
                                         styleclass : {
                                             "list-item-selected" : false
                                         },
+                                        isLoaded:false,
+                                        id: obj.id,
                                         data: posedata
                                     });
                                 }
@@ -416,7 +474,7 @@ const app = Vue.createApp({
                     //extension = "vvmpose";
                     if (val.value == "appserver") {
                         //---app server id
-                        urlparams.append("enumtype","pose");
+                        urlparams.append("enumtype","vvmpose");
                     }else if (val.value == "gdrive") {
                         //---user folder id
                         urlparams.append("dirid",poseapp.value.appconf.confs.fileloader.gdrive.user.pose);
@@ -427,7 +485,7 @@ const app = Vue.createApp({
                     //extension = "vvmmot";
                     if (val.value == "appserver") {
                         //---app server id
-                        urlparams.append("enumtype","motion");
+                        urlparams.append("enumtype","vvmmot");
                     }else if (val.value == "gdrive") {
                         //---user folder id
                         urlparams.append("dirid", poseapp.value.appconf.confs.fileloader.gdrive.user.motion);

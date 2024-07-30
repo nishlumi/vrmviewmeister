@@ -5,7 +5,7 @@ import { VVAvatar } from "./prop/cls_vvavatar.js";
 
 const template = `
 <div ref="gbdlg" v-show="show" :class="data.elements.panelCSS" class="rounded-borders shadow-2" :style="data.elements.win.styles">
-    <div ref="gbdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
+    <div ref="gbdlg_bar" v-touch-pan.prevent.mouse="handlePan" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
         <div class="row">
             <div>{{ $t('title_bonegravity') }}</div>
             <q-space></q-space>
@@ -145,7 +145,18 @@ export function defineGravityboneDlg(app, Quasar) {
                 AppQueue.start();
             }
 
+            const handlePan = ({ evt, ...newInfo }) => {
+                var dx = newInfo.delta.x;
+                var dy = newInfo.delta.y;
+                data.value.elements.win.position.x += dx;
+                data.value.elements.win.position.y += dy;
+            
+                gbdlg.value.style.transform =
+                    `translate(${data.value.elements.win.position.x}px, ${data.value.elements.win.position.y}px)`;
+            }
+
             Vue.onMounted(() => {
+                /*
                 interact(gbdlg_bar.value).draggable({
                     modifiers: [
                         interact.modifiers.restrict({
@@ -165,7 +176,7 @@ export function defineGravityboneDlg(app, Quasar) {
                               `translate(${data.value.elements.win.position.x}px, ${data.value.elements.win.position.y}px)`;
                         },
                     },
-                });
+                });*/
 
                 //---spreadsheet
                 data.value.elements.spreadsheet = jspreadsheet(gspr.value, {
@@ -244,7 +255,7 @@ export function defineGravityboneDlg(app, Quasar) {
 
             return {
                 show,data,
-                close_onclick,
+                close_onclick,handlePan,
                 reload_onclick,apply_onclick,
                 //element--------------
                 gbdlg,gbdlg_bar,gspr,

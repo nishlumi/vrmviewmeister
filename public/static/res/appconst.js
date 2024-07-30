@@ -97,6 +97,8 @@ export const STORAGE_TYPE = {
     LOCAL : "loc",
     GOOGLEDRIVE : "ggd",
     APPLICATION : "appggd",
+    VROIDHUB: "vhub",
+    WEB: "web",
 }
 /**
  * DB name of AppDB
@@ -387,4 +389,4 @@ export const EFFECTLIST = {
 };
 
 export const SAMPLEKEY = "fFk3r430awp";
-export const SAMPLEURL = "https://script.google.com/macros/s/AKfycbygqD5g0BGFy-d1A6Xf0y5e9uXGZvr4HlDVMsGQSQ3IwDa1m-HsT1icTWXnPrsau5XXmg/exec";
+export const SAMPLEURL = "https://script.google.com/macros/s/AKfycbzin8LMURln98AG3ikAi33SS6F0vHyk1Gh7rGVfP00VKPqi_Z6d45_EB3TwIM_usdN5Hw/exec";

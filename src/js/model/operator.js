@@ -183,8 +183,10 @@ export class appModelOperator {
         if (isAlsoUnity) {
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'NewProject'},
-                "",QD_INOUT.toUNITY,
-                null
+                "newproject",QD_INOUT.returnJS,
+                (val) => {
+                    console.log(val);
+                }
             ));
         }
         const proj = this.mainData.data.project;
@@ -248,6 +250,38 @@ export class appModelOperator {
         //modelOperator.clearTimeline();
         this.mainData.states.currentEditOperationCount = 0;
         this.mainData.states.backupEditOperationCount = 0;
+    }
+    async newProjectAndOpenProject(originalresult) {
+        
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'NewProject'},
+            "newproject",QD_INOUT.returnJS,
+            (val => {
+                console.log("newProjectAndOpenProject",val);
+                if (typeof val == "string") {
+                    if (val.indexOf("mkey,") > -1) {
+                        var ishit = AppQueue.list.findIndex(v => {
+                            if (v.key == "openproject") return true;
+                            return false;
+                        });
+                        if (ishit == -1) {
+                            AppQueue.add(new queueData(
+                                {target:AppQueue.unity.ManageAnimation,method:'LoadProject',param:JSON.stringify(originalresult)},
+                                "openproject",QD_INOUT.returnJS,
+                                this.UnityCallback.openproject,
+                                {callback: this.UnityCallback, preload: originalresult.preloadFiles}
+                            ));
+                        }
+                    }
+                }
+                
+                
+                
+            })
+        ));
+        this.newProject(false);
+        AppQueue.start();
+        
     }
     //==============================================================
     //
@@ -393,11 +427,11 @@ export class appModelOperator {
     }
     /**
      * 
-     * @param {AF_TARGETTYPE} avatar 
+     * @param {VVAvatar} avatar      
      */
     selectInitialTargetBones(avatar) {
         this.ribbonData.elements.frame.bonelist.selection.splice(0, this.ribbonData.elements.frame.bonelist.selection.length);
-        if (avatar == AF_TARGETTYPE.VRM) {
+        if (avatar.type == AF_TARGETTYPE.VRM) {
             for (var obj in IKBoneType) {
                 if ((IKBoneType[obj] >= IKBoneType.IKParent) && 
                     (IKBoneType[obj] <= IKBoneType.RightLeg)
@@ -409,6 +443,40 @@ export class appModelOperator {
             this.ribbonData.elements.frame.bonelist.selection.push(IKBoneType.IKParent);
         }
         return this.ribbonData.elements.frame.bonelist.selection;
+    }
+    /**
+     * 
+     * @param {VVCast} role 
+     * @param {Number} index 
+     */
+    selectCurrentFrameTargetBones(role, index) {
+        var aro = new AnimationRegisterOptions();
+        aro.targetRole = role.roleName;
+        aro.targetType = role.avatar.type;
+        aro.index = index;
+
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'GetRegisteredBonesFromOuter',param:JSON.stringify(aro)},
+            "getregbones",QD_INOUT.returnJS,
+            (val) => {
+                if (val != "") {
+                    var arr = val.split(",");
+                
+                    this.ribbonData.elements.frame.bonelist.selection.splice(0, this.ribbonData.elements.frame.bonelist.selection.length);
+                    for (var i = 0; i < arr.length; i++) {
+                        var v = arr[i];
+                        
+                        var ikbone = IKBoneType[v];
+                        //---select bone checkbox in keyframe register panel
+                        if ((0 <= ikbone) && (ikbone <= 16)) {
+                            this.selectSpecifyBoneForRegister(ikbone);
+                        }
+                    }
+                }
+                
+            }
+        ));
+
     }
     /**
      * select specified bone to register key-frame
@@ -453,6 +521,8 @@ export class appModelOperator {
             //+++this.elements.timeline.appendTimeline(role);
         }
 
+        this.mainData.states.currentEditOperationCount++;
+
         return role;
     }
     /**
@@ -462,7 +532,7 @@ export class appModelOperator {
      * @param {String} path
      * @returns 
      */
-    addObject (type, json, path)  {
+    addObject (type, json, path, isEditCount = true)  {
         //[creation point] VVAvatar
         var it = new VVAvatar(type,json);
 
@@ -488,6 +558,7 @@ export class appModelOperator {
         }
 
         //+++this.children.timeline.appendTimeline(role);
+        if (isEditCount) this.mainData.states.currentEditOperationCount++;
 
         return {
             avatar :it,
@@ -713,6 +784,40 @@ export class appModelOperator {
         this.mainData.states.currentEditOperationCount++;
     }
     /**
+     * 
+     * @param {String} avatarId
+     * @param {AF_TARGETTYPE} avatarType
+     * @param {Number} frameIndex 
+     * @param {{movetype:AF_MOVETYPE, isBatch:Boolean}} options 
+     */
+    removeKeyframes(avatarId, avatarType, frameIndex, options) {
+        var tmp_movetype = ("movetype" in options) ? options.movetype : AF_MOVETYPE.Rest;
+        var aro = new AnimationRegisterOptions();
+        aro.targetId = avatarId;
+        aro.targetType = avatarType;
+        aro.index = frameIndex;
+        aro.registerMoveTypes = [tmp_movetype];
+        
+        //---timeline ui    
+        this.mainData.states.selectedTimeline.clearFrame(aro.index, tmp_movetype);
+
+        if (avatarType == AF_TARGETTYPE.VRM) {
+            var cast = this.getRoleFromAvatar(avatarId);
+            if (cast) {
+                //---VRM properties clear: equipment
+                cast.avatar.UnequipAll(true);
+                this.objpropData.elements.vrmui.equip.equipments.splice(0, this.objpropData.elements.vrmui.equip.equipments.length);
+            }
+        }
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'UnregisterFrame',param:JSON.stringify(aro)},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        if (options.isBatch !== true) AppQueue.start();
+        this.mainData.states.currentEditOperationCount++;
+    }
+    /**
      * Remove specified child key in any key-frame
      * @param {VVAvatar} avatar 
      * @param {Number} frameIndex 
@@ -833,12 +938,7 @@ export class appModelOperator {
 
                 var fopt = FILEOPTION[dbname];
                 var facept = "";
-                if (dbname == "VRMA") {
-                    fopt = FILEOPTION.MOTION;
-                    facept = fopt.types[1].accept;
-                }else{
-                    facept = fopt.types[0].accept;
-                }
+                facept = fopt.types[0].accept;
                 
                 var fext = "";
                 
@@ -1065,7 +1165,7 @@ export class appModelOperator {
             }
             //---delete avatar and detach from cast(role)
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.FileMenuCommands,method:'DestroyVRM',param:selavatar.id},
+                {target:AppQueue.unity.FileMenuCommands,method:'DestroyVRMFromOuter',param:selavatar.id},
                 "",QD_INOUT.toUNITY,
                 null
             ));
@@ -1088,14 +1188,14 @@ export class appModelOperator {
             //---delete avatar and detach from cast(role)
             if (selavatar.type == AF_TARGETTYPE.Image) { 
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.FileMenuCommands,method:'DestroyImage',param:selavatar.id},
+                    {target:AppQueue.unity.FileMenuCommands,method:'DestroyImageFromOuter',param:selavatar.id},
                     "destroyobject",QD_INOUT.returnJS,
                     this.UnityCallback.destroyAfter,
                     {callback : this.UnityCallback}
                 ));
             }else{
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.FileMenuCommands,method:'DestroyOther',param:selavatar.id},
+                    {target:AppQueue.unity.FileMenuCommands,method:'DestroyOtherFromOuter',param:selavatar.id},
                     "destroyobject",QD_INOUT.returnJS,
                     this.UnityCallback.destroyAfter,
                     {callback : this.UnityCallback}
@@ -1103,35 +1203,42 @@ export class appModelOperator {
             }
         }else if (selavatar.type == AF_TARGETTYPE.Light) { 
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.FileMenuCommands,method:'DestroyLight',param:selavatar.id},
+                {target:AppQueue.unity.FileMenuCommands,method:'DestroyLightFromOuter',param:selavatar.id},
                 "destroyobject",QD_INOUT.returnJS,
                 this.UnityCallback.destroyAfter,
                 {callback : this.UnityCallback}
             ));
         }else if (selavatar.type == AF_TARGETTYPE.Camera) { 
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.FileMenuCommands,method:'DestroyCamera',param:selavatar.id},
+                {target:AppQueue.unity.FileMenuCommands,method:'DestroyCameraFromOuter',param:selavatar.id},
                 "destroyobject",QD_INOUT.returnJS,
                 this.UnityCallback.destroyAfter,
                 {callback : this.UnityCallback}
             ));
         }else if (selavatar.type == AF_TARGETTYPE.Effect) { 
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.FileMenuCommands,method:'DestroyEffect',param:selavatar.id},
+                {target:AppQueue.unity.FileMenuCommands,method:'DestroyEffectFromOuter',param:selavatar.id},
                 "destroyobject",QD_INOUT.returnJS,
                 this.UnityCallback.destroyAfter,
                 {callback : this.UnityCallback}
             ));
-        }else if ((selavatar.type == AF_TARGETTYPE.Text) || (selavatar.type == AF_TARGETTYPE.Text3D)) { 
+        }else if (selavatar.type == AF_TARGETTYPE.Text) { 
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.FileMenuCommands,method:'DestroyText',param:selavatar.id},
+                {target:AppQueue.unity.FileMenuCommands,method:'DestroyTextFromOuter',param:selavatar.id},
+                "destroyobject",QD_INOUT.returnJS,
+                this.UnityCallback.destroyAfter,
+                {callback : this.UnityCallback}
+            ));
+        }else if (selavatar.type == AF_TARGETTYPE.Text3D) {
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.FileMenuCommands,method:'DestroyText3DFromOuter',param:selavatar.id},
                 "destroyobject",QD_INOUT.returnJS,
                 this.UnityCallback.destroyAfter,
                 {callback : this.UnityCallback}
             ));
         }else if (selavatar.type == AF_TARGETTYPE.UImage) { 
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.FileMenuCommands,method:'DestroyUImage',param:selavatar.id},
+                {target:AppQueue.unity.FileMenuCommands,method:'DestroyUImageFromOuter',param:selavatar.id},
                 "destroyobject",QD_INOUT.returnJS,
                 this.UnityCallback.destroyAfter,
                 {callback : this.UnityCallback}
@@ -1227,7 +1334,10 @@ export class appModelOperator {
             }
             
             this.ribbonData.elements.frame.bonelist.options = this.enumerateTargetBones(selected.avatar.type);
-            this.selectInitialTargetBones(selected.avatar.type);
+            if (this.mainData.states.selectedTimeline.frames.length == 0) {
+                this.selectInitialTargetBones(selected.avatar);
+            }
+            
             this.objpropData.elements.common.fastRotate360 = false;
 
             window._REFAPP.childreturner["select_info"] = {
@@ -1318,6 +1428,9 @@ export class appModelOperator {
             if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
                 this.listupEquipList(this.mainData.states.selectedAvatar);
                 this.ribbonData.elements.frame.bonelist.disable_bodyselect  = false;
+                this.ribbonData.states.boneForVRM = true;
+            }else{
+                this.ribbonData.states.boneForVRM = false;
             }
 
             var tmpav = this.getAvatar(selected.avatar.id);
@@ -1526,6 +1639,8 @@ export class appModelOperator {
                     {callback : this.UnityCallback}
                 ));
             }
+
+            this.selectCurrentFrameTargetBones(role, this.ribbonData.elements.frame.current);
             //===============================================
             //this.getUnityData_EachObject(vsel.avatar.type);
             AppQueue.start();

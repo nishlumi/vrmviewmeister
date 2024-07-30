@@ -846,6 +846,14 @@ div.screen-number-area {
     background-color: #ffffff;
 }
 
+/*===============================================================
+  VroidHub selector
+*/
+
+.vrh-item-selected {
+    background : rgba(0, 0, 0, 0.47)
+}
+
 /*==============================================================
   vpad
 */

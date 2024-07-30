@@ -720,6 +720,102 @@ const app = Vue.createApp({
             opener.postMessage(js);
             
         }
+        const duplicatekeyframes_onclick = () => {
+            const timeline = data.value.states.timeline;
+            //---calculate future begin ~ end
+            var tbegin = parseInt(data.value.elements.targetFrameIndexBegin);
+            var tend = parseInt(data.value.elements.targetFrameIndexEnd);
+            var fut_begin = parseInt(data.value.elements.destinationFrameIndex);
+            var fut_end = (tend - tbegin) + parseInt(data.value.elements.destinationFrameIndex);
+
+            const funcbody = (cur_frame, fut_frame) => {
+                //var param = `${timeline.target.roleName},${timeline.target.type},${cur_frame},${fut_frame}`;
+                
+                return {roleName: timeline.target.roleName, 
+                    type: timeline.target.type,
+                    oldindex: parseInt(cur_frame), newindex: parseInt(fut_frame) 
+                };
+            }
+
+            var params = [];
+            var cnt = TargetFrameLength();
+            if (tbegin < fut_begin) {
+                for (var i = cnt-1; i >= 0; i--) {
+                    var cur_frame = getSingleTargetFrameIndex(i);
+                    // 1 ~ 10 ... 1 3 5 7
+                    // to 11
+                    // 1 - 1 + 11 = 11
+                    // 7 - 1 + 11 = 17
+                    var fut_frame = cur_frame - tbegin + fut_begin;
+                    params.push(funcbody(cur_frame, fut_frame));
+                } 
+            }else{
+                for (var i = 0; i < cnt; i++) {
+                    var cur_frame = getSingleTargetFrameIndex(i);
+                    var fut_frame = cur_frame - tbegin + fut_begin;
+                    params.push(funcbody(cur_frame, fut_frame));
+                }
+            }
+                            
+            //AppQueue.start();
+            var js = new ChildReturner();
+            js.origin = location.origin;
+            js.windowName = "keyframe";
+            js.funcName = "duplicatekeyframes_onclick";
+            js.data = JSON.stringify({
+                params
+            });
+            opener.postMessage(js);
+        }
+        const removekeyframes_onclick = () => {
+            const timeline = data.value.states.timeline;
+            //---calculate future begin ~ end
+            var tbegin = parseInt(data.value.elements.targetFrameIndexBegin);
+            var tend = parseInt(data.value.elements.targetFrameIndexEnd);
+            var fut_begin = parseInt(data.value.elements.destinationFrameIndex);
+            var fut_end = (tend - tbegin) + parseInt(data.value.elements.destinationFrameIndex);
+
+            const funcbody = (cur_frame, fut_frame) => {
+                //var param = `${timeline.target.roleName},${timeline.target.type},${cur_frame},${fut_frame}`;
+                
+                return {roleName: timeline.target.avatarId, 
+                    type: timeline.target.type,
+                    oldindex: parseInt(cur_frame), newindex: parseInt(fut_frame) 
+                };
+            }
+
+            var params = [];
+            var cnt = TargetFrameLength();
+            if (tbegin < fut_begin) {
+                for (var i = cnt-1; i >= 0; i--) {
+                    var cur_frame = getSingleTargetFrameIndex(i);
+                    // 1 ~ 10 ... 1 3 5 7
+                    // to 11
+                    // 1 - 1 + 11 = 11
+                    // 7 - 1 + 11 = 17
+                    var fut_frame = cur_frame - tbegin + fut_begin;
+                    params.push(funcbody(cur_frame, fut_frame));
+                } 
+            }else{
+                for (var i = 0; i < cnt; i++) {
+                    var cur_frame = getSingleTargetFrameIndex(i);
+                    var fut_frame = cur_frame - tbegin + fut_begin;
+                    params.push(funcbody(cur_frame, fut_frame));
+                }
+            }
+
+            appConfirm(_T("msg_delframe_keyinrange"),()=>{
+                //AppQueue.start();
+                var js = new ChildReturner();
+                js.origin = location.origin;
+                js.windowName = "keyframe";
+                js.funcName = "removekeyframes_onclick";
+                js.data = JSON.stringify({
+                    params
+                });
+                opener.postMessage(js);
+            });
+        }
         const copysumduration_onclick = () => {
             var param = `${data.value.elements.copySrcVrm.selected.value},${data.value.elements.copySrcVrm.startFrame},${data.value.elements.copySrcVrm.endFrame}`;
 
@@ -925,6 +1021,8 @@ const app = Vue.createApp({
             transform_onchange,
             frameno_onchange,targetframebeginno_onchange,targetframeendno_onchange,editframeno_onclick,
             copysumduration_onclick,
+            duplicatekeyframes_onclick,
+            removekeyframes_onclick,
         }
     }
 });

@@ -105,6 +105,10 @@ contextBridge.exposeInMainWorld('elecAPI', {
     },
 
     //==============================================
+    callVroidHub : async (uri, param) => {
+        const ret = await ipcRenderer.invoke(uri,param);
+        return ret;
+    },
     vroidhubAuthorize : async (param) => {
         const ret = await ipcRenderer.invoke("/vroidhub/authorize",param);
         return ret;

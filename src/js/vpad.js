@@ -2,7 +2,7 @@ import { UnityVector3 } from "./prop/cls_unityrel";
 
 const template = `
 <div ref="vpdlg" v-show="show" class="rounded-borders shadow-2" :style="data.elements.win.styles">
-    <div ref="vpdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs" :style="data.elements.titlebar.styles">
+    <div ref="vpdlg_bar" v-touch-pan.prevent.mouse="handlePan" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs" :style="data.elements.titlebar.styles">
         <div class="row">
             <div>{{ $t('title_virtualpad') }}</div>
             <q-space></q-space>
@@ -742,7 +742,18 @@ export function defineVpadDlg(app, Quasar) {
             }
             */
 
+            const handlePan = ({ evt, ...newInfo }) => {
+                var dx = newInfo.delta.x;
+                var dy = newInfo.delta.y;
+                data.value.elements.win.position.x += event.dx
+                data.value.elements.win.position.y += event.dy
+            
+                vpdlg.value.style.transform =
+                    `translate(${data.value.elements.win.position.x}px, ${data.value.elements.win.position.y}px)`;
+            }
+
             Vue.onMounted(() => {
+                /*
                 interact(vpdlg_bar.value).draggable({
                     modifiers: [
                         interact.modifiers.restrict({
@@ -763,12 +774,13 @@ export function defineVpadDlg(app, Quasar) {
                         },
                     },
                 });
+                */
             });
 
 
             return {
                 show,data,
-                close_onclick,
+                close_onclick,handlePan,
                 onswipe_rotation,onswipe_translation,onswipe_progress,onswipe_targetzoom,
                 //onclick_rotation,
                 //onclick_rotation_zero,

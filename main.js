@@ -2,7 +2,9 @@
 const fs = require('fs')
 const { app, BrowserWindow, ipcMain, dialog, session } = require('electron')
 const path = require('path')
-const mime = require("mime-types")
+const mime = require("mime-types");
+const { defineIPC4VRoidHub } = require('./ipc01vrh');
+require('dotenv').config({ path: __dirname + '/.env' })
 
 function createWindow() {
     // Create the browser window.
@@ -260,3 +262,4 @@ ipcMain.handle("focusWindow", async (event, name) => {
         }
     }
 });
+defineIPC4VRoidHub(ipcMain, process.env.VRH_CLIENT_ID, process.env.VRH_CLIENT_SECRET);

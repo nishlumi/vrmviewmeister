@@ -14,12 +14,13 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.10.2",
-            revision : "20240717-01",
+            version : "2.11.0",
+            revision : "20240731-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
         this.vroidhubapi = new VRoidHubConnector();
+        this.vroidhubdata = {};
         this.elements = {
             header : true,
             appinfodlg : false,
@@ -342,19 +343,19 @@ export class appMainData {
                 selectDBName : "",
                 selectTypeName : "",
                 columns : [
-                    { name: 'fullname', align: 'left', label: t('fullname'), field: 'fullname' },
-                    { name: 'name', align: 'left', label: t('name'), field: 'name' },
+                    { name: 'fullname', align: 'left', label: t('fullname'), field: 'fullname', sortable: true },
+                    { name: 'name', align: 'left', label: t('name'), field: 'name', sortable: true  },
                     { name: 'type', align: 'left', label: t('type'), field: 'type' },
-                    { name: 'size', align: 'right', label: t('size'), field: 'size' },
-                    { name: 'createdDate', align: 'left', label: t("created_date"), field: 'createdDate' },
-                    { name: 'updatedDate', align: 'left', label: t("updated_date"), field: 'updatedDate' },
+                    { name: 'size', align: 'right', label: t('size'), field: 'size', sortable: true  },
+                    { name: 'createdDate', align: 'left', label: t("created_date"), field: 'createdDate', sortable: true  },
+                    { name: 'updatedDate', align: 'left', label: t("updated_date"), field: 'updatedDate', sortable: true  },
 
                 ],
                 visiblecCol : [
                     "fullname",  "size", "createdDate", "updatedDate"
                 ],
                 pagenation : {
-                    rowsPerPage : 20
+                    rowsPerPage : 40
                 },
                 /**
                  * Internal, File - name
@@ -369,6 +370,31 @@ export class appMainData {
                 /**
                  * @type {AppDBMeta[]}
                  */
+                searchedFiles : [],
+                searchstr : "",
+            },
+            vroidhubSelector : {
+                show : false,
+                maximized : false,
+                fullwidth : false,
+                fullheight : false,
+                style : {
+                    width: "850px",
+                    height: "550px",
+                    overflow: "hidden"
+                },
+
+                loading : false,
+                kind: "model", //models, hearts, staffpicks
+                kindName : "My models",
+                next: {maxid:"", previd:""},
+                rand : "",
+
+                selected: "",
+                /**
+                 * @type {{data:Object, selectStyle:String}[]}
+                 */
+                files : [],
                 searchedFiles : [],
                 searchstr : "",
             },

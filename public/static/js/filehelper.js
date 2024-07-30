@@ -54,7 +54,7 @@ export class VOSFile {
 
         /**
          * @type {String} int - Internal Storage, loc - Local, 
-         * ggd - Google Drive, appggd - Application, web - web url
+         * ggd - Google Drive, appggd - Application, web - web url, vhub - vroidhub
          */
         this.storageType = "";
     }
@@ -271,6 +271,12 @@ export class VFileOperator {
     async _onchange_uploader(evt) {
         if (evt.target.files) this.common_open(evt.target.files);
     }
+    /**
+     * Open file from Google Drive
+     * @param {String} id  file id
+     * @param {String} ext file extension
+     * @returns 
+     */
     async openFromGoogleDrive(id,ext){
         var retfile = null;
         if ((this.appconf.confs.fileloader.gdrive.url != "") &&
@@ -318,6 +324,26 @@ export class VFileOperator {
             
         }
         
+        return retfile;
+    }
+    /**
+     * Open from VRoidHub (already get model data)
+     * @param {Blob} data downloaded data
+     * @param {*} options {name: String}
+     * @returns 
+     */
+    async openFromVroidHub(data, options) {
+        var retfile = null;
+        if (data) {
+            retfile = new VOSFile({});
+            retfile.name = options.name;
+            retfile.path = options.name;
+            retfile.size = data.size;
+            retfile.storageType = "vhub";
+            retfile.size = data.size;
+            retfile.type = data.type;
+            retfile.data = new File([data],options.name);
+        }
         return retfile;
     }
     /**
