@@ -3,8 +3,8 @@ const fs = require('fs')
 const { app, BrowserWindow, ipcMain, dialog, session } = require('electron')
 const path = require('path')
 const mime = require("mime-types");
-const { defineIPC4VRoidHub } = require('./ipc01vrh');
-require('dotenv').config({ path: __dirname + '/.env' })
+const { defineIPC4VRoidHub } = require('./ipc01vrh.js');
+require('dotenv').config({ path: __dirname + '/vrh.env' })
 
 function createWindow() {
     // Create the browser window.

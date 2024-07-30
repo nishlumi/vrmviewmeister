@@ -41,6 +41,8 @@
       "public",
       "main.js",
       "preload.js",
+      "ipc01vrh.js",
+      "vrh.env",
       "package.json",
       "package-lock.json"
     ],

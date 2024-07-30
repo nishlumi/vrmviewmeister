@@ -60,7 +60,7 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
             urlprm[`refresh_token`] = reftoken;
         }
         var finalurl = url; //`${url}?${urlprm.join("&")}`;
-        console.log(finalurl);
+        //console.log(finalurl);
         //res = ({url: url, prm: urlprm, appid: process.env.VRH_CLIENT_ID, cd:0});
         
         const result = await fetch(finalurl,{
@@ -73,7 +73,7 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
             body : JSON.stringify(urlprm)
         })
         
-        console.log(result);
+        //console.log(result);
         if (result.ok) {
             const js = await result.json();
             res = {cd:0, msg: "", appid: VRH_CLIENT_ID, data: js};
@@ -122,14 +122,14 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
         if ("publication" in req.query) {
             uparams.append("publication",req.query.publication);
         }
-        console.log("reqheader=", req.headers);
+        //console.log("reqheader=", req.headers);
         var headers = collectHubHeaders(req);
         headers["Content-Type"] = "application/json";
     
-        console.log("paramheader=",headers);
+        //console.log("paramheader=",headers);
         var url = `https://hub.vroid.com/api/account/character_models`;
         var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
-        console.log(finalurl);
+        //console.log(finalurl);
         var result = await fetch(finalurl,{
             method:"GET",
             headers: headers,
@@ -256,12 +256,12 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
         var res = {
         }
         var uparams = new URLSearchParams();
-        console.log("reqheader=", req.headers);
+        //console.log("reqheader=", req.headers);
         var headers = collectHubHeaders(req);
         headers["Content-Type"] = "application/json";
     
-        console.log(finalurl);
-        console.log("paramheader=",headers);
+        //console.log(finalurl);
+        //console.log("paramheader=",headers);
         var url = `https://hub.vroid.com/api/character_models/${req.params.id}`;
         var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
         var result = await fetch(finalurl,{
@@ -341,12 +341,12 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
         if ("id" in req.query) {
             uparams.append("id",req.query.id);
         }
-        console.log("reqheader=", req.headers);
+        //console.log("reqheader=", req.headers);
         var headers = collectHubHeaders(req);
         headers["Content-Type"] = "application/json";
     
-        console.log(finalurl);
-        console.log("paramheader=",headers);
+        //console.log(finalurl);
+        //console.log("paramheader=",headers);
         var url = `https://hub.vroid.com/api/download_licenses`;
         var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
         var result = await fetch(finalurl,{
@@ -368,14 +368,14 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
         }
         var uparams = new URLSearchParams();
         
-        console.log("reqheader=", req.headers);
+        //console.log("reqheader=", req.headers);
         var headers = collectHubHeaders(req);
         //headers["Content-Type"] = "application/json";
         headers["Accept-Encoding"] = "gzip";
     
-        console.log(finalurl);
-        console.log("paramheader=",headers);
-        console.log("req.params.id=",req.params.id);
+        //console.log(finalurl);
+        //console.log("paramheader=",headers);
+        //console.log("req.params.id=",req.params.id);
         var url = `https://hub.vroid.com/api/download_licenses/${req.params.id}/download`;
         var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
         var result = await fetch(finalurl,{
@@ -389,8 +389,8 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
                 location: result.headers.get("location")
             };
         }else{
-            console.log("error=",result.status, result.statusText);
-            console.log("url=",result.headers.get("location"));
+            //console.log("error=",result.status, result.statusText);
+            //console.log("url=",result.headers.get("location"));
             if (result.status == 302) {
                 res.statusCode = 200;
                 res.statusMessage = "";

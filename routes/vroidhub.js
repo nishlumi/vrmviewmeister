@@ -21,7 +21,7 @@ router.get("/authorize", async function (req, res) {
     var url = `https://hub.vroid.com/oauth/authorize`;
     var urlprm = `response_type=code&client_id=${process.env.VRH_CLIENT_ID}&redirect_uri=${req.query.redirect_uri}&scope=default`;
     var finalurl = `${url}?${urlprm}`;
-    console.log(finalurl);
+    //console.log(finalurl);
     res.send({url:finalurl, cd:0});
     /*
     const result = await fetch(finalurl,{
@@ -59,9 +59,9 @@ router.post("/request-token",async function(req,res){
     if (grant_type == "refresh_token") {
         urlprm[`refresh_token`] = reftoken;
     }
-    console.log("urlprm",urlprm);
+    //console.log("urlprm",urlprm);
     var finalurl = url; //`${url}?${urlprm.join("&")}`;
-    console.log(finalurl);
+    //console.log(finalurl);
     //res.send({url: url, prm: urlprm, appid: process.env.VRH_CLIENT_ID, cd:0});
     
     fetch(finalurl,{
@@ -74,7 +74,7 @@ router.post("/request-token",async function(req,res){
         body : JSON.stringify(urlprm)
     })
     .then(result => {
-        console.log(result);
+        //console.log(result);
         if (result.ok) {
             result.json()
             .then(js => {
@@ -90,12 +90,12 @@ router.get("/account",async function(req,res){
     var ret = {
     }
     var uparams = new URLSearchParams();
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     headers["Content-Type"] = "application/json";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
     var url = `https://hub.vroid.com/api/account`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -125,12 +125,12 @@ router.get("/account/character_models",async function(req,res){
     if ("publication" in req.query) {
         uparams.append("publication",req.query.publication);
     }
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     headers["Content-Type"] = "application/json";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
     var url = `https://hub.vroid.com/api/account/character_models`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -198,12 +198,12 @@ router.get("/hearts",async function(req,res){
     if ("has_booth_items" in req.query) {
         uparams.append("has_booth_items",req.query.has_booth_items);
     }
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     headers["Content-Type"] = "application/json";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
     var url = `https://hub.vroid.com/api/hearts`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -230,12 +230,12 @@ router.get("/staff_picks",async function(req,res){
     if ("count" in req.query) {
         uparams.append("count",req.query.count);
     }
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     headers["Content-Type"] = "application/json";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
     var url = `https://hub.vroid.com/api/staff_picks`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -256,12 +256,12 @@ router.get("/staff_picks",async function(req,res){
 router.get("/character_models/:id",async function(req,res){
     
     var uparams = new URLSearchParams();
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     headers["Content-Type"] = "application/json";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
     var url = `https://hub.vroid.com/api/character_models/${req.params.id}`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -286,13 +286,13 @@ router.get("/download_licenses/publish",async function(req,res){
     
     var uparams = new URLSearchParams();
     
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     headers["Content-Type"] = "application/json";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
-    console.log("req.query=",req.query.character_model_id);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
+    //console.log("req.query=",req.query.character_model_id);
     var url = `https://hub.vroid.com/api/download_licenses`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -304,12 +304,12 @@ router.get("/download_licenses/publish",async function(req,res){
     });
     if (result.ok) {
         var ret = await result.json();
-        console.log("ret=",JSON.stringify(ret));
+        //console.log("ret=",JSON.stringify(ret));
         res.send({cd:0, msg:"", 
             data:ret
         });
     }else{
-        console.log("error=",result.status, result.statusText);
+        //console.log("error=",result.status, result.statusText);
         res.statusCode = result.status;
         res.statusMessage = result.statusText;
         res.send({cd:result.status, msg:result.statusText, data:null})
@@ -321,12 +321,12 @@ router.get("/download_licenses",async function(req,res){
     if ("id" in req.query) {
         uparams.append("id",req.query.id);
     }
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     headers["Content-Type"] = "application/json";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
     var url = `https://hub.vroid.com/api/download_licenses`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -351,12 +351,12 @@ router.get("/download_licenses/delete",async function(req,res){
     if ("id" in req.query) {
         uparams.append("id",req.query.id);
     }
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     headers["Content-Type"] = "application/json";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
     var url = `https://hub.vroid.com/api/download_licenses`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -379,14 +379,14 @@ router.get("/download_licenses/:id/download",async function(req,res){
     
     var uparams = new URLSearchParams();
     
-    console.log("reqheader=", req.headers);
+    //console.log("reqheader=", req.headers);
     var headers = collectHubHeaders(req);
     //headers["Content-Type"] = "application/json";
     headers["Accept-Encoding"] = "gzip";
 
-    console.log(finalurl);
-    console.log("paramheader=",headers);
-    console.log("req.params.id=",req.params.id);
+    //console.log(finalurl);
+    //console.log("paramheader=",headers);
+    //console.log("req.params.id=",req.params.id);
     var url = `https://hub.vroid.com/api/download_licenses/${req.params.id}/download`;
     var finalurl = uparams.size > 0 ? `${url}?${uparams.toString()}` : url;
     var result = await fetch(finalurl,{
@@ -400,8 +400,8 @@ router.get("/download_licenses/:id/download",async function(req,res){
             location: result.headers.get("location")
         });
     }else{
-        console.log("error=",result.status, result.statusText);
-        console.log("url=",result.headers.get("location"));
+        //console.log("error=",result.status, result.statusText);
+        //console.log("url=",result.headers.get("location"));
         if (result.status == 302) {
             res.statusCode = 200;
             res.statusMessage = "";
