@@ -5211,9 +5211,17 @@
                     <q-card>
                         <q-card-section>
                             <div class="row">
+                                <div class="col-8">
+                                    <span>{{ $t('Text') }}</span>
+                                </div>
+                                <div class="col-4">
+                                    <q-btn flat round icon="edit"
+                                        @click="objpropEvent.textText_startEdit_onclick"
+                                    ></q-btn>
+                                </div>
                                 <div class="col-12">
                                     <q-input v-model="objpropData.elements.textui.text" 
-                                        type="textarea" :label="$t('Text')"
+                                        type="textarea" dense outlined
                                         @update:model-value="objpropEvent.textText_onchange"
                                     ></q-input>
                                 </div>

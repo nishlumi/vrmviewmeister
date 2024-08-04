@@ -2527,6 +2527,18 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         ));
         AppQueue.start();
     }
+    const textText_startEdit_onclick = () => {
+        appPrompt(t("Text"),(val) => {
+            var param = val;
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'SetVVMText',param:param},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+            AppQueue.start();
+            objpropData.elements.textui.text = val;
+        },objpropData.elements.textui.text);
+    }
     const textText_onchange = (val) => {
         var param = val;
         AppQueue.add(new queueData(
@@ -2726,7 +2738,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
 
             textFontsize_onchange,textColor_onchange,textStyle_onchange,
             textStyleRich_onchange,textOverflow_onchange,
-            textAnchorPos_onchange,textText_onchange,textAreasize_onchange,
+            textAnchorPos_onchange,textText_startEdit_onclick,textText_onchange,textAreasize_onchange,
             textcolortype_onchange,textOutlineWidth_onchange,textOutlineColor_onchange,textcolorGradient_onchange,
 
             uimageColor_onchange,
