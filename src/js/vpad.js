@@ -745,8 +745,8 @@ export function defineVpadDlg(app, Quasar) {
             const handlePan = ({ evt, ...newInfo }) => {
                 var dx = newInfo.delta.x;
                 var dy = newInfo.delta.y;
-                data.value.elements.win.position.x += event.dx
-                data.value.elements.win.position.y += event.dy
+                data.value.elements.win.position.x += dx;
+                data.value.elements.win.position.y += dy;
             
                 vpdlg.value.style.transform =
                     `translate(${data.value.elements.win.position.x}px, ${data.value.elements.win.position.y}px)`;

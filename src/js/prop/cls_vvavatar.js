@@ -832,7 +832,7 @@ export class VVTimelineTarget {
                 this.frames.splice(ishit,1);
             }else if (cleartype == AF_MOVETYPE.AllProperties) {
                 //---remove properties ONLY
-                var ishitprop = this.frames[ishit].data.movingData.findIndex(v => {
+                var ishitprop = this.frames[ishit].data.frame.movingData.findIndex(v => {
                     if (
                         (v.indexOf("position") == -1) &&
                         (v.indexOf("rotation") == -1) &&
@@ -844,7 +844,7 @@ export class VVTimelineTarget {
                     return false;
                 });
                 if (ishitprop > -1) {
-                    this.frames[ishit].data.movingData.splice(ishitprop,1);
+                    this.frames[ishit].data.frame.movingData.splice(ishitprop,1);
                 }
             }
             

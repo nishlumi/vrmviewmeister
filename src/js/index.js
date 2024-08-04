@@ -215,130 +215,130 @@ const app = Vue.createApp({
                     });
                 }
             }
-            setupUnity()
-            .then(async res => {
-                modelLoader.checkSWUpdate();
-                setupFixUnityEvent(modelOperator,UnityCallback);
-                Vue.nextTick(async () => {
-                    //---firstly set config to Unity, after each initial set up
-                    mainData.appconf.load()
-                    .then(confres => {
-                        mainData.states.uimode = ID("uimode").value;
-
-                        mainData.appconf.applyUnity(false);
-                        modelOperator.newProject(false);
-                        modelLoader.setupDefaultObject();
-
-                        calcUnitySize(Quasar.Screen.width, Quasar.Screen.height);
-                        if (Quasar.Screen.width >= Quasar.Screen.height) {
-                            mainData.elements.initialOrientation = "landscape";
-                        }else{
-                            mainData.elements.initialOrientation = "portrait";
-                        }
-                        
-                        //mainData.elements.canvas.scrollArea.width = `${Quasar.Screen.width - 300 - 225}px`;
-                        //mainData.elements.canvas.scrollArea.height = `${Quasar.Screen.height - 128 - 36 - 200}px`;
-                        ribbonData.elements.scr_size.width = unitycontainer.value.width; 
-                        ribbonData.elements.scr_size.height = unitycontainer.value.height;
-        
-                        //---additional settings
-                        modelOperator.setDarkMode(mainData.appconf.confs.application.UseDarkTheme);
-                        
-                        //AppQueue.start();
-                        
-                        //---1st: load app material
-                        modelOperator.load_materialFile(true);
-                        ID("splash").classList.add("fadeout");
-                        modelLoader.downloadAddressableAssetBundles();
-                        modelLoader.onload_effectDirectory();
-                        AppQueue.start();
-                        mainData.states.currentEditOperationCount = 0;
-                        mainData.states.backupEditOperationCount = 0;
+            const res = await setupUnity();
+            
+            modelLoader.checkSWUpdate();
+            setupFixUnityEvent(modelOperator,UnityCallback);
+            Vue.nextTick(async () => {
+                //---firstly set config to Unity, after each initial set up
+                const confres = mainData.appconf.load();
                 
-                        modelLoader.schedulingBackup();
-                    });
-                    
-                });
+                mainData.states.uimode = ID("uimode").value;
 
-                /**
-                 * Trigger event of Global to Vue. send-receive message.
-                 */
-                window.addEventListener("message",(evt)=> {
-                    //console.log(evt);
-                    if (evt.origin != location.origin) return;
+                mainData.appconf.applyUnity(false);
+                //---test: moving to firstLoad_effectDirectory
+                modelOperator.newProject(false);
+                modelLoader.setupDefaultObject();
 
-                    if (evt.data && evt.data.isvvm) {
-                        //console.log(evt.data);
-                        //modelOperator.filteringFromChildWindow(evt.data);
-                        childman.filteringFromChildWindow(evt.data);
-                    }
-                    
-                });
-                window.addEventListener("resize",(evt) => {
-                    if (mainData.states.turnOrientation) {
-                        mainData.states.turnOrientation = false;
-                        //return;
-                    }
-                    var w = evt.currentTarget;
-                    console.log(Quasar.Screen);
-                    Vue.nextTick(async () => {
-                        calcUnitySize(w.innerWidth, w.innerHeight);
-                    });
-                });
-                window.addEventListener("orientationchange",(evt)=> {
-                    var w = evt.currentTarget;
-                    console.log(Quasar.Screen);
-                    console.log(screen);
-                    /*alert(screen.orientation.type+"\n"+
-                        screen.availWidth + "\n" + 
-                        screen.availHeight
-                    );*/
-                    if (ID("uimode").value == "mobile") {
-                        //---after xs(portrait), off mini-mode
-                        objpropData.elements.drawer.show = false;
-                        objlistData.elements.drawer.show = false;
-                        objpropData.elements.drawer.miniState = true;
-                        objlistData.elements.drawer.miniState = true;
-                    }else{
-                        objpropData.elements.drawer.show = true;
-                        objlistData.elements.drawer.show = true;
-                        objpropData.elements.drawer.miniState = true;
-                        objlistData.elements.drawer.miniState = true;
-                    }
-                    //Vue.nextTick(async () => {
-                        calcUnitySize(w.innerWidth, w.innerHeight);
-                    //});
-                    mainData.states.turnOrientation = true;
-                });
-                if (!window.elecAPI) {
-                    window.addEventListener("beforeunload",(evt) => {
-                        if (this.mainData.states.currentEditOperationCount > 0) {
-                            evt.preventDefault();
-                            evt.returnValue = "End VRMViewMeister ?";
-                        }
-                        
-                    });
+                calcUnitySize(Quasar.Screen.width, Quasar.Screen.height);
+                if (Quasar.Screen.width >= Quasar.Screen.height) {
+                    mainData.elements.initialOrientation = "landscape";
+                }else{
+                    mainData.elements.initialOrientation = "portrait";
                 }
                 
-                window.addEventListener("unload",(evt) => {
-                    window.clearInterval(mainData.states.inputstep.id);
-                    if (mainData.elements.win_bonetransform) mainData.elements.win_bonetransform.close();
-                    if (mainData.elements.win_mediapipe) mainData.elements.win_mediapipe.close();
-                    if (mainData.elements.win_pose) mainData.elements.win_pose.close();
-                    if (mainData.elements.win_screenshot) mainData.elements.win_screenshot.close();
-                    if (mainData.elements.win_vplayer) mainData.elements.win_vplayer.close();
-                    if (mainData.elements.win_keyframe) mainData.elements.win_keyframe.close();
-                    if (mainData.elements.win_gravitybone) mainData.elements.win_gravitybone.close();
-                });
+                //mainData.elements.canvas.scrollArea.width = `${Quasar.Screen.width - 300 - 225}px`;
+                //mainData.elements.canvas.scrollArea.height = `${Quasar.Screen.height - 128 - 36 - 200}px`;
+                ribbonData.elements.scr_size.width = unitycontainer.value.width; 
+                ribbonData.elements.scr_size.height = unitycontainer.value.height;
 
-
-                return true;
-            })
-            .then((val) => {
-                //setTimeout(() => {
-                    //modelLoader.load_materialFile(true);
-                //},500);
+                //---additional settings
+                modelOperator.setDarkMode(mainData.appconf.confs.application.UseDarkTheme);
+                
+                //AppQueue.start();
+                
+                //---1st: load app material
+                modelOperator.load_materialFile(true);
+                ID("splash").classList.add("fadeout");
+                modelLoader.downloadAddressableAssetBundles();
+                //modelLoader.onload_effectDirectory();
+                AppQueue.start();
+                mainData.states.currentEditOperationCount = 0;
+                mainData.states.backupEditOperationCount = 0;
+        
+                modelLoader.schedulingBackup();
+                
+                
             });
+
+            /**
+             * Trigger event of Global to Vue. send-receive message.
+             */
+            window.addEventListener("message",(evt)=> {
+                //console.log(evt);
+                if (evt.origin != location.origin) return;
+
+                if (evt.data && evt.data.isvvm) {
+                    //console.log(evt.data);
+                    //modelOperator.filteringFromChildWindow(evt.data);
+                    childman.filteringFromChildWindow(evt.data);
+                }
+                
+            });
+            window.addEventListener("resize",(evt) => {
+                if (mainData.states.turnOrientation) {
+                    mainData.states.turnOrientation = false;
+                    //return;
+                }
+                var w = evt.currentTarget;
+                console.log(Quasar.Screen);
+                Vue.nextTick(async () => {
+                    calcUnitySize(w.innerWidth, w.innerHeight);
+                });
+            });
+            window.addEventListener("orientationchange",(evt)=> {
+                var w = evt.currentTarget;
+                console.log(Quasar.Screen);
+                console.log(screen);
+                /*alert(screen.orientation.type+"\n"+
+                    screen.availWidth + "\n" + 
+                    screen.availHeight
+                );*/
+                if (ID("uimode").value == "mobile") {
+                    //---after xs(portrait), off mini-mode
+                    objpropData.elements.drawer.show = false;
+                    objlistData.elements.drawer.show = false;
+                    objpropData.elements.drawer.miniState = true;
+                    objlistData.elements.drawer.miniState = true;
+                }else{
+                    objpropData.elements.drawer.show = true;
+                    objlistData.elements.drawer.show = true;
+                    objpropData.elements.drawer.miniState = true;
+                    objlistData.elements.drawer.miniState = true;
+                }
+                //Vue.nextTick(async () => {
+                    calcUnitySize(w.innerWidth, w.innerHeight);
+                //});
+                mainData.states.turnOrientation = true;
+            });
+            if (!window.elecAPI) {
+                window.addEventListener("beforeunload",(evt) => {
+                    if (this.mainData.states.currentEditOperationCount > 0) {
+                        evt.preventDefault();
+                        evt.returnValue = "End VRMViewMeister ?";
+                    }
+                    
+                });
+            }
+            
+            window.addEventListener("unload",(evt) => {
+                window.clearInterval(mainData.states.inputstep.id);
+                if (mainData.elements.win_bonetransform) mainData.elements.win_bonetransform.close();
+                if (mainData.elements.win_mediapipe) mainData.elements.win_mediapipe.close();
+                if (mainData.elements.win_pose) mainData.elements.win_pose.close();
+                if (mainData.elements.win_screenshot) mainData.elements.win_screenshot.close();
+                if (mainData.elements.win_vplayer) mainData.elements.win_vplayer.close();
+                if (mainData.elements.win_keyframe) mainData.elements.win_keyframe.close();
+                if (mainData.elements.win_gravitybone) mainData.elements.win_gravitybone.close();
+            });
+
+
+            
+        
+            //setTimeout(() => {
+                //modelLoader.load_materialFile(true);
+            //},500);
+            
             
             /*
             window.addEventListener("beforeunload",(evt)=>{

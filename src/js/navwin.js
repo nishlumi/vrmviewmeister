@@ -340,8 +340,8 @@ export function defineNavigationDlg(app, Quasar) {
             const handlePan = ({ evt, ...newInfo }) => {
                 var dx = newInfo.delta.x;
                 var dy = newInfo.delta.y;
-                nvapp.elements.win.position.x += event.dx
-                nvapp.elements.win.position.y += event.dy
+                nvapp.elements.win.position.x += dx;
+                nvapp.elements.win.position.y += dy;
             
                 nvdlg.value.style.transform =
                     `translate(${nvapp.elements.win.position.x}px, ${nvapp.elements.win.position.y}px)`;

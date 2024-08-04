@@ -4,7 +4,7 @@ const template = `
             <q-card-section class="row" style="width:100%;height:calc(100% - 52px);" v-if="selectAvatar">
                 <div class="row"  style="width:100%">
                     <div class="col-3 ">
-                        <q-img :src="selectAvatar.thumbnail" alt="Thumbnail" width="128" height="128" style="width:128px"></q-img>
+                        <q-img :src="selectAvatar.thumbnail" alt="Thumbnail" style="width:100%"></q-img>
                     </div>
                     <div class="col-8 offset-1">
                         <b v-text="selectAvatar.title" style="font-size: 1.5rem;"></b>
@@ -72,11 +72,11 @@ const template = `
                     <div class="col-12">
                         <table class="vrminfo-info2-table" >
                             <tr>
-                                <td colspan="2">
+                                <td colspan="1">
                                     <q-icon name="manage_accounts" size="2rem"></q-icon>
-                                    <span>{{$t("vrminfo_allowedUser")}}</span>
+                                    <span>{{$t("vrminfo_allowedUser") + ":"}}</span>
                                 </td>
-                                <td colspan="2">
+                                <td colspan="3">
                                     <!--<q-icon :name="showIconAllowed(selectAvatar.allowedUser)"  :class="styleIconAllowed(selectAvatar.allowedUser)" size="2rem"></q-icon>-->
                                     {{ showAllowUserLabel(selectAvatar.allowedUser) }}
                                 </td>

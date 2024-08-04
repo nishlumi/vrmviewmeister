@@ -1640,7 +1640,13 @@ export class appModelOperator {
                 ));
             }
 
-            this.selectCurrentFrameTargetBones(role, this.ribbonData.elements.frame.current);
+            if (
+                (selected.avatar.type != AF_TARGETTYPE.Stage) &&
+                (selected.avatar.type != AF_TARGETTYPE.SystemEffect) &&
+                (selected.avatar.type != AF_TARGETTYPE.Audio) 
+            ) {
+                this.selectCurrentFrameTargetBones(role, this.ribbonData.elements.frame.current);
+            }
             //===============================================
             //this.getUnityData_EachObject(vsel.avatar.type);
             AppQueue.start();

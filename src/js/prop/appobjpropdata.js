@@ -336,7 +336,7 @@ export class appDataObjectProp {
             effectui : {
                 genre : "",
                 genreoptions : [
-                    //"Explosion","Smoke","Water","Action"
+                    "Explosion","Smoke","Water","Action"
                 ],
                 effect : "",
                 effectoptions : [],

@@ -1237,6 +1237,7 @@ export class UnityCallbackFunctioner {
             }
             mainData.data.EffectDirectory[lnarr[0]].push(lnarr[1]);
         }
+
     }
     async getcurrenteffect (val, effectui, mainData)  {
         mainData.states.selectedAvatar.effects = {genre:"", effectName:""};
@@ -2246,7 +2247,14 @@ export class UnityCallbackFunctioner {
                 AppDB.scene_meta.setItem(cmeta.fullname,cmeta);
                 AppDB.scene.setItem(cmeta.fullname,cproj)
                 .then(res => {
-                    
+                    Quasar.Notify.create({
+                        message : callback.t("cons_backuping"), 
+                        position : "top-right",
+                        color : "info",
+                        textColor : "black",
+                        timeout : 1000, 
+                        multiLine : true
+                    });
                 });
             }
 

@@ -1,6 +1,6 @@
 import { VVAvatar, VVCast,VVAnimationProject, VVTimelineTarget, VVProp, VVTimelineFrameData } from "./cls_vvavatar.js"
 import { AppDBMeta, VVAppConfig } from "../appconf.js";
-import { AF_TARGETTYPE, FILEOPTION, INTERNAL_FILE, STORAGE_TYPE, UserAnimationEase } from "../../res/appconst.js";
+import { AF_TARGETTYPE, EFFECTLIST, FILEOPTION, INTERNAL_FILE, STORAGE_TYPE, UserAnimationEase } from "../../res/appconst.js";
 import { VOSFile } from "../../../public/static/js/filehelper.js";
 import { VRoidHubConnector } from "../model/vroidhub.js";
 import { UnityVector3 } from "./cls_unityrel.js";
@@ -14,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.11.0",
-            revision : "20240731-01",
+            version : "2.11.2",
+            revision : "20240804-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -60,7 +60,7 @@ export class appMainData {
                 scrollArea : {
                     width : "calc(100% - 300px - 225px)",
                     height : "calc(100% - 165px - 250px)", //"calc(100% - 128px - 36px - 200px)",
-                    overflow : "hidden"
+                    overflow : "auto"
                 },
                 /*win_poselist : null,
                 win_screenshot : null,
@@ -528,9 +528,8 @@ export class appMainData {
                 vrm : null,
                 audio : null
             },
-            EffectDirectory : {
-                
-            },
+            EffectDirectory : EFFECTLIST
+            ,
       
         };
     }

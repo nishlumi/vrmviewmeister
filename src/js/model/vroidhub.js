@@ -32,9 +32,15 @@ export class VRoidHubConnector {
             enable_token : false
         };
         this.session = {
-
+            licenses:[],
         };
 
+    }
+    destroy() {
+        //---Remove licenses in bulk
+        for (var i = 0; i < this.session.licenses.length; i++) {
+            this.delete_download_licenses(this.session.licenses[i]);
+        }
     }
     setHeaders() {
         this.headers["Authorization"] = `Bearer ${this.savedata.token.access_token}`;
@@ -638,6 +644,12 @@ export class VRoidHubConnector {
     async download_model(id) {
         var ret = {
         }
+
+        var ishit = this.session.licenses.findIndex(v => { 
+            if (v == id) return true;
+            return false;
+        });
+        if (ishit == -1) this.session.licenses.push(id);
 
         this.setHeaders();
         var finalheaders = {};

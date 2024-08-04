@@ -674,6 +674,9 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
      */
     const saveToInternalStorage = async (dbname, fileHandle) => {
         var metadb = (dbname == INTERNAL_FILE.PROJECT) ? AppDB.scene_meta : AppDB.avatar_meta;
+        //---not save from  VRoidHub
+        if (fileHandle.storageType == STORAGE_TYPE.VROIDHUB) return false;
+
         var datadb = AppDB[INTERNAL_FILE[dbname]];
         if (metadb && datadb) {
             var tmpfile = Vue.toRaw(fileHandle); // new VOSFile({});
