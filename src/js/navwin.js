@@ -83,6 +83,10 @@ class BaseData{
                 webgl : 0,
                 sa : 0,
             },
+            scroll : {
+                top : 0,
+                left : 0,
+            },
             rect : {
                 preview : null,
                 webgl : null,
@@ -148,6 +152,8 @@ export function defineNavigationDlg(app, Quasar) {
             
                 nvapp.elements.win.position.x = 0;
                 nvapp.elements.win.position.y = 0;
+                //nvapp.data.scroll.top = scrollTop.value;
+                //nvapp.data.scroll.left = scrollLeft.value;
                 nvdlg.value.style.transform =
                     `translate(${nvapp.elements.win.position.x}px, ${nvapp.elements.win.position.y}px)`;
 

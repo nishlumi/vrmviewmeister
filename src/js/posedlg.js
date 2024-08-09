@@ -431,11 +431,11 @@ export function definePoseMotionDlg(app, Quasar) {
                     
                     if (poseapp.value.states.item_mode == "pose") {
                         if (!cast.value.avatar) {
-                            appAlert(this._t("msg_pose_noselectmodel"));
+                            appAlert(t("msg_pose_noselectmodel"));
                             return;
                         }
                         if (cast.value.avatar.type != AF_TARGETTYPE.VRM) {
-                            appAlert(this._t("msg_pose_noselectmodel"));
+                            appAlert(t("msg_pose_noselectmodel"));
                             return;
                         }
                         var pose = JSON.parse(JSON.stringify(poseapp.value.list.selected.data));
@@ -459,7 +459,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         var motion = JSON.parse(JSON.stringify(poseapp.value.list.selected.data));
 
                         if (cast.value.avatar.type != motion.targetType) {
-                            appAlert(this._t("msg_openmotion_error2"));
+                            appAlert(t("msg_openmotion_error2"));
                             return;
                         }
                         var tmpcast = cast.value;
@@ -694,7 +694,7 @@ export function definePoseMotionDlg(app, Quasar) {
             }
 
             const listorigin_onchange = (val) =>  {
-                var remoteload = (url) => {
+                var remoteload = (url, originType) => {
                     fetch(url)
                     .then(async ret => {
                         if (ret.ok) {
@@ -712,7 +712,7 @@ export function definePoseMotionDlg(app, Quasar) {
                                             styleclass : {
                                                 "list-item-selected" : false
                                             },
-                                            isLoaded:false,
+                                            isLoaded: (originType == "appserver") ? true : false,
                                             id: obj.id,
                                             data : posedata
                                         });
@@ -731,7 +731,7 @@ export function definePoseMotionDlg(app, Quasar) {
                                             styleclass : {
                                                 "list-item-selected" : false
                                             },
-                                            isLoaded:false,
+                                            isLoaded: (originType == "appserver") ? true : false,
                                             id: obj.id,
                                             data: posedata
                                         });
@@ -758,16 +758,9 @@ export function definePoseMotionDlg(app, Quasar) {
 
                     //---decide URL
                     if (val.value == "appserver") {
-                        baseurl = SAMPLEURL;
+                        baseurl = "/samplesv/enumdir";
                         apikey = SAMPLEKEY;
-                    }
-                    
-                    /*if (baseurl.indexOf("https://script.google.com/macros/s/") < 0) {
-                        baseurl = "https://script.google.com/macros/s/" + baseurl;
-                    }
-                    if (baseurl.lastIndexOf("/exec") < 0) {
-                        baseurl = baseurl + "/exec";
-                    }*/            
+                    }                              
                     
                     //---setting URL parameters
                     urlparams.append("mode","enumdir");
@@ -780,7 +773,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         //extension = "vvmpose";
                         if (val.value == "appserver") {
                             //---app server id
-                            urlparams.append("enumtype","vvmpose");
+                            urlparams.append("container_name","vvmpose");
                         }else if (val.value == "gdrive") {
                             //---user folder id
                             urlparams.append("dirid",poseapp.value.appconf.confs.fileloader.gdrive.user.pose);
@@ -791,7 +784,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         //extension = "vvmmot";
                         if (val.value == "appserver") {
                             //---app server id
-                            urlparams.append("enumtype","vvmmot");
+                            urlparams.append("container_name","vvmmot");
                         }else if (val.value == "gdrive") {
                             //---user folder id
                             urlparams.append("dirid", poseapp.value.appconf.confs.fileloader.gdrive.user.motion);
@@ -808,7 +801,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         //---specified google drive id
                         finalurl += `&dirid=${dirid}`;
                     }*/
-                    remoteload(finalurl);
+                    remoteload(finalurl,val.value);
 
                 }else if (val.value == "mystorage") {
                     loadData();

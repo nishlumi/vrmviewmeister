@@ -11,6 +11,7 @@ const { doubleCsrf } = require("csrf-csrf");
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var vroidhubRouter = require('./routes/vroidhub');
+var samplesvRouter = require('./routes/samplesv');
 //var buildRouter = require("./routes/build");
 var bodyParser = require('body-parser');
 
@@ -82,6 +83,7 @@ app.enable('view cache');
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/vroidhub",vroidhubRouter);
+app.use("/samplesv",samplesvRouter);
 //app.use('/Build', buildRouter);
 /*app.get('.*.js', (req, res, next) => {
 	req.url = req.url + '.gz';

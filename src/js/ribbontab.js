@@ -1123,8 +1123,25 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             }
             is_closepanel = true;
         }else if (ename == "connect_vroidhub") {
-            mainData.vroidhubapi.generateAuthLink(mainData);
+            if (mainData.vroidhubapi.states.enable_token) {
+                mainData.vroidhubapi.request_token(mainData.vroidhubapi.savedata.code,"refresh_token");
+            }else{
+                mainData.vroidhubapi.generateAuthLink(mainData);
+            }
             is_closepanel = true;
+        }else if (ename == "logout_vroidhub") {
+            appConfirm(t("msg_logoutvrh"),()=>{
+                var ret = modelOperator.getVRMsByStorageType(STORAGE_TYPE.VROIDHUB);
+                for (var o = 0; o < ret.length; o++) {
+                    modelOperator.removeBodyObject(ret[o].avatar);
+                }
+                if (ret.length > 0) AppQueue.start();
+                console.log(ret);
+                mainData.vroidhubapi.destroy();
+                mainData.vroidhubapi.logout();
+                mainData.states.vroidhub_api = false;
+            });
+            
         }else if (ename == "list_models_vroidhub") {
             var options = {};
             
@@ -1410,8 +1427,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ribbonData.elements.frame.bonelist.selection.splice(0, ribbonData.elements.frame.bonelist.selection.length);
             is_closepanel = true;
         }else if (ename == "bone_select_all") {
-            for (var i = IKBoneType.IKParent; i < IKBoneType.RightLeg+1; i++) {
-                modelOperator.selectSpecifyBoneForRegister(i);
+            for (var i = IKBoneType.IKParent; i < IKBoneType.Unknown; i++) {
+                if (modelOperator.IsVRMParseBoneType(i)) {
+                    modelOperator.selectSpecifyBoneForRegister(i);
+                }
+                
             }
             is_closepanel = true;
         }else if (ename == "bone_select_ikparent") {
@@ -1437,6 +1457,8 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.RightLowerLeg);
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.LeftLeg);
             modelOperator.selectSpecifyBoneForRegister(IKBoneType.RightLeg);
+            modelOperator.selectSpecifyBoneForRegister(IKBoneType.LeftToes);
+            modelOperator.selectSpecifyBoneForRegister(IKBoneType.RightToes);
         }else if (ename == "cutframe") {
             var param = `${mainData.states.selectedCast.roleName},${mainData.states.selectedCast.type},${timelineData.states.currentcursor},1`;
             AppQueue.add(new queueData(

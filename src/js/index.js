@@ -115,7 +115,7 @@ const app = Vue.createApp({
             mat_realtoon,UIMaterials
         } = defineMaterialPropertyUI(app, Quasar, objpropData, objpropEvent);
 
-        const {vroidhubSelectorEvent} = defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelLoader, modelOperator, UnityCallback);
+        const {vroidhubSelectorEvent,vroidhubAuthorizerEvent} = defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelLoader, modelOperator, UnityCallback);
 
         //===set up the other referrence
         UnityCallback.timelineEvent = timelineEvent;
@@ -200,19 +200,16 @@ const app = Vue.createApp({
             }else{
                 mainData.elements.loadmsg = "First access. Now installing the WebApp...";
             }
-            mainData.vroidhubapi.load()
-            .then(async res => {
-                mainData.states.vroidhub_api = res === true ? true : false;
-            });
+            var vrhres = await mainData.vroidhubapi.load();
+            mainData.states.vroidhub_api = vrhres;
+            
             var ishit = Quasar.LocalStorage.getItem("callback_code");
             if (ishit) {
                 var resjs = JSON.parse(ishit);
                 if (resjs["code"]) {
-                    mainData.vroidhubapi.request_token(resjs.code)
-                    .then(res => {
-                        Quasar.LocalStorage.remove("callback_code");
-                        mainData.states.vroidhub_api = true;
-                    });
+                    var vrhreqres = await mainData.vroidhubapi.request_token(resjs.code)
+                    Quasar.LocalStorage.remove("callback_code");
+                    mainData.states.vroidhub_api = true;
                 }
             }
             const res = await setupUnity();
@@ -434,6 +431,7 @@ const app = Vue.createApp({
             projectdlgEvent,
             projectSelectorEvent,
             vroidhubSelectorEvent,
+            vroidhubAuthorizerEvent,
 
             //---method, properties
             modelLoader, modelOperator, dnd,UnityCallback, childman,

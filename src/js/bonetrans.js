@@ -242,11 +242,13 @@ export function defineBonetranDlg(app, Quasar) {
                 //---Left Foot from Right
                 mirrorLR(IKBoneType.LeftLeg, IKBoneType.RightLeg);
         
-                //---Right Lower Leg from Right
+                //---Right Lower Leg from Left
                 mirrorLR(IKBoneType.RightLowerLeg, IKBoneType.LeftLowerLeg);
         
-                //---Right Foot from Right
+                //---Right Foot from Left
                 mirrorLR(IKBoneType.RightLeg, IKBoneType.LeftLeg);
+
+                //---Toes don't matter.
             }
 
             const handlePan = ({ evt, ...newInfo }) => {
@@ -286,7 +288,14 @@ export function defineBonetranDlg(app, Quasar) {
                 //---spreadsheet
                 var bonedata = [];
                 for (var obj in IKBoneType) {
-                    if ((IKBoneType[obj] >= IKBoneType.IKParent) && (IKBoneType[obj] <= IKBoneType.RightLeg)) {
+                    if (
+                        ((IKBoneType[obj] >= IKBoneType.IKParent) && (IKBoneType[obj] <= IKBoneType.RightLeg))
+                        ||
+                        (IKBoneType[obj] == IKBoneType.LeftToes)
+                        ||
+                        (IKBoneType[obj] == IKBoneType.RightToes)
+                    ) {
+                        
                         bonedata.push([obj,0,0,0,0,0,0]);
                     }
                 }

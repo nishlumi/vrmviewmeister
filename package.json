@@ -4,7 +4,7 @@
     "name": "ISHII Eiju"
   },
   "description": "Web app for VRoid(VRM) : Posing, Animation",
-  "version": "2.11.2",
+  "version": "2.12.0",
   "private": true,
   "scripts": {
     "dev": "set NODE_ENV=delevopment&&set PORT=5026&&node ./app.js",

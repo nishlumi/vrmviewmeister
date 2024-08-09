@@ -72,7 +72,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                 var urlparams = new URLSearchParams();
 
                 if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
-                    baseurl = SAMPLEURL;
+                    baseurl = "/samplesv/load";
                     apikey = SAMPLEKEY;
                 }
 
@@ -95,7 +95,32 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                     //---setting URL parameters
                     urlparams.append("mode","load");
                     urlparams.append("apikey",apikey);
-                    urlparams.append("fileid",mainData.elements.projectSelector.selected);
+                    if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+                        var db2container = {
+                            scene : "project",
+                            vrm : "vrms",
+                            obj : "3dmodel",
+                            image : "image",
+                            motion : "vvmmot",
+                            pose : "vvmpose",
+                            vrma : "vrmanimation"
+                        }
+                        
+                        urlparams.append("container_name",db2container[mainData.elements.projectSelector.selectDB]);
+                        urlparams.append("filename",ishit.name);
+                        if (
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) ||
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.POSE) ||
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.MOTION)
+                        ) {
+                            urlparams.append("download_type","string");
+                        }else{
+                            urlparams.append("download_type","buffer");
+                        }
+                    }else if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
+                        urlparams.append("fileid",mainData.elements.projectSelector.selected);
+                    }
+                    
                     urlparams.append("extension",fext);
 
                     //finalurl = `${baseurl}?mode=load&apikey=${apikey}&fileid=${mainData.elements.projectSelector.selected}&extension=${fext}`;
@@ -113,7 +138,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                             originalresult = js.data;
 
                             modelOperator.newProject(false);
-                            mainData.states.currentProjectFileID = js.id;
+                            mainData.states.currentProjectFileID = mainData.elements.projectSelector.selected;
                             mainData.states.currentProjectFilename = js.name;
                             mainData.states.currentProjectFilepath = js.name;
                             mainData.states.currentProjectHandle = js.name;
@@ -123,17 +148,17 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                                 throw new Exception(js.msg);
                             }
                             var retfile = new VOSFile({});
-                            retfile.name = js.name;
-                            retfile.path = js.name;
-                            retfile.id = js.id;
-                            retfile.size = js.size;
-                            retfile.type = js.mimeType;
+                            retfile.name = js.name || ishit.name;
+                            retfile.path = js.name || ishit.name;
+                            retfile.id = js.id || ishit.id;
+                            retfile.size = js.size || ishit.size;
+                            retfile.type = js.mimeType || ishit.type;
                             retfile.encoding = "binary";
-                            retfile.storageType = "ggd";
+                            retfile.storageType = mainData.elements.projectSelector.selectStorageType;
 
                             var barr = new Uint8Array(js.data);
                             var bb = new Blob([barr.buffer]); //,"application/octet-stream"
-                            retfile.data = new File([bb], js.name);
+                            retfile.data = new File([bb], retfile.name);
 
                             originalresult = retfile;
                         }
@@ -233,7 +258,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                     //if (await modelOperator.verifyFileHandlePermission(result,options) === true) {
                     if (isJudge) {
                         var originalvos = new VOSFile(originalresult);
-                        originalvos.storageType = originalresult.storageType || mainData.elements.projectSelector.selectStorageType || "";
+                        originalvos.storageType = originalresult.storageType || mainData.elements.projectSelector.selectStorageType;
 
                         var result = null;
                         if (VFileHelper.flags.isHistoryFSAA) {
@@ -339,7 +364,9 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                                     {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
                                     "firstload_vrm",QD_INOUT.returnJS,
                                     callback.historySendObjectInfo,
-                                    {callback,objectURL:fdata}
+                                    {callback,objectURL:fdata,filename:originalvos.name,
+                                        fileloadtype: mainData.states.fileloadtype,
+                                        loadingfileHandle : originalvos}
                                 ));
                                 if (mainData.appconf.confs.application.shortcut_vrminfo_from_history) {
                                     AppQueue.add(new queueData(

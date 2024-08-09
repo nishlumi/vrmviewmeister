@@ -239,6 +239,8 @@ export const  IKBoneType =
     //LeftHandPose : 17,
     //RightHandPose : 18,
     //BlendShape : 19,
+    LeftToes : 20,
+    RightToes : 21,
     Unknown : 25
 };
 export const CameraClearFlags = {

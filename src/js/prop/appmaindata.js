@@ -14,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.11.2",
-            revision : "20240804-01",
+            version : "2.12.0",
+            revision : "20240810-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -397,6 +397,22 @@ export class appMainData {
                 files : [],
                 searchedFiles : [],
                 searchstr : "",
+            },
+            vroidhubAuthorizer : {
+                show : false,
+                maximized : false,
+                fullwidth : false,
+                fullheight : false,
+                style : {
+                    width: "640px",
+                    height: "280px",
+                    overflow: "hidden"
+                },
+
+
+                url : "",
+                progress_authorize : false,
+                code_inputBox : "",
             },
             win_screenshot : null,
             win_pose : null,

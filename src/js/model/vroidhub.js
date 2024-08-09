@@ -26,6 +26,7 @@ export class VRoidHubConnector {
         this.savedata = {
             appid: "",
             token : {},
+            code : "",
         };
 
         this.states = {
@@ -42,21 +43,36 @@ export class VRoidHubConnector {
             this.delete_download_licenses(this.session.licenses[i]);
         }
     }
+    /**
+     * 
+     * @param {*} vrms 
+     */
+    logout(vrms) {
+        this.savedata.token = null;
+        this.savedata.token = {};
+        this.savedata.code = "";
+        AppDB.app.removeItem("vrh_save");
+        this.states.enable_token = false;
+    }
     setHeaders() {
         this.headers["Authorization"] = `Bearer ${this.savedata.token.access_token}`;
     }
     save() {
         AppDB.app.setItem("vrh_save",Vue.toRaw(this.savedata));
     }
-    load() {
-        return AppDB.app.getItem("vrh_save")
-        .then(result => {
-            if (result) {
-                this.savedata = result;
-                this.states.enable_token = true;
-            }
-            return this.states.enable_token;
-        });
+    /**
+     * 
+     * @returns {Promise<Boolean>}
+     */
+    async load() {
+        var result = await AppDB.app.getItem("vrh_save");
+        
+        if (result) {
+            this.savedata = result;
+            this.states.enable_token = true;
+        }
+        return this.states.enable_token;
+        
     }
     delete_data() {
         AppDB.app.remove("vrh_save");
@@ -71,7 +87,9 @@ export class VRoidHubConnector {
                 "redirect_uri" : location.origin + "/redirect"
             })
             .then(async res => {
-                appPrompt("Do you ppen VRoidHub authorize page?\nPlease paste to browser.", (res) => {
+                mainData.elements.vroidhubAuthorizer.url = res.url;
+                mainData.elements.vroidhubAuthorizer.show = true;
+                /*appPrompt("Do you open VRoidHub authorize page?\nPlease paste to browser.", (res) => {
                     
                     appPrompt("Input code.",(val) => {
                         mainData.vroidhubapi.request_token(val)
@@ -80,7 +98,7 @@ export class VRoidHubConnector {
                             mainData.states.vroidhub_api = true;
                         });
                     });
-                },res.url);
+                },res.url);*/
             });
             //TODO
             //don't jump, manually authorize...
@@ -108,12 +126,12 @@ export class VRoidHubConnector {
             });
         }
     }
-    async request_token(code) {
+    async request_token(code,grantopt = "authorization_code") {
         var def = new Promise(async (resolve,reject) => {
             if (window.elecAPI) {
                 elecAPI.callVroidHub("/vroidhub/request-token",{
                     "redirect_uri" : location.origin + "/redirect",
-                    "grant_type" : "authorization_code",
+                    "grant_type" : grantopt,
                     "code" : code
                 })
                 .then(resjs => {
@@ -121,6 +139,7 @@ export class VRoidHubConnector {
                         this.savedata.appid = resjs.appid;
                         
                         this.savedata.token = resjs.data;
+                        this.savedata.code = code;
                         this.states.enable_token = true;
                         this.save();
                         resolve(resjs.data);
@@ -134,7 +153,7 @@ export class VRoidHubConnector {
 
                 var uparams = new URLSearchParams();
                 uparams.append("redirect_uri",location.origin + "/redirect");
-                uparams.append("grant_type","authorization_code");
+                uparams.append("grant_type",grantopt);
                 uparams.append("code",code);
     
                 var finalheaders = {};
@@ -157,6 +176,7 @@ export class VRoidHubConnector {
                             this.savedata.appid = resjs.appid;
                             
                             this.savedata.token = resjs.data;
+                            this.savedata.code = code;
                             this.states.enable_token = true;
                             this.save();
                             resolve(resjs.data);
@@ -759,6 +779,29 @@ export function defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelL
             mainData.elements.vroidhubSelector.fullheight = true;
         }
     });
+    const wa_vroidhubAuthorizer_show = Vue.watch( () => mainData.elements.vroidhubAuthorizer.show, (newval) => {        
+
+        if (Quasar.Screen.name == "xs") {
+            mainData.elements.vroidhubAuthorizer.style.width = "100%";
+            mainData.elements.vroidhubAuthorizer.style.height = "100%";
+            mainData.elements.vroidhubAuthorizer.maximized = true;
+            mainData.elements.vroidhubAuthorizer.fullwidth = false;
+            mainData.elements.vroidhubAuthorizer.fullheight = false;
+            
+        }else if (Quasar.Screen.name == "sm") {
+            mainData.elements.vroidhubAuthorizer.style.width = "100%";
+            mainData.elements.vroidhubAuthorizer.style.height = "100%";
+            mainData.elements.vroidhubAuthorizer.maximized = false;
+            mainData.elements.vroidhubAuthorizer.fullwidth = true;
+            mainData.elements.vroidhubAuthorizer.fullheight = true;
+        }else{
+            mainData.elements.vroidhubAuthorizer.style.width = "640px";
+            mainData.elements.vroidhubAuthorizer.style.height = "280px";
+            mainData.elements.vroidhubAuthorizer.maximized = false;
+            mainData.elements.vroidhubAuthorizer.fullwidth = false;
+            mainData.elements.vroidhubAuthorizer.fullheight = false;
+        }
+    });
     const cmp_item_thumbnail = (item) => {
         if (Quasar.Screen.md || Quasar.Screen.lg || Quasar.Screen.xl) {
             return item.data.portrait_image.sq150.url;
@@ -867,13 +910,41 @@ export function defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelL
                 {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
                 "firstload_vrm",QD_INOUT.returnJS,
                 callback.sendObjectInfo,
-                {callback,objectURL:fdata}
+                {callback,objectURL:fdata,filename:mainData.states.fileloadname,
+                    fileloadtype: mainData.states.fileloadtype,
+                    loadingfileHandle : vosfile}
             ));
             AppQueue.start();
             mainData.elements.vroidhubSelector.show=false;
             mainData.elements.loading = true;
         });
     }
+    //############################################
+    // VRoidHubAuthorizer
+    //############################################
+    const onclick_authorize_vroidhubAuthorizer = () => {
+        var a = ID("vrha_url");
+        a.click();
+        mainData.elements.vroidhubAuthorizer.progress_authorize = true;
+    }
+    const onclick_codesend_vroidhubAuthorizer = () => {
+        if (mainData.elements.vroidhubAuthorizer.code_inputBox == "") {
+            appAlert(t("msg_notinputcode_vrha"));
+            return;
+        }
+        mainData.vroidhubapi.request_token(mainData.elements.vroidhubAuthorizer.code_inputBox)
+        .then(res => {
+            Quasar.LocalStorage.remove("callback_code");
+            mainData.states.vroidhub_api = true;
+            mainData.elements.vroidhubAuthorizer.show = false;
+            mainData.elements.vroidhubAuthorizer.progress_authorize = false;
+        });
+    }
+    const onclick_close_vroidhubAuthorizer = () => {
+        mainData.elements.vroidhubAuthorizer.show = false;
+        mainData.elements.vroidhubAuthorizer.progress_authorize = false;
+    }
+
     return {
         vroidhubSelectorEvent : Vue.reactive({
             cmp_item_thumbnail,
@@ -883,7 +954,12 @@ export function defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelL
             onclick_ok_vroidhubSelector,
         }),
         wa_vroidhubSelector_show,
-
+        wa_vroidhubAuthorizer_show,
+        vroidhubAuthorizerEvent : Vue.reactive({
+            onclick_authorize_vroidhubAuthorizer,
+            onclick_codesend_vroidhubAuthorizer,
+            onclick_close_vroidhubAuthorizer,
+        })
 
     };
 }

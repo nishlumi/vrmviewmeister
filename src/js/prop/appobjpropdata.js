@@ -480,7 +480,8 @@ export const defineAppObjlistProp = () => {
     for (var obj in IKBoneType) {
         if ((IKBoneType[obj] != IKBoneType.IKParent) && (IKBoneType[obj] != IKBoneType.Head) && 
             (IKBoneType[obj] != IKBoneType.Unknown) && 
-            (IKBoneType[obj] != IKBoneType.LeftShoulder) && (IKBoneType[obj] != IKBoneType.RightShoulder)
+            (IKBoneType[obj] != IKBoneType.LeftShoulder) && (IKBoneType[obj] != IKBoneType.RightShoulder) &&
+            (IKBoneType[obj] != IKBoneType.LeftToes) && (IKBoneType[obj] != IKBoneType.RightToes)
         ) {
             tmpIKBoneType.push({
                 label : obj,

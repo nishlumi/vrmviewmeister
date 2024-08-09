@@ -785,7 +785,6 @@
                             <br>
                             <q-btn flat dense icon="list" :label="$t('ribbon_capture_list')+'...'" no-caps 
                                 :disable="!mainData.states.vroidhub_api"
-                                
                             >
                                 <q-menu>
                                     <q-list>
@@ -810,8 +809,14 @@
                                 </q-menu>
                             </q-btn>
                         </div>
-                        
-                        <div class="ribbon-group-title">VRoidHub</div>
+                        <div class="ribbon-toolbar">
+                            <q-btn flat dense icon="logout"  no-caps 
+                                @click="ribbonEvent.RibbonFuncModel('logout_vroidhub')"
+                                :disable="!mainData.states.vroidhub_api"
+                            ><q-tooltip>{{ $t('cons_logout') }}</q-tooltip></q-btn>
+                            <br>
+                        </div>
+                        <div class="ribbon-group-title">VRoid Hub</div>
                     </div>
 
                 </q-tab-panel>
@@ -5439,7 +5444,7 @@
             position="bottom"  class="bg-grey-1" :style="timelineData.elements.boxStyle"
             transition-show="slide-up" transition-hide="slide-down"
         >-->
-        <div v-if="mainData.elements.footer" class="bg-grey-1 fixed-bottom" 
+        <div v-show="mainData.elements.footer" class="bg-grey-1 fixed-bottom" 
             :style="timelineData.elements.panel_styles"
             style="max-height:298px;height:calc(100% - 60px);padding-bottom:48px;z-index:100;"
         >

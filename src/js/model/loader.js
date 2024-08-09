@@ -909,7 +909,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         mainData.elements.navigationdlg.selectRect = evt.target.getBoundingClientRect();
     }
     const navigationdlg_onmovecursor = (pos) => {
-        document.getElementById("unity-container").scroll({top: pos.y, left: pos.x, behavior: "smooth"});
+        document.getElementById("unity-parent-container").scroll({top: pos.y, left: pos.x, behavior: "smooth"});
     }
 
     const applychange_vpadflags = (evt) => {

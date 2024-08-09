@@ -1,5 +1,5 @@
 import { AnimationTargetParts, UnityVector3, AnimationFrameActor } from  "./cls_unityrel.js"
-import { AF_TARGETTYPE, AF_MOVETYPE, UserAnimationEase } from "../../res/appconst.js";
+import { AF_TARGETTYPE, AF_MOVETYPE, UserAnimationEase, STORAGE_TYPE } from "../../res/appconst.js";
 
 export class VVBlendShape {
     constructor(id, title, value) {
@@ -54,6 +54,10 @@ export class VVObjectMaterialProp {
 export class VVAvatar {
     constructor(type,json) {
         this.isFixed = false;
+        /**
+         * @type {STORAGE_TYPE}
+         */
+        this.comeFrom = STORAGE_TYPE.LOCAL;
         /**
          * @type {AF_TARGETTYPE}
          */

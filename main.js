@@ -1,9 +1,10 @@
 // Modules to control application life and create native browser window
 const fs = require('fs')
-const { app, BrowserWindow, ipcMain, dialog, session } = require('electron')
+const { app, BrowserWindow, shell, ipcMain, dialog, session } = require('electron')
 const path = require('path')
 const mime = require("mime-types");
 const { defineIPC4VRoidHub } = require('./ipc01vrh.js');
+const { defineIPC4Azure } = require("./ipc02azur.js");
 require('dotenv').config({ path: __dirname + '/vrh.env' })
 
 function createWindow() {
@@ -46,6 +47,13 @@ function createWindow() {
 
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
+
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.startsWith('http')) {
+            shell.openExternal(url)
+        }
+        return { action: 'deny' }
+    });
 }
 
 
@@ -263,3 +271,4 @@ ipcMain.handle("focusWindow", async (event, name) => {
     }
 });
 defineIPC4VRoidHub(ipcMain, process.env.VRH_CLIENT_ID, process.env.VRH_CLIENT_SECRET);
+defineIPC4Azure(ipcMain);

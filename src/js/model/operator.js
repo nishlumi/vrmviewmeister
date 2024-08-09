@@ -279,7 +279,7 @@ export class appModelOperator {
                 
             })
         ));
-        this.newProject(false);
+        //this.newProject(false);
         AppQueue.start();
         
     }
@@ -406,6 +406,19 @@ export class appModelOperator {
         this.mainData.elements.vrminfodlg.show = isOpenDialog;
     }
     /**
+     * Get All VRMs by specified STORAGE_TYPE
+     * @param {STORAGE_TYPE} stype 
+     * @returns {VVCast[]}
+     */
+    getVRMsByStorageType(stype) {
+        var ret = this.mainData.data.project.casts.filter(match => {
+            if (match.avatar && match.avatar.comeFrom == stype) return true;
+            return false;
+        });
+        
+        return ret;
+    }
+    /**
      * 
      * @param {AF_TARGETTYPE} avatar 
      */
@@ -413,8 +426,8 @@ export class appModelOperator {
         var ret = [];
         if (avatar == AF_TARGETTYPE.VRM) {
             for (var obj in IKBoneType) {
-                if ((IKBoneType[obj] >= IKBoneType.IKParent) && 
-                    (IKBoneType[obj] <= IKBoneType.RightLeg)
+                if (
+                    this.IsVRMParseBoneType(IKBoneType[obj])
                 ){
                     ret.push({label:obj, id:IKBoneType[obj]});
                 }
@@ -426,6 +439,33 @@ export class appModelOperator {
         return ret;
     }
     /**
+     * Check wheather parameter's ParseIKBoneType is VRM bone.
+     * @param {IKBoneType} ptype 
+     * @param {*} includeIKParent 
+     * @returns 
+     */
+    IsVRMParseBoneType(ptype, includeIKParent = true) {
+        var ret = false;
+        if (includeIKParent == true)
+        {
+            if (ptype == IKBoneType.IKParent)
+            {
+                ret = true;
+            }
+        }
+
+        if ((ptype >= IKBoneType.EyeViewHandle) && (ptype <= IKBoneType.RightLeg))
+        {
+            ret = true;
+        }
+        else if ((ptype >= IKBoneType.LeftToes) && (ptype <= IKBoneType.RightToes))
+        {
+            ret = true;
+        }
+
+        return ret;
+    }
+    /**
      * 
      * @param {VVAvatar} avatar      
      */
@@ -433,9 +473,8 @@ export class appModelOperator {
         this.ribbonData.elements.frame.bonelist.selection.splice(0, this.ribbonData.elements.frame.bonelist.selection.length);
         if (avatar.type == AF_TARGETTYPE.VRM) {
             for (var obj in IKBoneType) {
-                if ((IKBoneType[obj] >= IKBoneType.IKParent) && 
-                    (IKBoneType[obj] <= IKBoneType.RightLeg)
-                ){
+                if (this.IsVRMParseBoneType(IKBoneType[obj]))
+                {
                     this.ribbonData.elements.frame.bonelist.selection.push(IKBoneType[obj]);
                 }
             }
@@ -468,7 +507,7 @@ export class appModelOperator {
                         
                         var ikbone = IKBoneType[v];
                         //---select bone checkbox in keyframe register panel
-                        if ((0 <= ikbone) && (ikbone <= 16)) {
+                        if (this.IsVRMParseBoneType(ikbone)) {
                             this.selectSpecifyBoneForRegister(ikbone);
                         }
                     }
@@ -909,10 +948,6 @@ export class appModelOperator {
             var apikey = this.mainData.appconf.confs.fileloader.gdrive.apikey;
             var urlparams = new URLSearchParams();
 
-            if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
-                baseurl = SAMPLEURL;
-                apikey = SAMPLEKEY;
-            }
             var isExecute = false;
             if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) {
                 if ((filegd.url != "") && (filegd.enabled === true)) {
@@ -920,6 +955,7 @@ export class appModelOperator {
                 }
             }else if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
                 isExecute = true;
+                baseurl = "/samplesv/enumdir";
             }
 
             if (isExecute === true) {
@@ -982,9 +1018,17 @@ export class appModelOperator {
                         }
                     }
                 }else if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
-                    var tmpdbconf = db2conf[dbname];
-                    if (dbname == "OBJECTS") tmpdbconf = "3dmodel";
-                    urlparams.append("enumtype",tmpdbconf);
+                    var db2container = {
+                        PROJECT : "project",
+                        VRM : "vrms",
+                        OBJECTS : "3dmodel",
+                        IMAGES : "image",
+                        MOTION : "vvmmot",
+                        POSE : "vvmpose",
+                        VRMA : "vrmanimation"
+                    }
+                    var tmpdbconf = db2container[dbname];
+                    urlparams.append("container_name",tmpdbconf);
                 }
 
                 //---specify user folder ID
@@ -2066,7 +2110,9 @@ export class appModelOperator {
                                 {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
                                 "firstload_vrm",QD_INOUT.returnJS,
                                 this.UnityCallback.historySendObjectInfo,
-                                {callback:this.UnityCallback,objectURL:fdata}
+                                {callback:this.UnityCallback,objectURL:fdata,filename:dbf.name,
+                                    fileloadtype: "v",
+                                    loadingfileHandle : dbf}
                             ));
                             AppQueue.add(new queueData(
                                 {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
@@ -2123,7 +2169,7 @@ export class appModelOperator {
                                 this.UnityCallback.sendObjectInfo,
                                 {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
                                     fileloadtype: "o",
-                                    loadingfileHandle : f}
+                                    loadingfileHandle : dbf}
                             ));
                         }else{
                             this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;

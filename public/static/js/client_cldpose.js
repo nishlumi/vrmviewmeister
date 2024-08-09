@@ -388,7 +388,7 @@ const app = Vue.createApp({
         }
 
         const listorigin_onchange = (val) =>  {
-            var remoteload = (url) => {
+            var remoteload = (url, originType) => {
                 fetch(url)
                 .then(async ret => {
                     if (ret.ok) {
@@ -406,7 +406,7 @@ const app = Vue.createApp({
                                         styleclass : {
                                             "list-item-selected" : false
                                         },
-                                        isLoaded:false,
+                                        isLoaded: (originType == "appserver") ? true : false,
                                         id: obj.id,
                                         data : posedata
                                     });
@@ -425,7 +425,7 @@ const app = Vue.createApp({
                                         styleclass : {
                                             "list-item-selected" : false
                                         },
-                                        isLoaded:false,
+                                        isLoaded: (originType == "appserver") ? true : false,
                                         id: obj.id,
                                         data: posedata
                                     });
@@ -452,7 +452,7 @@ const app = Vue.createApp({
 
                 //---decide URL
                 if (val.value == "appserver") {
-                    baseurl = SAMPLEURL;
+                    baseurl = "/samplesv/enumdir";
                     apikey = SAMPLEKEY;
                 }
                 
@@ -474,7 +474,7 @@ const app = Vue.createApp({
                     //extension = "vvmpose";
                     if (val.value == "appserver") {
                         //---app server id
-                        urlparams.append("enumtype","vvmpose");
+                        urlparams.append("container_name","vvmpose");
                     }else if (val.value == "gdrive") {
                         //---user folder id
                         urlparams.append("dirid",poseapp.value.appconf.confs.fileloader.gdrive.user.pose);
@@ -485,7 +485,7 @@ const app = Vue.createApp({
                     //extension = "vvmmot";
                     if (val.value == "appserver") {
                         //---app server id
-                        urlparams.append("enumtype","vvmmot");
+                        urlparams.append("container_name","vvmmot");
                     }else if (val.value == "gdrive") {
                         //---user folder id
                         urlparams.append("dirid", poseapp.value.appconf.confs.fileloader.gdrive.user.motion);
@@ -502,7 +502,7 @@ const app = Vue.createApp({
                     //---specified google drive id
                     finalurl += `&dirid=${dirid}`;
                 }*/
-                remoteload(finalurl);
+                remoteload(finalurl,val.value);
 
             }else if (val.value == "mystorage") {
                 loadData();

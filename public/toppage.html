@@ -785,7 +785,6 @@
                             <br>
                             <q-btn flat dense icon="list" :label="$t('ribbon_capture_list')+'...'" no-caps 
                                 :disable="!mainData.states.vroidhub_api"
-                                
                             >
                                 <q-menu>
                                     <q-list>
@@ -810,8 +809,14 @@
                                 </q-menu>
                             </q-btn>
                         </div>
-                        
-                        <div class="ribbon-group-title">VRoidHub</div>
+                        <div class="ribbon-toolbar">
+                            <q-btn flat dense icon="logout"  no-caps 
+                                @click="ribbonEvent.RibbonFuncModel('logout_vroidhub')"
+                                :disable="!mainData.states.vroidhub_api"
+                            ><q-tooltip>{{ $t('cons_logout') }}</q-tooltip></q-btn>
+                            <br>
+                        </div>
+                        <div class="ribbon-group-title">VRoid Hub</div>
                     </div>
 
                 </q-tab-panel>
@@ -1831,11 +1836,12 @@
 <!--[] Center panel ================================================================================= -->
         <q-page-container>
         <q-page>
-            <div
+            <div id="unity-parent-container"
                 :style="mainData.elements.canvas.scrollArea"
+                @scroll="modelLoader.canvasdiv_scroll"
             >
                 <div id="unity-container" class="unity-desktop"
-                    @scroll="modelLoader.canvasdiv_scroll"
+                    
                 >
                     <canvas id="unity-canvas" ref="unitycontainer"  :style="mainData.elements.canvas.styles"
                         :width="mainData.elements.canvas.width" :height="mainData.elements.canvas.height"
@@ -5483,8 +5489,8 @@
             
             <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
                 <div class="vvtl-seekbar" :style="timelineData.elements.seekbar_styles">
-                    <div class="grid-oneline">
-                        <div class="seekbar-buttonbox">
+                    <div class="row xgrid-oneline">
+                        <div class="col-10 col-sm-10 col-md-5 xxseekbar-buttonbox">
                             <!--
                             <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
                                 <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
@@ -5556,10 +5562,17 @@
                             </q-btn-->
                             
                         </div>
-                        <div class="seekbar-currentframe">
+                        <div class="col-1 xxseekbar-currentframe lt-md">
                             <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
                         </div>
-                        <div class="seekbar-seekbox q-pl-md q-pr-md">
+                        <div class="col-1 xxoneline-dlgbox lt-md" style="text-align:right">
+                            <q-btn flat round :icon="timelineData.elements.toggleIcon" @click="timelineEvent.panelToggleBtn_onclick">
+                            </q-btn>
+                        </div>
+                        <div class="col-1 xxseekbar-currentframe gt-sm">
+                            <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
+                        </div>
+                        <div class="col-9 col-sm-9 col-md-5 xxseekbar-seekbox q-pl-md q-pr-md">
                             
                             <div style="padding-top : 1.1rem;">
                                 <q-slider
@@ -5574,7 +5587,7 @@
                             
                             
                         </div>
-                        <div class="oneline-dlgbox">
+                        <div class="col-1 xxoneline-dlgbox gt-sm" style="text-align:right">
                             <q-btn flat round :icon="timelineData.elements.toggleIcon" @click="timelineEvent.panelToggleBtn_onclick">
                             </q-btn>
                         </div>
@@ -6356,7 +6369,39 @@
                 </q-card-actions>
             </q-card>
         </q-dialog>
-        
+        <q-dialog persistent
+            v-model="mainData.elements.vroidhubAuthorizer.show" 
+            :maximized="mainData.elements.vroidhubAuthorizer.maximized"
+            :full-width="mainData.elements.vroidhubAuthorizer.fullwidth"
+        >
+            <q-card :style="mainData.elements.vroidhubAuthorizer.style">
+                <q-card-section>
+                    <div class="row">
+                        <div class="col-12">
+                            <span>{{ $t("msg_vrh_authorize_pc") }}</span>
+                        </div>
+                        <div class="col-12 q-mt-sm">
+                            <q-btn color="primary" :label="$t('cons_login')" style="width:100%;" @click="vroidhubAuthorizerEvent.onclick_authorize_vroidhubAuthorizer"></q-btn>
+                            <a :href="mainData.elements.vroidhubAuthorizer.url" id="vrha_url" target="_blank" class="common_ui_off">VRoid Hub</a>
+                        </div>
+                    </div>
+                    <div class="row q-mt-md" v-if="mainData.elements.vroidhubAuthorizer.progress_authorize">
+                        <div class="col-12">
+                            <span>{{ $t("msg_vrh_inputcode_pc") }}</span>
+                        </div>
+                        <div class="col-10">
+                            <q-input outlined v-model="mainData.elements.vroidhubAuthorizer.code_inputBox"></q-input>
+                        </div>
+                        <div class="col-2">
+                            <q-btn round color="primary" icon="send" @click="vroidhubAuthorizerEvent.onclick_codesend_vroidhubAuthorizer"></q-btn>
+                        </div>
+                    </div>
+                </q-card-section>
+                <q-card-actions align="right">
+                    <q-btn flat :label="$t('cons_close')" @click="vroidhubAuthorizerEvent.onclick_close_vroidhubAuthorizer"></q-btn>
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
         
     </q-layout>
 

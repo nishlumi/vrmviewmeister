@@ -623,9 +623,9 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
                     timelineData.states.popup.ikmarkers.push(v.toLowerCase());
                     var ikbone = IKBoneType[v];
                     //---select bone checkbox in keyframe register panel
-                    if ((0 <= ikbone) && (ikbone <= 16)) {
+                    //if ((0 <= ikbone) && (ikbone <= 16)) {                    
                         //modelOperator.selectSpecifyBoneForRegister(ikbone);
-                    }
+                    //}
                 }
                 //console.log(timelineData.states.popup.ikmarkers);
                 //timelineData.states.popup.ikmarkers = result.slice(0, -1);

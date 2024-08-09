@@ -373,7 +373,13 @@ const app = Vue.createApp({
             //---spreadsheet
             var bonedata = [];
             for (var obj in IKBoneType) {
-                if ((IKBoneType[obj] >= IKBoneType.IKParent) && (IKBoneType[obj] <= IKBoneType.RightLeg)) {
+                if (
+                    ((IKBoneType[obj] >= IKBoneType.IKParent) && (IKBoneType[obj] <= IKBoneType.RightLeg))
+                    ||
+                    (IKBoneType[obj] == IKBoneType.LeftToes)
+                    ||
+                    (IKBoneType[obj] == IKBoneType.RightToes)
+                ) {
                     bonedata.push([obj,0,0,0,0,0,0]);
                 }
             }
