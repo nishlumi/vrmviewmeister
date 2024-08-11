@@ -90,14 +90,14 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 null
             ));
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GetEnableHandleShowCamera',param:0},
+                {target:AppQueue.unity.Camera,method:'GetEnableHandleShowCamera'},
                 "tmp",QD_INOUT.returnJS,
                 callback.takescreenshot,  //---Here is somebody OK 
                 {callback}
             ));
         }else{
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'CaptureScreen',param:param},
+                {target:AppQueue.unity.FrontMainCamera,method:'CaptureScreen',param:param},
                 "",QD_INOUT.toUNITY,
                 null
             ));

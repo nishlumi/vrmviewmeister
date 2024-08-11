@@ -1759,17 +1759,20 @@ export class UnityCallbackFunctioner {
          * @type {UnityCallbackFunctioner}
          */
         const callback = options.callback;
+        const ribbonData = callback.ribbonData;
         
         var context = callback.unity.instance.Module.canvas;
         
         var dataurl = context.toDataURL("image/png");
         AppDB.capture.setItem(new Date().valueOf(), dataurl);
 
+        
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.Camera,method:'EnableHandleShowCamera',param:1},
+            {target:AppQueue.unity.Camera,method:'EnableHandleShowCamera',param:ribbonData.elements.optionArea.showIKMarker ? 1 : 0},
             "",QD_INOUT.toUNITY,
             null
         ));
+        
         AppQueue.add(new queueData(
             {target:AppQueue.unity.Camera,method:'ShowTargetObject',param: callback.mainData.appconf.confs.application.show_camera_target_object},
             "",QD_INOUT.toUNITY,

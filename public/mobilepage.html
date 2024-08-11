@@ -5538,7 +5538,7 @@
                     </template>
                     <template v-else>
                         <div class="row" style="overflow:hidden;height:auto;">
-                            <div class="col-12">
+                            <div class="col-10">
                                 <!--
                                 <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
                                     <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
@@ -5602,11 +5602,12 @@
                                 </q-btn-->
                                 
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">
+                            <div class="col-2">
                                 <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
                             </div>
+                        </div>
+                        <div class="row common_ui_off">
+                            
                             <div class="col-8 q-pl-md q-pr-md">
                                 
                                 <div style="padding-top : 1.1rem;">

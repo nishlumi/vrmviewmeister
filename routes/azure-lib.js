@@ -10,11 +10,11 @@ const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storag
 
 
 class UserAzureBlobManager {
-    constructor() {
+    constructor(accname, acckey) {
 
         // Enter your storage account name and shared key
-        this.account = process.env.ACCOUNT_NAME || "";
-        this.accountKey = process.env.ACCOUNT_KEY || "";
+        this.account = accname || "";
+        this.accountKey = acckey || "";
         this.sharedKeyCredential = new StorageSharedKeyCredential(this.account, this.accountKey);
 
         this.blobServiceClient = new BlobServiceClient(
@@ -35,7 +35,7 @@ class UserAzureBlobManager {
         }
     }
     async ListBlob(container_name, alsoData = false) {
-        let blobs = this.containerClient.listBlobsFlat();
+        let blobs = this.containerClient.listBlobsFlat({});
         var ret = [];
         for await (const bb of blobs) {
             var linedata = {

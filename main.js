@@ -271,4 +271,4 @@ ipcMain.handle("focusWindow", async (event, name) => {
     }
 });
 defineIPC4VRoidHub(ipcMain, process.env.VRH_CLIENT_ID, process.env.VRH_CLIENT_SECRET);
-defineIPC4Azure(ipcMain);
+defineIPC4Azure(ipcMain,process.env.ACCOUNT_NAME, process.env.ACCOUNT_KEY);

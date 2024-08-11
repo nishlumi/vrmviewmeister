@@ -116,6 +116,11 @@ contextBridge.exposeInMainWorld('elecAPI', {
     vroidhubRequestToken : async (param) => {
         const ret = await ipcRenderer.invoke("/vroidhub/request-token",param);
         return ret;
+    },
+    //============================================
+    callSampleSV : async (uri, param) => {
+        const ret = await ipcRenderer.invoke(uri,param);
+        return ret;
     }
 });
 

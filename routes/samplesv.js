@@ -7,7 +7,7 @@ require('dotenv').config()
 
 router.get("/enumdir", async function (req, res) {
     const param = req.query;
-    const uabm = new azlib.UserAzureBlobManager();
+    const uabm = new azlib.UserAzureBlobManager(process.env.ACCOUNT_NAME,process.env.ACCOUNT_KEY);
     await uabm.SetContainer(param.container_name);
     var ret = await uabm.ListBlob(param.container_name,param.withdata == "1" ? true : false);
     var finalret = {cd : 0, msg: "",
@@ -19,7 +19,7 @@ router.get("/enumdir", async function (req, res) {
 
 router.get("/load", async function (req, res) {
     const param = req.query;
-    const uabm = new azlib.UserAzureBlobManager();
+    const uabm = new azlib.UserAzureBlobManager(process.env.ACCOUNT_NAME,process.env.ACCOUNT_KEY);
     await uabm.SetContainer(param.container_name);
     var finalret = {};
     try {

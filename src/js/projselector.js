@@ -61,8 +61,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                 originalresult = await datadb.getItem(mainData.elements.projectSelector.selected);
                 mainData.states.currentProjectFromStorageType = "i";
             }else if (
-                (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) ||
-                (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION)
+                (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) 
             ) {
                 mainData.states.currentProjectFromStorageType = "g";
 
@@ -166,6 +165,108 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                 }
                 
 
+            }else if (mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+                mainData.states.currentProjectFromStorageType = "g";
+
+                var baseurl = "/samplesv/load";
+                var apikey = SAMPLEKEY;
+                var urlparams = new URLSearchParams();
+
+
+
+                var ishit = mainData.elements.projectSelector.files.find(v => {
+                    if (v.id == mainData.elements.projectSelector.selected) return true;
+                    return false;
+                });
+                var finalurl = "";                
+                if (ishit) {
+                    var filenamearr = ishit.fullname.split(".");
+                    var db2container = {
+                        scene : "project",
+                        vrm : "vrms",
+                        obj : "3dmodel",
+                        image : "image",
+                        motion : "vvmmot",
+                        pose : "vvmpose",
+                        vrma : "vrmanimation"
+                    }
+                    var dwntype = "";
+                    const returnBody_application = (js) => {
+                        var ret = null;
+                        if (
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) ||
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.POSE) ||
+                            (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.MOTION)
+                        ) {
+                            //originalresult = js.data;
+                            ret = js.data;
+
+                            modelOperator.newProject(false);
+                            mainData.states.currentProjectFileID = mainData.elements.projectSelector.selected;
+                            mainData.states.currentProjectFilename = js.name;
+                            mainData.states.currentProjectFilepath = js.name;
+                            mainData.states.currentProjectHandle = js.name;
+
+                        }else{
+                            if (js.cd != 0) {
+                                throw new Exception(js.msg);
+                            }
+                            var retfile = new VOSFile({});
+                            retfile.name = js.name || ishit.name;
+                            retfile.path = js.name || ishit.name;
+                            retfile.id = js.id || ishit.id;
+                            retfile.size = js.size || ishit.size;
+                            retfile.type = js.mimeType || ishit.type;
+                            retfile.encoding = "binary";
+                            retfile.storageType = mainData.elements.projectSelector.selectStorageType;
+
+                            var barr = new Uint8Array(js.data);
+                            var bb = new Blob([barr.buffer]); //,"application/octet-stream"
+                            retfile.data = new File([bb], retfile.name);
+
+                            //originalresult = retfile;
+                            ret = retfile;
+                        }
+                        return ret;
+                    }
+                    if (
+                        (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) ||
+                        (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.POSE) ||
+                        (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.MOTION)
+                    ) {
+                        dwntype = "string";
+                    }else{
+                        dwntype = "buffer";
+                    }
+
+                    if (window.elecAPI) {
+                        var result = await elecAPI.callSampleSV(baseurl,{
+                            container_name: db2container[mainData.elements.projectSelector.selectDB],
+                            filename: ishit.name,
+                            download_type : dwntype
+                        });
+                        if (result.cd == 0) {
+                            originalresult = returnBody_application(result);
+                        }
+                    }else{
+                        //---setting URL parameters
+                        urlparams.append("container_name",db2container[mainData.elements.projectSelector.selectDB]);
+                        urlparams.append("filename",ishit.name);
+                        urlparams.append("download_type",dwntype);
+
+
+                        //finalurl = `${baseurl}?mode=load&apikey=${apikey}&fileid=${mainData.elements.projectSelector.selected}&extension=${fext}`;
+                        finalurl = baseurl;
+                        finalurl += "?" + urlparams.toString();
+
+                        var fetchret = await fetch(finalurl);
+                        if (fetchret.ok) {
+                            var js = await fetchret.json();
+                            originalresult = returnBody_application(js);
+                        }
+                    }
+                    
+                }
             }
             
             //---main body to load

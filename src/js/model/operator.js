@@ -936,8 +936,7 @@ export class appModelOperator {
                 });
             }
         }else if (
-            (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE) ||
-            (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION)
+            (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.GOOGLEDRIVE)
         ) {
             this.mainData.elements.projectSelector.selectDBName = dbname;
             this.mainData.elements.projectSelector.searchedFiles.splice(0,this.mainData.elements.projectSelector.searchedFiles.length);
@@ -1072,6 +1071,109 @@ export class appModelOperator {
                     retfile = null;
                 }
             }
+        }else if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+            this.mainData.elements.projectSelector.selectDBName = dbname;
+            this.mainData.elements.projectSelector.searchedFiles.splice(0,this.mainData.elements.projectSelector.searchedFiles.length);
+            this.mainData.elements.projectSelector.files.splice(0,this.mainData.elements.projectSelector.files.length);
+            var db2container = {
+                PROJECT : "project",
+                VRM : "vrms",
+                OBJECTS : "3dmodel",
+                IMAGES : "image",
+                MOTION : "vvmmot",
+                POSE : "vvmpose",
+                VRMA : "vrmanimation"
+            }
+            var tmpdbconf = db2container[dbname];
+            var baseurl = "/samplesv/enumdir";
+
+            if (window.elecAPI) {
+                elecAPI.callSampleSV(baseurl,{
+                    container_name: tmpdbconf,
+                    withdata : "0"
+                })
+                .then(result => {
+                    if (result.cd == 0) {
+                        for (var obj of result.data) {
+                            var meta = new AppDBMeta(
+                                obj.dir.name + "/" + obj.name,
+                                obj.id,
+                                obj.size,
+                                dbname,
+                                new Date(obj.createDate).toLocaleString(),
+                                new Date(obj.updatedDate).toLocaleString()
+                            );
+                            meta.id = obj.id;
+                            this.mainData.elements.projectSelector.files.push(meta);
+                            this.mainData.elements.projectSelector.searchedFiles.push(meta);
+                        }
+                    }
+                    this.mainData.elements.loading = false;
+                })
+                .finally(() => {
+                    if (this.mainData.elements.projectSelector.files.length == 0) {
+                        this.mainData.elements.projectSelector.selected = "";
+                    }
+                });
+            }else{
+                var apikey = this.mainData.appconf.confs.fileloader.gdrive.apikey;
+                var urlparams = new URLSearchParams();
+    
+                var isExecute = false;
+                if (this.mainData.elements.projectSelector.selectStorageType == STORAGE_TYPE.APPLICATION) {
+                    isExecute = true;
+                }
+    
+                if (isExecute === true) {
+                    
+    
+                    
+                    //---setting URL parameters
+                    urlparams.append("container_name",tmpdbconf);
+    
+                    //---specify user folder ID
+                    //var finalurl = `${baseurl}?mode=enumdir&apikey=${apikey}&extension=${fext}`;
+                    var finalurl = baseurl;
+                    finalurl += "?" + urlparams.toString();
+                    
+                    
+                    try {
+                        fetch(finalurl)
+                        .then(async ret => {
+                            if (ret.ok) {
+                                var js = await ret.json();
+                                if (js.cd == 0) {
+                                    for (var obj of js.data) {
+                                        var meta = new AppDBMeta(
+                                            obj.dir.name + "/" + obj.name,
+                                            obj.id,
+                                            obj.size,
+                                            dbname,
+                                            new Date(obj.createDate).toLocaleString(),
+                                            new Date(obj.updatedDate).toLocaleString()
+                                        );
+                                        meta.id = obj.id;
+                                        this.mainData.elements.projectSelector.files.push(meta);
+                                        this.mainData.elements.projectSelector.searchedFiles.push(meta);
+                                    }
+                                }else{
+                                    appNotifyWarning(js.msg,{timeout:3000});
+                                }
+                            }
+                            this.mainData.elements.loading = false;
+                        })
+                        .finally(() => {
+                            if (this.mainData.elements.projectSelector.files.length == 0) {
+                                this.mainData.elements.projectSelector.selected = "";
+                            }
+                        });
+                    }catch(e) {
+                        console.error(e);
+                        retfile = null;
+                    }
+                }
+            }
+            
         }
         
     }

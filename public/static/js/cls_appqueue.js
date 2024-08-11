@@ -45,6 +45,7 @@ const AppQueue = {
         Windzone : "WindZone",
         Camera : "WebXRCameraSet",
         XR : "WebXRCameraSet",
+        FrontMainCamera : "Main Camera",
         Stage : "Stage",
         FileMenuCommands : "AnimateArea",
         OperateAvatarIK : "IKHandleParent",
