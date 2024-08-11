@@ -535,7 +535,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 }
                     
                 if (VFileHelper.checkNativeAPI) { 
-                    var title = mainData.elements.win_screenshot.document.title
+                    var title = mainData.elements.win_screenshot.document.title;
                     window.elecAPI.focusWindow(title);
                 }else{
                     mainData.elements.win_screenshot.blur();

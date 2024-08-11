@@ -381,7 +381,7 @@ export function definePoseMotionDlg(app, Quasar) {
                     if (
                         (!poseapp.value.list.selected.isLoaded) &&
                         (
-                            (poseapp.value.header.list_selected.value == "appserver") ||
+                            //(poseapp.value.header.list_selected.value == "appserver") ||
                             (poseapp.value.header.list_selected.value == "gdrive")
                         )
                     ){
@@ -694,50 +694,53 @@ export function definePoseMotionDlg(app, Quasar) {
             }
 
             const listorigin_onchange = (val) =>  {
+                const enumrate_data = (data, originType) => {
+                    for (var obj of data) {
+                        let posedata = (typeof obj.data == "string" ? JSON.parse(obj.data) : obj.data);
+                        if (poseapp.value.states.item_mode == "pose") {
+                            poseapp.value.list.options.push({
+                                thumbnail : posedata.thumbnail,
+                                name : obj.name,
+                                bodyinfo : posedata.frameData.bodyHeight,
+                                sample : posedata.sampleavatar,
+                                visibility : true,
+                                styleclass : {
+                                    "list-item-selected" : false
+                                },
+                                isLoaded: (originType == "appserver") ? true : false,
+                                id: obj.id,
+                                data : posedata
+                            });
+                        }else if (poseapp.value.states.item_mode == "motion") {
+                            poseapp.value.list.options.push({
+                                name: obj.name,
+                                type: posedata.targetType,
+                                version : posedata.version,
+                                height: Math.round(posedata.bodyHeight[1] * 1000) / 1000,
+                                
+                                frameCount : posedata.frames.length,
+                                startFrame : posedata.frames[0].index,
+                                endFrame : posedata.frames[posedata.frames.length-1].index,
+                                
+                                visibility : true,
+                                styleclass : {
+                                    "list-item-selected" : false
+                                },
+                                isLoaded: (originType == "appserver") ? true : false,
+                                id: obj.id,
+                                data: posedata
+                            });
+                        }
+                        
+                    }
+                }
                 var remoteload = (url, originType) => {
                     fetch(url)
                     .then(async ret => {
                         if (ret.ok) {
                             var js = await ret.json();
                             if (js.cd == 0) {
-                                for (var obj of js.data) {
-                                    let posedata = (typeof obj.data == "string" ? JSON.parse(obj.data) : obj.data);
-                                    if (poseapp.value.states.item_mode == "pose") {
-                                        poseapp.value.list.options.push({
-                                            thumbnail : posedata.thumbnail,
-                                            name : obj.name,
-                                            bodyinfo : posedata.frameData.bodyHeight,
-                                            sample : posedata.sampleavatar,
-                                            visibility : true,
-                                            styleclass : {
-                                                "list-item-selected" : false
-                                            },
-                                            isLoaded: (originType == "appserver") ? true : false,
-                                            id: obj.id,
-                                            data : posedata
-                                        });
-                                    }else if (poseapp.value.states.item_mode == "motion") {
-                                        poseapp.value.list.options.push({
-                                            name: obj.name,
-                                            type: posedata.targetType,
-                                            version : posedata.version,
-                                            height: Math.round(posedata.bodyHeight[1] * 1000) / 1000,
-                                            
-                                            frameCount : posedata.frames.length,
-                                            startFrame : posedata.frames[0].index,
-                                            endFrame : posedata.frames[posedata.frames.length-1].index,
-                                            
-                                            visibility : true,
-                                            styleclass : {
-                                                "list-item-selected" : false
-                                            },
-                                            isLoaded: (originType == "appserver") ? true : false,
-                                            id: obj.id,
-                                            data: posedata
-                                        });
-                                    }
-                                    
-                                }
+                                enumrate_data(js.data, originType);
                             }else{
                                 alert(js.msg);
                             }
@@ -749,18 +752,13 @@ export function definePoseMotionDlg(app, Quasar) {
                 }
                 console.log(val);
                 if (
-                    (val.value == "appserver") ||
                     (val.value == "gdrive")
                 ) {
                     var baseurl = poseapp.value.appconf.confs.fileloader.gdrive.url;
                     var apikey = poseapp.value.appconf.confs.fileloader.gdrive.apikey;
                     var urlparams = new URLSearchParams();
 
-                    //---decide URL
-                    if (val.value == "appserver") {
-                        baseurl = "/samplesv/enumdir";
-                        apikey = SAMPLEKEY;
-                    }                              
+                           
                     
                     //---setting URL parameters
                     urlparams.append("mode","enumdir");
@@ -771,10 +769,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         urlparams.append("extension","vvmpose");
 
                         //extension = "vvmpose";
-                        if (val.value == "appserver") {
-                            //---app server id
-                            urlparams.append("container_name","vvmpose");
-                        }else if (val.value == "gdrive") {
+                        if (val.value == "gdrive") {
                             //---user folder id
                             urlparams.append("dirid",poseapp.value.appconf.confs.fileloader.gdrive.user.pose);
                         }
@@ -782,10 +777,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         urlparams.append("extension","vvmmot");
 
                         //extension = "vvmmot";
-                        if (val.value == "appserver") {
-                            //---app server id
-                            urlparams.append("container_name","vvmmot");
-                        }else if (val.value == "gdrive") {
+                        if (val.value == "gdrive") {
                             //---user folder id
                             urlparams.append("dirid", poseapp.value.appconf.confs.fileloader.gdrive.user.motion);
                         }
@@ -802,7 +794,43 @@ export function definePoseMotionDlg(app, Quasar) {
                         finalurl += `&dirid=${dirid}`;
                     }*/
                     remoteload(finalurl,val.value);
+                }else if (val.value == "appserver") {
+                    //---decide URL
+                    var baseurl = "/samplesv/enumdir";
 
+                    poseapp.value.header.loading = true;
+                    poseapp.value.list.options.splice(0, poseapp.value.list.options.length);
+                    if (window.elecAPI) {
+                        var options = {
+                            container_name : "",
+                            withdata : "1"
+                        };
+                        if (poseapp.value.states.item_mode == "pose") {
+                            options.container_name = "vvmpose";
+                        }else if (poseapp.value.states.item_mode == "motion") {
+                            options.container_name = "vvmmot";
+                        }
+                        elecAPI.callSampleSV(baseurl,options)
+                        .then(result => {
+                            if (result.cd == 0) {
+                                poseapp.value.header.loading = false;
+                                enumrate_data(result.data, val.value);
+                            }
+                        });
+                    }else{
+                        var urlparams = new URLSearchParams();
+                        if (poseapp.value.states.item_mode == "pose") {
+                            urlparams.append("container_name","vvmpose");
+                        }else if (poseapp.value.states.item_mode == "motion") {
+                            urlparams.append("container_name","vvmmot");
+                        }
+                        urlparams.append("withdata","1");
+
+                        var finalurl = baseurl;
+                        finalurl += "?" + urlparams.toString();
+
+                        remoteload(finalurl,val.value);
+                    }
                 }else if (val.value == "mystorage") {
                     loadData();
                 }

@@ -20,7 +20,11 @@ function createWindow() {
     });
     mainWindow.webContents.setWindowOpenHandler( ({url}) => {
         console.log(url);
-        if (
+        if (url.startsWith('http')) {
+            //---example: a 
+            shell.openExternal(url)
+        }
+        else if (
             (url.indexOf("static/win/bonetran/") > -1) ||
             (url.indexOf("static/win/capture/") > -1) ||
             (url.indexOf("static/win/gravitybone/") > -1) ||
@@ -29,6 +33,7 @@ function createWindow() {
             (url.indexOf("static/win/vplayer/") > -1) ||
             (url.indexOf("static/win/keyframe/") > -1)
         ) {
+            //---example: window.open
             return {
                 action: "allow",
                 overrideBrowserWindowOptions : {
@@ -48,12 +53,6 @@ function createWindow() {
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
 
-    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        if (url.startsWith('http')) {
-            shell.openExternal(url)
-        }
-        return { action: 'deny' }
-    });
 }
 
 
