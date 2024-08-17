@@ -1,5 +1,5 @@
 var express = require('express');
-const azlib = require("./azure-lib");
+const azlib = require("./azure-lib.js");
 var router = express.Router();
 require('dotenv').config()
 

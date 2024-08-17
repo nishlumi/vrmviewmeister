@@ -59,6 +59,11 @@ export class VVAvatar {
          */
         this.comeFrom = STORAGE_TYPE.LOCAL;
         /**
+         * example: VRoidHub's model data, etc...
+         * @type {Any}
+         */
+        this.additionalData = {};
+        /**
          * @type {AF_TARGETTYPE}
          */
         this.type = type;

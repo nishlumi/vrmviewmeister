@@ -101,6 +101,7 @@ export class UnityCallbackFunctioner {
                 //[creation point] VVAvatar
                 mainData.data.preview = new VVAvatar("VRM",js);
                 mainData.data.preview.comeFrom = loadingfileHandle.storageType;
+                mainData.data.preview.additionalData = loadingfileHandle.additionalData;
                 //console.log(mainData.data.preview);
                 mainData.elements.vrminfodlg.selectedAvatar = mainData.data.preview;
                 //console.log(mainData.elements.vrminfodlg.selectedAvatar);
@@ -209,6 +210,7 @@ export class UnityCallbackFunctioner {
             //[creation point] VVAvatar
             mainData.data.preview = new VVAvatar("VRM",js);
             mainData.data.preview.comeFrom = loadingfileHandle.storageType;
+            mainData.data.preview.additionalData = loadingfileHandle.additionalData;
             //console.log(mainData.data.preview);
             mainData.elements.vrminfodlg.selectedAvatar = mainData.data.preview;
             //console.log(mainData.elements.vrminfodlg.selectedAvatar);
@@ -224,6 +226,41 @@ export class UnityCallbackFunctioner {
             //URL.revokeObjectURL(mainData.data.objectUrl.vrm);
         }
         //mainData.states.fileloadname = "";
+    }
+    async vroidhubSendObjectInfo (js, options) {
+        /**
+         * @type {UnityCallbackFunctioner}
+         */
+        const callback = options.callback;
+        var mainData = callback.mainData;
+        var ribbonData = callback.ribbonData;
+        var timelineData = callback.timelineData;
+        var modelOperator = callback.modelOperator;
+        /**
+         * @type {VOSFile}
+         */
+        const loadingfileHandle = options.loadingfileHandle;
+
+        var objectURL = options.objectURL;
+        if (objectURL != "") URL.revokeObjectURL(objectURL);
+        mainData.elements.loading = false;
+
+        if (js.type == "VRM") {
+            //[creation point] VVAvatar
+            mainData.data.preview = new VVAvatar("VRM",js);
+            mainData.data.preview.comeFrom = loadingfileHandle.storageType;
+            mainData.data.preview.additionalData = loadingfileHandle.additionalData;
+            //console.log(mainData.data.preview);
+            mainData.elements.vrminfodlg.selectedAvatar = mainData.data.preview;
+            //console.log(mainData.elements.vrminfodlg.selectedAvatar);
+
+            //---forcely: omitted vrminfo dialog to open own models
+            
+            //---call VRM IK limitation
+            callback.callVRM_Limitedfunction(mainData,ribbonData);
+
+            //URL.revokeObjectURL(mainData.data.objectUrl.vrm);
+        }
     }
     /**
      * Load VRM after confirm dialog

@@ -1124,7 +1124,16 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             is_closepanel = true;
         }else if (ename == "connect_vroidhub") {
             if (mainData.vroidhubapi.states.enable_token) {
-                mainData.vroidhubapi.request_token(mainData.vroidhubapi.savedata.code,"refresh_token");
+                mainData.vroidhubapi.request_token(mainData.vroidhubapi.savedata.code,"refresh_token")
+                .then(res => {
+                    Quasar.Notify.create({
+                        message: t("msg_vrh_refresh_token"),
+                        position : "top-right",
+                        color: "info",
+                        textColor : "black",
+                        timeout : 1000,
+                    });
+                });
             }else{
                 mainData.vroidhubapi.generateAuthLink(mainData);
             }

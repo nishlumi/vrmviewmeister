@@ -5,7 +5,7 @@
  Setup: Enter your storage account name and shared key in main()
 */
 
-const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob");
+const { BlobServiceClient, StorageSharedKeyCredential } = require('@azure/storage-blob');
 
 
 

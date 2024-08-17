@@ -155,11 +155,11 @@
                                             <q-item-section>{{ $t('from disk')}}</q-item-section>
                                         </q-item>
                                         <template v-if="mainData.states.googledrive_gas">
-                                            <q-item clickable  v-close-popup 
+                                            <!--q-item clickable  v-close-popup 
                                                 @click="ribbonEvent.RibbonFuncHome('openvrm_gdrive_direct')"
                                             >
                                                 <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
-                                            </q-item>
+                                            </q-item-->
                                             <q-item clickable  v-close-popup 
                                                 @click="ribbonEvent.RibbonFuncHome('openvrm_gdrive')"
                                             >
@@ -186,11 +186,11 @@
                                             <q-item-section>{{ $t('from disk')}}</q-item-section>
                                         </q-item>
                                         <template v-if="mainData.states.googledrive_gas">
-                                            <q-item clickable  v-close-popup 
+                                            <!--q-item clickable  v-close-popup 
                                                 @click="ribbonEvent.RibbonFuncHome('openobject_gdrive_direct')"
                                             >
                                                 <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
-                                            </q-item>
+                                            </q-item-->
                                             <q-item clickable  v-close-popup 
                                                 @click="ribbonEvent.RibbonFuncHome('openobject_gdrive')"
                                             >
@@ -499,11 +499,11 @@
                                             <q-item-section>{{ $t('from disk')}}</q-item-section>
                                         </q-item>
                                         <template v-if="mainData.states.googledrive_gas">
-                                            <q-item clickable  v-close-popup 
+                                            <!--q-item clickable  v-close-popup 
                                                 @click="ribbonEvent.RibbonFuncHome('openvrm_gdrive_direct')"
                                             >
                                                 <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
-                                            </q-item>
+                                            </q-item-->
                                             <q-item clickable  v-close-popup 
                                                 @click="ribbonEvent.RibbonFuncHome('openvrm_gdrive')"
                                             >
@@ -529,11 +529,11 @@
                                             <q-item-section>{{ $t('from disk')}}</q-item-section>
                                         </q-item>
                                         <template v-if="mainData.states.googledrive_gas">
-                                            <q-item clickable  v-close-popup 
+                                            <!--q-item clickable  v-close-popup 
                                                 @click="ribbonEvent.RibbonFuncHome('openobject_gdrive_direct')"
                                             >
                                                 <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
-                                            </q-item>
+                                            </q-item-->
                                             <q-item clickable  v-close-popup 
                                                 @click="ribbonEvent.RibbonFuncHome('openobject_gdrive')"
                                             >
@@ -562,11 +562,11 @@
                                         <q-item-section>{{ $t('from disk')}}</q-item-section>
                                     </q-item>
                                     <template v-if="mainData.states.googledrive_gas">
-                                        <q-item clickable  v-close-popup 
+                                        <!--q-item clickable  v-close-popup 
                                             @click="ribbonEvent.RibbonFuncModel('openimage_gdrive_direct')"
                                         >
                                             <q-item-section>{{ $t('from gdrive direct')}}</q-item-section>
-                                        </q-item>
+                                        </q-item-->
                                         <q-item clickable  v-close-popup 
                                             @click="ribbonEvent.RibbonFuncModel('openimage_gdrive')"
                                         >
@@ -1650,16 +1650,24 @@
                         </div>
                     </div>
                 </q-card>
-                <div class="q-mt-sm row">
+                <!--<div class="q-mt-sm row">
                     <div class="col-12">
                         <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                    </div>
+                </div>-->
+                <div class="q-mt-md row">
+                    <div class="col-12">
+                        <q-btn style="width:100%" :icon="mainData.elements.mobilepad.left.tgl_changetarget.icon"
+                            @click="mobilePadEvent.changetarget_onchange_left">
+                            <q-tooltip>{{ mainData.elements.mobilepad.left.tgl_changetarget.tooltip }}</q-tooltip>
+                        </q-btn>
                     </div>
                 </div>
                 <div class="q-mt-md row">
                     <div class="col-12">
-                        <q-btn style="width:100%" :icon="mainData.elements.mobilepad.left.tgl_changetarget.icon"
-                            @click="mobilePadEvent.changetarget_onchange">
-                            <q-tooltip>{{ mainData.elements.mobilepad.left.tgl_changetarget.tooltip }}</q-tooltip>
+                        <q-btn style="width:100%" :icon="mainData.elements.mobilepad.left.tgl_changespace.icon"
+                            @click="mobilePadEvent.changespace_onchange_left">
+                            <q-tooltip>{{ mainData.elements.mobilepad.left.tgl_changespace.tooltip }}</q-tooltip>
                         </q-btn>
                     </div>
                 </div>
@@ -1728,7 +1736,7 @@
                             :disable="ribbonEvent.chk_enableKeyframeButton"
                         >
                             <q-item-section avatar>
-                                <q-icon name="bookmark_add"></q-icon>
+                                <q-icon name="add_task"></q-icon>
                             </q-item-section>
                             <q-item-section v-text="$t('objlistmenu_overwritekey')"></q-item-section>
                         </q-item>
@@ -1742,14 +1750,14 @@
                             </q-item-section>
                             <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
                         </q-item>
-                        <q-item clickable v-close-popup dense @click="projectdlgEvent.btn_loadsinglemotion_onclick('objlist')"
+                        <!--q-item clickable v-close-popup dense @click="projectdlgEvent.btn_loadsinglemotion_onclick('objlist')"
                             :disable="ribbonEvent.chk_enableKeyframeButton"
                         >
                             <q-item-section avatar>
                                 <q-icon name="emoji_people"></q-icon>
                             </q-item-section>
                             <q-item-section v-text="$t('open single motion')"></q-item-section>
-                        </q-item>
+                        </q-item-->
                         <q-item clickable v-close-popup dense @click="objlistEvent.listmenu_removeobj_onclick"
                             :disable="objlistEvent.checkListSelStage || ribbonEvent.chk_enableKeyframeButton"
                         >
@@ -1937,15 +1945,19 @@
                         </div>
                     </div>
                 </q-card>
-                <div class="q-mt-sm row">
+                
+                <div class="q-mt-md row">
                     <div class="col-12">
-                        <q-btn label="Focus" dense @click="objlistEvent.listmenu_focus_onclick"></q-btn>
+                        <q-btn style="width:100%" :icon="mainData.elements.mobilepad.left.tgl_changetarget.icon"
+                            @click="mobilePadEvent.changetarget_onchange_left">
+                            <q-tooltip>{{ mainData.elements.mobilepad.left.tgl_changetarget.tooltip }}</q-tooltip>
+                        </q-btn>
                     </div>
                 </div>
                 <div class="q-mt-md row">
                     <div class="col-12">
                         <q-btn style="width:100%" :icon="mainData.elements.mobilepad.left.tgl_changespace.icon"
-                            @click="mobilePadEvent.changespace_onchange">
+                            @click="mobilePadEvent.changespace_onchange_left">
                             <q-tooltip>{{ mainData.elements.mobilepad.left.tgl_changespace.tooltip }}</q-tooltip>
                         </q-btn>
                     </div>
@@ -5626,6 +5638,7 @@
                             <div v-for="(val) in timelineData.data.timelines" :key="val.roleName"
                                 class="namebox-child" :dataIndex="val.roleName" 
                                 @click="timelineEvent.namebox_onclick(val)" :class="val.selected"
+                                @click.right="timelineEvent.namebox_onrightclick"
                             >
                                 <q-btn flat round size="0.75rem" color="primary" :icon="val.readonlyIcon" 
                                     class="btn-visibility"
@@ -5642,7 +5655,7 @@
                                     :width="32" ratio="1/1" style="float:left;"
                                 >
                                 <div v-text="timelineEvent.checkAvatarLabel(val)" style="height:35px;overflow:hidden;"></div>
-                                <q-tooltip>
+                                <q-tooltip :delay="500">
                                     <img
                                         :src="timelineEvent.chechAvatarThumbnail(val)"
                                         :width="32" ratio="1/1" 
@@ -5656,6 +5669,34 @@
                             </q-scroll-area>-->
                             
                         </div>
+                        <q-menu v-model="timelineData.elements.menu" touch-position context-menu>
+                            <q-list>
+                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                    clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
+                                    <q-item-section avatar>
+                                        <q-icon name="info"></q-icon>
+                                    </q-item-section>
+                                    <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
+                                </q-item>
+                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                    clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
+                                    <q-item-section avatar>
+                                        <q-icon name="filter_center_focus"></q-icon>
+                                    </q-item-section>
+                                    <q-item-section v-text="$t('objlistmenu_centerfocus')"></q-item-section>
+                                </q-item>
+                                <q-separator></q-separator>
+                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                    clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
+                                    :disable="ribbonEvent.chk_enableKeyframeButton"
+                                >
+                                    <q-item-section avatar>
+                                        <q-icon name="restart_alt"></q-icon>
+                                    </q-item-section>
+                                    <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
                         <div class="oneline-timelinebox" 
                             ref="scroll_keyframe_xy" 
                             @scroll="timelineEvent.scroll_keyframe_xy_onscroll" 
@@ -6330,7 +6371,7 @@
                         class="q-ma-md"
                     ></q-circular-progress>
                     
-                    <q-toolbar-title>VRoidHub [{{ mainData.elements.vroidhubSelector.kind }}]</q-toolbar-title>
+                    <q-toolbar-title>VRoid Hub [{{ mainData.elements.vroidhubSelector.kind }}]</q-toolbar-title>
                 </q-toolbar>
                 <q-card-section class="q-ma-none q-pa-none project-selector-mainbody scroll">
                     <div class="row" v-if="mainData.elements.vroidhubSelector.files.length > 0">
@@ -6366,6 +6407,93 @@
                 <q-card-actions align="right">
                     <q-btn flat class="bg-primary text-white" label="OK" @click="vroidhubSelectorEvent.onclick_ok_vroidhubSelector" :disabled="mainData.elements.vroidhubSelector.selected == ''"></q-btn>
                     <q-btn flat :label="$t('cons_cancel')" @click="mainData.elements.vroidhubSelector.show=false"></q-btn>
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+        <q-dialog persistent style="z-index:2010;"
+            v-model="mainData.elements.vroidhubSelectCondition.show" 
+            
+            :full-width="mainData.elements.vroidhubSelectCondition.fullwidth"
+        >
+            <q-card>
+                <q-card-section class="row">
+                    <div class="col-12">
+                        <b class="text-h5">{{ $t("vrmdlg_titlebar") }}</b>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <q-img 
+                            :src="mainData.elements.vroidhubSelectCondition.modelData.portrait_image.sq150.url"
+                            spinner-color="red" v-ripple 
+                            class="q-pa-xs" style="max-width:128px;"
+                        >
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <b class="text-h6">{{ mainData.elements.vroidhubSelectCondition.modelData.character.name }}</b><br>
+                        <span>{{ mainData.elements.vroidhubSelectCondition.modelData.character.user.name }}</span>
+                    </div>
+                    <div class="col-12">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>{{ $t("vrminfo_allowedUser") }}</th>
+                                    <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.characterization_allowed_user)">
+                                        {{ vroidhubSelectorEvent.cmp_license_avataruse(mainData.elements.vroidhubSelectCondition.modelData) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>{{ $t("vrminfo_violentUssage") }}</th>
+                                    <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.violent_expression)">
+                                        {{ vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.violent_expression) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>{{ $t("vrminfo_sexualUssage") }}</th>
+                                    <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.sexual_expression)">
+                                        {{ vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.sexual_expression) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>{{ $t("vrminfo_commercialUssage") }}</th>
+                                    <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.corporate_commercial_use)">
+                                        {{ vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.corporate_commercial_use) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>{{ $t("vrminfo_personalUssage") }}</th>
+                                    <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.personal_commercial_use)">
+                                        {{ $t(vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.personal_commercial_use)) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>{{ $t("vrminfo_modification") }}</th>
+                                    <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.modification)">
+                                        {{ vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.modification) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>{{ $t("vrminfo_redistribution") }}</th>
+                                    <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.redistribution)">
+                                        {{ vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.redistribution) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>{{ $t("vrminfo_credit") }}</th>
+                                    <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.credit)">
+                                        {{ $t(vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.credit)) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </q-card-section>
+                <q-card-actions align="right">
+                    <q-checkbox v-model="mainData.elements.vroidhubSelectCondition.condition_accept" :label="$t('msg_vrhcondition_accept')"></q-checkbox>
+                    <q-btn :label="$t('msg_vrh_ok')" color="primary" 
+                        @click="vroidhubSelectorEvent.onclick_ok_selectCondition"
+                        :disable="!mainData.elements.vroidhubSelectCondition.condition_accept"
+                    ></q-btn>
+                    <q-btn flat :label="$t('cons_cancel')" v-close-popup></q-btn>
                 </q-card-actions>
             </q-card>
         </q-dialog>

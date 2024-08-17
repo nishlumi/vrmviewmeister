@@ -203,9 +203,9 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
         targetzoom_body("right",newInfo);
     }
 
-    const changetarget_onchange = () => {
+    const changetarget_onchange = (direction) => {
 
-        const mpdir = mainData.elements.mobilepad.left;        
+        const mpdir = mainData.elements.mobilepad[direction];        
         var val = mpdir.tgl_changetarget.selected;
         if (val == "o") { //---to main camera
             var param = "L1";
@@ -231,8 +231,14 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
             mpdir.tgl_changetarget.tooltip = "Object";
         }
     }
-    const changespace_onchange = () => {
-        const mpdir = mainData.elements.mobilepad.left;
+    const changetarget_onchange_left = () => {
+        changetarget_onchange("left");
+    }
+    const changetarget_onchange_right = () => {
+        changetarget_onchange("right");
+    }
+    const changespace_onchange = (direction) => {
+        const mpdir = mainData.elements.mobilepad[direction];
 
         var param = "select";
         AppQueue.add(new queueData(
@@ -253,6 +259,12 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
             mpdir.tgl_changespace.tooltip = "World";
         }
     }
+    const changespace_onchange_left = () => {
+        changespace_onchange("left");
+    }
+    const changespace_onchange_right = () => {
+        changespace_onchange("right");
+    }
     
 
     return {
@@ -266,7 +278,9 @@ export const defineMobileOperator = (app,Quasar,mainData, ribbonData, objlistDat
             targetzoom_onswipe_left,
             targetzoom_onswipe_right,
             changetarget_onchange,
-            changespace_onchange
+            changetarget_onchange_left,changetarget_onchange_right,
+            changespace_onchange,
+            changespace_onchange_left,changespace_onchange_right,
         }
     }
 }

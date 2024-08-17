@@ -132,7 +132,8 @@ export class VRoidHubConnector {
                 elecAPI.callVroidHub("/vroidhub/request-token",{
                     "redirect_uri" : location.origin + "/redirect",
                     "grant_type" : grantopt,
-                    "code" : code
+                    "code" : code,
+                    "refresh_token" : this.savedata.token.refresh_token
                 })
                 .then(resjs => {
                     if (resjs.cd == 0) {
@@ -155,6 +156,9 @@ export class VRoidHubConnector {
                 uparams.append("redirect_uri",location.origin + "/redirect");
                 uparams.append("grant_type",grantopt);
                 uparams.append("code",code);
+                if (grantopt == "refresh_token") {
+                    uparams.append("refresh_token",this.savedata.token.refresh_token)
+                }
     
                 var finalheaders = {};
                 for (var obj in this.headers) {
@@ -779,6 +783,23 @@ export function defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelL
             mainData.elements.vroidhubSelector.fullheight = true;
         }
     });
+    const wa_vroidhubSelectCondition_show = Vue.watch( () => mainData.elements.vroidhubSelectCondition.show, (newval) => {
+
+        if (Quasar.Screen.name == "xs") {
+            mainData.elements.vroidhubSelectCondition.style.width = "100%";
+            mainData.elements.vroidhubSelectCondition.style.height = "100%";
+            mainData.elements.vroidhubSelectCondition.maximized = true;
+            mainData.elements.vroidhubSelectCondition.fullwidth = false;
+            mainData.elements.vroidhubSelectCondition.fullheight = false;
+            
+        }else if (Quasar.Screen.name == "sm") {
+            mainData.elements.vroidhubSelectCondition.style.width = "100%";
+            mainData.elements.vroidhubSelectCondition.style.height = "100%";
+            mainData.elements.vroidhubSelectCondition.maximized = false;
+            mainData.elements.vroidhubSelectCondition.fullwidth = true;
+            mainData.elements.vroidhubSelectCondition.fullheight = true;
+        }
+    });
     const wa_vroidhubAuthorizer_show = Vue.watch( () => mainData.elements.vroidhubAuthorizer.show, (newval) => {        
 
         if (Quasar.Screen.name == "xs") {
@@ -807,6 +828,43 @@ export function defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelL
             return item.data.portrait_image.sq150.url;
         }else{
             return item.data.portrait_image.sq150.url;
+        }
+    }
+    const cmp_license_avataruse = (item) => {
+        if (item.license.characterization_allowed_user == "everyone") {
+            return "OK";
+        }else{
+            return "NG";
+        }
+    }
+    const cmp_license_shortname = (item) => {
+        if (item == "allow") {
+            return "OK";
+        }else if (item == "disallow") {
+            return "NG";
+        }else if (item == "unnecessary") {
+            return "vrminfo_credit_none";
+        }else if (item == "necessary") {
+            return "vrminfo_credit_req";
+        }else if (item == "profit") {
+            return "vrminfo_commercial_nonprofit";
+        }else if (item == "nonprofit") {
+            return "vrminfo_commercial_profit";
+        }
+    }
+    const cmp_license_shortstyle = (item) => {
+        if (item == "allow") {
+            return "vrmussage_ok";
+        }else if (item == "disallow") {
+            return "vrmussage_ng";
+        }else if (item == "unnecessary") {
+            return "vrmussage_ok";
+        }else if (item == "necessary") {
+            return "vrmussage_ng";
+        }else if (item == "everyone") {
+            return "vrmussage_ok";
+        }else if (item == "author") {
+            return "vrmussage_ng";
         }
     }
 
@@ -877,47 +935,118 @@ export function defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelL
         console.log(mainData.elements.vroidhubSelector.selected);
     }
     const onclick_ok_vroidhubSelector = () => {
-        appConfirm(t("msg_vrh_loading"),async () => {
-            var ret = await mainData.vroidhubapi.request_download_licenses({
-                character_model_id: mainData.elements.vroidhubSelector.selected.data.id
+        mainData.elements.vroidhubSelectCondition.modelData = mainData.elements.vroidhubSelector.selected.data;
+
+        if (mainData.elements.vroidhubSelector.kind == "models") {
+            appConfirm(t("msg_vrh_loading"),async () => {
+                var ret = await mainData.vroidhubapi.request_download_licenses({
+                    character_model_id: mainData.elements.vroidhubSelector.selected.data.id
+                });
+                //console.log(ret);
+                mainData.vroidhubdata["license"] = ret.data;
+        
+                //---real download
+                var ret2 = await mainData.vroidhubapi.download_model(mainData.vroidhubdata["license"].id);
+                //console.log(ret2);
+                mainData.vroidhubdata["real"] = ret2;
+        
+                var retbb = await mainData.vroidhubapi.realdownload(ret2.location);
+                var vosfile = new VOSFile({});
+                vosfile.name = mainData.elements.vroidhubSelector.selected.data.character.name;
+                vosfile.id = mainData.elements.vroidhubSelector.selected.data.id;
+                vosfile.path = mainData.elements.vroidhubSelector.selected.data.character.name;
+                vosfile.size = retbb.size;
+                vosfile.encoding = "binary";
+                vosfile.lastModified = new Date(mainData.elements.vroidhubSelector.selected.data.published_at);
+                vosfile.data = retbb;
+                vosfile.storageType = STORAGE_TYPE.VROIDHUB;
+                vosfile.additionalData = mainData.elements.vroidhubSelector.selected;
+        
+                var fdata = URL.createObjectURL(vosfile.data);
+                mainData.data.objectUrl.vrm = fdata;
+                mainData.states.fileloadname = vosfile.name;
+                mainData.states.fileloadtype = "v";
+                mainData.states.loadingfileHandle = vosfile;
+        
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
+                    "firstload_vrm",QD_INOUT.returnJS,
+                    callback.vroidhubSendObjectInfo,
+                    {callback,objectURL:fdata,filename:mainData.states.fileloadname,
+                        fileloadtype: mainData.states.fileloadtype,
+                        loadingfileHandle : vosfile}
+                ));
+                
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
+                    "accept_vrm",QD_INOUT.returnJS,
+                    callback.firstload_vrm,
+                    {callback,filename:mainData.states.fileloadname,
+                        fileloadtype: mainData.states.fileloadtype,
+                        loadingfileHandle : vosfile}
+                ));
+                
+                AppQueue.start();
+                mainData.elements.vroidhubSelector.show = false;
+                mainData.elements.vroidhubSelectCondition.show = false;
+                mainData.elements.loading = true;
             });
-            //console.log(ret);
-            mainData.vroidhubdata["license"] = ret.data;
-
-            //---real download
-            var ret2 = await mainData.vroidhubapi.download_model(mainData.vroidhubdata["license"].id);
-            //console.log(ret2);
-            mainData.vroidhubdata["real"] = ret2;
-
-            var retbb = await mainData.vroidhubapi.realdownload(ret2.location);
-            var vosfile = new VOSFile({});
-            vosfile.name = mainData.elements.vroidhubSelector.selected.data.character.name;
-            vosfile.id = mainData.elements.vroidhubSelector.selected.data.id;
-            vosfile.path = mainData.elements.vroidhubSelector.selected.data.character.name;
-            vosfile.size = retbb.size;
-            vosfile.encoding = "binary";
-            vosfile.lastModified = new Date(mainData.elements.vroidhubSelector.selected.data.published_at);
-            vosfile.data = retbb;
-            vosfile.storageType = STORAGE_TYPE.VROIDHUB;
-
-            var fdata = URL.createObjectURL(vosfile.data);
-            mainData.data.objectUrl.vrm = fdata;
-            mainData.states.fileloadname = vosfile.name;
-            mainData.states.fileloadtype = "v";
-            mainData.states.loadingfileHandle = vosfile;
-
-            AppQueue.add(new queueData(
-                {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
-                "firstload_vrm",QD_INOUT.returnJS,
-                callback.sendObjectInfo,
-                {callback,objectURL:fdata,filename:mainData.states.fileloadname,
-                    fileloadtype: mainData.states.fileloadtype,
-                    loadingfileHandle : vosfile}
-            ));
-            AppQueue.start();
-            mainData.elements.vroidhubSelector.show=false;
-            mainData.elements.loading = true;
+        }else{
+            mainData.elements.vroidhubSelectCondition.show = true;
+        }
+    }
+    const onclick_ok_selectCondition = async () => {
+        var ret = await mainData.vroidhubapi.request_download_licenses({
+            character_model_id: mainData.elements.vroidhubSelector.selected.data.id
         });
+        //console.log(ret);
+        mainData.vroidhubdata["license"] = ret.data;
+
+        //---real download
+        var ret2 = await mainData.vroidhubapi.download_model(mainData.vroidhubdata["license"].id);
+        //console.log(ret2);
+        mainData.vroidhubdata["real"] = ret2;
+
+        var retbb = await mainData.vroidhubapi.realdownload(ret2.location);
+        var vosfile = new VOSFile({});
+        vosfile.name = mainData.elements.vroidhubSelector.selected.data.character.name;
+        vosfile.id = mainData.elements.vroidhubSelector.selected.data.id;
+        vosfile.path = mainData.elements.vroidhubSelector.selected.data.character.name;
+        vosfile.size = retbb.size;
+        vosfile.encoding = "binary";
+        vosfile.lastModified = new Date(mainData.elements.vroidhubSelector.selected.data.published_at);
+        vosfile.data = retbb;
+        vosfile.storageType = STORAGE_TYPE.VROIDHUB;
+        vosfile.additionalData = mainData.elements.vroidhubSelector.selected;
+
+        var fdata = URL.createObjectURL(vosfile.data);
+        mainData.data.objectUrl.vrm = fdata;
+        mainData.states.fileloadname = vosfile.name;
+        mainData.states.fileloadtype = "v";
+        mainData.states.loadingfileHandle = vosfile;
+        
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.FileMenuCommands,method:'LoadVRMURI',param:fdata},
+            "firstload_vrm",QD_INOUT.returnJS,
+            callback.vroidhubSendObjectInfo,
+            {callback,objectURL:fdata,filename:mainData.states.fileloadname,
+                fileloadtype: mainData.states.fileloadtype,
+                loadingfileHandle : vosfile}
+        ));
+        
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.FileMenuCommands,method:'AcceptLoadVRM'},
+            "accept_vrm",QD_INOUT.returnJS,
+            callback.firstload_vrm,
+            {callback,filename:mainData.states.fileloadname,
+                fileloadtype: mainData.states.fileloadtype,
+                loadingfileHandle : vosfile}
+        ));
+        
+        AppQueue.start();
+        mainData.elements.vroidhubSelector.show = false;
+        mainData.elements.vroidhubSelectCondition.show = false;
+        mainData.elements.loading = true;
     }
     //############################################
     // VRoidHubAuthorizer
@@ -948,12 +1077,14 @@ export function defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelL
     return {
         vroidhubSelectorEvent : Vue.reactive({
             cmp_item_thumbnail,
-
+            cmp_license_avataruse,cmp_license_shortname,cmp_license_shortstyle,
             list_reloaded,
             item_onclick,
             onclick_ok_vroidhubSelector,
+            onclick_ok_selectCondition,
         }),
         wa_vroidhubSelector_show,
+        wa_vroidhubSelectCondition_show,
         wa_vroidhubAuthorizer_show,
         vroidhubAuthorizerEvent : Vue.reactive({
             onclick_authorize_vroidhubAuthorizer,

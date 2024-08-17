@@ -57,6 +57,8 @@ export class VOSFile {
          * ggd - Google Drive, appggd - Application, web - web url, vhub - vroidhub
          */
         this.storageType = "";
+
+        this.additionalData = null;
     }
 }
 export class VFileOptions {

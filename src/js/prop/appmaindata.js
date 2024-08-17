@@ -14,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.12.0",
-            revision : "20240811-01",
+            version : "2.12.1",
+            revision : "20240817-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -413,6 +413,17 @@ export class appMainData {
                 url : "",
                 progress_authorize : false,
                 code_inputBox : "",
+            },
+            vroidhubSelectCondition : {
+                show : false,
+                maximized : false,
+                fullwidth : false,
+                fullheight : false,
+                style : {
+                    overflow: "hidden"
+                },
+                condition_accept : false,
+                modelData : null,
             },
             win_screenshot : null,
             win_pose : null,

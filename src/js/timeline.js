@@ -59,6 +59,20 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             }
         }
     });
+    const checkContextMenu3DModel = Vue.computed(() => {
+        if (
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.SystemEffect) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Stage) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Audio) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Text) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.UImage) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Unknown)
+        ){
+            return false;
+        }else{
+            return true;
+        }
+    });
     //---events, watch-------------------------------
     
     const wa_tlLength = Vue.watch(() => mainData.data.project.timelineFrameLength,(newval) => {
@@ -472,6 +486,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
      * @param {VVTimelineTarget} item 
      */
     const namebox_onclick = (item) => {
+        timelineData.elements.menu = false;
         for (var obj = 0; obj < timelineData.data.timelines.length; obj++) {
             timelineData.data.timelines[obj].selected.currentcursor = false;
         }
@@ -503,6 +518,21 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             null
         ));
         AppQueue.start();
+    }
+    const namebox_onrightclick = () => {
+        if (
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.SystemEffect) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Stage) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Audio) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Text) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.UImage) ||
+            (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Unknown)
+        ){
+            timelineData.elements.menu = false;
+            return;
+        }
+
+        timelineData.elements.menu = true;
     }
 
     //===timeline box=============================
@@ -797,6 +827,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             judgeVClass,existsKeyFrame,getCurrentModeSize,chechAvatarThumbnail,checkAvatarLabel,
             keyframeHasTranslateCount,
             setupMobileSize,
+            checkContextMenu3DModel,
             //---events, watches-------------------
             wa_tlLength,
             //common_loadFrame,
@@ -807,7 +838,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             insertFrame_onclick, deleteFrame_onclick,OnChange_childKeyVal, addChildKey_onclick, deleteChildKey_onclick,
 
             frameheaderNumber_onclick,
-            namebox_onclick,namebox_readonly_onclick,
+            namebox_onclick,namebox_readonly_onclick,namebox_onrightclick,
             keyframebox_onclick,keyframebox_ondblclick,keyframebox_popuptip,
             wa_frame_current,wa_selectedTimeline,
 

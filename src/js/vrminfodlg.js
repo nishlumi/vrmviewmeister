@@ -3,8 +3,11 @@ const template = `
         <q-card class="q-dialog-plugin" :style="data.elements.inner.styles">
             <q-card-section class="row" style="width:100%;height:calc(100% - 52px);" v-if="selectAvatar">
                 <div class="row"  style="width:100%">
+                    <b class="text-h5">{{ $t("vrmdlg_titlebar") }}</b>
+                </div>
+                <div class="row"  style="width:100%">
                     <div class="col-3 ">
-                        <q-img :src="selectAvatar.thumbnail" alt="Thumbnail" style="width:100%"></q-img>
+                        <q-img :src="selectAvatar.thumbnail" alt="Thumbnail" style="width:100%;max-width:128px;"></q-img>
                     </div>
                     <div class="col-8 offset-1">
                         <b v-text="selectAvatar.title" style="font-size: 1.5rem;"></b>
