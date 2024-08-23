@@ -4,7 +4,7 @@
     "name": "ISHII Eiju"
   },
   "description": "Web app for VRoid(VRM) : Posing, Animation",
-  "version": "2.12.1",
+  "version": "2.12.2",
   "private": true,
   "scripts": {
     "dev": "set NODE_ENV=delevopment&&set PORT=5026&&node ./app.js",
@@ -111,9 +111,9 @@
     "morgan": "~1.10.0",
     "node-fetch": "^3.3.2",
     "nunjucks": "^3.2.4",
-    "vue": "^3.3.4",
-    "vue-i18n": "^9.2.2",
-    "workbox-cli": "^6.6.0"
+    "vue": "^3.4.38",
+    "vue-i18n": "^9.14.0",
+    "workbox-cli": "^7.1.0"
   },
   "devDependencies": {
     "@interactjs/types": "^1.10.17",
@@ -121,11 +121,11 @@
     "electron": "^24.3.1",
     "electron-builder": "^24.4.0",
     "interactjs": "^1.10.17",
-    "quasar": "^2.15.3",
+    "quasar": "^2.16.9",
     "webpack": "^5.93.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.2",
-    "workbox-sw": "^6.6.0",
-    "workbox-webpack-plugin": "^6.6.0"
+    "webpack-dev-server": "^5.0.4",
+    "workbox-sw": "^7.1.0",
+    "workbox-webpack-plugin": "^7.1.0"
   }
 }

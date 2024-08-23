@@ -847,9 +847,9 @@ export function defineVroidhubSelector(app, Quasar, mainData, ribbonData, modelL
         }else if (item == "necessary") {
             return "vrminfo_credit_req";
         }else if (item == "profit") {
-            return "vrminfo_commercial_nonprofit";
-        }else if (item == "nonprofit") {
             return "vrminfo_commercial_profit";
+        }else if (item == "nonprofit") {
+            return "vrminfo_commercial_nonprofit";
         }
     }
     const cmp_license_shortstyle = (item) => {

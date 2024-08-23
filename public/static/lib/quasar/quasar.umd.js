@@ -1,269 +1,15 @@
 /*!
- * Quasar Framework v2.15.3
+ * Quasar Framework v2.16.9
  * (c) 2015-present Razvan Stoenescu
  * Released under the MIT License.
  */
 
 (() => {
-  var __create = Object.create;
   var __defProp = Object.defineProperty;
-  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getProtoOf = Object.getPrototypeOf;
-  var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __commonJS = (cb, mod2) => function __require() {
-    return mod2 || (0, cb[__getOwnPropNames(cb)[0]])((mod2 = { exports: {} }).exports, mod2), mod2.exports;
-  };
   var __export = (target2, all) => {
     for (var name2 in all)
       __defProp(target2, name2, { get: all[name2], enumerable: true });
   };
-  var __copyProps = (to, from, except, desc) => {
-    if (from && typeof from === "object" || typeof from === "function") {
-      for (let key of __getOwnPropNames(from))
-        if (!__hasOwnProp.call(to, key) && key !== except)
-          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-    }
-    return to;
-  };
-  var __toESM = (mod2, isNodeMode, target2) => (target2 = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(
-    // If the importer is in node compatibility mode or this is not an ESM
-    // file that has been converted to a CommonJS file using a Babel-
-    // compatible transform (i.e. "__esModule" has not been set), then set
-    // "default" to the CommonJS "module.exports" for node compatibility.
-    isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target2, "default", { value: mod2, enumerable: true }) : target2,
-    mod2
-  ));
-
-  // lang/en-US.js
-  var require_en_US = __commonJS({
-    "lang/en-US.js"(exports, module) {
-      module.exports = {
-        isoName: "en-US",
-        nativeName: "English (US)",
-        label: {
-          clear: "Clear",
-          ok: "OK",
-          cancel: "Cancel",
-          close: "Close",
-          set: "Set",
-          select: "Select",
-          reset: "Reset",
-          remove: "Remove",
-          update: "Update",
-          create: "Create",
-          search: "Search",
-          filter: "Filter",
-          refresh: "Refresh",
-          expand: (label) => label ? `Expand "${label}"` : "Expand",
-          collapse: (label) => label ? `Collapse "${label}"` : "Collapse"
-        },
-        date: {
-          days: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
-          daysShort: "Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"),
-          months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
-          monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
-          firstDayOfWeek: 0,
-          // 0-6, 0 - Sunday, 1 Monday, ...
-          format24h: false,
-          pluralDay: "days"
-        },
-        table: {
-          noData: "No data available",
-          noResults: "No matching records found",
-          loading: "Loading...",
-          selectedRecords: (rows) => rows === 1 ? "1 record selected." : (rows === 0 ? "No" : rows) + " records selected.",
-          recordsPerPage: "Records per page:",
-          allRows: "All",
-          pagination: (start, end, total) => start + "-" + end + " of " + total,
-          columns: "Columns"
-        },
-        editor: {
-          url: "URL",
-          bold: "Bold",
-          italic: "Italic",
-          strikethrough: "Strikethrough",
-          underline: "Underline",
-          unorderedList: "Unordered List",
-          orderedList: "Ordered List",
-          subscript: "Subscript",
-          superscript: "Superscript",
-          hyperlink: "Hyperlink",
-          toggleFullscreen: "Toggle Fullscreen",
-          quote: "Quote",
-          left: "Left align",
-          center: "Center align",
-          right: "Right align",
-          justify: "Justify align",
-          print: "Print",
-          outdent: "Decrease indentation",
-          indent: "Increase indentation",
-          removeFormat: "Remove formatting",
-          formatting: "Formatting",
-          fontSize: "Font Size",
-          align: "Align",
-          hr: "Insert Horizontal Rule",
-          undo: "Undo",
-          redo: "Redo",
-          heading1: "Heading 1",
-          heading2: "Heading 2",
-          heading3: "Heading 3",
-          heading4: "Heading 4",
-          heading5: "Heading 5",
-          heading6: "Heading 6",
-          paragraph: "Paragraph",
-          code: "Code",
-          size1: "Very small",
-          size2: "A bit small",
-          size3: "Normal",
-          size4: "Medium-large",
-          size5: "Big",
-          size6: "Very big",
-          size7: "Maximum",
-          defaultFont: "Default Font",
-          viewSource: "View Source"
-        },
-        tree: {
-          noNodes: "No nodes available",
-          noResults: "No matching nodes found"
-        }
-      };
-    }
-  });
-
-  // icon-set/material-icons.js
-  var require_material_icons = __commonJS({
-    "icon-set/material-icons.js"(exports, module) {
-      module.exports = {
-        name: "material-icons",
-        type: {
-          positive: "check_circle",
-          negative: "warning",
-          info: "info",
-          warning: "priority_high"
-        },
-        arrow: {
-          up: "arrow_upward",
-          right: "arrow_forward",
-          down: "arrow_downward",
-          left: "arrow_back",
-          dropdown: "arrow_drop_down"
-        },
-        chevron: {
-          left: "chevron_left",
-          right: "chevron_right"
-        },
-        colorPicker: {
-          spectrum: "gradient",
-          tune: "tune",
-          palette: "style"
-        },
-        pullToRefresh: {
-          icon: "refresh"
-        },
-        carousel: {
-          left: "chevron_left",
-          right: "chevron_right",
-          up: "keyboard_arrow_up",
-          down: "keyboard_arrow_down",
-          navigationIcon: "lens"
-        },
-        chip: {
-          remove: "cancel",
-          selected: "check"
-        },
-        datetime: {
-          arrowLeft: "chevron_left",
-          arrowRight: "chevron_right",
-          now: "access_time",
-          today: "today"
-        },
-        editor: {
-          bold: "format_bold",
-          italic: "format_italic",
-          strikethrough: "strikethrough_s",
-          underline: "format_underlined",
-          unorderedList: "format_list_bulleted",
-          orderedList: "format_list_numbered",
-          subscript: "vertical_align_bottom",
-          superscript: "vertical_align_top",
-          hyperlink: "link",
-          toggleFullscreen: "fullscreen",
-          quote: "format_quote",
-          left: "format_align_left",
-          center: "format_align_center",
-          right: "format_align_right",
-          justify: "format_align_justify",
-          print: "print",
-          outdent: "format_indent_decrease",
-          indent: "format_indent_increase",
-          removeFormat: "format_clear",
-          formatting: "text_format",
-          fontSize: "format_size",
-          align: "format_align_left",
-          hr: "remove",
-          undo: "undo",
-          redo: "redo",
-          heading: "format_size",
-          code: "code",
-          size: "format_size",
-          font: "font_download",
-          viewSource: "code"
-        },
-        expansionItem: {
-          icon: "keyboard_arrow_down",
-          denseIcon: "arrow_drop_down"
-        },
-        fab: {
-          icon: "add",
-          activeIcon: "close"
-        },
-        field: {
-          clear: "cancel",
-          error: "error"
-        },
-        pagination: {
-          first: "first_page",
-          prev: "keyboard_arrow_left",
-          next: "keyboard_arrow_right",
-          last: "last_page"
-        },
-        rating: {
-          icon: "grade"
-        },
-        stepper: {
-          done: "check",
-          active: "edit",
-          error: "warning"
-        },
-        tabs: {
-          left: "chevron_left",
-          right: "chevron_right",
-          up: "keyboard_arrow_up",
-          down: "keyboard_arrow_down"
-        },
-        table: {
-          arrowUp: "arrow_upward",
-          warning: "warning",
-          firstPage: "first_page",
-          prevPage: "chevron_left",
-          nextPage: "chevron_right",
-          lastPage: "last_page"
-        },
-        tree: {
-          icon: "play_arrow"
-        },
-        uploader: {
-          done: "done",
-          clear: "clear",
-          add: "add_box",
-          upload: "cloud_upload",
-          removeQueue: "clear_all",
-          removeUploaded: "done_all"
-        }
-      };
-    }
-  });
 
   // Search for vueNamedImportsCode in /ui/build :vue
   var { h, ref, computed, watch, isRef, toRaw, unref, reactive, shallowReactive, nextTick, onActivated, onDeactivated, onBeforeMount, onMounted, onBeforeUnmount, onUnmounted, onBeforeUpdate, onUpdated, inject, provide, getCurrentInstance, markRaw, Transition, TransitionGroup, KeepAlive, Teleport, useSSRContext, withDirectives, vShow, defineComponent, createApp } = window.Vue;
@@ -330,7 +76,8 @@
     } else if (browser.fxios) {
       browser.firefox = true;
       matched.browser = "firefox";
-    } else if (browser.ipod || browser.ipad || browser.iphone) {
+    }
+    if (browser.ipod || browser.ipad || browser.iphone) {
       browser.ios = true;
     }
     if (browser.vivaldi) {
@@ -687,8 +434,7 @@
     setDebounce: noop,
     install({ $q, onSSRHydrated }) {
       $q.screen = this;
-      if (false)
-        return;
+      if (false) return;
       if (this.__installed === true) {
         if ($q.config.screen !== void 0) {
           if ($q.config.screen.bodyClasses === false) {
@@ -798,8 +544,7 @@
   }, {
     __media: void 0,
     set(val) {
-      if (false)
-        return;
+      if (false) return;
       Plugin.mode = val;
       if (val === "auto") {
         if (Plugin.__media === void 0) {
@@ -878,10 +623,8 @@
 
   // src/plugins/private.body/Body.js
   function getMobilePlatform(is) {
-    if (is.ios === true)
-      return "ios";
-    if (is.android === true)
-      return "android";
+    if (is.ios === true) return "ios";
+    if (is.android === true) return "android";
   }
   function getBodyClasses({ is, has: has2, within }, cfg) {
     const cls = [
@@ -961,8 +704,7 @@
         }
         return;
       }
-      if (this.__installed === true)
-        return;
+      if (this.__installed === true) return;
       if (isRuntimeSsrPreHydration.value === true) {
         applyClientSsrCorrections();
       } else {
@@ -1007,8 +749,7 @@
     add: noop,
     remove: noop,
     install({ $q }) {
-      if (this.__installed === true)
-        return;
+      if (this.__installed === true) return;
       const { cordova: cordova2, capacitor } = client.is;
       if (cordova2 !== true && capacitor !== true) {
         return;
@@ -1064,11 +805,101 @@
     }
   };
 
+  // lang/en-US.js
+  var en_US_default = {
+    isoName: "en-US",
+    nativeName: "English (US)",
+    label: {
+      clear: "Clear",
+      ok: "OK",
+      cancel: "Cancel",
+      close: "Close",
+      set: "Set",
+      select: "Select",
+      reset: "Reset",
+      remove: "Remove",
+      update: "Update",
+      create: "Create",
+      search: "Search",
+      filter: "Filter",
+      refresh: "Refresh",
+      expand: (label) => label ? `Expand "${label}"` : "Expand",
+      collapse: (label) => label ? `Collapse "${label}"` : "Collapse"
+    },
+    date: {
+      days: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
+      daysShort: "Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"),
+      months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
+      monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
+      firstDayOfWeek: 0,
+      // 0-6, 0 - Sunday, 1 Monday, ...
+      format24h: false,
+      pluralDay: "days"
+    },
+    table: {
+      noData: "No data available",
+      noResults: "No matching records found",
+      loading: "Loading...",
+      selectedRecords: (rows) => rows === 1 ? "1 record selected." : (rows === 0 ? "No" : rows) + " records selected.",
+      recordsPerPage: "Records per page:",
+      allRows: "All",
+      pagination: (start, end, total) => start + "-" + end + " of " + total,
+      columns: "Columns"
+    },
+    editor: {
+      url: "URL",
+      bold: "Bold",
+      italic: "Italic",
+      strikethrough: "Strikethrough",
+      underline: "Underline",
+      unorderedList: "Unordered List",
+      orderedList: "Ordered List",
+      subscript: "Subscript",
+      superscript: "Superscript",
+      hyperlink: "Hyperlink",
+      toggleFullscreen: "Toggle Fullscreen",
+      quote: "Quote",
+      left: "Left align",
+      center: "Center align",
+      right: "Right align",
+      justify: "Justify align",
+      print: "Print",
+      outdent: "Decrease indentation",
+      indent: "Increase indentation",
+      removeFormat: "Remove formatting",
+      formatting: "Formatting",
+      fontSize: "Font Size",
+      align: "Align",
+      hr: "Insert Horizontal Rule",
+      undo: "Undo",
+      redo: "Redo",
+      heading1: "Heading 1",
+      heading2: "Heading 2",
+      heading3: "Heading 3",
+      heading4: "Heading 4",
+      heading5: "Heading 5",
+      heading6: "Heading 6",
+      paragraph: "Paragraph",
+      code: "Code",
+      size1: "Very small",
+      size2: "A bit small",
+      size3: "Normal",
+      size4: "Medium-large",
+      size5: "Big",
+      size6: "Very big",
+      size7: "Maximum",
+      defaultFont: "Default Font",
+      viewSource: "View Source"
+    },
+    tree: {
+      noNodes: "No nodes available",
+      noResults: "No matching nodes found"
+    }
+  };
+
   // src/plugins/lang/Lang.js
-  var import_en_US = __toESM(require_en_US());
   function getLocale() {
-    if (false)
-      return;
+    if (false) return;
     const val = Array.isArray(navigator.languages) === true && navigator.languages.length !== 0 ? navigator.languages[0] : navigator.language;
     if (typeof val === "string") {
       return val.split(/[-_]/).map((v, i) => i === 0 ? v.toLowerCase() : i > 1 || v.length < 4 ? v.toUpperCase() : v[0].toUpperCase() + v.slice(1).toLowerCase()).join("-");
@@ -1080,7 +911,7 @@
     // props: object
     // __langConfig: object
     getLocale,
-    set(langObject = import_en_US.default, ssrContext) {
+    set(langObject = en_US_default, ssrContext) {
       const lang = {
         ...langObject,
         rtl: langObject.rtl === true,
@@ -1111,7 +942,7 @@
     },
     install({ $q, lang, ssrContext }) {
       if (false) {
-        const initialLang = lang || import_en_US.default;
+        const initialLang = lang || en_US_default;
         $q.lang = {};
         $q.lang.set = (langObject) => {
           this.set(langObject, ssrContext);
@@ -1134,15 +965,144 @@
               return Reflect.ownKeys(target2).filter((key) => key !== "set" && key !== "getLocale");
             }
           });
-          this.set(lang || import_en_US.default);
+          this.set(lang || en_US_default);
         }
       }
     }
   });
   var Lang_default = Plugin2;
 
+  // icon-set/material-icons.js
+  var material_icons_default = {
+    name: "material-icons",
+    type: {
+      positive: "check_circle",
+      negative: "warning",
+      info: "info",
+      warning: "priority_high"
+    },
+    arrow: {
+      up: "arrow_upward",
+      right: "arrow_forward",
+      down: "arrow_downward",
+      left: "arrow_back",
+      dropdown: "arrow_drop_down"
+    },
+    chevron: {
+      left: "chevron_left",
+      right: "chevron_right"
+    },
+    colorPicker: {
+      spectrum: "gradient",
+      tune: "tune",
+      palette: "style"
+    },
+    pullToRefresh: {
+      icon: "refresh"
+    },
+    carousel: {
+      left: "chevron_left",
+      right: "chevron_right",
+      up: "keyboard_arrow_up",
+      down: "keyboard_arrow_down",
+      navigationIcon: "lens"
+    },
+    chip: {
+      remove: "cancel",
+      selected: "check"
+    },
+    datetime: {
+      arrowLeft: "chevron_left",
+      arrowRight: "chevron_right",
+      now: "access_time",
+      today: "today"
+    },
+    editor: {
+      bold: "format_bold",
+      italic: "format_italic",
+      strikethrough: "strikethrough_s",
+      underline: "format_underlined",
+      unorderedList: "format_list_bulleted",
+      orderedList: "format_list_numbered",
+      subscript: "vertical_align_bottom",
+      superscript: "vertical_align_top",
+      hyperlink: "link",
+      toggleFullscreen: "fullscreen",
+      quote: "format_quote",
+      left: "format_align_left",
+      center: "format_align_center",
+      right: "format_align_right",
+      justify: "format_align_justify",
+      print: "print",
+      outdent: "format_indent_decrease",
+      indent: "format_indent_increase",
+      removeFormat: "format_clear",
+      formatting: "text_format",
+      fontSize: "format_size",
+      align: "format_align_left",
+      hr: "remove",
+      undo: "undo",
+      redo: "redo",
+      heading: "format_size",
+      code: "code",
+      size: "format_size",
+      font: "font_download",
+      viewSource: "code"
+    },
+    expansionItem: {
+      icon: "keyboard_arrow_down",
+      denseIcon: "arrow_drop_down"
+    },
+    fab: {
+      icon: "add",
+      activeIcon: "close"
+    },
+    field: {
+      clear: "cancel",
+      error: "error"
+    },
+    pagination: {
+      first: "first_page",
+      prev: "keyboard_arrow_left",
+      next: "keyboard_arrow_right",
+      last: "last_page"
+    },
+    rating: {
+      icon: "grade"
+    },
+    stepper: {
+      done: "check",
+      active: "edit",
+      error: "warning"
+    },
+    tabs: {
+      left: "chevron_left",
+      right: "chevron_right",
+      up: "keyboard_arrow_up",
+      down: "keyboard_arrow_down"
+    },
+    table: {
+      arrowUp: "arrow_upward",
+      warning: "warning",
+      firstPage: "first_page",
+      prevPage: "chevron_left",
+      nextPage: "chevron_right",
+      lastPage: "last_page"
+    },
+    tree: {
+      icon: "play_arrow"
+    },
+    uploader: {
+      done: "done",
+      clear: "clear",
+      add: "add_box",
+      upload: "cloud_upload",
+      removeQueue: "clear_all",
+      removeUploaded: "done_all"
+    }
+  };
+
   // src/plugins/icon-set/IconSet.js
-  var import_material_icons = __toESM(require_material_icons());
   var Plugin3 = createReactivePlugin({
     iconMapFn: null,
     __qIconSet: {}
@@ -1164,7 +1124,7 @@
     },
     install({ $q, iconSet, ssrContext }) {
       if (false) {
-        const initialSet = iconSet || import_material_icons.default;
+        const initialSet = iconSet || material_icons_default;
         $q.iconMapFn = ssrContext.$q.config.iconMapFn || this.iconMapFn || null;
         $q.iconSet = {};
         $q.iconSet.set = (setObject) => {
@@ -1193,7 +1153,7 @@
               return Reflect.ownKeys(target2).filter((key) => key !== "set");
             }
           });
-          this.set(iconSet || import_material_icons.default);
+          this.set(iconSet || material_icons_default);
         }
       }
     }
@@ -1213,7 +1173,7 @@
   function emptyRenderFn() {
   }
 
-  // src/utils/private.global/global-config.js
+  // src/utils/private.config/instance-config.js
   var globalConfig = {};
   var globalConfigIsFrozen = false;
   function freezeGlobalConfig() {
@@ -1389,7 +1349,7 @@
   }
   var install_quasar_default = false ? function(parentApp, opts = {}, ssrContext) {
     const $q = {
-      version: "2.15.3",
+      version: "2.16.9",
       config: opts.config || {}
     };
     Object.assign(ssrContext, {
@@ -1419,7 +1379,7 @@
       ssrContext
     });
   } : function(parentApp, opts = {}) {
-    const $q = { version: "2.15.3" };
+    const $q = { version: "2.16.9" };
     if (globalConfigIsFrozen === false) {
       if (opts.config !== void 0) {
         Object.assign(globalConfig, opts.config);
@@ -1652,8 +1612,7 @@
   function highjackAjax(stackEntry) {
     highjackCount++;
     stack.push(stackEntry);
-    if (highjackCount > 1)
-      return;
+    if (highjackCount > 1) return;
     xhr.prototype.open = function(_, url) {
       const stopStack = [];
       const loadStart = () => {
@@ -2265,13 +2224,11 @@
       const sepClass = computed(() => props4.separatorColor ? ` text-${props4.separatorColor}` : "");
       const activeClass = computed(() => ` text-${props4.activeColor}`);
       return () => {
-        if (slots.default === void 0)
-          return;
+        if (slots.default === void 0) return;
         const vnodes = getNormalizedVNodes(
           hSlot(slots.default)
         );
-        if (vnodes.length === 0)
-          return;
+        if (vnodes.length === 0) return;
         let els = 1;
         const child = [], len = vnodes.filter((c) => c.type !== void 0 && c.type.name === "QBreadcrumbsEl").length, separator = slots.separator !== void 0 ? slots.separator : () => props4.separator;
         vnodes.forEach((comp) => {
@@ -2342,10 +2299,19 @@
     }
     return true;
   }
-  var useRouterLinkProps = {
+  var useRouterLinkNonMatchingProps = {
     // router-link
     to: [String, Object],
     replace: Boolean,
+    // regular <a> link
+    href: String,
+    target: String,
+    // state
+    disable: Boolean
+  };
+  var useRouterLinkProps = {
+    ...useRouterLinkNonMatchingProps,
+    // router-link
     exact: Boolean,
     activeClass: {
       type: String,
@@ -2354,12 +2320,7 @@
     exactActiveClass: {
       type: String,
       default: "q-router-link--exact-active"
-    },
-    // regular <a> link
-    href: String,
-    target: String,
-    // state
-    disable: Boolean
+    }
   };
   function use_router_link_default({ fallbackTag, useDisableForRouterLinkProps = true } = {}) {
     const vm2 = getCurrentInstance();
@@ -2511,7 +2472,7 @@
   // src/components/spinner/use-spinner.js
   var useSpinnerProps = {
     size: {
-      type: [Number, String],
+      type: [String, Number],
       default: "1em"
     },
     color: String
@@ -2769,23 +2730,19 @@
   var mediaTypeRE = /[^\s]\/[^\s]/;
   var btnDesignOptions = ["flat", "outline", "push", "unelevated"];
   function getBtnDesign(props4, defaultValue) {
-    if (props4.flat === true)
-      return "flat";
-    if (props4.outline === true)
-      return "outline";
-    if (props4.push === true)
-      return "push";
-    if (props4.unelevated === true)
-      return "unelevated";
+    if (props4.flat === true) return "flat";
+    if (props4.outline === true) return "outline";
+    if (props4.push === true) return "push";
+    if (props4.unelevated === true) return "unelevated";
     return defaultValue;
   }
   function getBtnDesignAttr(props4) {
     const design = getBtnDesign(props4);
     return design !== void 0 ? { [design]: true } : {};
   }
-  var useBtnProps = {
+  var nonRoundBtnProps = {
     ...useSizeProps,
-    ...useRouterLinkProps,
+    ...useRouterLinkNonMatchingProps,
     type: {
       type: String,
       default: "button"
@@ -2798,7 +2755,6 @@
       {}
     ),
     square: Boolean,
-    round: Boolean,
     rounded: Boolean,
     glossy: Boolean,
     size: String,
@@ -2826,6 +2782,10 @@
       default: null
     },
     disable: Boolean
+  };
+  var useBtnProps = {
+    ...nonRoundBtnProps,
+    round: Boolean
   };
   function use_btn_default(props4) {
     const sizeStyle = use_size_default(props4, defaultSizes);
@@ -2984,8 +2944,7 @@
         ...onEvents.value
       }));
       function onClick(e) {
-        if (rootRef.value === null)
-          return;
+        if (rootRef.value === null) return;
         if (e !== void 0) {
           if (e.defaultPrevented === true) {
             return;
@@ -3006,8 +2965,7 @@
         navigateOnClick(e);
       }
       function onKeydown2(e) {
-        if (rootRef.value === null)
-          return;
+        if (rootRef.value === null) return;
         emit("keydown", e);
         if (isKeyCode(e, [13, 32]) === true && keyboardTarget !== rootRef.value) {
           keyboardTarget !== null && cleanup();
@@ -3022,11 +2980,9 @@
         }
       }
       function onTouchstart(e) {
-        if (rootRef.value === null)
-          return;
+        if (rootRef.value === null) return;
         emit("touchstart", e);
-        if (e.defaultPrevented === true)
-          return;
+        if (e.defaultPrevented === true) return;
         if (touchTarget !== rootRef.value) {
           touchTarget !== null && cleanup();
           touchTarget = rootRef.value;
@@ -3042,8 +2998,7 @@
         }, 200);
       }
       function onMousedown(e) {
-        if (rootRef.value === null)
-          return;
+        if (rootRef.value === null) return;
         e.qSkipRipple = avoidMouseRipple === true;
         emit("mousedown", e);
         if (e.defaultPrevented !== true && mouseTarget !== rootRef.value) {
@@ -3054,8 +3009,7 @@
         }
       }
       function onPressEnd(e) {
-        if (rootRef.value === null)
-          return;
+        if (rootRef.value === null) return;
         if (e !== void 0 && e.type === "blur" && document.activeElement === rootRef.value) {
           return;
         }
@@ -3117,8 +3071,7 @@
           h(QIcon_default, {
             name: props4.icon,
             left: props4.stack !== true && hasLabel.value === true,
-            role: "img",
-            "aria-hidden": "true"
+            role: "img"
           })
         );
         hasLabel.value === true && inner.push(
@@ -3130,8 +3083,7 @@
             h(QIcon_default, {
               name: props4.iconRight,
               right: props4.stack !== true && hasLabel.value === true,
-              role: "img",
-              "aria-hidden": "true"
+              role: "img"
             })
           );
         }
@@ -3224,11 +3176,16 @@
   }
 
   // src/composables/private.use-anchor/use-anchor.js
-  var useAnchorProps = {
-    target: {
+  var useAnchorStaticProps = {
+    /* SSR does not know about Element */
+    target: false ? { default: true } : {
+      type: [Boolean, String, Element],
       default: true
     },
-    noParentEvent: Boolean,
+    noParentEvent: Boolean
+  };
+  var useAnchorProps = {
+    ...useAnchorStaticProps,
     contextMenu: Boolean
   };
   function use_anchor_default({
@@ -3298,8 +3255,7 @@
         }
       });
       configureAnchorEl = function(context = props4.contextMenu) {
-        if (props4.noParentEvent === true || anchorEl.value === null)
-          return;
+        if (props4.noParentEvent === true || anchorEl.value === null) return;
         let evts;
         if (context === true) {
           if (proxy.$q.platform.is.mobile === true) {
@@ -3576,7 +3532,7 @@
     queue = queue.filter((entry) => entry !== fn);
   }
 
-  // src/utils/private.global/global-nodes.js
+  // src/utils/private.config/nodes.js
   var nodesList = [];
   var portalTypeList = [];
   var portalIndex = 1;
@@ -3716,8 +3672,7 @@
     }
     function hidePortal(isReady) {
       portalIsAccessible.value = false;
-      if (isReady !== true)
-        return;
+      if (isReady !== true) return;
       removeFocusWaitFlag(focusObj);
       portalIsActive.value = false;
       const index = portalProxyList.indexOf(vm2.proxy);
@@ -3829,6 +3784,7 @@
   }
 
   // src/utils/scroll/scroll.js
+  var scrollTargetProp = false ? {} : [Element, String];
   var scrollTargets = false ? [] : [null, document, document.body, document.scrollingElement, document.documentElement];
   function getScrollTarget(el, targetEl) {
     let target2 = getElement(targetEl);
@@ -4372,9 +4328,7 @@
         type: Array,
         validator: validateOffset
       },
-      scrollTarget: {
-        default: void 0
-      },
+      scrollTarget: scrollTargetProp,
       touchPosition: Boolean,
       maxHeight: {
         type: String,
@@ -4660,7 +4614,7 @@
   }
 
   // src/components/btn-dropdown/QBtnDropdown.js
-  var btnPropsList = Object.keys(useBtnProps);
+  var btnPropsList = Object.keys(nonRoundBtnProps);
   function passBtnProps(props4) {
     return btnPropsList.reduce((acc, key) => {
       const val = props4[key];
@@ -4673,7 +4627,7 @@
   var QBtnDropdown_default = createComponent({
     name: "QBtnDropdown",
     props: {
-      ...useBtnProps,
+      ...nonRoundBtnProps,
       ...useTransitionProps,
       modelValue: Boolean,
       split: Boolean,
@@ -5285,13 +5239,13 @@
         cache[key] = obj;
       },
       hasCache(key) {
-        return cache.hasOwnProperty(key);
+        return Object.hasOwnProperty.call(cache, key);
       },
       clearCache(key) {
         if (key !== void 0) {
           delete cache[key];
         } else {
-          cache = {};
+          cache = /* @__PURE__ */ Object.create(null);
         }
       }
     };
@@ -5646,6 +5600,9 @@
       const { inFullscreen } = use_fullscreen_default();
       const style2 = computed(() => inFullscreen.value !== true && props4.height !== void 0 ? { height: props4.height } : {});
       const direction = computed(() => props4.vertical === true ? "vertical" : "horizontal");
+      const navigationPosition = computed(
+        () => props4.navigationPosition || (props4.vertical === true ? "right" : "bottom")
+      );
       const classes = computed(
         () => `q-carousel q-panel-parent q-carousel--with${props4.padding === true ? "" : "out"}-padding` + (inFullscreen.value === true ? " fullscreen" : "") + (isDark.value === true ? " q-carousel--dark q-dark" : "") + (props4.arrows === true ? ` q-carousel--arrows-${direction.value}` : "") + (props4.navigation === true ? ` q-carousel--navigation-${navigationPosition.value}` : "")
       );
@@ -5658,9 +5615,6 @@
       });
       const navIcon = computed(() => props4.navigationIcon || $q.iconSet.carousel.navigationIcon);
       const navActiveIcon = computed(() => props4.navigationActiveIcon || navIcon.value);
-      const navigationPosition = computed(
-        () => props4.navigationPosition || (props4.vertical === true ? "right" : "bottom")
-      );
       const controlProps = computed(() => ({
         color: props4.controlColor,
         textColor: props4.controlTextColor,
@@ -6338,8 +6292,7 @@
         return child;
       }
       return () => {
-        if (props4.modelValue === false)
-          return;
+        if (props4.modelValue === false) return;
         const data = {
           class: classes.value,
           style: sizeStyle.value
@@ -6839,7 +6792,6 @@
     snap: Boolean,
     vertical: Boolean,
     reverse: Boolean,
-    hideSelection: Boolean,
     color: String,
     markerLabelsClass: String,
     label: Boolean,
@@ -7683,8 +7635,7 @@
         });
       }
       function updateContainer(domSize) {
-        if (domProps.value === void 0 || contentRef.value === null)
-          return;
+        if (domProps.value === void 0 || contentRef.value === null) return;
         const size2 = domSize[domProps.value.container], scrollSize = Math.min(
           contentRef.value[domProps.value.scroll],
           Array.prototype.reduce.call(
@@ -7739,8 +7690,7 @@
       }
       function updateArrows() {
         const content = contentRef.value;
-        if (content === null)
-          return;
+        if (content === null) return;
         const rect = content.getBoundingClientRect(), pos = props4.vertical === true ? content.scrollTop : Math.abs(content.scrollLeft);
         if (isRTL.value === true) {
           leftArrow.value = Math.ceil(pos + rect.width) < content.scrollWidth - 1;
@@ -7776,8 +7726,7 @@
           (el) => el === fromEl || el.matches && el.matches(".q-tab.q-focusable") === true
         );
         const len = tabs.length;
-        if (len === 0)
-          return;
+        if (len === 0) return;
         if (keyCode === 36) {
           scrollToTabEl(tabs[0]);
           tabs[0].focus();
@@ -8685,8 +8634,7 @@
       }
       function changeSpectrum(left, top, change) {
         const panel = spectrumRef.value;
-        if (panel === null)
-          return;
+        if (panel === null) return;
         const width3 = panel.clientWidth, height2 = panel.clientHeight, rect = panel.getBoundingClientRect();
         let x = Math.min(width3, Math.max(0, left - rect.left));
         if ($q.lang.rtl === true) {
@@ -9201,12 +9149,9 @@
     return jalCalLeap(jy) === 0;
   }
   function jalaaliMonthLength(jy, jm) {
-    if (jm <= 6)
-      return 31;
-    if (jm <= 11)
-      return 30;
-    if (isLeapJalaaliYear(jy))
-      return 30;
+    if (jm <= 6) return 31;
+    if (jm <= 11) return 30;
+    if (isLeapJalaaliYear(jy)) return 30;
     return 29;
   }
   function jalCalLeap(jy) {
@@ -9331,9 +9276,7 @@
   // src/components/date/use-datetime.js
   var calendars = ["gregorian", "persian"];
   var useDatetimeProps = {
-    modelValue: {
-      required: true
-    },
+    // should define modelValue in the target component
     mask: {
       type: String
     },
@@ -9407,8 +9350,8 @@
   var MILLISECONDS_IN_HOUR = 36e5;
   var MILLISECONDS_IN_MINUTE = 6e4;
   var defaultMask = "YYYY-MM-DDTHH:mm:ss.SSSZ";
-  var token = /\[((?:[^\]\\]|\\]|\\)*)\]|d{1,4}|M{1,4}|m{1,2}|w{1,2}|Qo|Do|D{1,4}|YY(?:YY)?|H{1,2}|h{1,2}|s{1,2}|S{1,3}|Z{1,2}|a{1,2}|[AQExX]/g;
-  var reverseToken = /(\[[^\]]*\])|d{1,4}|M{1,4}|m{1,2}|w{1,2}|Qo|Do|D{1,4}|YY(?:YY)?|H{1,2}|h{1,2}|s{1,2}|S{1,3}|Z{1,2}|a{1,2}|[AQExX]|([.*+:?^,\s${}()|\\]+)/g;
+  var token = /\[((?:[^\]\\]|\\]|\\)*)\]|do|d{1,4}|Mo|M{1,4}|m{1,2}|wo|w{1,2}|Qo|Do|DDDo|D{1,4}|YY(?:YY)?|H{1,2}|h{1,2}|s{1,2}|S{1,3}|Z{1,2}|a{1,2}|[AQExX]/g;
+  var reverseToken = /(\[[^\]]*\])|do|d{1,4}|Mo|M{1,4}|m{1,2}|wo|w{1,2}|Qo|Do|DDDo|D{1,4}|YY(?:YY)?|H{1,2}|h{1,2}|s{1,2}|S{1,3}|Z{1,2}|a{1,2}|[AQExX]|([.*+:?^,\s${}()|\\]+)/g;
   var regexStore = {};
   function getRegexData(mask, dateLocale) {
     const days = "(" + dateLocale.days.join("|") + ")", key = mask + days;
@@ -9430,6 +9373,9 @@
         case "M":
           map.M = index;
           return "(\\d{1,2})";
+        case "Mo":
+          map.M = index++;
+          return "(\\d{1,2}(st|nd|rd|th))";
         case "MM":
           map.M = index;
           return "(\\d{2})";
@@ -9498,13 +9444,22 @@
         case "d":
         case "E":
           return "(\\d{1})";
+        case "do":
+          index++;
+          return "(\\d{1}(st|nd|rd|th))";
         case "Qo":
           return "(1st|2nd|3rd|4th)";
         case "DDD":
         case "DDDD":
           return "(\\d{1,3})";
+        case "DDDo":
+          index++;
+          return "(\\d{1,3}(st|nd|rd|th))";
         case "w":
           return "(\\d{1,2})";
+        case "wo":
+          index++;
+          return "(\\d{1,2}(st|nd|rd|th))";
         case "ww":
           return "(\\d{2})";
         case "Z":
@@ -9532,7 +9487,7 @@
     return res;
   }
   function getDateLocale(paramDateLocale, langProps) {
-    return paramDateLocale !== void 0 ? paramDateLocale : langProps !== void 0 ? langProps.date : import_en_US.default.date;
+    return paramDateLocale !== void 0 ? paramDateLocale : langProps !== void 0 ? langProps.date : en_US_default.date;
   }
   function formatTimezone(offset2, delimeter = "") {
     const sign = offset2 > 0 ? "-" : "+", absOffset = Math.abs(offset2), hours = Math.floor(absOffset / 60), minutes = absOffset % 60;
@@ -9956,6 +9911,10 @@
     M(date) {
       return date.getMonth() + 1;
     },
+    // Month: 1st, 2nd, ..., 12th
+    Mo(date) {
+      return getOrdinal(date.getMonth() + 1);
+    },
     // Month: 01, 02, ..., 12
     MM(date) {
       return pad(date.getMonth() + 1);
@@ -9992,6 +9951,10 @@
     DDD(date) {
       return getDayOfYear(date);
     },
+    // Day of year: 1st, 2nd, ..., 366th
+    DDDo(date) {
+      return getOrdinal(getDayOfYear(date));
+    },
     // Day of year: 001, 002, ..., 366
     DDDD(date) {
       return pad(getDayOfYear(date), 3);
@@ -10000,9 +9963,13 @@
     d(date) {
       return date.getDay();
     },
+    // Day of week: 0th, 1st, ..., 6th
+    do(date) {
+      return getOrdinal(date.getDay());
+    },
     // Day of week: Su, Mo, ...
     dd(date, dateLocale) {
-      return this.dddd(date, dateLocale).slice(0, 2);
+      return dateLocale.days[date.getDay()].slice(0, 2);
     },
     // Day of week: Sun, Mon, ...
     ddd(date, dateLocale) {
@@ -10019,6 +9986,10 @@
     // Week of Year: 1 2 ... 52 53
     w(date) {
       return getWeekOfYear(date);
+    },
+    // Week of Year: 1st 2nd ... 52nd 53rd
+    wo(date) {
+      return getOrdinal(getWeekOfYear(date));
     },
     // Week of Year: 01 02 ... 52 53
     ww(date) {
@@ -10071,15 +10042,15 @@
     },
     // Meridiem: AM, PM
     A(date) {
-      return this.H(date) < 12 ? "AM" : "PM";
+      return date.getHours() < 12 ? "AM" : "PM";
     },
     // Meridiem: am, pm
     a(date) {
-      return this.H(date) < 12 ? "am" : "pm";
+      return date.getHours() < 12 ? "am" : "pm";
     },
     // Meridiem: a.m., p.m.
     aa(date) {
-      return this.H(date) < 12 ? "a.m." : "p.m.";
+      return date.getHours() < 12 ? "a.m." : "p.m.";
     },
     // Timezone: -01:00, +00:00, ... +12:00
     Z(date, _dateLocale, _forcedYear, forcedTimezoneOffset) {
@@ -10159,11 +10130,16 @@
       ...useDatetimeProps,
       ...useFormProps,
       ...useDarkProps,
+      modelValue: {
+        required: true,
+        validator: (val) => typeof val === "string" || Array.isArray(val) === true || Object(val) === val || val === null
+      },
       multiple: Boolean,
       range: Boolean,
       title: String,
       subtitle: String,
       mask: {
+        ...useDatetimeProps.mask,
         // this mask is forced
         // when using persian calendar
         default: "YYYY/MM/DD"
@@ -10218,7 +10194,7 @@
       const today = computed(() => getCurrentDate());
       const viewModel = ref(getViewModel(innerMask.value, innerLocale.value));
       const view = ref(props4.defaultView);
-      const direction = $q.lang.rtl === true ? "right" : "left";
+      const direction = computed(() => $q.lang.rtl === true ? "right" : "left");
       const monthDirection = ref(direction.value);
       const yearDirection = ref(direction.value);
       const year = viewModel.value.year;
@@ -10893,8 +10869,7 @@
         emit("update:modelValue", (props4.multiple === true ? model : model[0]) || null, reason);
       }
       function getHeader() {
-        if (props4.minimal === true)
-          return;
+        if (props4.minimal === true) return;
         return h("div", {
           class: "q-date__header " + headerClass.value
         }, [
@@ -11479,7 +11454,7 @@
       position: {
         type: String,
         default: "standard",
-        validator: (val) => val === "standard" || ["top", "bottom", "left", "right"].includes(val)
+        validator: (val) => ["standard", "top", "bottom", "left", "right"].includes(val)
       }
     },
     emits: [
@@ -11594,8 +11569,7 @@
       function focus(selector) {
         addFocusFn(() => {
           let node = innerRef.value;
-          if (node === null)
-            return;
+          if (node === null) return;
           if (selector !== void 0) {
             const target2 = node.querySelector(selector);
             if (target2 !== null) {
@@ -12014,8 +11988,7 @@
         applyPosition();
       });
       watch(() => props4.mini, () => {
-        if (props4.noMiniAnimation)
-          return;
+        if (props4.noMiniAnimation) return;
         if (props4.modelValue === true) {
           animateMini();
           $layout.animate();
@@ -12500,7 +12473,7 @@
     name: "QTooltip",
     inheritAttrs: false,
     props: {
-      ...useAnchorProps,
+      ...useAnchorStaticProps,
       ...useModelToggleProps,
       ...useTransitionProps,
       maxHeight: {
@@ -12512,9 +12485,11 @@
         default: null
       },
       transitionShow: {
+        ...useTransitionProps.transitionShow,
         default: "jump-down"
       },
       transitionHide: {
+        ...useTransitionProps.transitionHide,
         default: "jump-up"
       },
       anchor: {
@@ -12532,9 +12507,7 @@
         default: () => [14, 14],
         validator: validateOffset
       },
-      scrollTarget: {
-        default: void 0
-      },
+      scrollTarget: scrollTargetProp,
       delay: {
         type: Number,
         default: 0
@@ -12675,8 +12648,7 @@
         }, props4.hideDelay);
       }
       function configureAnchorEl() {
-        if (props4.noParentEvent === true || anchorEl.value === null)
-          return;
+        if (props4.noParentEvent === true || anchorEl.value === null) return;
         const evts = $q.platform.is.mobile === true ? [
           [anchorEl.value, "touchstart", "delayShow", "passive"]
         ] : [
@@ -13168,13 +13140,8 @@
       toolbar: {
         type: Array,
         validator: (v) => v.length === 0 || v.every((group) => group.length),
-        default() {
-          return [
-            ["left", "center", "right", "justify"],
-            ["bold", "italic", "underline", "strike"],
-            ["undo", "redo"]
-          ];
-        }
+        // long line on purpose for API validation purposes:
+        default: () => [["left", "center", "right", "justify"], ["bold", "italic", "underline", "strike"], ["undo", "redo"]]
       },
       toolbarColor: String,
       toolbarBg: String,
@@ -13202,9 +13169,6 @@
       "update:modelValue",
       "keydown",
       "click",
-      "mouseup",
-      "keyup",
-      "touchend",
       "focus",
       "blur",
       "dropdownShow",
@@ -13769,7 +13733,7 @@
       expandIcon: String,
       expandedIcon: String,
       expandIconClass: [Array, String, Object],
-      duration: Number,
+      duration: {},
       headerInsetLevel: Number,
       contentInsetLevel: Number,
       expandSeparator: Boolean,
@@ -14103,6 +14067,7 @@
       activeIcon: String,
       hideIcon: Boolean,
       hideLabel: {
+        ...useFabProps.hideLabel,
         default: null
       },
       direction: {
@@ -14447,7 +14412,7 @@
   function fieldValueIsFilled(val) {
     return val !== void 0 && val !== null && ("" + val).length !== 0;
   }
-  var useFieldProps = {
+  var useNonInputFieldProps = {
     ...useDarkProps,
     ...useValidateProps,
     label: String,
@@ -14477,11 +14442,14 @@
     disable: Boolean,
     readonly: Boolean,
     autofocus: Boolean,
-    for: String,
+    for: String
+  };
+  var useFieldProps = {
+    ...useNonInputFieldProps,
     maxlength: [Number, String]
   };
-  var useFieldEmits = ["update:modelValue", "clear", "focus", "blur", "popupShow", "popupHide"];
-  function useFieldState({ requiredForAttr = true, tagProp } = {}) {
+  var useFieldEmits = ["update:modelValue", "clear", "focus", "blur"];
+  function useFieldState({ requiredForAttr = true, tagProp, changeEvent = false } = {}) {
     const { props: props4, proxy } = getCurrentInstance();
     const isDark = use_dark_default(props4, proxy.$q);
     const targetUid = use_id_default({
@@ -14490,6 +14458,7 @@
     });
     return {
       requiredForAttr,
+      changeEvent,
       tag: tagProp === true ? computed(() => props4.tag) : { value: "label" },
       isDark,
       editable: computed(
@@ -14668,12 +14637,16 @@
         state.inputRef.value.value = null;
       }
       emit("update:modelValue", null);
+      state.changeEvent === true && emit("change", null);
       emit("clear", props4.modelValue);
       nextTick(() => {
         const isDirty = isDirtyModel.value;
         resetValidation();
         isDirtyModel.value = isDirty;
       });
+    }
+    function onClearableKeyup(evt) {
+      [13, 32].includes(evt.keyCode) && clearValue(evt);
     }
     function getContent() {
       const node = [];
@@ -14706,12 +14679,12 @@
           getInnerAppendNode("inner-clearable-append", [
             h(QIcon_default, {
               class: "q-field__focusable-action",
-              tag: "button",
               name: props4.clearIcon || $q.iconSet.field.clear,
               tabindex: 0,
-              type: "button",
-              "aria-hidden": null,
-              role: null,
+              role: "button",
+              "aria-hidden": "false",
+              "aria-label": $q.lang.label.clear,
+              onKeyup: onClearableKeyup,
               onClick: clearValue
             })
           ])
@@ -14880,10 +14853,7 @@
     emits: useFieldEmits,
     setup() {
       return use_field_default(
-        useFieldState({
-          requiredForAttr: false,
-          tagProp: true
-        })
+        useFieldState({ tagProp: true })
       );
     }
   });
@@ -15097,7 +15067,7 @@
     name: "QFile",
     inheritAttrs: false,
     props: {
-      ...useFieldProps,
+      ...useNonInputFieldProps,
       ...useFormProps,
       ...useFileProps,
       /* SSR does not know about File & FileList */
@@ -15195,8 +15165,7 @@
         if (fileInput !== void 0 && fileInput !== null) {
           fileInput.value = "";
         }
-        if (files === void 0)
-          return;
+        if (files === void 0) return;
         if (props4.multiple === true ? props4.modelValue && files.every((f) => innerValue.value.includes(f)) : props4.modelValue === files[0]) {
           return;
         }
@@ -15373,8 +15342,7 @@
         updateLayout("size", height2);
       }
       function updateRevealed() {
-        if (props4.reveal !== true)
-          return;
+        if (props4.reveal !== true) return;
         const { direction, position: position2, inflectionPoint } = $layout.scroll.value;
         updateLocal(revealed, direction === "up" || position2 - inflectionPoint < 100 || $layout.height.value - containerHeight.value - position2 - size2.value < 300);
       }
@@ -15457,7 +15425,7 @@
         const focus2 = typeof shouldFocus === "boolean" ? shouldFocus : props4.noErrorFocus !== true;
         const index = ++validateIndex;
         const emitEvent = (res, ref2) => {
-          emit("validation" + (res === true ? "Success" : "Error"), ref2);
+          emit(`validation${res === true ? "Success" : "Error"}`, ref2);
         };
         const validateComponent = (comp) => {
           const valid = comp.validate();
@@ -15526,8 +15494,7 @@
       }
       function focus() {
         addFocusFn(() => {
-          if (rootRef.value === null)
-            return;
+          if (rootRef.value === null) return;
           const target2 = rootRef.value.querySelector("[autofocus][tabindex], [data-autofocus][tabindex]") || rootRef.value.querySelector("[autofocus] [tabindex], [data-autofocus] [tabindex]") || rootRef.value.querySelector("[autofocus], [data-autofocus]") || Array.prototype.find.call(rootRef.value.querySelectorAll("[tabindex]"), (el) => el.tabIndex !== -1);
           target2 !== null && target2 !== void 0 && target2.focus({ preventScroll: true });
         });
@@ -15858,8 +15825,7 @@
         }
       }
       function waitForCompleteness(target2, count) {
-        if (count === 1e3 || vmIsDestroyed(vm2) === true)
-          return;
+        if (count === 1e3 || vmIsDestroyed(vm2) === true) return;
         if (target2.complete === true) {
           onReady(target2);
         } else {
@@ -15869,8 +15835,7 @@
         }
       }
       function onReady(target2) {
-        if (vmIsDestroyed(vm2) === true)
-          return;
+        if (vmIsDestroyed(vm2) === true) return;
         position2.value = position2.value ^ 1;
         images[position2.value].value = null;
         clearLoading();
@@ -16009,10 +15974,11 @@
         type: [String, Number],
         default: 100
       },
-      scrollTarget: {
-        default: void 0
+      scrollTarget: scrollTargetProp,
+      initialIndex: {
+        type: Number,
+        default: 0
       },
-      initialIndex: Number,
       disable: Boolean,
       reverse: Boolean
     },
@@ -16022,7 +15988,7 @@
       const isWorking = ref(true);
       const rootRef = ref(null);
       const loadingRef = ref(null);
-      let index = props4.initialIndex || 0;
+      let index = props4.initialIndex;
       let localScrollTarget, poll;
       const classes = computed(
         () => "q-infinite-scroll__loading" + (isFetching.value === true ? "" : " invisible")
@@ -16200,7 +16166,7 @@
       color: String,
       size: {
         type: [String, Number],
-        default: 42
+        default: "42px"
       },
       label: String,
       labelClass: String,
@@ -16617,8 +16583,7 @@
   function use_key_composition_default(onInput) {
     return function onComposition(e) {
       if (e.type === "compositionend" || e.type === "change") {
-        if (e.target.qComposing !== true)
-          return;
+        if (e.target.qComposing !== true) return;
         e.target.qComposing = false;
         onInput(e);
       } else if (e.type === "compositionupdate" && e.target.qComposing !== true && typeof e.data === "string") {
@@ -16638,7 +16603,8 @@
       ...useFieldProps,
       ...useMaskProps,
       ...useFormProps,
-      modelValue: { required: false },
+      // override of useFieldProps > modelValue
+      modelValue: false ? {} : [String, Number, FileList],
       shadowText: String,
       type: {
         type: String,
@@ -16680,7 +16646,7 @@
       );
       const hasValue = computed(() => fieldValueIsFilled(innerValue.value));
       const onComposition = use_key_composition_default(onInput);
-      const state = useFieldState();
+      const state = useFieldState({ changeEvent: true });
       const isTextarea = computed(
         () => props4.type === "textarea" || props4.autogrow === true
       );
@@ -17314,9 +17280,7 @@
         default: "vertical"
       },
       debounce: [String, Number],
-      scrollTarget: {
-        default: void 0
-      }
+      scrollTarget: scrollTargetProp
     },
     emits: ["scroll"],
     setup(props4, { emit }) {
@@ -17831,6 +17795,7 @@
       },
       name: String,
       type: {
+        type: String,
         default: "radio",
         validator: (v) => typeValues.includes(v)
       },
@@ -18085,6 +18050,7 @@
         default: 300
       },
       offset: {
+        ...usePageStickyProps.offset,
         default: () => [18, 18]
       }
     },
@@ -18529,8 +18495,7 @@
     let wait = false, frame, callArgs;
     function debounced() {
       callArgs = arguments;
-      if (wait === true)
-        return;
+      if (wait === true) return;
       wait = true;
       frame = window.requestAnimationFrame(() => {
         fn.apply(this, callArgs);
@@ -18560,9 +18525,7 @@
         default: 1,
         validator: (v) => v >= 0 && v <= 1
       },
-      scrollTarget: {
-        default: void 0
-      },
+      scrollTarget: scrollTargetProp,
       onScroll: Function
     },
     setup(props4, { slots, emit }) {
@@ -18677,10 +18640,8 @@
 
   // src/utils/clone/clone.js
   function cloneDeep(data, hash = /* @__PURE__ */ new WeakMap()) {
-    if (Object(data) !== data)
-      return data;
-    if (hash.has(data))
-      return hash.get(data);
+    if (Object(data) !== data) return data;
+    if (hash.has(data)) return hash.get(data);
     const result = data instanceof Date ? new Date(data) : data instanceof RegExp ? new RegExp(data.source, data.flags) : data instanceof Set ? /* @__PURE__ */ new Set() : data instanceof Map ? /* @__PURE__ */ new Map() : typeof data.constructor !== "function" ? /* @__PURE__ */ Object.create(null) : data.prototype !== void 0 && typeof data.prototype.constructor === "function" ? data : new data.constructor();
     if (typeof data.constructor === "function" && typeof data.valueOf === "function") {
       const val = data.valueOf();
@@ -18847,8 +18808,7 @@
         updatePosition
       });
       return () => {
-        if (props4.disable === true)
-          return;
+        if (props4.disable === true) return;
         return h(QMenu_default, {
           ref: menuRef,
           class: "q-popup-edit",
@@ -19044,9 +19004,7 @@
       icon: String,
       noMouse: Boolean,
       disable: Boolean,
-      scrollTarget: {
-        default: void 0
-      }
+      scrollTarget: scrollTargetProp
     },
     emits: ["refresh"],
     setup(props4, { slots, emit }) {
@@ -19970,8 +19928,7 @@
         };
       });
       onActivated(() => {
-        if (scrollPosition === null)
-          return;
+        if (scrollPosition === null) return;
         const scrollTarget = targetRef.value;
         if (scrollTarget !== null) {
           setHorizontalScrollPosition(scrollTarget, scrollPosition.left);
@@ -20198,7 +20155,7 @@
   var commonVirtScrollProps = {
     virtualScrollSliceSize: {
       type: [Number, String],
-      default: null
+      default: 10
     },
     virtualScrollSliceRatioBefore: {
       type: [Number, String],
@@ -20222,7 +20179,7 @@
     },
     tableColspan: [Number, String]
   };
-  var commonVirtPropsList = Object.keys(commonVirtScrollProps);
+  var commonVirtScrollPropsList = Object.keys(commonVirtScrollProps);
   var useVirtualScrollProps = {
     virtualScrollHorizontal: Boolean,
     onVirtualScroll: Function,
@@ -20577,8 +20534,7 @@
       shouldActivate = true;
     });
     onActivated(() => {
-      if (shouldActivate !== true)
-        return;
+      if (shouldActivate !== true) return;
       const scrollEl = getVirtualScrollTarget();
       if (prevScrollStart !== void 0 && scrollEl !== void 0 && scrollEl !== null && scrollEl.nodeType !== 8) {
         setScroll2(
@@ -20619,6 +20575,7 @@
       ...useVirtualScrollProps,
       ...useFormProps,
       ...useFieldProps,
+      // override of useFieldProps > modelValue
       modelValue: {
         required: true
       },
@@ -20671,18 +20628,16 @@
         default: 0
       },
       autocomplete: String,
-      transitionShow: String,
-      transitionHide: String,
-      transitionDuration: [String, Number],
+      transitionShow: {},
+      transitionHide: {},
+      transitionDuration: {},
       behavior: {
         type: String,
         validator: (v) => ["default", "menu", "dialog"].includes(v),
         default: "default"
       },
-      virtualScrollItemSize: {
-        type: [Number, String],
-        default: void 0
-      },
+      // override of useVirtualScrollProps > virtualScrollItemSize (no default)
+      virtualScrollItemSize: useVirtualScrollProps.virtualScrollItemSize.type,
       onNewValue: Function,
       onFilter: Function
     },
@@ -20694,6 +20649,8 @@
       "keyup",
       "keypress",
       "keydown",
+      "popupShow",
+      "popupHide",
       "filterAbort"
     ],
     setup(props4, { slots, emit }) {
@@ -20975,8 +20932,7 @@
         emit("update:modelValue", model);
       }
       function setOptionIndex(index) {
-        if ($q.platform.is.desktop !== true)
-          return;
+        if ($q.platform.is.desktop !== true) return;
         const val = index !== -1 && index < virtualScrollLength.value ? index : -1;
         if (optionIndex.value !== val) {
           optionIndex.value = val;
@@ -21091,8 +21047,7 @@
           closeMenu();
           return;
         }
-        if (e.target === void 0 || e.target.id !== state.targetUid.value || state.editable.value !== true)
-          return;
+        if (e.target === void 0 || e.target.id !== state.targetUid.value || state.editable.value !== true) return;
         if (e.keyCode === 40 && state.innerLoading.value !== true && menu.value === false) {
           stopAndPrevent(e);
           showPopup();
@@ -21156,8 +21111,7 @@
           }
           return;
         }
-        if (e.keyCode !== 13 && (e.keyCode !== 32 || props4.useInput === true || searchBuffer !== "") && (e.keyCode !== 9 || tabShouldSelect === false))
-          return;
+        if (e.keyCode !== 13 && (e.keyCode !== 32 || props4.useInput === true || searchBuffer !== "") && (e.keyCode !== 9 || tabShouldSelect === false)) return;
         e.keyCode !== 9 && stopAndPrevent(e);
         if (optionIndex.value !== -1 && optionIndex.value < optionsLength) {
           toggleOption(props4.options[optionIndex.value]);
@@ -23880,10 +23834,8 @@
       limits: {
         type: Array,
         validator: (v) => {
-          if (v.length !== 2)
-            return false;
-          if (typeof v[0] !== "number" || typeof v[1] !== "number")
-            return false;
+          if (v.length !== 2) return false;
+          if (typeof v[0] !== "number" || typeof v[1] !== "number") return false;
           return v[0] >= 0 && v[0] <= v[1];
         }
       },
@@ -24357,8 +24309,7 @@
         const name2 = vm2.vnode.key;
         if (name2) {
           col = props4.props.colsMap[name2];
-          if (col === void 0)
-            return;
+          if (col === void 0) return;
         } else {
           col = props4.props.col;
         }
@@ -24415,9 +24366,7 @@
       },
       itemsFn: Function,
       itemsSize: Number,
-      scrollTarget: {
-        default: void 0
-      }
+      scrollTarget: scrollTargetProp
     },
     setup(props4, { slots, attrs }) {
       let localScrollTarget;
@@ -24954,9 +24903,9 @@
 
   // src/components/table/QTable.js
   var bottomClass = "q-table__bottom row items-center";
-  var commonVirtPropsObj = {};
-  commonVirtPropsList.forEach((p) => {
-    commonVirtPropsObj[p] = {};
+  var virtScrollPassthroughProps = {};
+  commonVirtScrollPropsList.forEach((p) => {
+    virtScrollPassthroughProps[p] = {};
   });
   var QTable_default = createComponent({
     name: "QTable",
@@ -24990,10 +24939,8 @@
       },
       wrapCells: Boolean,
       virtualScroll: Boolean,
-      virtualScrollTarget: {
-        default: void 0
-      },
-      ...commonVirtPropsObj,
+      virtualScrollTarget: {},
+      ...virtScrollPassthroughProps,
       noDataLabel: String,
       noResultsLabel: String,
       loadingLabel: String,
@@ -25134,7 +25081,7 @@
       const nothingToDisplay = computed(() => computedRows.value.length === 0);
       const virtProps = computed(() => {
         const acc = {};
-        commonVirtPropsList.forEach((p) => {
+        commonVirtScrollPropsList.forEach((p) => {
           acc[p] = props4[p];
         });
         if (acc.virtualScrollItemSize === void 0) {
@@ -25771,8 +25718,7 @@
         }
         const name2 = vm2.vnode.key;
         const col = (props4.props.colsMap !== void 0 ? props4.props.colsMap[name2] : null) || props4.props.col;
-        if (col === void 0)
-          return;
+        if (col === void 0) return;
         const { row } = props4.props;
         return h("td", {
           class: classes.value + col.__tdClass(row),
@@ -25836,7 +25782,12 @@
       ...useDarkProps,
       ...useFormProps,
       ...useDatetimeProps,
+      modelValue: {
+        required: true,
+        validator: (val) => typeof val === "string" || val === null
+      },
       mask: {
+        ...useDatetimeProps.mask,
         default: null
       },
       format24h: {
@@ -26157,8 +26108,7 @@
           const payload = e.keyCode === 37 ? -1 : 1;
           if (validHours.value !== null) {
             const values = computedFormat24h.value === true ? validHours.value.values : validHours.value[isAM.value === true ? "am" : "pm"].values;
-            if (values.length === 0)
-              return;
+            if (values.length === 0) return;
             if (innerModel.value.hour === null) {
               setHour(values[0]);
             } else {
@@ -26178,8 +26128,7 @@
           const payload = e.keyCode === 37 ? -1 : 1;
           if (validMinutes.value !== null) {
             const values = validMinutes.value.values;
-            if (values.length === 0)
-              return;
+            if (values.length === 0) return;
             if (innerModel.value.minute === null) {
               setMinute(values[0]);
             } else {
@@ -26199,8 +26148,7 @@
           const payload = e.keyCode === 37 ? -1 : 1;
           if (validSeconds.value !== null) {
             const values = validSeconds.value.values;
-            if (values.length === 0)
-              return;
+            if (values.length === 0) return;
             if (innerModel.value.seconds === null) {
               setSecond(values[0]);
             } else {
@@ -26624,7 +26572,7 @@
       accordion: Boolean,
       filter: String,
       filterMethod: Function,
-      duration: Number,
+      duration: {},
       noConnectors: Boolean,
       noTransition: Boolean,
       noNodesLabel: String,
@@ -27265,8 +27213,7 @@
       }
     }
     function removeFile(file) {
-      if (props4.disable)
-        return;
+      if (props4.disable) return;
       if (file.__status === "uploaded") {
         state.uploadedFiles.value = state.uploadedFiles.value.filter((f) => f.__key !== file.__key);
       } else if (file.__status === "uploading") {
@@ -27298,8 +27245,7 @@
       if (fileInput !== void 0 && fileInput !== null) {
         fileInput.value = "";
       }
-      if (localFiles === void 0)
-        return;
+      if (localFiles === void 0) return;
       localFiles.forEach((file) => {
         state.updateFileStatus(file, "idle");
         uploadSize.value += file.size;
@@ -27519,9 +27465,7 @@
     },
     fieldName: {
       type: [Function, String],
-      default: () => {
-        return (file) => file.name;
-      }
+      default: () => (file) => file.name
     },
     headers: [Function, Array],
     formFields: [Function, Array],
@@ -27626,8 +27570,7 @@
       });
       let uploadIndex = 0, uploadIndexSize = 0, localUploadedSize = 0, maxUploadSize = 0, aborted;
       xhr2.upload.addEventListener("progress", (e) => {
-        if (aborted === true)
-          return;
+        if (aborted === true) return;
         const loaded = Math.min(maxUploadSize, e.loaded);
         helpers.uploadedSize.value += loaded - localUploadedSize;
         localUploadedSize = loaded;
@@ -29538,7 +29481,7 @@
     }
   });
 
-  // src/utils/private.global/global-dialog.js
+  // src/utils/private.dialog/create-dialog.js
   function merge(target2, source) {
     for (const key in source) {
       if (key !== "spinner" && Object(source[key]) === source[key]) {
@@ -29549,7 +29492,7 @@
       }
     }
   }
-  function global_dialog_default(DefaultComponent, supportsCustomComponent, parentApp) {
+  function create_dialog_default(DefaultComponent, supportsCustomComponent, parentApp) {
     return (pluginProps) => {
       if (false) {
         return ssrAPI;
@@ -29661,7 +29604,7 @@
   // src/plugins/bottom-sheet/BottomSheet.js
   var BottomSheet_default = {
     install({ $q, parentApp }) {
-      $q.bottomSheet = this.create = global_dialog_default(BottomSheetComponent_default, false, parentApp);
+      $q.bottomSheet = this.create = create_dialog_default(BottomSheetComponent_default, false, parentApp);
     }
   };
 
@@ -30035,7 +29978,7 @@
   // src/plugins/dialog/Dialog.js
   var Dialog_default = {
     install({ $q, parentApp }) {
-      $q.dialog = this.create = global_dialog_default(DialogPluginComponent_default, true, parentApp);
+      $q.dialog = this.create = create_dialog_default(DialogPluginComponent_default, true, parentApp);
     }
   };
 
@@ -30072,8 +30015,7 @@
     isActive: false
   }, {
     show(opts) {
-      if (false)
-        return;
+      if (false) return;
       props3 = registerProps(opts);
       const { group } = props3;
       Plugin7.isActive = true;
@@ -30198,8 +30140,7 @@
     setDefaults: noop,
     install({ $q, parentApp }) {
       $q.loadingBar = this;
-      if (false)
-        return;
+      if (false) return;
       if (this.__installed === true) {
         if ($q.config.loadingBar !== void 0) {
           this.setDefaults($q.config.loadingBar);
@@ -31368,7 +31309,7 @@
     console.error("[ Quasar ] Vue is required to run. Please add a script tag for it before loading Quasar.");
   }
   window.Quasar = {
-    version: "2.15.3",
+    version: "2.16.9",
     install(app2, opts) {
       install_quasar_default(app2, {
         components: components_exports,

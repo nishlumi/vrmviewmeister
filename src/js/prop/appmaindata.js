@@ -14,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.12.1",
-            revision : "20240817-01",
+            version : "2.12.2",
+            revision : "20240823-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -424,6 +424,10 @@ export class appMainData {
                 },
                 condition_accept : false,
                 modelData : null,
+            },
+            tearchManager : {
+                show : false,
+                modelName : "rot",
             },
             win_screenshot : null,
             win_pose : null,

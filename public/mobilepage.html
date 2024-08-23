@@ -5699,36 +5699,36 @@
                                 ref="scr_main_name_height"
                             >
                             </q-scroll-area>-->
-                            
+                            <q-menu v-model="timelineData.elements.menu" context-menu>
+                                <q-list>
+                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
+                                        <q-item-section avatar>
+                                            <q-icon name="info"></q-icon>
+                                        </q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
+                                    </q-item>
+                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
+                                        <q-item-section avatar>
+                                            <q-icon name="filter_center_focus"></q-icon>
+                                        </q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_centerfocus')"></q-item-section>
+                                    </q-item>
+                                    <q-separator></q-separator>
+                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
+                                        :disable="ribbonEvent.chk_enableKeyframeButton"
+                                    >
+                                        <q-item-section avatar>
+                                            <q-icon name="restart_alt"></q-icon>
+                                        </q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </q-menu>
                         </div>
-                        <q-menu v-model="timelineData.elements.menu" touch-position context-menu>
-                            <q-list>
-                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                    clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
-                                    <q-item-section avatar>
-                                        <q-icon name="info"></q-icon>
-                                    </q-item-section>
-                                    <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
-                                </q-item>
-                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                    clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
-                                    <q-item-section avatar>
-                                        <q-icon name="filter_center_focus"></q-icon>
-                                    </q-item-section>
-                                    <q-item-section v-text="$t('objlistmenu_centerfocus')"></q-item-section>
-                                </q-item>
-                                <q-separator></q-separator>
-                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                    clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
-                                    :disable="ribbonEvent.chk_enableKeyframeButton"
-                                >
-                                    <q-item-section avatar>
-                                        <q-icon name="restart_alt"></q-icon>
-                                    </q-item-section>
-                                    <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-menu>
+                        
                         <div class="oneline-timelinebox" style="overflow-x:auto;" 
                             ref="scroll_keyframe_xy" 
                             
@@ -6553,7 +6553,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>{{ $t("vrminfo_commercialUssage") }}</th>
+                                    <th>{{ $t("vrminfo_corporateUssage") }}</th>
                                     <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.corporate_commercial_use)">
                                         {{ vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.corporate_commercial_use) }}
                                     </td>
@@ -6597,7 +6597,10 @@
                 </q-card-actions>
             </q-card>
         </q-dialog>
-        
+        <!--tearch-manage-dlg
+            v-model="mainData.elements.tearchManager.show"
+            :tearching-name="mainData.elements.tearchManager.modelName"
+        ></tearch-manage-dlg-->
     </q-layout>
 
     
@@ -6612,6 +6615,11 @@
     <input type="hidden" id="UnityBuildPath" value="Build">
     <input type="hidden" id="_csrf" value="<$ csrfToken $>">
     <input type ="hidden" id="uimode" value="<$ uimode $>">
+
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    -->
 
     <!-- start global include by CDN -->
     <script src="static/lib/vue/vue.global.<$ jsenv $>js"></script>

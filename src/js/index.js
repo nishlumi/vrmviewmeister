@@ -35,6 +35,7 @@ import { defineMobileOperator } from "./model/mblope.js";
 import { defineUswipeInput } from "../uswipeinput.js";
 import { definePoseMotionDlg } from "./posedlg.js";
 import { defineCaptureDlg } from "./capturedlg.js";
+import { defineTearchManagerDlg } from "./teachman.js";
 
 var loc = localStorage.getItem("appLocale");
 //loc = await AppDB.app.getItem("appLocale");
@@ -489,6 +490,7 @@ defineKeyframeDlg(app,Quasar);
 defineNavigationDlg(app, Quasar);
 definePoseMotionDlg(app, Quasar);
 defineCaptureDlg(app, Quasar);
+defineTearchManagerDlg(app, Quasar);
 
 app.use(i18n);
 //---Start app

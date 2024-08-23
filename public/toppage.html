@@ -5638,7 +5638,7 @@
                             <div v-for="(val) in timelineData.data.timelines" :key="val.roleName"
                                 class="namebox-child" :dataIndex="val.roleName" 
                                 @click="timelineEvent.namebox_onclick(val)" :class="val.selected"
-                                @click.right="timelineEvent.namebox_onrightclick"
+                                @click.right.prevent="timelineEvent.namebox_onrightclick"
                             >
                                 <q-btn flat round size="0.75rem" color="primary" :icon="val.readonlyIcon" 
                                     class="btn-visibility"
@@ -5667,36 +5667,36 @@
                                 ref="scr_main_name_height"
                             >
                             </q-scroll-area>-->
-                            
+                            <q-menu v-model="timelineData.elements.menu" context-menu>
+                                <q-list>
+                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
+                                        <q-item-section avatar>
+                                            <q-icon name="info"></q-icon>
+                                        </q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
+                                    </q-item>
+                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
+                                        <q-item-section avatar>
+                                            <q-icon name="filter_center_focus"></q-icon>
+                                        </q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_centerfocus')"></q-item-section>
+                                    </q-item>
+                                    <q-separator></q-separator>
+                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
+                                        :disable="ribbonEvent.chk_enableKeyframeButton"
+                                    >
+                                        <q-item-section avatar>
+                                            <q-icon name="restart_alt"></q-icon>
+                                        </q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </q-menu>
                         </div>
-                        <q-menu v-model="timelineData.elements.menu" touch-position context-menu>
-                            <q-list>
-                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                    clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
-                                    <q-item-section avatar>
-                                        <q-icon name="info"></q-icon>
-                                    </q-item-section>
-                                    <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
-                                </q-item>
-                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                    clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
-                                    <q-item-section avatar>
-                                        <q-icon name="filter_center_focus"></q-icon>
-                                    </q-item-section>
-                                    <q-item-section v-text="$t('objlistmenu_centerfocus')"></q-item-section>
-                                </q-item>
-                                <q-separator></q-separator>
-                                <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                    clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
-                                    :disable="ribbonEvent.chk_enableKeyframeButton"
-                                >
-                                    <q-item-section avatar>
-                                        <q-icon name="restart_alt"></q-icon>
-                                    </q-item-section>
-                                    <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-menu>
+                        
                         <div class="oneline-timelinebox" 
                             ref="scroll_keyframe_xy" 
                             @scroll="timelineEvent.scroll_keyframe_xy_onscroll" 
@@ -6453,7 +6453,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>{{ $t("vrminfo_commercialUssage") }}</th>
+                                    <th>{{ $t("vrminfo_corporateUssage") }}</th>
                                     <td class="text-bold" :class="vroidhubSelectorEvent.cmp_license_shortstyle(mainData.elements.vroidhubSelectCondition.modelData.license.corporate_commercial_use)">
                                         {{ vroidhubSelectorEvent.cmp_license_shortname(mainData.elements.vroidhubSelectCondition.modelData.license.corporate_commercial_use) }}
                                     </td>
