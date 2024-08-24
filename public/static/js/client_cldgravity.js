@@ -397,6 +397,7 @@ const app = Vue.createApp({
 
 
 const i18n = VueI18n.createI18n({
+    legacy : false,
     locale : loc,
     //messages
 });

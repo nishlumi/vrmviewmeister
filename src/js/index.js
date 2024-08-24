@@ -453,7 +453,7 @@ window["_REFAPP"] = {
 
 
 const i18n = VueI18n.createI18n({
-    legacy : true,
+    legacy : false,
     locale : loc,
     messages
 });
