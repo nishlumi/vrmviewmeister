@@ -374,7 +374,21 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                     ) {
                         //---if Animation Project: Text file
                         mainData.states.fileloadtype = "ap";
-                        filetype = "PROJECT";                        
+                        filetype = "PROJECT";
+
+                        //---wheather now project is an editing project.
+                        if (mainData.states.currentEditOperationCount != 0) {
+                            appConfirm(t("msg_openproject_warning"),()=> {
+                                //---reset and re-create project
+                                modelOperator.newProject();
+                                AppQueue.start();
+            
+                                setupDefaultObject();
+                                modelOperator.destroy_materialFile(true);
+                                
+                            });
+                            return;
+                        }
                     }else if (tmpfile.name.toLowerCase().indexOf(FILEEXTENSION_MOTION) > -1) {
                         //---if AnimationSingleMotion file: Text file (neccesary .vvmmot, don't .json)
                         mainData.states.fileloadtype = "mot";

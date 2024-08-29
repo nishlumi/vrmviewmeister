@@ -7,7 +7,7 @@ import { AnimationParsingOptions } from "./prop/cls_unityrel";
 import { VVAvatar, VVCast } from "./prop/cls_vvavatar";
 
 const template = `
-<q-dialog v-model="poseapp.show" :maximized="poseapp.dialog.maximized" @hide="dialogHide">
+<q-dialog v-model="poseapp.show" :fullwidth="poseapp.dialog.fullwidth" :fullheight="poseapp.dialog.fullheight" :maximized="poseapp.dialog.maximized" @hide="dialogHide">
     <q-card :style="poseapp.dialog.styles" >
         <q-toolbar class="bg-primary text-white">
             <q-btn flat round dense icon="refresh" @click="refresh_onclick">
@@ -206,6 +206,8 @@ export function definePoseMotionDlg(app, Quasar) {
                 show: false,
                 dialog : {
                     maximized: false,
+                    fullwidth: false,
+                    fullheight: false,
                     styles : {
                         width : "auto",
                         height: "100%",
@@ -332,11 +334,19 @@ export function definePoseMotionDlg(app, Quasar) {
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
                 poseapp.value.show = newval;
                 if (newval === true) {
-                    if ((Quasar.Screen.name == "xs") ||
-                        (Quasar.Screen.name == "sm")) 
+                    if ((Quasar.Screen.name == "xs") 
+                    //    || (Quasar.Screen.name == "sm")
+                    ) 
                     {
                         poseapp.value.dialog.maximized = true;
+                        poseapp.value.dialog.fullwidth = false;
+                        poseapp.value.dialog.fullheight = false;
                         poseapp.value.card.styles["grid-template-columns"] = "100%";
+                    }else if (Quasar.Screen.name == "sm") {
+                        poseapp.value.dialog.maximized = false;
+                        poseapp.value.dialog.fullwidth = true;
+                        poseapp.value.dialog.fullheight = true;
+                        poseapp.value.card.styles["grid-template-columns"] = "1fr 1fr";
                     }else{
                         poseapp.value.dialog.styles.width = "65%";
                         if (Quasar.Screen.name == "md") {
@@ -344,7 +354,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         }else if (Quasar.Screen.name == "lg") {
                             poseapp.value.card.styles["grid-template-columns"] = "1fr 1fr";
                         }else if (Quasar.Screen.name == "xl") {
-                            poseapp.value.card.styles["grid-template-columns"] = "1fr 1fr";
+                            poseapp.value.card.styles["grid-template-columns"] = "1fr 1fr 1fr";
                         }
                     }
                 }

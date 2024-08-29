@@ -1264,7 +1264,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 is_closepanel = true;
             });
         }else if (ename == "openproject") {
-            if (mainData.states.currentEditOperationCount == 0) {
+            //if (mainData.states.currentEditOperationCount == 0) {
                 if (options.type == "f") {
                     Sub_openfile("ap","PROJECT");
                 }else if (options.type == "i") {
@@ -1299,7 +1299,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     mainData.elements.projectSelector.show = true;
                 }
                 is_closepanel = true;
-            }else{
+            /*}else{
                 appConfirm(t("msg_openproject_warning"),()=> {
                     //---reset and re-create project
                     modelOperator.newProject();
@@ -1309,7 +1309,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     modelOperator.destroy_materialFile(true);
                     
                 });
-            }
+            }*/
             
         }else if (ename == "saveproject") {
             AppQueue.add(new queueData(

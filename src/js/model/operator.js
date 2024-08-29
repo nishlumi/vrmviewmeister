@@ -180,7 +180,25 @@ export class appModelOperator {
         
     }
     newProject(isAlsoUnity = true) {
+        const proj = this.mainData.data.project;
         if (isAlsoUnity) {
+            //---here remove no cast avatars.
+            for (var i = 0; i < this.mainData.data.vrms.length; i++) {
+                var ishit = proj.casts.findIndex(v => {
+                    if (this.mainData.data.vrms[i].id == v.avatarId) return true;
+                    return false;
+                });
+
+                //---avatar is NOT attach with cast.
+                if (ishit == -1) {
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.FileMenuCommands,method:'DestroyVRMFromOuter',param:this.mainData.data.vrms[i].id},
+                        "",QD_INOUT.toUNITY,
+                        null
+                    ));
+                }
+            }
+
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'NewProject'},
                 "newproject",QD_INOUT.returnJS,
@@ -189,7 +207,6 @@ export class appModelOperator {
                 }
             ));
         }
-        const proj = this.mainData.data.project;
 
         proj.timelineFrameLength = parseInt(this.mainData.appconf.confs.animation.initial_framecount);
         this.ribbonData.elements.frame.max = proj.timelineFrameLength;
@@ -490,6 +507,7 @@ export class appModelOperator {
      */
     selectCurrentFrameTargetBones(role, index) {
         var aro = new AnimationRegisterOptions();
+        if (!role) return;
         aro.targetRole = role.roleName;
         aro.targetType = role.avatar.type;
         aro.index = index;
@@ -921,8 +939,8 @@ export class appModelOperator {
                                 (VFileHelper.flags.isElectron ? value.name : value.fullname),
                                 value.size,
                                 value.type,
-                                value.createdDate.toLocaleString(),
-                                value.updatedDate.toLocaleString()
+                                value.createdDate.toFormatText(true,true),
+                                value.updatedDate.toFormatText(true,true)
                             );
                             this.mainData.elements.projectSelector.files.push(meta);
                             this.mainData.elements.projectSelector.searchedFiles.push(meta);
@@ -1048,8 +1066,8 @@ export class appModelOperator {
                                         obj.id,
                                         obj.size,
                                         dbname,
-                                        new Date(obj.createDate).toLocaleString(),
-                                        new Date(obj.updatedDate).toLocaleString()
+                                        new Date(obj.createDate).toFormatText(true,true),
+                                        new Date(obj.updatedDate).toFormatText(true,true)
                                     );
                                     meta.id = obj.id;
                                     this.mainData.elements.projectSelector.files.push(meta);
@@ -1100,8 +1118,8 @@ export class appModelOperator {
                                 obj.id,
                                 obj.size,
                                 dbname,
-                                new Date(obj.createDate).toLocaleString(),
-                                new Date(obj.updatedDate).toLocaleString()
+                                new Date(obj.createDate).toFormatText(true,true),
+                                new Date(obj.updatedDate).toFormatText(true,true)
                             );
                             meta.id = obj.id;
                             this.mainData.elements.projectSelector.files.push(meta);
@@ -1149,8 +1167,8 @@ export class appModelOperator {
                                             obj.id,
                                             obj.size,
                                             dbname,
-                                            new Date(obj.createDate).toLocaleString(),
-                                            new Date(obj.updatedDate).toLocaleString()
+                                            new Date(obj.createDate).toFormatText(true,true),
+                                            new Date(obj.updatedDate).toFormatText(true,true)
                                         );
                                         meta.id = obj.id;
                                         this.mainData.elements.projectSelector.files.push(meta);
