@@ -95,6 +95,7 @@ z_commit/
 *.tflite
 *.data
 *.wasm
+*.bin
 
 largef.zip
 largef/
