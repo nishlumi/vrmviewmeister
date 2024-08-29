@@ -2434,7 +2434,7 @@ export class UnityCallbackFunctioner {
                     vf.types.push(vopt);
                     vf.suggestedName = fname;
                     if (vf.suggestedName.indexOf(FILEEXTENSION_MOTION) == -1) {
-                        vf.suggestedName + FILEEXTENSION_MOTION;
+                        vf.suggestedName = vf.suggestedName + FILEEXTENSION_MOTION;
                     }
                     var acckey = "";
                     var accval = "";

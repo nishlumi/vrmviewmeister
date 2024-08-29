@@ -53,6 +53,23 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
         var datadb = AppDB[mainData.elements.projectSelector.selectDB];
         const DBname = mainData.elements.projectSelector.selectDBName;
 
+        if (mainData.elements.projectSelector.selectDB == INTERNAL_FILE.PROJECT) { 
+            //---Only project, wheather check editing project. 
+            //   if editing, clear project before to open other.
+            if (mainData.states.currentEditOperationCount != 0) {
+                appConfirm(t("msg_openproject_warning"),()=> {
+                    //---reset and re-create project
+                    modelOperator.newProject();
+                    AppQueue.start();
+
+                    modelLoader.setupDefaultObject();
+                    modelOperator.destroy_materialFile(true);
+                    
+                });
+                return;
+            }
+        }
+
         try {            
             var originalresult = null;
             mainData.elements.loading = true;
