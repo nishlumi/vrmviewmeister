@@ -817,8 +817,9 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             }
 
             appPrompt(t("msg_pose_sav"),(keyname)=>{
+                var prm = "vrm," + (mainData.appconf.confs.animation.with_compling ? "1" : "0");
                 AppQueue.add(new queueData(
-                    {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:"vrm"},
+                    {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:prm},
                     "backupnowpose",QD_INOUT.returnJS,
                     callback.savepose,
                     {callback, filename: keyname, mode:"i"}
@@ -835,9 +836,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 is_closepanel = true;
                 return;
             }
+            var prm = "vrm," + (mainData.appconf.confs.animation.with_compling ? "1" : "0");
+
             if (VFileHelper.checkNativeAPI) {
                 AppQueue.add(new queueData(
-                    {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:"vrm"},
+                    {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:prm},
                     "backupnowpose",QD_INOUT.returnJS,
                     callback.savepose,
                     {callback, filename: "posename", mode:"f"}
@@ -847,7 +850,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             }else{
                 appPrompt(t("msg_pose_sav"),(keyname)=>{
                     AppQueue.add(new queueData(
-                        {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:"vrm"},
+                        {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:prm},
                         "backupnowpose",QD_INOUT.returnJS,
                         callback.savepose,
                         {callback, filename: keyname, mode:"f"}
@@ -868,8 +871,9 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             }
 
             appPrompt(t("msg_pose_sav"),(keyname)=>{
+                var prm = "vrm," + (mainData.appconf.confs.animation.with_compling ? "1" : "0");
                 AppQueue.add(new queueData(
-                    {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:"vrm"},
+                    {target:mainData.states.selectedAvatar.id,method:'BackupAvatarTransform',param:prm},
                     "backupnowpose",QD_INOUT.returnJS,
                     callback.savepose,
                     {callback, filename: keyname, mode:"g"}
@@ -1036,7 +1040,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             is_closepanel = true;
         }else if (ename == "savemotion") {
             var tmpcast = modelOperator.getRole(mainData.states.selectedCast.roleName,"role");
-            var param = tmpcast.roleName + "," + tmpcast.type;
+            var param = tmpcast.roleName + "," + tmpcast.type + "," + mainData.appconf.confs.animation.with_compling ? "1" : "0";
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'SaveSingleMotion', param:param},
                 "savemotion",QD_INOUT.returnJS,

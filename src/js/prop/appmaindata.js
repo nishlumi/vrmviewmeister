@@ -14,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.12.3",
-            revision : "202408xx-01",
+            version : "2.13.0",
+            revision : "20240914-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -207,6 +207,10 @@ export class appMainData {
                 show : false,
             },
             bonetrandlg : {
+                show : false,
+                
+            },
+            easybonetrandlg : {
                 show : false,
             },
             gravitybonedlg : {

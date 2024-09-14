@@ -1509,7 +1509,7 @@
                 <div class="row">
                     <div class="col-4">
                         <q-input v-model="ribbonData.elements.frame.keylist.duration" type="number"
-                            :min="0.00000001" :max="999.99999999" :step="0.00000001" 
+                            :min="0" :max="999.9999" :step="0.0001" 
                             :label="_T('duration')" filled 
                         ></q-input>
                     </div>
@@ -2284,9 +2284,13 @@
                                 <div class="offset-md-1 col-5">
                                     <q-btn flat round color="primary" icon="edit" 
                                         @click="objpropEvent.OnClicked_editIKPosition"
-                                    ></q-btn>
+                                    ><q-tooltip>{{ $t("batchik_input_mode") }}</q-tooltip></q-btn>
+                                    <q-btn flat round color="primary" icon="rule" 
+                                        @click="objpropEvent.OnClicked_easyBoneTran"
+                                    ><q-tooltip>{{ $t("batchik_easy_mode") }}</q-tooltip></q-btn>
                                 </div>
                             </div>
+                            
                             <div class="row">
                                 <div class="col-6">
                                     {{ $t('edit_gravitybone') }}
@@ -6167,7 +6171,12 @@
         
         <bonetran-dlg v-model="mainData.elements.bonetrandlg.show"
             :avatar="mainData.states.selectedAvatar"
+            
         ></bonetran-dlg>
+        <easytran-dlg v-model="mainData.elements.easybonetrandlg.show"
+            :avatar="mainData.states.selectedAvatar"
+            :sample-url="mainData.appconf.confs.fileloader.easyik.sampleurl"
+        ></easytran-dlg>
         <gravitybone-dlg v-model="mainData.elements.gravitybonedlg.show"
             :avatar="mainData.states.selectedAvatar"
         ></gravitybone-dlg>
@@ -6553,10 +6562,12 @@
     <script src="static/lib/quasar/lang/ja.umd.prod.js"></script>
     <script src="static/lib/quasar/lang/eo.umd.prod.js"></script>
     <script src="static/lib/quasar/lang/en-US.umd.prod.js"></script>
+    
     <!--script src="static/lib/interactjs/interact.min.js"></script-->
     <script src="static/lib/localforage.min.js"></script>
     <script src="static/lib/jsuites/jspreadsheet.js"></script>
     <script src="static/lib/jsuites/jsuites.js"></script>
+    <script src="static/lib/math.js"></script>
 
     <script src="static/js/util.js"></script>
     <script src="static/js/cls_appqueue.js"></script>

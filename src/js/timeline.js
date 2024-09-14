@@ -650,8 +650,11 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
                 //ribbonData.elements.frame.bonelist.selection.splice(0, ribbonData.elements.frame.bonelist.selection.length);
                 for (var i = 0; i < arr.length; i++) {
                     var v = arr[i];
-                    timelineData.states.popup.ikmarkers.push(v.toLowerCase());
-                    var ikbone = IKBoneType[v];
+                    if (v.toLowerCase() != "usehumanbodybones") {
+                        timelineData.states.popup.ikmarkers.push(v.toLowerCase());
+                        var ikbone = IKBoneType[v];
+                    }
+                    
                     //---select bone checkbox in keyframe register panel
                     //if ((0 <= ikbone) && (ikbone <= 16)) {                    
                         //modelOperator.selectSpecifyBoneForRegister(ikbone);

@@ -951,3 +951,25 @@ div.screen-number-area {
     position : absolute;
     z-index: 5025;
 }
+
+/*======================================================
+  bone tran
+*/
+.spr-panel-top {
+    position: absolute;
+    top : 0;
+    left : 0;
+    background-color: #FFFFFF;
+    width : 100%;
+    height : 100%;
+    z-index: 100;
+}
+.spr-panel-back {
+    position: absolute;
+    top : 0;
+    left : 0;
+    background-color: #FFFFFF;
+    width : 100%;
+    height : 100%;
+    z-index: 10;
+}

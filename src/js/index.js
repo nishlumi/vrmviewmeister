@@ -36,6 +36,7 @@ import { defineUswipeInput } from "../uswipeinput.js";
 import { definePoseMotionDlg } from "./posedlg.js";
 import { defineCaptureDlg } from "./capturedlg.js";
 import { defineTearchManagerDlg } from "./teachman.js";
+import { defineEasyBoneTranDlg } from "./easybonetran.js";
 
 var loc = localStorage.getItem("appLocale");
 //loc = await AppDB.app.getItem("appLocale");
@@ -226,6 +227,12 @@ const app = Vue.createApp({
                 mainData.appconf.applyUnity(false);
                 //---test: moving to firstLoad_effectDirectory
                 modelOperator.newProject(false);
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'SetBaseDuration',param:parseFloat(mainData.appconf.confs.animation.base_duration)},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+
                 modelLoader.setupDefaultObject();
 
                 calcUnitySize(Quasar.Screen.width, Quasar.Screen.height);
@@ -491,6 +498,7 @@ defineNavigationDlg(app, Quasar);
 definePoseMotionDlg(app, Quasar);
 defineCaptureDlg(app, Quasar);
 defineTearchManagerDlg(app, Quasar);
+defineEasyBoneTranDlg(app, Quasar);
 
 app.use(i18n);
 //---Start app

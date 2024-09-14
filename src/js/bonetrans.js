@@ -15,20 +15,25 @@ const template = `
     </div>
     <div :class="data.elements.panelCSS" style="width:100%;height:calc(100% - 40px);">
         <div class="row basic-dialog-toolbar">
-            <q-btn flat round dense icon="bookmark_added" @click="apply_onclick">
+            <q-btn flat round dense icon="bookmark_added" @click="apply_onclick" :disabled="data.elements.header.btndisable">
                 <q-tooltip v-text="$t('apply pose')"></q-tooltip>
             </q-btn>
-            <q-btn flat round dense icon="refresh" style="margin-left:1rem;" @click="reload_onclick">
+            <q-btn flat round dense icon="refresh" style="margin-left:1rem;" @click="reload_onclick" :disabled="data.elements.header.btndisable">
                 <q-tooltip v-text="$t('refresh')"></q-tooltip>
             </q-btn>
             <q-separator spaced inset vertical dark></q-separator>
-            <q-btn flat round dense icon="mdi-mirror" style="margin-left:1rem;" @click="mirrorpose_onclick">
+            <q-btn flat round dense icon="mdi-mirror" style="margin-left:1rem;" @click="mirrorpose_onclick" :disabled="data.elements.header.btndisable">
                 <q-tooltip v-text="$t('reverse pose')"></q-tooltip>
             </q-btn>
         </div>
         
         <div class="basic-dialog-contentarea">
-            <div id="spreadsheet_bone" ref="spr"></div>
+            <div :class="data.elements.sprPanelCSS.forVRM">
+                <div id="spreadsheet_bone" ref="spr"></div>
+            </div>
+            <div :class="data.elements.sprPanelCSS.forOther">
+                <h1>Not VRM</h1>
+            </div>
         </div>
     </div>
 </div>
@@ -67,7 +72,20 @@ export function defineBonetranDlg(app, Quasar) {
                         "q-dark" : false,
                         "text-dark" : true,
                     },
-                    spreadsheet : null
+                    spreadsheet : null,
+                    header : {
+                        btndisable : false
+                    },
+                    sprPanelCSS : {
+                        forVRM : {
+                            "spr-panel-top" : true,
+                            "spr-panel-back" : false
+                        },
+                        forOther : {
+                            "spr-panel-top" : false,
+                            "spr-panel-back" : true
+                        }
+                    }
                 }
             });
             const show = Vue.ref(false);
@@ -101,8 +119,31 @@ export function defineBonetranDlg(app, Quasar) {
                 data.value.elements.panelCSS["q-dark"] = newval;
                 data.value.elements.panelCSS["text-dark"] = !newval;
             }); 
+            const wa_avatar_type = Vue.watch(() => avatar.value,(newval,oldval) => {
+                if (!newval) return;
+                if (!oldval) return;
 
+                if (newval.type != oldval.type) {
+                    if (newval.type == AF_TARGETTYPE.VRM) {
+                        data.value.elements.sprPanelCSS.forVRM["spr-panel-top"] = true;
+                        data.value.elements.sprPanelCSS.forVRM["spr-panel-back"] = false;
+                        data.value.elements.sprPanelCSS.forOther["spr-panel-top"] = false;
+                        data.value.elements.sprPanelCSS.forOther["spr-panel-back"] = true;
 
+                        data.value.elements.header.btndisable = false;
+                    }else{
+                        data.value.elements.sprPanelCSS.forVRM["spr-panel-top"] = false;
+                        data.value.elements.sprPanelCSS.forVRM["spr-panel-back"] = true;
+                        data.value.elements.sprPanelCSS.forOther["spr-panel-top"] = true;
+                        data.value.elements.sprPanelCSS.forOther["spr-panel-back"] = false;
+
+                        data.value.elements.header.btndisable = true;
+                    }
+                    
+                }
+            },{deep:true});
+
+            //---event---------------------------------------------------------------
             const close_onclick = () => {
                 show.value = false;
                 context.emit("update:model-value",show.value);
@@ -346,7 +387,8 @@ export function defineBonetranDlg(app, Quasar) {
                 //element--------------
                 btpdlg,btpdlg_bar,spr,
                 //watch----------------
-                wa_modelValue,wa_show,wa_dark
+                wa_modelValue,wa_show,wa_dark,
+                wa_avatar_type,
             }
         }
     });

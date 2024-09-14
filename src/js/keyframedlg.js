@@ -120,7 +120,7 @@ const template = `
                 <div class="row">
                     <div class="col-8">
                         <q-input v-model="kfapp.elements.duration" type="number"
-                            :min="0.00000001" :max="999.99999999" :step="0.00000001" 
+                            :min="0.0001" :max="999.9999" :step="0.0001" 
                             :label="$t('duration')" filled dense
                             @update:model-value="duration_onchange"
                             :disable="kfapp.states.disable"

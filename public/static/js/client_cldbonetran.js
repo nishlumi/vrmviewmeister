@@ -116,7 +116,7 @@ const app = Vue.createApp({
                 }
                 
             }
-        })
+        });
         const reload_func = (js) => {
             //var js = JSON.parse(val);
             const floatDown = (v,multiply) => {

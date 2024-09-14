@@ -545,7 +545,7 @@ export function defineProjectDialog (app, Quasar, mainData, timelineData, modelO
     const baseDuration_onchange = () => {
         //---FPS--------------------------------------===== setfps
         appConfirmWithCancel(t("msg_baseduration_warning"),()=> {
-            var param = parseInt(mainData.elements.projdlg.pinfo.baseDuration);
+            var param = parseFloat(mainData.elements.projdlg.pinfo.baseDuration);
             if (isNaN(param)) {
                 mainData.elements.projdlg.pinfo.baseDuration = mainData.elements.projdlg.pinfo.oldbaseDuration;
                 return;
