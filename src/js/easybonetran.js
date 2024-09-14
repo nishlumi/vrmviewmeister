@@ -751,15 +751,20 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     
                     if (appdata.elements.armBox.selected && (appdata.elements.armBox.selected.length > 0)) {
                         for (var o of appdata.elements.armBox.selected) {
-                            lists = analyzeCalculation(o.value);
-                            reloadMathScope(lists);
+                            if (o.value) {
+                                lists = analyzeCalculation(o.value);
+                                reloadMathScope(lists);
+                            }
                         }
                         
                     }
                     if (appdata.elements.legBox.selected && (appdata.elements.legBox.selected.length > 0)) {
                         for (var o of appdata.elements.legBox.selected) {
-                            lists = analyzeCalculation(o.value);
-                            reloadMathScope(lists);
+                            if (o.value) {
+                                lists = analyzeCalculation(o.value);
+                                reloadMathScope(lists);
+                            }
+                            
                         }
                         
                     }
