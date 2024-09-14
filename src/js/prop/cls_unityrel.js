@@ -309,13 +309,31 @@ export class UnityVector3 {
      */
     constructor (x, y, z) {
         if (typeof(x) == "number") {
+            /**
+             * @type {Number}
+             */
             this.x = x ? x : 0;
+            /**
+             * @type {Number}
+             */
             this.y = y ? y : 0;
+            /**
+             * @type {Number}
+             */
             this.z = z ? z : 0;
         }else{
             var vec = x;
+            /**
+             * @type {Number}
+             */
             this.x = "x" in vec ? vec.x : 0;
+            /**
+             * @type {Number}
+             */
             this.y = "y" in vec ? vec.y : 0;
+            /**
+             * @type {Number}
+             */
             this.z = "z" in vec ? vec.z : 0;    
         }
     }
@@ -562,5 +580,46 @@ export class VRMAnimationClip {
          * @type {VOSFile}
          */
         this.originalFile = null;
+    }
+}
+
+export class AvatarSingleIKTransform {
+    constructor() {
+        /**
+         * @type {String}
+         */
+        this.ikname = "";
+        /**
+         * @type {UnityVector3}
+         */
+        this.position = new UnityVector3(0, 0, 0);
+        /**
+         * @type {UnityVector3}
+         */
+        this.rotation = new UnityVector3(0, 0, 0);
+        /**
+         * @type {Number}
+         */
+        this.useCollision = 0;
+        /**
+         * @type {Number}
+         */
+        this.useGravity = 0;
+        /**
+         * @type {Number}
+         */
+        this.drag = 0;
+        /**
+         * @type {Number}
+         */
+        this.anglarDrag = 0;
+    }
+}
+export class AvatarAllIKParts {
+    constructor() {
+        /**
+         * @type {AvatarSingleIKTransform[]}
+         */
+        this.list = [];
     }
 }

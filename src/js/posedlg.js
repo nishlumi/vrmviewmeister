@@ -512,7 +512,7 @@ export function definePoseMotionDlg(app, Quasar) {
             }
             const delete_onclick = () => {
                 if (poseapp.value.states.item_mode == "pose") {
-                    appConfirm($t("msg_pose_delconfirm"),()=>{
+                    appConfirm(t("msg_pose_delconfirm"),()=>{
                         if (poseapp.value.list.selected) {
                             AppDB.pose.removeItem(poseapp.value.list.selected.name).then(result=>{
                                 refresh_onclick();
@@ -520,7 +520,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         }
                     });
                 }else if (poseapp.value.states.item_mode == "motion") {
-                    appConfirm($t("msg_motion_delconfirm"),()=>{
+                    appConfirm(t("msg_motion_delconfirm"),()=>{
                         if (poseapp.value.list.selected) {
                             AppDB.motion.removeItem(poseapp.value.list.selected.name).then(result=>{
                                 refresh_onclick();

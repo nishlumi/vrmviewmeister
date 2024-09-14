@@ -981,3 +981,37 @@ export class VVProp {
         }
     }
 }
+
+
+export class EasySelectRow {
+    constructor(posIndex) {
+        /**
+         * @type {Number}
+         */
+        this.posture = posIndex;
+        /**
+         * @type {String}
+         */
+        this.name = "";
+        /**
+         * @type {String}
+         */
+        this.lang = "";
+
+        /**
+         * @type {Boolean}
+         */
+        this.useTPose = false;
+        /**
+         * @type { {parts: String, transform: String, axis: String, expression : String}[]}
+         */
+        this.calclist = [];
+
+    }
+}
+export class EasySelectList {
+    constructor() {
+        this.arealist = [
+        ];
+    }
+}

@@ -226,6 +226,16 @@ const template = `
                             </div>
                         
                         </q-item-section>
+                        <q-item-section>
+                            <div class="row">
+                                <div class="col-12 q-pt-sm">
+                                    <span>{{ $t('easyik sampleurl') }}</span>
+                                </div>
+                                <div class="col-11 offset-1">
+                                    <q-input v-model="appconf.confs.fileloader.easyik.sampleurl" type="text" dense></q-input>
+                                </div>
+                            </div>
+                        </q-item-section>
                     </q-list>
                 </q-tab-panel>
                 <q-tab-panel name="model">
@@ -333,6 +343,14 @@ const template = `
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-8 q-pt-sm">
+                                        <span class="">{{ $t('msg_default_baseDuration')}}</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <q-input v-model="appconf.confs.animation.base_duration" type="number" :min="0.01" :max="2" :step="0.01" dense></q-input>
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-12">
                                         <q-checkbox v-model="appconf.confs.animation.recover_firstpose_whenfinished" :label="$t('msg_recover_firstpose_whenfinished')"></q-checkbox>
                                     </div>
@@ -353,14 +371,6 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.animation.preview_onlyselected_whenselected" :label="$t('msg_preview_onlyselected_whenselected')"></q-checkbox>
                                     </div>
                                 </div>
-                                <div class="row common_ui_off">
-                                    <div class="col-8 q-pt-sm">
-                                        <span class="">{{ $t('msg_default_baseDuration')}}</span>
-                                    </div>
-                                    <div class="col-4">
-                                        <q-input v-model="appconf.confs.animation.base_duration" type="number" :min="0.01" :max="2" :step="0.01" dense></q-input>
-                                    </div>
-                                </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <q-checkbox v-model="appconf.confs.animation.off_ikmarker_during_play_animation" :label="$t('msg_off_ikmarker_during_play_animation')"></q-checkbox>
@@ -376,7 +386,7 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.animation.play_with_record_movie" :label="$t('msg_play_with_record_movie')"></q-checkbox>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row common_ui_off">
                                     <div class="col-12">
                                         <q-checkbox v-model="appconf.confs.animation.with_compling" :label="$t('msg_with_compling')"></q-checkbox>
                                     </div>

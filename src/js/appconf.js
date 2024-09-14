@@ -95,6 +95,9 @@ export class VVConfigTemplate {
                     other : false,
                     image : false,
                 }
+            },
+            easyik : {
+                sampleurl : "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgPoXgJM4OC2CAWgvu2VXR-CDsKURfRevjQ8uklHWL5I9ARlZ7a9toycaNYvs4_ldh4Nd2I31m4xR_/pub?gid=0&single=true&output=tsv",
             }
         }
         this.aiapis = {

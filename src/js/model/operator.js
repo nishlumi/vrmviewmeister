@@ -200,12 +200,12 @@ export class appModelOperator {
             }
 
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'NewProject'},
+                {target:AppQueue.unity.ManageAnimation,method:'NewProject',param:parseFloat(this.mainData.appconf.confs.animation.base_duration)},
                 "newproject",QD_INOUT.returnJS,
                 (val) => {
                     console.log(val);
                 }
-            ));
+            ));            
         }
 
         proj.timelineFrameLength = parseInt(this.mainData.appconf.confs.animation.initial_framecount);
@@ -219,7 +219,8 @@ export class appModelOperator {
         //this.mainData.elements.projdlg.vrmaList.splice(0, this.mainData.elements.projdlg.vrmaList.length);
 
 
-        this.ribbonData.elements.frame.baseDuration = proj.fps / 6000.0;
+        this.ribbonData.elements.frame.baseDuration = parseFloat(this.mainData.appconf.confs.animation.base_duration);
+        this.mainData.elements.projdlg.pinfo.baseDuration = this.ribbonData.elements.frame.baseDuration;
 
         this.mainData.states.currentProjectFilename = "project";
         this.mainData.states.currentProjectHandle = null;
@@ -271,7 +272,7 @@ export class appModelOperator {
     async newProjectAndOpenProject(originalresult) {
         
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'NewProject'},
+            {target:AppQueue.unity.ManageAnimation,method:'NewProject',param:parseFloat(this.mainData.appconf.confs.animation.base_duration)},
             "newproject",QD_INOUT.returnJS,
             (val => {
                 console.log("newProjectAndOpenProject",val);
@@ -2526,7 +2527,7 @@ export class appModelOperator {
                 
                 param.isExecuteForDOTween = 1;
                 
-                //param.isCompileAnimation = this.appconf.confs.animation.with_compling ? 1 : 0;
+                //param.isCompileAnimation = this.mainData.appconf.confs.animation.with_compling ? 1 : 0;
                 //param.targetId = item.avatar.id;
                 var ishitpreview = false;
                 if (this.mainData.appconf.confs.animation.preview_onlyselected_whenselected === true) {

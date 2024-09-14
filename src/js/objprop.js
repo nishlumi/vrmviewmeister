@@ -666,9 +666,10 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         }else{
             mainData.elements.bonetrandlg.show = true;
         }
-        
     
-        
+    }
+    const OnClicked_easyBoneTran = async () => {
+        mainData.elements.easybonetrandlg.show = true;
     }
     const OnClicked_editGravity = async () => {
 
@@ -2673,6 +2674,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             OnChange_NaturalRotation_LeftHand,OnChange_NaturalRotation_RightHand,OnChange_NaturalRotation_LeftFoot,OnChange_NaturalRotation_RightFoot,
             OnClick_ApplyNaturalRotation,
             OnClicked_editIKPosition,OnClicked_editGravity,OnClicked_MirrorPose,
+            OnClicked_easyBoneTran,
             OnChange_LeftHand,OnChange_RightHand,OnChange_FingerStretch,
             onchange_expression_searchstr,onchange_bs_searchstr,OnChange_BlendShape, OnChange_BlendShape_Checked,
             OnChange_Blink_enable,OnChange_Blink_interval,OnChange_Blink_opening,OnChange_Blink_closing,OnChange_Blink_closeTime,
