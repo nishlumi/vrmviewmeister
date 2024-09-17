@@ -1040,7 +1040,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             is_closepanel = true;
         }else if (ename == "savemotion") {
             var tmpcast = modelOperator.getRole(mainData.states.selectedCast.roleName,"role");
-            var param = tmpcast.roleName + "," + tmpcast.type + "," + mainData.appconf.confs.animation.with_compling ? "1" : "0";
+            var param = tmpcast.roleName + "," + tmpcast.type + "," + (mainData.appconf.confs.animation.with_compling ? "1" : "0");
             AppQueue.add(new queueData(
                 {target:AppQueue.unity.ManageAnimation,method:'SaveSingleMotion', param:param},
                 "savemotion",QD_INOUT.returnJS,
