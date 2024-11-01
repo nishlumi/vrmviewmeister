@@ -361,21 +361,6 @@ const template = `
                                         <q-input v-model="appconf.confs.animation.recover_firstpose_timeout" type="number" :min="0" :max="2000" :step="100" dense></q-input>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <q-checkbox v-model="appconf.confs.animation.recover_pose_whenselected" :label="$t('msg_recover_pose_whenselected')"></q-checkbox>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <q-checkbox v-model="appconf.confs.animation.preview_onlyselected_whenselected" :label="$t('msg_preview_onlyselected_whenselected')"></q-checkbox>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <q-checkbox v-model="appconf.confs.animation.off_ikmarker_during_play_animation" :label="$t('msg_off_ikmarker_during_play_animation')"></q-checkbox>
-                                    </div>
-                                </div>
                                 <div class="row common_ui_off">
                                     <div class="col-12">
                                         <q-checkbox v-model="appconf.confs.animation.remove_emptytimeline_whensave" :label="$t('msg_remove_emptytimeline_whensave')"></q-checkbox>
@@ -386,24 +371,49 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.animation.play_with_record_movie" :label="$t('msg_play_with_record_movie')"></q-checkbox>
                                     </div>
                                 </div>
-                                <div class="row common_ui_off">
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <q-checkbox v-model="appconf.confs.animation.recover_pose_whenselected" :label="$t('msg_recover_pose_whenselected')"></q-checkbox>
+                                    </div>
+                                
+                                    <div class="col-12 col-sm-6">
+                                        <q-checkbox v-model="appconf.confs.animation.preview_onlyselected_whenselected" :label="$t('msg_preview_onlyselected_whenselected')"></q-checkbox>
+                                    </div>
+                                
+                                    <div class="col-12 col-sm-6">
+                                        <q-checkbox v-model="appconf.confs.animation.off_ikmarker_during_play_animation" :label="$t('msg_off_ikmarker_during_play_animation')"></q-checkbox>
+                                    </div>
+                                
+                                    <div class="col-12 col-sm-6">
+                                        <q-checkbox v-model="appconf.confs.animation.recover_tomax_overframe" :label="$t('msg_recover_tomax_overframe')"></q-checkbox>
+                                    </div>
+                                
+                                    <div class="col-12 col-sm-6">
+                                        <q-checkbox v-model="appconf.confs.animation.enable_audio_record" :label="$t('msg_enable_audio_record')"></q-checkbox>
+                                    </div>
+                                
+                                    <div class="col-12 col-sm-6">
+                                        <q-checkbox v-model="appconf.confs.animation.save_previous_value_in_keyframeregister" :label="$t('msg_save_previous_value_in_keyframeregister')"></q-checkbox>
+                                    </div>
+                                </div>
+                                <div class="row ">
                                     <div class="col-12">
                                         <q-checkbox v-model="appconf.confs.animation.with_compling" :label="$t('msg_with_compling')"></q-checkbox>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12">
-                                        <q-checkbox v-model="appconf.confs.animation.recover_tomax_overframe" :label="$t('msg_recover_tomax_overframe')"></q-checkbox>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <q-checkbox v-model="appconf.confs.animation.enable_audio_record" :label="$t('msg_enable_audio_record')"></q-checkbox>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <q-checkbox v-model="appconf.confs.animation.save_previous_value_in_keyframeregister" :label="$t('msg_save_previous_value_in_keyframeregister')"></q-checkbox>
+                                    <div class="col-12 col-sm-6">
+                                        <q-input filled label="Color of Onion skin"
+                                            v-model="appconf.confs.animation.onion_skin_color"
+                                        >
+                                            <template v-slot:append>
+                                                <q-icon name="colorize" class="cursor-pointer">
+                                                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                                        <q-color v-model="appconf.confs.animation.onion_skin_color"></q-color>
+                                                    </q-popup-proxy>
+                                                </q-icon>
+                                            </template>
+                                        </q-input>
                                     </div>
                                 </div>
                             </q-item-section>

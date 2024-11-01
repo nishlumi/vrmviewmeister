@@ -63,7 +63,9 @@ export class appDataRibbon {
                 rotateSpeed : 15,
                 useAntialias : false,
                 showIKMarker : true,
-                ikmarkerSize : 0.1
+                ikmarkerSize : 0.1,
+                enableik : true,
+                onionskin : false,
             },
             //---Model
             basicshapes : [

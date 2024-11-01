@@ -406,10 +406,10 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
     */
 
     const CanvasPointerEnter = () => {
-        if (unityConfig.value.instance) unityConfig.value.instance.SendMessage('Main Camera', "SetFlagWebGLInputFromOuter", "1");
+        if (unityConfig.value.instance) unityConfig.value.instance.SendMessage('WebXRCameraSet', "SetFlagWebGLInputFromOuter", "1");
     }
     const CanvasPointerLeave = () => {
-        if (unityConfig.value.instance) unityConfig.value.instance.SendMessage('Main Camera', "SetFlagWebGLInputFromOuter", " ");
+        if (unityConfig.value.instance) unityConfig.value.instance.SendMessage('WebXRCameraSet', "SetFlagWebGLInputFromOuter", " ");
     }
     return {
         unitycontainer,

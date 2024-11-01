@@ -186,6 +186,15 @@ export function defineBonetranDlg(app, Quasar) {
                                 6, i,
                                 js.list[i].rotation.z
                             );
+                            data.value.elements.spreadsheet.setValueFromCoords(
+                                7, i,
+                                js.list[i].drag
+                            );
+                            data.value.elements.spreadsheet.setValueFromCoords(
+                                8, i,
+                                js.list[i].anglarDrag
+                            );
+            
                         }
                     }
                 ));
@@ -199,7 +208,12 @@ export function defineBonetranDlg(app, Quasar) {
                     lists.push({
                         ikname : ln[0],
                         position : new UnityVector3(parseFloat(ln[1]),parseFloat(ln[2]),parseFloat(ln[3])),
-                        rotation : new UnityVector3(parseFloat(ln[4]),parseFloat(ln[5]),parseFloat(ln[6]))
+                        rotation : new UnityVector3(parseFloat(ln[4]),parseFloat(ln[5]),parseFloat(ln[6])),
+                        useCollision : 0, //ln[7] == 1 ? 1 : 0,
+                        useGravity : 0, //ln[8] == 1 ? 1 : 0,
+                        drag : isNaN(parseFloat(ln[7])) == false ? parseFloat(ln[8]) : 10,
+                        anglarDrag : isNaN(parseFloat(ln[7])) == false ? parseFloat(ln[8]) : 10,
+    
                     });
                 }
                 var param = JSON.stringify({
@@ -303,28 +317,6 @@ export function defineBonetranDlg(app, Quasar) {
             }
 
             Vue.onMounted(() => {
-                /*
-                interact(btpdlg_bar.value).draggable({
-                    modifiers: [
-                        interact.modifiers.restrict({
-                            restriction: 'parent',
-                            endOnly: true
-                        })
-                    ],
-                    listeners : {
-                        start(evt) {
-                            console.log("start",evt);
-                        },
-                        move (event) {
-                            data.value.elements.win.position.x += event.dx
-                            data.value.elements.win.position.y += event.dy
-                      
-                            btpdlg.value.style.transform =
-                              `translate(${data.value.elements.win.position.x}px, ${data.value.elements.win.position.y}px)`;
-                        },
-                    },
-                });
-                */
 
                 //---spreadsheet
                 var bonedata = [];
@@ -352,7 +344,9 @@ export function defineBonetranDlg(app, Quasar) {
                         { type: 'number', title: 'Rotation X', width: 100, align : "right" },
                         { type: 'number', title: 'Rotation Y', width: 100, align : "right" },
                         { type: 'number', title: 'Rotation Z', width: 100, align : "right"  },
-            
+                        { type: 'number', title: 'drag', width: 50, align : "right"  },
+                        { type: 'number', title: 'anglarDrag', width: 50, align : "right"  },
+    
                     ],
                     /**
                      * 

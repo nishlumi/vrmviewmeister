@@ -257,6 +257,19 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             return "pc";
         }
     }
+    const chkIsNotOnionTarget = Vue.computed(() => {
+        if (
+            (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) &&
+            (mainData.states.selectedAvatar.type != AF_TARGETTYPE.OtherObject) &&
+            (mainData.states.selectedAvatar.type != AF_TARGETTYPE.Camera) &&
+            (mainData.states.selectedAvatar.type != AF_TARGETTYPE.Light) &&
+            (mainData.states.selectedAvatar.type != AF_TARGETTYPE.Effect)
+        ) {
+            return true;
+        }else{
+            return false;
+        }
+    });
     //===============================================================
     //  Main events judge
     //===============================================================
@@ -1248,6 +1261,45 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                     mainData.vroidhubdata["real"] = ret;
                 }
             });
+        }else if (ename == "enableik") {
+            var val = ribbonData.elements.optionArea.enableik;
+            for (var i = 0; i < mainData.data.project.casts.length; i++){
+                var v = mainData.data.project.casts[i];
+                if (v.avatar.type == AF_TARGETTYPE.VRM) {
+                    if (val) {
+                        //---to enable
+                        AppQueue.add(new queueData(
+                            {target:mainData.states.selectedAvatar.id,method:'ApplyBoneTransformToIKTransform'},
+                            "",QD_INOUT.toUNITY,
+                            null
+                        ));
+                    }else{
+                        //---to disable
+                        AppQueue.add(new queueData(
+                            {target:mainData.states.selectedAvatar.id,method:'EnableIKFromOuter',param:val ? 1 : 0},
+                            "",QD_INOUT.toUNITY,
+                            null
+                        ));
+                    }
+                }
+            }
+            AppQueue.start();
+        }else if (ename == "onionskin") {
+            if (ribbonData.elements.optionArea.onionskin) {
+                var param = mainData.states.selectedAvatar.id;
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'CreateAllOnionSkin',param:param},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+            }else{
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'DestroyOnion'},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+            }
+            AppQueue.start();
         }
 
         if (is_closepanel) close_tabpanel();
@@ -2481,6 +2533,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         //---computed
         chk_enableClipboardButton, chk_enableKeyframeButton,chk_enablePasteButton,
         chkAppIsOSApp,chkTabSelectEffectORAudio,
+        chkIsNotOnionTarget,
 
         //---watches
         wa_tabSelectedIndex,

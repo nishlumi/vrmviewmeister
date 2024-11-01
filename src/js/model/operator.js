@@ -3210,6 +3210,14 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
                     null
                 ));
             }
+            if (ribbonData.elements.optionArea.onionskin) {
+                AppQueue.add(new queueData(
+                    {target:AppQueue.unity.ManageAnimation,method:'DestroyOnion'},
+                    "",QD_INOUT.toUNITY,
+                    null
+                ));
+                ribbonData.elements.optionArea.onionskin = false;
+            }
         }
         mainData.states.old_selectedAvatar = oldval;
         //#####select an avatar on HTML

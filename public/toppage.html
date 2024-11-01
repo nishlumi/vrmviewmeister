@@ -65,7 +65,8 @@
                     v-model="ribbonData.elements.tab.selectIndex"
                     
                     inline-label no-caps dense align="left"
-                    mobile-arrows
+                    mobile-arrows 
+                    indicator-color="yellow"
                     :style="ribbonData.elements.tab.style"
                     @click="ribbonEvent.tabbar_onclick"
                 >
@@ -419,6 +420,17 @@
                                 color="primary" label
                                 @update:model-value="ribbonEvent.ikmarkerSize_onchange"
                             ></q-slider>
+                            <br>
+                            <q-checkbox right-label v-model="ribbonData.elements.optionArea.enableik" 
+                                label="Enable IK" 
+                                @update:model-value="ribbonEvent.RibbonFuncModel('enableik')"
+                            ></q-checkbox>
+                        </div>
+                        <div class="ribbon-toolbar">
+                            <q-checkbox right-label v-model="ribbonData.elements.optionArea.onionskin" 
+                                :label="$t('Onion_skin')" :disable="ribbonEvent.chkIsNotOnionTarget"
+                                @update:model-value="ribbonEvent.RibbonFuncModel('onionskin')"
+                            ></q-checkbox>
                         </div>
                         <div class="ribbon-group-title">Options</div>
                     </div>
@@ -818,7 +830,6 @@
                         </div>
                         <div class="ribbon-group-title">VRoid Hub</div>
                     </div>
-
                 </q-tab-panel>
                 <!-- Animation tab ------------------------------------------------------>
                 <q-tab-panel name="animation" class=" q-pa-sm">
@@ -2255,6 +2266,14 @@
                                 </div>
                                 <div class="offset-md-1 col-5">
                                     <q-toggle v-model="objpropData.elements.vrmui.movemode" color="primary"></q-toggle>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <q-checkbox right-label v-model="objpropData.elements.vrmui.enableik" 
+                                        label="Enable IK" 
+                                        @update:model-value="objpropEvent.OnChangeVRMEnableIK"
+                                    ></q-checkbox>
                                 </div>
                             </div>
                             <div class="row" >

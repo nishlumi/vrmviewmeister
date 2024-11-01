@@ -569,6 +569,25 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         AppQueue.start();
         return true;
     },{deep:true});
+    const OnChangeVRMEnableIK = (val) => {
+        if (val) {
+            //---to enable
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'ApplyBoneTransformToIKTransform'},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }else{
+            //---to disable
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:'EnableIKFromOuter',param:val ? 1 : 0},
+                "",QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        
+        AppQueue.start();
+    }
     const OnChange_NaturalRotationBody = (flag, bonename) => {
         if (mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) return false;
         if (!modelOperator.getSelected_objectItem(mainData.states.selectedAvatar.id)) return false;
@@ -2673,6 +2692,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             wa_propVRMMoveMode,
             OnChange_NaturalRotation_LeftHand,OnChange_NaturalRotation_RightHand,OnChange_NaturalRotation_LeftFoot,OnChange_NaturalRotation_RightFoot,
             OnClick_ApplyNaturalRotation,
+            OnChangeVRMEnableIK,
             OnClicked_editIKPosition,OnClicked_editGravity,OnClicked_MirrorPose,
             OnClicked_easyBoneTran,
             OnChange_LeftHand,OnChange_RightHand,OnChange_FingerStretch,

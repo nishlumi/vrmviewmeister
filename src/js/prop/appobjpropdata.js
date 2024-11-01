@@ -57,6 +57,7 @@ export class appDataObjectProp {
             //---VRM
             vrmui : {
                 movemode : false,
+                enableik: true,
                 ikhandles : {
                     partSelected : template.tmpIKBoneType[0],
                     partOptions : template.tmpIKBoneType,

@@ -68,6 +68,7 @@ export class VVConfigTemplate {
             recover_tomax_overframe : true,
             enable_audio_record : false,
             save_previous_value_in_keyframeregister : false,
+            onion_skin_color : "#FF0000",
         };
         this.fileloader = {
             gdrive : {
@@ -537,6 +538,13 @@ export class VVAppConfig{
         ));
         AppQueue.add(new queueData(
             {target:AppQueue.unity.ManageAnimation,method:'SetInitialTimelineLength',param:parseInt(this.confs.animation.initial_framecount)},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetValFromOuter',param:
+                `str,${"onion_skin_color"},${this.confs.animation.onion_skin_color}`
+            },
             "",QD_INOUT.toUNITY,
             null
         ));

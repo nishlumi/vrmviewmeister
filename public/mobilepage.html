@@ -66,6 +66,7 @@
                     
                     inline-label no-caps dense align="left"
                     mobile-arrows
+                    indicator-color="yellow"
                     :style="ribbonData.elements.tab.style"
                     @click="ribbonEvent.tabbar_onclick"
                 >
@@ -419,6 +420,12 @@
                                 color="primary" label
                                 @update:model-value="ribbonEvent.ikmarkerSize_onchange"
                             ></q-slider>
+                        </div>
+                        <div class="ribbon-toolbar">
+                            <q-checkbox right-label v-model="ribbonData.elements.optionArea.onionskin" 
+                                :label="$t('Onion_skin')" :disable="ribbonEvent.chkIsNotOnionTarget"
+                                @update:model-value="ribbonEvent.RibbonFuncModel('onionskin')"
+                            ></q-checkbox>
                         </div>
                         <div class="ribbon-group-title">Options</div>
                     </div>
