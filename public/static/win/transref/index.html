@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="same-origin">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Position/Rotation reference</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^7.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/jsuites/jspreadsheet.css" rel="stylesheet">
+    <link href="../../lib/jsuites/jsuites.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/index.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <div id="q-app" v-cloak>
+        <!--<div ref="btpdlg_bar" class="basic-dialog-titlebar bg-primary text-grey-1 q-pa-xs">
+            <div class="row">
+                <div>{{ _T('title_bonetransform') }}</div>
+                <q-space></q-space>
+            </div>
+            
+        </div>-->
+        <div :class="trapp.elements.panelCSS" style="width:100%;height:100%;">
+            <div class="row">
+                <div class="col-12">
+                    <q-list>
+                        <q-item>
+                            <q-item-section avatar>
+                                <q-img :src="cmp_current_avatar_icon"></q-img>
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>{{ cmp_current_avatar_title }}</q-item-label>
+                                <q-item-label caption>{{ cmp_current_parts }}</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <q-select v-model="trapp.elements.avatarBox.selected"
+                        :options="cmp_avatarlist"
+                        :label="_T('refer_avatar')" 
+                        
+                        :disable="trapp.states.disable"
+                        @update:model-value="avatarbox_selected"
+                    >
+                        <template v-slot:option="scope">
+                            <q-item v-bind="scope.itemProps">
+                                <q-item-section avatar>
+                                    <template v-if="scope.opt.thumbnail != ''">
+                                        <q-img :src="scope.opt.thumbnail"></q-img>
+                                    </template>
+                                </q-item-section>
+                                <q-item-section>
+                                    <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </template>
+                    </q-select>
+                </div>
+                <div class="col-12" v-if="cmp_avatar_is_vrm">
+                    <q-select v-model="trapp.elements.vrmParts.selected"
+                        :options="cmp_vrmpartslist"
+                        :label="_T('refer_parts')" 
+                        
+                        :disable="trapp.states.disable"
+                    >
+                        <template v-slot:selected-item="scope">
+                            <q-item dense>
+                                <q-item-section avatar>
+                                    <template v-if="scope.opt.value == ''">
+                                        <div style="width:24px;height:24px"></div>
+                                    </template>
+                                    <template v-else>
+                                        <img :src="scope.opt.icon" width="24" height="24">
+                                    </template>
+                                </q-item-section>
+                                <q-item-section>
+                                    <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </template>
+                        <template v-slot:option="scope">
+                            <q-item v-bind="scope.itemProps">
+                                <q-item-section avatar>
+                                    <template v-if="scope.opt.value == ''">
+                                        <div style="width:24px;height:24px"></div>
+                                    </template>
+                                    <template v-else>
+                                        <img :src="scope.opt.icon" width="24" height="24">
+                                    </template>
+                                </q-item-section>
+                                <q-item-section>
+                                <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </template>
+                    </q-select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <span>Offset</span>
+                </div>
+                <div class="col-3 q-pr-xs">
+                    <q-input v-model.number="trapp.elements.offset.x"  type="number" label="X" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                </div>
+                <div class="col-3 q-pr-xs">
+                    <q-input v-model.number="trapp.elements.offset.y"  type="number" label="Y" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                </div>
+                <div class="col-3">
+                    <q-input v-model.number="trapp.elements.offset.z" type="number" label="Z" dense :min="-99.9999999" :max="99.9999999" :step="0.01"></q-input>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <q-btn icon="control_camera" size="md" :label="_T('position')"
+                        @click="transform_onchange('position')"
+                        :disable="trapp.states.disable"
+                    >
+                        <q-tooltip>
+                            {{ _T('position') }}
+                        </q-tooltip>
+                    </q-btn>
+                </div>
+                <div class="col-4">
+                    <q-checkbox v-model="trapp.elements.chk_rotate_reverse">
+                        <q-icon name="360" size="sm"></q-icon>
+                        <q-tooltip>{{ _T("reverse pose") }}</q-tooltip>
+                    </q-checkbox>
+                </div>
+                <div class="col-4">
+                    <q-btn icon="follow_the_signs" size="md" :label="_T('refer_direction')"
+                        @click="transform_onchange('rotation')"
+                        :disable="trapp.states.disable"
+                    >
+                        <q-tooltip>
+                            {{ _T('refer_direction') }}
+                        </q-tooltip>
+                    </q-btn>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../lib/vue/vue.global.prod.js"></script>
+    <script src="../../lib/vue/vue-i18n.global.prod.js"></script>
+    <script src="../../lib/quasar/quasar.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/ja.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/eo.umd.prod.js"></script>
+    <script src="../../lib/quasar/lang/en-US.umd.prod.js"></script>
+    <script src="../../lib/localforage.min.js"></script>
+
+    <script src="../../js/util.js"></script>
+
+    <script src="../../js/client_cldtransref.js" type="module"></script>
+</body>
+</html>

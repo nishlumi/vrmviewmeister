@@ -1489,6 +1489,7 @@ export class appModelOperator {
             if (!isPropertyOnly) {
                 //this.mainData.states.selectedAvatar = selected.avatar;
                 this.mainData.states.selectedCast = role;
+                this.mainData.states.selectedBodyParts = "";
 
                 //---timeline change coloring(selecting)
                 if (role) {
@@ -3177,6 +3178,37 @@ export class appModelOperator {
             vrms : this.mainData.data.project.casts
         }));
     }
+    //----------------------------------------------------
+    //  easy-ui pose data functions
+    //----------------------------------------------------
+    async loadDefaultDataForEasyUI() {
+        var res = await fetch(this.mainData.appconf.confs.fileloader.easyik.sampleurl);
+        if (res.ok) {
+            this.mainData.elements.easybonetrandlg.defaultCSV = await res.text();
+        }
+    }
+
+    //-----------------------------------------------------
+    // Position/Rotation reference window functions
+    //-----------------------------------------------------
+    returnTransrefReloadBtn(data) {
+        if (this.mainData.states.selectedAvatar.id != data.avatarId) return;
+
+        AppDB.temp.setItem("transref_cast",JSON.original((this.mainData.states.selectedCast)));
+        AppDB.temp.setItem("transref_part",this.mainData.states.selectedBodyParts);
+        AppDB.temp.setItem("transref_avatars",JSON.original({list: this.mainData.data.project.casts}));
+    } 
+    //-----------------------------------------------------
+    // Easy IK mode window functions
+    //-----------------------------------------------------
+    returnEasyIKReloadBtn(data) {
+        if (this.mainData.states.selectedAvatar.id != data.avatarId) return;
+        if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) return;
+
+        AppDB.temp.setItem("easyik_avatar",JSON.original((this.mainData.states.selectedAvatar)));
+        AppDB.temp.setItem("easyik_sampleurl",this.mainData.appconf.confs.fileloader.easyik.sampleurl);
+        AppDB.temp.setItem("easyik_defaultcsv",this.mainData.elements.easybonetrandlg.defaultCSV);
+    } 
 }
 
 /**
@@ -3236,6 +3268,7 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
         }
         modelOperator.returnKeyframeWindowChangeTimeline();
         modelOperator.returnKeyFrameWindowTemporaryCastArray();
+        modelOperator.returnTransrefReloadBtn({avatarId:newval.id});
     });
     const wa_percentCurrent = Vue.watch(() => mainData.elements.percentLoad.current,(newval)=>{
         if (mainData.elements.percentLoad.current >= 1.0) {

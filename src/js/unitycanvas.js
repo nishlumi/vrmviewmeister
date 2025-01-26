@@ -3,13 +3,14 @@ import { VVAvatar, VVCast, VVTimelineTarget } from './prop/cls_vvavatar.js';
 import { StageType, DEFAULTMEM } from '../res/appconst.js';
 import { appModelOperator } from './model/operator.js';
 import { UnityCallbackFunctioner } from './model/callback.js';
+import { appMainData } from './prop/appmaindata.js';
 
 
 /**
  * 
  * @param {*} app app object
  * @param {*} Quasar Quasar object
- * @param {*} mainData mainDataData object
+ * @param {appMainData} mainData mainDataData object
  * @param {*} ribbonData appRibbonData object
  * @returns 
  */
@@ -338,6 +339,14 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
             "freecapture_unity2html",QD_INOUT.returnJS,
             callback.endingVRAR,
             {callback}
+        );
+        AppQueue.fixedList["saveCurrentIKMarker_unity2html"] = new queueData(
+            null,
+            "saveCurrentIKMarker_unity2html",QD_INOUT.returnJS,
+            (val) => {
+                mainData.states.selectedBodyParts = val;
+                AppDB.temp.setItem("transref_part",mainData.states.selectedBodyParts);
+            }
         );
     }
     /*

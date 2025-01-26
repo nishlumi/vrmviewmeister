@@ -56,11 +56,31 @@ const template = `
                     <q-tabs
                         v-model="appdata.elements.tab"
                     >
-                        <q-tab name="posture" icon="directions_walk"></q-tab>
-                        <q-tab name="gaze" icon="face_6"></q-tab>
-                        <q-tab name="arm" icon="waving_hand"></q-tab>
-                        <q-tab name="leg" icon="airline_seat_legroom_normal"></q-tab>
+                        <q-tab name="gaze">
+                            <img src="static/img/vvmtrans_eyeview.png" width="32" height="32">
+                        </q-tab>
                     </q-tabs>
+                    <q-tabs
+                        v-model="appdata.elements.tab"
+                    >
+                        <q-tab name="rightarm">
+                            <img src="static/img/vvmtrans_rightarm.png" width="32" height="32">
+                        </q-tab>
+                        <q-tab name="rightleg">
+                            <img src="static/img/vvmtrans_rightleg.png" width="32" height="32">
+                        </q-tab>
+
+                        <q-tab name="posture">
+                            <img src="static/img/vvmtrans_body.png" width="32" height="32">
+                        </q-tab>
+                        <q-tab name="leftleg">
+                            <img src="static/img/vvmtrans_leftleg.png" width="32" height="32">
+                        </q-tab>
+                        <q-tab name="leftarm">
+                            <img src="static/img/vvmtrans_leftarm.png" width="32" height="32">
+                        </q-tab>
+                    </q-tabs>
+                    
                     <q-tab-panels v-model="appdata.elements.tab" animated>
                         <q-tab-panel name="posture">
                             <q-select v-model="appdata.elements.postureBox.selected" 
@@ -77,37 +97,37 @@ const template = `
                                 filled 
                             ></q-select>
                         </q-tab-panel>
-                        <q-tab-panel name="arm">
-                            <q-select v-model="appdata.elements.armBox.selected" 
-                                :options="appdata.elements.armBox.options" 
-                                :label="$t('arm')"
-                                filled multiple max-values="2" counter
+                        <q-tab-panel name="rightarm">
+                            <q-select v-model="appdata.elements.rightArmBox.selected" 
+                                :options="appdata.elements.rightArmBox.options" 
+                                :label="$t('RightHand')"
+                                filled 
                             ></q-select>
                         </q-tab-panel>
-                        <q-tab-panel name="leg">
+                        <q-tab-panel name="leftarm">
+                            <q-select v-model="appdata.elements.armBox.selected" 
+                                :options="appdata.elements.armBox.options" 
+                                :label="$t('LeftHand')"
+                                filled 
+                            ></q-select>
+                        </q-tab-panel>
+                        <q-tab-panel name="rightleg">
+                            <q-select v-model="appdata.elements.rightLegBox.selected" 
+                                :options="appdata.elements.rightLegBox.options" 
+                                :label="$t('RightFoot')"
+                                filled
+                            ></q-select>
+                        </q-tab-panel>
+                        <q-tab-panel name="leftleg">
                             <q-select v-model="appdata.elements.legBox.selected" 
                                 :options="appdata.elements.legBox.options" 
-                                :label="$t('leg')"
-                                filled multiple max-values="2" counter
+                                :label="$t('LeftFoot')"
+                                filled 
                             ></q-select>
                         </q-tab-panel>
                     </q-tab-panels>
                 </template>
                 <template v-else>
-                    
-                    <div class="row q-mb-sm">
-                        
-                        <div class="col-12">
-                            <q-select v-model="appdata.elements.postureBox.selected" 
-                                :options="appdata.elements.postureBox.options" 
-                                :label="$t('posture')"
-                                filled 
-                                @update:model-value="posturebox_onchange"
-                            ><template v-slot:prepend>
-                                <q-icon name="directions_walk"></q-icon>
-                            </template></q-select>
-                        </div>
-                    </div>
                     <div class="row q-mb-sm">
                         <div class="col-12">
                             <q-select v-model="appdata.elements.eyeBox.selected" 
@@ -115,7 +135,30 @@ const template = `
                                 :label="$t('gaze')"
                                 filled 
                             ><template v-slot:prepend>
-                                <q-icon name="face_6"></q-icon>
+                                <img src="static/img/vvmtrans_eyeview.png" width="32" height="32">
+                            </template></q-select>
+                        </div>
+                    </div>
+                    <div class="row q-mb-sm">                        
+                        <div class="col-12">
+                            <q-select v-model="appdata.elements.postureBox.selected" 
+                                :options="appdata.elements.postureBox.options" 
+                                :label="$t('posture')"
+                                filled 
+                                @update:model-value="posturebox_onchange"
+                            ><template v-slot:prepend>
+                                <img src="static/img/vvmtrans_body.png" width="32" height="32">
+                            </template></q-select>
+                        </div>
+                    </div>
+                    <div class="row q-mb-sm">                        
+                        <div class="col-12">
+                            <q-select v-model="appdata.elements.rightArmBox.selected" 
+                                :options="appdata.elements.rightArmBox.options" 
+                                :label="$t('RightHand')"
+                                filled 
+                            ><template v-slot:prepend>
+                                <img src="static/img/vvmtrans_rightarm.png" width="32" height="32">
                             </template></q-select>
                         </div>
                     </div>
@@ -123,10 +166,21 @@ const template = `
                         <div class="col-12">
                             <q-select v-model="appdata.elements.armBox.selected" 
                                 :options="appdata.elements.armBox.options" 
-                                :label="$t('arm')"
-                                filled multiple max-values="2" counter
+                                :label="$t('LeftHand')"
+                                filled 
                             ><template v-slot:prepend>
-                                <q-icon name="waving_hand"></q-icon>                        
+                                <img src="static/img/vvmtrans_leftarm.png" width="32" height="32">
+                            </template></q-select>
+                        </div>
+                    </div>
+                    <div class="row q-mb-sm">                        
+                        <div class="col-12">
+                            <q-select v-model="appdata.elements.rightLegBox.selected" 
+                                :options="appdata.elements.rightLegBox.options" 
+                                :label="$t('RightFoot')"
+                                filled 
+                            ><template v-slot:prepend>
+                                <img src="static/img/vvmtrans_rightleg.png" width="32" height="32">
                             </template></q-select>
                         </div>
                     </div>
@@ -134,10 +188,10 @@ const template = `
                         <div class="col-12">
                             <q-select v-model="appdata.elements.legBox.selected" 
                                 :options="appdata.elements.legBox.options" 
-                                :label="$t('leg')"
-                                filled multiple max-values="2" counter
+                                :label="$t('LeftFoot')"
+                                filled 
                             ><template v-slot:prepend>
-                                <q-icon name="airline_seat_legroom_normal"></q-icon>                            
+                                <img src="static/img/vvmtrans_leftleg.png" width="32" height="32">
                             </template></q-select>
                         </div>
                     </div>
@@ -198,7 +252,7 @@ export class BaseData {
                     bottom : "-9999px",
                     right : "-9999px",
                     width : "280px",
-                    height : "450px",
+                    height : "520px",
                     zIndex : 5003,
                     backgroundColor : "#FFFFFF"
                 },
@@ -247,7 +301,15 @@ export class BaseData {
             legBox : {
                 options : [{label:"---",value:null}],
                 selected : null
-            }
+            },
+            rightArmBox : {
+                options : [{label:"---",value:null}],
+                selected : null
+            },
+            rightLegBox : {
+                options : [{label:"---",value:null}],
+                selected : null
+            },
         }
         this.data = {
             easySelectList : new EasySelectList(),
@@ -274,13 +336,17 @@ export function defineEasyBoneTranDlg(app, Quasar) {
             sampleUrl : {
                 type: String,
                 default: ""
+            },
+            defaultCsv: {
+                type: String,
+                default: []
             }
         },
         emits : [
             "update:model-value"
         ],
         setup(props, context) {
-            const {modelValue, avatar, sampleUrl } = Vue.toRefs(props);
+            const {modelValue, avatar, sampleUrl, defaultCsv } = Vue.toRefs(props);
             const { t, locale  } = VueI18n.useI18n({ useScope: 'global' });
 
 
@@ -307,11 +373,11 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     if (Quasar.Screen.xs) {
                         appdata.elements.win.styles.width = `${Quasar.Screen.width * 0.95}px`;
                     }else{
-                        appdata.elements.win.styles.width = "280px";
+                        appdata.elements.win.styles.width = "370px";
                     }
                     appdata.elements.win.styles["max-height"] = `${Quasar.Screen.height * 0.95}px`;
                     //---UI is mobile mode, then window size fixed.
-                    appdata.elements.win.styles.height = "270px";
+                    appdata.elements.win.styles.height = "330px";
                 }else{
                     appdata.elements.win.styles.bottom = "0px";
                 }
@@ -328,7 +394,14 @@ export function defineEasyBoneTranDlg(app, Quasar) {
             });
             const wa_show = Vue.watch(() => show.value, (newval) => {
                 if (newval) {
-                    defaultbtn_onclick();
+                    if (defaultCsv.value == "") {
+                        //---if this windo only
+                        defaultbtn_onclick();
+                    }else{
+                        //---load from app start
+                        reloadDefaultDataForFirst(defaultCsv.value);
+                    }
+                    
                     reload_onclick();
 
                 }
@@ -396,7 +469,7 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                         //---col 1 : kind,posture
                         var postureIndex = parseInt(line[0]);
                         if (isNaN(postureIndex)) throw new Error("posture,error,nan");
-                        if ((postureIndex < 0) || (postureIndex > 3)) throw new Error("posture,error,range");
+                        if ((postureIndex < 0) || (postureIndex > 5)) throw new Error("posture,error,range");
 
                         if (line.length < 110) throw new Error("parts,error,range");
 
@@ -502,6 +575,30 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     }
                     
                 }
+                //---right arm
+                arms = appdata.data.easySelectList.arealist.filter(v => {
+                    if ((v.posture == 4) && ((locale.value.indexOf(v.lang) > -1) || (v.lang == ""))) return true;
+                    return false;
+                });
+                appdata.elements.rightArmBox.options.splice(0, appdata.elements.rightArmBox.options.length);
+                appdata.elements.rightArmBox.options.push({label:"---",value:null});
+                for (var o of arms) {
+                    appdata.elements.rightArmBox.options.push( {
+                        label: o.name,
+                        value : o
+                    });
+                }
+                //---reload current select data
+                if (appdata.elements.rightArmBox.selected) {
+                    for (var o = 0; o < appdata.elements.rightArmBox.selected.length; o++) {
+                        var ishit = appdata.elements.rightArmBox.options.find(v => {
+                            if (v.label == appdata.elements.rightArmBox.selected[o].label) return true;
+                            return false;
+                        });
+                        if(ishit) appdata.elements.rightArmBox.selected[o].value = ishit.value;
+                    }
+                    
+                }
                 
 
                 //---leg
@@ -528,44 +625,76 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     }
                     
                 }
+                //---right leg
+                legs = appdata.data.easySelectList.arealist.filter(v => {
+                    if ((v.posture == 5) && ((locale.value.indexOf(v.lang) > -1) || (v.lang == ""))) return true;
+                    return false;
+                });
+                appdata.elements.rightLegBox.options.splice(0, appdata.elements.rightLegBox.options.length);
+                appdata.elements.rightLegBox.options.push({label:"---",value:null});
+                for (var o of legs) {
+                    appdata.elements.rightLegBox.options.push( {
+                        label: o.name,
+                        value : o
+                    });
+                }
+                //---reload current select data
+                if (appdata.elements.rightLegBox.selected) {
+                    for (var o = 0; o < appdata.elements.rightLegBox.selected.length; o++) {
+                        var ishit = appdata.elements.rightLegBox.options.find(v => {
+                            if (v.label == appdata.elements.rightLegBox.selected[o].label) return true;
+                            return false;
+                        });
+                        if (ishit) appdata.elements.rightLegBox.selected[o].value = ishit.value;
+                    }
+                    
+                }
                 
 
             }
             /**
              * 
-             * @param {AvatarSingleIKTransform[]} list 
+             * @param {AvatarSingleIKTransform[]} list reload data
+             * @param {String[]} targets target bones to reload
              */
-            const reloadMathScope = (list) => {
+            const reloadMathScope = (list, targets = []) => {
                 if (list.length > 0) {
                     appdata.data.mathScope = null;
                     appdata.data.mathScope = {};
 
                     for (var i = 0; i < PARTS_LABEL.length; i++) {
                         const PLABEL = PARTS_LABEL[i];
-    
-                        for (var v of list) {
-                            if (PLABEL.toLowerCase().indexOf(v.ikname.toLowerCase()) > -1) {
-                                if (PLABEL.toLowerCase().indexOf("pos_x") > -1) {
-                                    appdata.data.mathScope[PLABEL] = v.position.x;
-                                }
-                                else if (PLABEL.toLowerCase().indexOf("pos_y") > -1) {
-                                    appdata.data.mathScope[PLABEL] = v.position.y;
-                                }
-                                else if (PLABEL.toLowerCase().indexOf("pos_z") > -1) {
-                                    appdata.data.mathScope[PLABEL] = v.position.z;
-                                }
-                                else if (PLABEL.toLowerCase().indexOf("rot_x") > -1) {
-                                    appdata.data.mathScope[PLABEL] = v.rotation.x;
-                                }
-                                else if (PLABEL.toLowerCase().indexOf("rot_y") > -1) {
-                                    appdata.data.mathScope[PLABEL] = v.rotation.y;
-                                }
-                                else if (PLABEL.toLowerCase().indexOf("rot_z") > -1) {
-                                    appdata.data.mathScope[PLABEL] = v.rotation.z;
-                                }
-                                
+
+                        var ishit = true; //default is all bones
+                        //---if receive target bones, reload target bones only.
+                        if (targets.length > 0) {
+                            ishit = targets.findIndex(PLABEL.split("_")[0]);
+                        }
+
+                        if (ishit) {
+                            for (var v of list) {
+                                if (PLABEL.toLowerCase().indexOf(v.ikname.toLowerCase()) > -1) {
+                                    if (PLABEL.toLowerCase().indexOf("pos_x") > -1) {
+                                        appdata.data.mathScope[PLABEL] = v.position.x;
+                                    }
+                                    else if (PLABEL.toLowerCase().indexOf("pos_y") > -1) {
+                                        appdata.data.mathScope[PLABEL] = v.position.y;
+                                    }
+                                    else if (PLABEL.toLowerCase().indexOf("pos_z") > -1) {
+                                        appdata.data.mathScope[PLABEL] = v.position.z;
+                                    }
+                                    else if (PLABEL.toLowerCase().indexOf("rot_x") > -1) {
+                                        appdata.data.mathScope[PLABEL] = v.rotation.x;
+                                    }
+                                    else if (PLABEL.toLowerCase().indexOf("rot_y") > -1) {
+                                        appdata.data.mathScope[PLABEL] = v.rotation.y;
+                                    }
+                                    else if (PLABEL.toLowerCase().indexOf("rot_z") > -1) {
+                                        appdata.data.mathScope[PLABEL] = v.rotation.z;
+                                    }
+                                    
+                                }   
                             }
-                            
                         }
                     }
                 }
@@ -575,6 +704,7 @@ export function defineEasyBoneTranDlg(app, Quasar) {
             /**
              * 
              * @param {EasySelectRow} calcdata 
+             * @returns {AvatarSingleIKTransform[]} new current transform data.
              */
             const analyzeCalculation = (calcdata) => {
                 //---retrive T-pose data
@@ -667,6 +797,15 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 //---
                 return lists;
             }
+            /**
+             * load default csv data at first.
+             * @param {String} csvtext csv text data
+             */
+            const reloadDefaultDataForFirst = (csvtext) => {
+                loadData(csvtext);
+                applyDataToUI();
+                appdata.elements.header.btndisable = false;
+            }
 
             //---events--------------------------------------------------------------
             const close_onclick = () => {
@@ -749,24 +888,43 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                         reloadMathScope(lists);
                     }
                     
-                    if (appdata.elements.armBox.selected && (appdata.elements.armBox.selected.length > 0)) {
-                        for (var o of appdata.elements.armBox.selected) {
+                    if (appdata.elements.armBox.selected && (appdata.elements.armBox.selected.value)) {
+                        {
+                            var o = appdata.elements.armBox.selected;
                             if (o.value) {
                                 lists = analyzeCalculation(o.value);
                                 reloadMathScope(lists);
                             }
                         }
-                        
                     }
-                    if (appdata.elements.legBox.selected && (appdata.elements.legBox.selected.length > 0)) {
-                        for (var o of appdata.elements.legBox.selected) {
+                    if (appdata.elements.rightArmBox.selected && (appdata.elements.rightArmBox.selected.value)) {
+                        {
+                            var o = appdata.elements.rightArmBox.selected;
+                            if (o.value) {
+                                lists = analyzeCalculation(o.value);
+                                reloadMathScope(lists);
+                            }
+                        }
+                    }
+                    if (appdata.elements.legBox.selected && (appdata.elements.legBox.selected.value)) {
+                        {
+                            var o = appdata.elements.legBox.selected;
                             if (o.value) {
                                 lists = analyzeCalculation(o.value);
                                 reloadMathScope(lists);
                             }
                             
                         }
-                        
+                    }
+                    if (appdata.elements.rightLegBox.selected && (appdata.elements.rightLegBox.selected.value)) {
+                        {
+                            var o = appdata.elements.rightLegBox.selected;
+                            if (o.value) {
+                                lists = analyzeCalculation(o.value);
+                                reloadMathScope(lists);
+                            }
+                            
+                        }
                     }
     
                     var param = JSON.stringify({
@@ -787,17 +945,25 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                             {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:1},
                             "",QD_INOUT.toUNITY,
                             null
-                        ));
-                        
-                        
-                        
+                        ));                                                                        
                     }
                 }
 
                 //---decide start pose data
                 if (appdata.elements.initialpose.useTPose === true) {
-                    reloadMathScope(appdata.data.TPose.list);
-                    apply_body();
+                    if (appdata.data.TPose) {
+                        reloadMathScope(appdata.data.TPose.list);
+                        apply_body();
+                    }else{
+                        Quasar.Notify.create({
+                            message : t("msg_error_tposedata"), 
+                            position : "top-right",
+                            color : "info",
+                            textColor : "black",
+                            timeout : 1000, 
+                            multiLine : true
+                        });
+                    }
                 }else{
                     
                     AppQueue.add(new queueData(
@@ -879,6 +1045,8 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 appdata.elements.eyeBox.selected = {label:"---",value:null};
                 appdata.elements.armBox.selected = [];
                 appdata.elements.legBox.selected = [];
+                appdata.elements.rightArmBox.selected = [];
+                appdata.elements.rightLegBox.selected = [];
             }
 
             return {

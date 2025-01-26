@@ -78,6 +78,22 @@ export class ChildManager {
                 var js = JSON.parse(data.data);
                 this.gravitybone_reload_onclick(js);
             }
+        }else if (data.windowName == "transref") {
+            var js = JSON.parse(data.data);
+            if (data.funcName == "call_setpositionikmarker") {
+                this.transref_position_onchange(js);
+            }else if (data.funcName == "call_setrotationikmarker") {
+                this.transref_rotation_onchange(js);
+            }
+        }else if (data.windowName == "easyik") {
+            var js = JSON.parse(data.data);
+            if (data.funcName == "easyik_apply_curpose") {
+                this.easyik_apply_onclick_curpose(js);
+            }else if (data.funcName == "easyik_apply_apply") {
+                this.easyik_apply_onclick_applybody(js);
+            }else if (data.funcName == "easyik_reload_onclick") {
+                this.easyik_reload_onclick(js);
+            }
         }
     }
     //----------------------------------------------------------------------------------------------------
@@ -914,6 +930,98 @@ export class ChildManager {
             (val) => {
                 var js = JSON.parse(val);
                 AppDB.temp.setItem("grapp_list_gravitybone",js);
+            }
+        ));
+        AppQueue.start();
+    }
+    //----------------------------------------------------------------------------------------------------
+    // Position/Rotation Refernce window
+    //----------------------------------------------------------------------------------------------------
+    transref_position_onchange(param) {
+        AppQueue.add(new queueData(
+            {target:param.avatarId,method:'SetPositionIKMarkerFromOuter',param:param.param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    transref_rotation_onchange(param) {
+        AppQueue.add(new queueData(
+            {target:param.avatarId,method:'SetRotationIKMarkerFromOuter',param:param.param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    //----------------------------------------------------------------------------------------------------
+    // Easy IK mode window
+    //----------------------------------------------------------------------------------------------------
+    easyik_apply_onclick_curpose(param) {
+        AppQueue.add(new queueData(
+            {target:param.avatarId,method:'GetIKTransformAll'},
+            "alliktransform",QD_INOUT.returnJS,
+            (val) => {
+                /**
+                 * @type {AvatarAllIKParts}
+                 */
+                var js = JSON.parse(val);
+
+                AppDB.temp.setItem("easyik_return_allikparts",js);
+            }
+        ));
+        AppQueue.start();
+    }
+    easyik_apply_onclick_applybody(param) {
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:0},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:param.avatarId,method:'SetIKTransformAll',param:param.param},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:1},
+            "",QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.start();
+    }
+    easyik_reload_onclick(param) {
+        AppQueue.add(new queueData(
+            {target:param.avatarId,method:'GetIKTransformAll'},
+            "alliktransform",QD_INOUT.returnJS,
+            (val) => {
+                /**
+                 * @type {AvatarAllIKParts}
+                 */
+                var js = JSON.parse(val);
+
+                AppDB.temp.setItem("easyik_return_reloadikparts",js);
+
+                
+                
+            }
+        ));
+        //---default T-pose data
+        AppQueue.add(new queueData(
+            {target:param.avatarId,method:'GetTPoseIKTransformAll'},
+            "tposetransform",QD_INOUT.returnJS,
+            (val) => {
+                /**
+                 * @type {AvatarAllIKParts}
+                 */
+                var js = JSON.parse(val);
+                AppDB.temp.setItem("easyik_return_reload_tposeikparts",js);
+
+                appdata.data.TPose = js;
+
+                //---set scope data for math.js
+                //   {"Pelvis_pos_x" : 0.5, ...}
+                //reloadMathScope(appdata.data.bodyList.list);
+                
             }
         ));
         AppQueue.start();

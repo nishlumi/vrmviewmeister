@@ -31,7 +31,9 @@ function createWindow() {
             (url.indexOf("static/win/mp/") > -1) ||
             (url.indexOf("static/win/pose/") > -1) || 
             (url.indexOf("static/win/vplayer/") > -1) ||
-            (url.indexOf("static/win/keyframe/") > -1)
+            (url.indexOf("static/win/keyframe/") > -1) ||
+            (url.indexOf("static/win/transref/") > -1) ||
+            (url.indexOf("static/win/easybonetran/") > -1)
         ) {
             //---example: window.open
             return {

@@ -37,6 +37,7 @@ import { definePoseMotionDlg } from "./posedlg.js";
 import { defineCaptureDlg } from "./capturedlg.js";
 import { defineTearchManagerDlg } from "./teachman.js";
 import { defineEasyBoneTranDlg } from "./easybonetran.js";
+import { defineTransformRefDlg } from "./transformrefdlg.js";
 
 var loc = localStorage.getItem("appLocale");
 //loc = await AppDB.app.getItem("appLocale");
@@ -263,6 +264,8 @@ const app = Vue.createApp({
         
                 modelLoader.schedulingBackup();
                 
+                //---load easy-ui data
+                modelOperator.loadDefaultDataForEasyUI();
                 
             });
 
@@ -499,6 +502,7 @@ definePoseMotionDlg(app, Quasar);
 defineCaptureDlg(app, Quasar);
 defineTearchManagerDlg(app, Quasar);
 defineEasyBoneTranDlg(app, Quasar);
+defineTransformRefDlg(app, Quasar);
 
 app.use(i18n);
 //---Start app

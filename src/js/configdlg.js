@@ -1,5 +1,5 @@
 import { DEFAULTMEM } from "../res/appconst.js";
-import { VVAppConfig } from "./appconf.js";
+import { VVAppConfig, VVConfigTemplate } from "./appconf.js";
 
 const template = `
 <q-dialog v-model="show" persistent full-width full-height style="max-width:600px;max-height:700px;">
@@ -149,7 +149,13 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.application.is_externalwin_bonetran" :label="$t('msg_is_externalwin_bonetran')"></q-checkbox>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <q-checkbox v-model="appconf.confs.application.is_externaiwin_gravitybone" :label="$t('msg_is_externaiwin_gravitybone')"></q-checkbox>
+                                        <q-checkbox v-model="appconf.confs.application.is_externalwin_gravitybone" :label="$t('msg_is_externalwin_gravitybone')"></q-checkbox>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <q-checkbox v-model="appconf.confs.application.is_externalwin_transref" :label="$t('msg_is_externalwin_transref')"></q-checkbox>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <q-checkbox v-model="appconf.confs.application.is_externalwin_easyik" :label="$t('msg_is_externalwin_easyik')"></q-checkbox>
                                     </div>
                                 </div>
                                 <q-separator class="q-mt-sm q-mb-md"></q-separator>
@@ -231,7 +237,12 @@ const template = `
                                 <div class="col-12 q-pt-sm">
                                     <span>{{ $t('easyik sampleurl') }}</span>
                                 </div>
-                                <div class="col-11 offset-1">
+                                <div class="col-1">
+                                    <q-btn round icon="restart_alt" color="primary" @click="easyIkModeURL_reset_onclick">
+                                        <q-tooltip>Reset</q-tooltip>
+                                    </q-btn>
+                                </div>
+                                <div class="col-11">
                                     <q-input v-model="appconf.confs.fileloader.easyik.sampleurl" type="text" dense></q-input>
                                 </div>
                             </div>
@@ -853,6 +864,10 @@ export function defineConfigDlg(app, Quasar) {
             const fileloader_isName_OnChange = (val) => {
 
             }
+            const easyIkModeURL_reset_onclick = () => {
+                const tmpcon = new VVConfigTemplate();
+                appconf.value.confs.fileloader.easyik.sampleurl = tmpcon.fileloader.easyik.sampleurl;
+            }
 
             return {
                 show, tabIndex, appconf, elements,
@@ -863,6 +878,7 @@ export function defineConfigDlg(app, Quasar) {
                 //---method---
                 ok_onclick,cancel_onclick,historyClear_onclick,
                 vrarctrl_panel_left_onchange,vrarctrl_panel_right_onchange,
+                easyIkModeURL_reset_onclick,
             }
         }
     });

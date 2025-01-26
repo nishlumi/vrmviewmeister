@@ -14,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.14.2",
-            revision : "20241214-01",
+            version : "2.15.0",
+            revision : "20250126-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -206,12 +206,16 @@ export class appMainData {
                 easying : UserAnimationEase.Unset,
                 show : false,
             },
+            transformrefdlg : {
+                show : false
+            },
             bonetrandlg : {
                 show : false,
                 
             },
             easybonetrandlg : {
                 show : false,
+                defaultCSV: "",
             },
             gravitybonedlg : {
                 show : false
@@ -440,6 +444,8 @@ export class appMainData {
             win_bonetransform : null,
             win_keyframe : null,
             win_gravitybone: null,
+            win_transref: null,
+            win_easyikmode: null,
             footer : true
         };
         this.states = {
@@ -447,6 +453,12 @@ export class appMainData {
              * @type {VVAvatar}
              */
             selectedAvatar : null,
+
+            /**
+             * VRM's body parts IK-Marker
+             * @type {String}
+             */
+            selectedBodyParts: "",
             
             old_selectedAvatar : null,
 

@@ -277,6 +277,33 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         }
         
     }
+    const rightdrawer_transformrefdlg_opened = async () => {
+        
+        if (mainData.appconf.confs.application.is_externalwin_transref === true) {
+            modelOperator.returnTransrefReloadBtn({avatarId: mainData.states.selectedAvatar.id});
+
+            if (mainData.elements.win_transref && !mainData.elements.win_transref.closed) {
+    
+            }else{
+                mainData.elements.win_transref = window.open("./static/win/transref/index.html",
+                    "transref",
+                    "width=320,height=340,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                );
+            }
+    
+            if (VFileHelper.checkNativeAPI) { 
+                var title = mainData.elements.win_transref.document.title
+                await window.elecAPI.focusWindow(title);
+            }else{
+                mainData.elements.win_transref.blur();
+                window.focus();
+                window.blur();
+                mainData.elements.win_transref.focus();
+            }
+        }else{
+            mainData.elements.transformrefdlg.show = !mainData.elements.transformrefdlg.show;
+        }
+    }
     const getCurrentModeSize = (w, h) => {
         if ((Quasar.Screen.name == "sm") ||
             (Quasar.Screen.name == "xs")
@@ -669,7 +696,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             }else{
                 mainData.elements.win_bonetransform = window.open("./static/win/bonetran/index.html",
                     "bonetran",
-                    "width=865,height=500,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                    "width=970,height=500,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
                 );
             }
     
@@ -688,11 +715,35 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     
     }
     const OnClicked_easyBoneTran = async () => {
-        mainData.elements.easybonetrandlg.show = true;
+        //mainData.elements.easybonetrandlg.show = true;
+        if (mainData.appconf.confs.application.is_externalwin_easyik === true) {
+            modelOperator.returnEasyIKReloadBtn({avatarId: mainData.states.selectedAvatar.id});
+
+            if (mainData.elements.win_easyikmode && !mainData.elements.win_easyikmode.closed) {
+    
+            }else{
+                mainData.elements.win_easyikmode = window.open("./static/win/easybonetran/index.html",
+                    "easybonetran",
+                    "width=320,height=550,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                );
+            }
+    
+            if (VFileHelper.checkNativeAPI) { 
+                var title = mainData.elements.win_easyikmode.document.title
+                await window.elecAPI.focusWindow(title);
+            }else{
+                mainData.elements.win_easyikmode.blur();
+                window.focus();
+                window.blur();
+                mainData.elements.win_easyikmode.focus();
+            }
+        }else{
+            mainData.elements.easybonetrandlg.show = true;
+        }
     }
     const OnClicked_editGravity = async () => {
 
-        if (mainData.appconf.confs.application.is_externaiwin_gravitybone === true) {
+        if (mainData.appconf.confs.application.is_externalwin_gravitybone === true) {
             modelOperator.returnGravityBoneReloadBtn({avatarId: mainData.states.selectedAvatar.id});
 
             if (mainData.elements.win_gravitybone && !mainData.elements.win_gravitybone.closed) {
@@ -2684,6 +2735,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             wa_materialNameSelected,
             //---events-------------------------
             rightdrawer_minimize,getCurrentModeSize,setupMobileSize,
+            rightdrawer_transformrefdlg_opened,
             OnChange_Position3D,OnChange_Rotation3D,OnChange_Scale3D,
             OnChange_Position2D,OnChange_Rotation2D,OnChange_Scale2D,OnChange_Size2D,
             OnChange_JumpNum,OnChange_JumpPower,OnChange_PunchColumn,OnChange_ShakeColumn,

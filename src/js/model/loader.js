@@ -839,6 +839,11 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         }else{
             mainData.states.inputman.enabled = false;
         }
+        if (mainData.appconf.confs.fileloader.easyik.sampleurl != "") {
+            modelOperator.loadDefaultDataForEasyUI();
+        }else{
+            mainData.elements.easybonetrandlg.defaultCSV = "";
+        }
 
         //---backup functions
         schedulingBackup();

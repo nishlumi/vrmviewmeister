@@ -1,5 +1,5 @@
 /*!
- * Quasar Framework v2.16.9
+ * Quasar Framework v2.17.7
  * (c) 2015-present Razvan Stoenescu
  * Released under the MIT License.
  */
@@ -48,7 +48,42 @@
   }
   var hasTouch = false ? false : "ontouchstart" in window || window.navigator.maxTouchPoints > 0;
   function getPlatform(UA) {
-    const userAgent2 = UA.toLowerCase(), platformMatch = getPlatformMatch(userAgent2), matched = getMatch(userAgent2, platformMatch), browser = {};
+    const userAgent2 = UA.toLowerCase();
+    const platformMatch = getPlatformMatch(userAgent2);
+    const matched = getMatch(userAgent2, platformMatch);
+    const browser = {
+      mobile: false,
+      desktop: false,
+      cordova: false,
+      capacitor: false,
+      nativeMobile: false,
+      // nativeMobileWrapper: void 0,
+      electron: false,
+      bex: false,
+      linux: false,
+      mac: false,
+      win: false,
+      cros: false,
+      chrome: false,
+      firefox: false,
+      opera: false,
+      safari: false,
+      vivaldi: false,
+      edge: false,
+      edgeChromium: false,
+      ie: false,
+      webkit: false,
+      android: false,
+      ios: false,
+      ipad: false,
+      iphone: false,
+      ipod: false,
+      kindle: false,
+      winphone: false,
+      blackberry: false,
+      playbook: false,
+      silk: false
+    };
     if (matched.browser) {
       browser[matched.browser] = true;
       browser.version = matched.version;
@@ -751,19 +786,13 @@
     install({ $q }) {
       if (this.__installed === true) return;
       const { cordova: cordova2, capacitor } = client.is;
-      if (cordova2 !== true && capacitor !== true) {
-        return;
-      }
+      if (cordova2 !== true && capacitor !== true) return;
       const qConf = $q.config[cordova2 === true ? "cordova" : "capacitor"];
-      if (qConf !== void 0 && qConf.backButton === false) {
-        return;
-      }
+      if (qConf !== void 0 && qConf.backButton === false) return;
       if (
         // if we're on Capacitor mode
         capacitor === true && (window.Capacitor === void 0 || window.Capacitor.Plugins.App === void 0)
-      ) {
-        return;
-      }
+      ) return;
       this.add = (entry) => {
         if (entry.condition === void 0) {
           entry.condition = getTrue;
@@ -1349,7 +1378,7 @@
   }
   var install_quasar_default = false ? function(parentApp, opts = {}, ssrContext) {
     const $q = {
-      version: "2.16.9",
+      version: "2.17.7",
       config: opts.config || {}
     };
     Object.assign(ssrContext, {
@@ -1379,7 +1408,7 @@
       ssrContext
     });
   } : function(parentApp, opts = {}) {
-    const $q = { version: "2.16.9" };
+    const $q = { version: "2.17.7" };
     if (globalConfigIsFrozen === false) {
       if (opts.config !== void 0) {
         Object.assign(globalConfig, opts.config);
@@ -1857,7 +1886,7 @@
   var imgRE = /^img:/;
   var svgUseRE = /^svguse:/;
   var ionRE = /^ion-/;
-  var faRE = /^(fa-(sharp|solid|regular|light|brands|duotone|thin)|[lf]a[srlbdk]?) /;
+  var faRE = /^(fa-(classic|sharp|solid|regular|light|brands|duotone|thin)|[lf]a[srlbdk]?) /;
   var QIcon_default = createComponent({
     name: "QIcon",
     props: {
@@ -2545,9 +2574,7 @@
     elements.forEach((el) => css(el, style2));
   }
   function ready(fn) {
-    if (typeof fn !== "function") {
-      return;
-    }
+    if (typeof fn !== "function") return;
     if (document.readyState !== "loading") {
       return fn();
     }
@@ -2658,9 +2685,7 @@
       name: "ripple",
       beforeMount(el, binding) {
         const cfg = binding.instance.$.appContext.config.globalProperties.$q.config || {};
-        if (cfg.ripple === false) {
-          return;
-        }
+        if (cfg.ripple === false) return;
         const ctx = {
           cfg,
           enabled: binding.value !== false,
@@ -2946,9 +2971,7 @@
       function onClick(e) {
         if (rootRef.value === null) return;
         if (e !== void 0) {
-          if (e.defaultPrevented === true) {
-            return;
-          }
+          if (e.defaultPrevented === true) return;
           const el = document.activeElement;
           if (props4.type === "submit" && el !== document.body && rootRef.value.contains(el) === false && el.contains(rootRef.value) === false) {
             rootRef.value.focus();
@@ -3010,9 +3033,7 @@
       }
       function onPressEnd(e) {
         if (rootRef.value === null) return;
-        if (e !== void 0 && e.type === "blur" && document.activeElement === rootRef.value) {
-          return;
-        }
+        if (e !== void 0 && e.type === "blur" && document.activeElement === rootRef.value) return;
         if (e !== void 0 && e.type === "keyup") {
           if (keyboardTarget === rootRef.value && isKeyCode(e, [13, 32]) === true) {
             const evt = new MouseEvent("click", e);
@@ -3225,9 +3246,7 @@
         prevent,
         mobileTouch(evt) {
           anchorEvents.mobileCleanup(evt);
-          if (canShow(evt) !== true) {
-            return;
-          }
+          if (canShow(evt) !== true) return;
           proxy.hide(evt);
           anchorEl.value.classList.add("non-selectable");
           const target2 = evt.target;
@@ -3419,9 +3438,7 @@
       }
     }
     function show(evt) {
-      if (props4.disable === true || evt !== void 0 && evt.qAnchorHandled === true || canShow !== void 0 && canShow(evt) !== true) {
-        return;
-      }
+      if (props4.disable === true || evt !== void 0 && evt.qAnchorHandled === true || canShow !== void 0 && canShow(evt) !== true) return;
       const listener = props4["onUpdate:modelValue"] !== void 0;
       if (listener === true && true) {
         emit("update:modelValue", true);
@@ -3437,9 +3454,7 @@
       }
     }
     function processShow(evt) {
-      if (showing.value === true) {
-        return;
-      }
+      if (showing.value === true) return;
       showing.value = true;
       emit("beforeShow", evt);
       if (handleShow !== void 0) {
@@ -3449,9 +3464,7 @@
       }
     }
     function hide(evt) {
-      if (props4.disable === true) {
-        return;
-      }
+      if (props4.disable === true) return;
       const listener = props4["onUpdate:modelValue"] !== void 0;
       if (listener === true && true) {
         emit("update:modelValue", false);
@@ -3467,9 +3480,7 @@
       }
     }
     function processHide(evt) {
-      if (showing.value === false) {
-        return;
-      }
+      if (showing.value === false) return;
       showing.value = false;
       emit("beforeHide", evt);
       if (handleHide !== void 0) {
@@ -3558,9 +3569,7 @@
     el.remove();
   }
   function changeGlobalNodesTarget(newTarget) {
-    if (newTarget === target) {
-      return;
-    }
+    if (newTarget === target) return;
     target = newTarget;
     if (target === document.body || portalTypeList.reduce((acc, type) => type === "dialog" ? acc + 1 : acc, 0) < 2) {
       nodesList.forEach((node) => {
@@ -3772,7 +3781,7 @@
     return {
       removeTimeout,
       registerTimeout(fn, delay) {
-        removeTimeout(timer2);
+        removeTimeout();
         if (vmIsDestroyed(vm2) === false) {
           timer2 = setTimeout(() => {
             timer2 = null;
@@ -3999,9 +4008,7 @@
       timer = null;
     }
     const target2 = evt.target;
-    if (target2 === void 0 || target2.nodeType === 8 || target2.classList.contains("no-pointer-events") === true) {
-      return;
-    }
+    if (target2 === void 0 || target2.nodeType === 8 || target2.classList.contains("no-pointer-events") === true) return;
     let portalIndex2 = portalProxyList.length - 1;
     while (portalIndex2 >= 0) {
       const proxy = portalProxyList[portalIndex2].$;
@@ -4012,9 +4019,7 @@
       if (proxy.type.name !== "QDialog") {
         break;
       }
-      if (proxy.props.seamless !== true) {
-        return;
-      }
+      if (proxy.props.seamless !== true) return;
       portalIndex2--;
     }
     for (let i = registeredList.length - 1; i >= 0; i--) {
@@ -4153,9 +4158,7 @@
     };
   }
   function setPosition(cfg, retryNumber = 0) {
-    if (cfg.targetEl === null || cfg.anchorEl === null || retryNumber > 5) {
-      return;
-    }
+    if (cfg.targetEl === null || cfg.anchorEl === null || retryNumber > 5) return;
     if (cfg.targetEl.offsetHeight === 0 || cfg.targetEl.offsetWidth === 0) {
       setTimeout(() => {
         setPosition(cfg, retryNumber + 1);
@@ -4193,8 +4196,8 @@
       left: 0,
       minWidth: null,
       minHeight: null,
-      maxWidth: maxWidth || "100vw",
-      maxHeight: maxHeight || "100vh",
+      maxWidth,
+      maxHeight,
       visibility: "visible"
     });
     const { offsetWidth: origElWidth, offsetHeight: origElHeight } = targetEl;
@@ -5066,9 +5069,7 @@
     false ? { name: "touch-swipe", getSSRProps: noop_ssr_directive_transform_default } : {
       name: "touch-swipe",
       beforeMount(el, { value: value2, arg, modifiers }) {
-        if (modifiers.mouse !== true && client.has.touch !== true) {
-          return;
-        }
+        if (modifiers.mouse !== true && client.has.touch !== true) return;
         const mouseCapture = modifiers.mouseCapture === true ? "Capture" : "";
         const ctx = {
           handler: value2,
@@ -5107,17 +5108,13 @@
             };
           },
           move(evt) {
-            if (ctx.event === void 0) {
-              return;
-            }
+            if (ctx.event === void 0) return;
             if (ctx.event.dir !== false) {
               stopAndPrevent(evt);
               return;
             }
             const time = Date.now() - ctx.event.time;
-            if (time === 0) {
-              return;
-            }
+            if (time === 0) return;
             const pos = position(evt), distX = pos.left - ctx.event.x, absX = Math.abs(distX), distY = pos.top - ctx.event.y, absY = Math.abs(distY);
             if (ctx.event.mouse !== true) {
               if (absX < ctx.sensitivity[1] && absY < ctx.sensitivity[1]) {
@@ -5184,9 +5181,7 @@
             }
           },
           end(evt) {
-            if (ctx.event === void 0) {
-              return;
-            }
+            if (ctx.event === void 0) return;
             cleanEvt(ctx, "temp");
             client.is.firefox === true && preventDraggable(el, false);
             ctx.styleCleanup !== void 0 && ctx.styleCleanup(true);
@@ -5287,9 +5282,10 @@
   function use_panel_default() {
     const { props: props4, emit, proxy } = getCurrentInstance();
     const { getCache } = use_render_cache_default();
+    const { registerTimeout } = use_timeout_default();
     let panels, forcedPanelTransition;
-    const panelIndex = ref(null);
     const panelTransition = ref(null);
+    const panelIndex = { value: null };
     function onSwipe(evt) {
       const dir = props4.vertical === true ? "up" : "left";
       goToPanelByOffset((proxy.$q.lang.rtl === true ? -1 : 1) * (evt.direction === dir ? 1 : -1));
@@ -5334,9 +5330,9 @@
       if (panelIndex.value !== index) {
         panelIndex.value = index;
         emit("beforeTransition", newVal, oldVal);
-        nextTick(() => {
+        registerTimeout(() => {
           emit("transition", newVal, oldVal);
-        });
+        }, props4.transitionDuration);
       }
     });
     function nextPanel() {
@@ -5413,9 +5409,7 @@
       ];
     }
     function getPanelContent() {
-      if (panels.length === 0) {
-        return;
-      }
+      if (panels.length === 0) return;
       return props4.animated === true ? [h(Transition, { name: panelTransition.value }, getPanelContentChild)] : getPanelContentChild();
     }
     function updatePanelsList(slots) {
@@ -5484,9 +5478,7 @@
       }
     }
     function setFullscreen() {
-      if (inFullscreen.value === true) {
-        return;
-      }
+      if (inFullscreen.value === true) return;
       inFullscreen.value = true;
       container = proxy.$el.parentNode;
       container.replaceChild(fullscreenFillerNode, proxy.$el);
@@ -5501,9 +5493,7 @@
       History_default.add(historyEntry);
     }
     function exitFullscreen() {
-      if (inFullscreen.value !== true) {
-        return;
-      }
+      if (inFullscreen.value !== true) return;
       if (historyEntry !== void 0) {
         History_default.remove(historyEntry);
         historyEntry = void 0;
@@ -6129,7 +6119,7 @@
   }
 
   // src/components/checkbox/QCheckbox.js
-  var bgNode = h("div", {
+  var createBgNode = () => h("div", {
     key: "svg",
     class: "q-checkbox__bg absolute"
   }, [
@@ -6153,6 +6143,7 @@
     props: useCheckboxProps,
     emits: useCheckboxEmits,
     setup(props4) {
+      const bgNode = createBgNode();
       function getInner(isTrue, isIndeterminate) {
         const icon = computed(
           () => (isTrue.value === true ? props4.checkedIcon : isIndeterminate.value === true ? props4.indeterminateIcon : props4.uncheckedIcon) || null
@@ -6549,9 +6540,7 @@
     false ? { name: "touch-pan", getSSRProps: noop_ssr_directive_transform_default } : {
       name: "touch-pan",
       beforeMount(el, { value: value2, modifiers }) {
-        if (modifiers.mouse !== true && client.has.touch !== true) {
-          return;
-        }
+        if (modifiers.mouse !== true && client.has.touch !== true) return;
         function handleEvent(evt, mouseEvent) {
           if (modifiers.mouse === true && mouseEvent === true) {
             stopAndPrevent(evt);
@@ -6621,13 +6610,9 @@
             };
           },
           move(evt) {
-            if (ctx.event === void 0) {
-              return;
-            }
+            if (ctx.event === void 0) return;
             const pos = position(evt), distX = pos.left - ctx.event.x, distY = pos.top - ctx.event.y;
-            if (distX === 0 && distY === 0) {
-              return;
-            }
+            if (distX === 0 && distY === 0) return;
             ctx.lastEvt = evt;
             const isMouseEvt = ctx.event.mouse === true;
             const start = () => {
@@ -6698,9 +6683,7 @@
             }
           },
           end(evt, abort) {
-            if (ctx.event === void 0) {
-              return;
-            }
+            if (ctx.event === void 0) return;
             cleanEvt(ctx, "temp");
             client.is.firefox === true && preventDraggable(el, false);
             if (abort === true) {
@@ -7336,9 +7319,7 @@
         state.focus.value = true;
       }
       function onKeydown2(evt) {
-        if (!keyCodes.includes(evt.keyCode)) {
-          return;
-        }
+        if (keyCodes.includes(evt.keyCode) === false) return;
         stopAndPrevent(evt);
         const stepVal = ([34, 33].includes(evt.keyCode) ? 10 : 1) * state.keyStep.value, offset2 = ([34, 37, 40].includes(evt.keyCode) ? -1 : 1) * (state.isReversed.value === true ? -1 : 1) * (props4.vertical === true ? -1 : 1) * stepVal;
         model.value = between(
@@ -7616,19 +7597,18 @@
       });
       watch(() => props4.outsideArrows, recalculateScroll);
       function updateModel2({ name: name2, setCurrent, skipEmit }) {
-        if (currentModel.value !== name2) {
-          if (skipEmit !== true && props4["onUpdate:modelValue"] !== void 0) {
-            emit("update:modelValue", name2);
-          }
-          if (setCurrent === true || props4["onUpdate:modelValue"] === void 0) {
-            animate(currentModel.value, name2);
-            currentModel.value = name2;
-          }
+        if (currentModel.value === name2) return;
+        if (skipEmit !== true && props4["onUpdate:modelValue"] !== void 0) {
+          emit("update:modelValue", name2);
+        }
+        if (setCurrent === true || props4["onUpdate:modelValue"] === void 0) {
+          animate(currentModel.value, name2);
+          currentModel.value = name2;
         }
       }
       function recalculateScroll() {
         registerScrollTick(() => {
-          updateContainer({
+          rootRef.value && updateContainer({
             width: rootRef.value.offsetWidth,
             height: rootRef.value.offsetHeight
           });
@@ -7650,7 +7630,9 @@
       }
       function animate(oldName, newName) {
         const oldTab = oldName !== void 0 && oldName !== null && oldName !== "" ? tabDataList.find((tab) => tab.name.value === oldName) : null, newTab = newName !== void 0 && newName !== null && newName !== "" ? tabDataList.find((tab) => tab.name.value === newName) : null;
-        if (oldTab && newTab) {
+        if (hadActivated === true) {
+          hadActivated = false;
+        } else if (oldTab && newTab) {
           const oldEl = oldTab.tabIndicatorRef.value, newEl = newTab.tabIndicatorRef.value;
           if (animateTimer !== null) {
             clearTimeout(animateTimer);
@@ -7833,6 +7815,7 @@
           }
         }
         if (name2 === null && tabDataList.some((tab) => tab.routeData === void 0 && tab.name.value === currentModel.value) === true) {
+          hadActivated = false;
           return;
         }
         updateModel2({ name: name2, setCurrent: true });
@@ -7917,14 +7900,18 @@
         stopAnimScroll();
         unwatchRoute !== void 0 && unwatchRoute();
       }
-      let hadRouteWatcher;
+      let hadRouteWatcher, hadActivated;
       onBeforeUnmount(cleanup);
       onDeactivated(() => {
         hadRouteWatcher = unwatchRoute !== void 0;
         cleanup();
       });
       onActivated(() => {
-        hadRouteWatcher === true && watchRoute();
+        if (hadRouteWatcher === true) {
+          watchRoute();
+          hadActivated = true;
+          verifyRouteModel();
+        }
         recalculateScroll();
       });
       return () => {
@@ -9849,27 +9836,32 @@
           return false;
         }
       case "minute":
+      // intentional fall-through
       case "minutes":
         if (t.getMinutes() !== d.getMinutes()) {
           return false;
         }
       case "hour":
+      // intentional fall-through
       case "hours":
         if (t.getHours() !== d.getHours()) {
           return false;
         }
       case "day":
+      // intentional fall-through
       case "days":
       case "date":
         if (t.getDate() !== d.getDate()) {
           return false;
         }
       case "month":
+      // intentional fall-through
       case "months":
         if (t.getMonth() !== d.getMonth()) {
           return false;
         }
       case "year":
+      // intentional fall-through
       case "years":
         if (t.getFullYear() !== d.getFullYear()) {
           return false;
@@ -10072,13 +10064,9 @@
     }
   };
   function formatDate(val, mask, dateLocale, __forcedYear, __forcedTimezoneOffset) {
-    if (val !== 0 && !val || val === Infinity || val === -Infinity) {
-      return;
-    }
+    if (val !== 0 && !val || val === Infinity || val === -Infinity) return;
     const date = new Date(val);
-    if (isNaN(date)) {
-      return;
-    }
+    if (isNaN(date)) return;
     if (mask === void 0) {
       mask = defaultMask;
     }
@@ -10394,16 +10382,12 @@
         return map;
       });
       const rangeView = computed(() => {
-        if (editRange.value === null) {
-          return;
-        }
+        if (editRange.value === null) return;
         const { init, initHash, final, finalHash } = editRange.value;
         const [from, to] = initHash <= finalHash ? [init, final] : [final, init];
         const fromHash = getMonthHash(from);
         const toHash = getMonthHash(to);
-        if (fromHash !== viewMonthHash.value && toHash !== viewMonthHash.value) {
-          return;
-        }
+        if (fromHash !== viewMonthHash.value && toHash !== viewMonthHash.value) return;
         const view2 = {};
         if (fromHash === viewMonthHash.value) {
           view2.from = from.day;
@@ -10596,7 +10580,7 @@
       });
       const attributes = computed(() => props4.disable === true ? { "aria-disabled": "true" } : {});
       watch(() => props4.modelValue, (v) => {
-        if (lastEmitValue === v) {
+        if (lastEmitValue === JSON.stringify(v)) {
           lastEmitValue = 0;
         } else {
           const model = getViewModel(innerMask.value, innerLocale.value);
@@ -10619,6 +10603,9 @@
         updateValue2(innerMask.value, val, "locale");
         innerLocale.value = val;
       });
+      function setLastValue(v) {
+        lastEmitValue = JSON.stringify(v);
+      }
       function setToday() {
         const { year: year2, month, day } = today.value;
         const date = {
@@ -10790,8 +10777,8 @@
       }
       function emitValue(val, action, date) {
         const value2 = val !== null && val.length === 1 && props4.multiple === false ? val[0] : val;
-        lastEmitValue = value2;
         const { reason, details } = getEmitParams(action, date);
+        setLastValue(value2);
         emit("update:modelValue", value2, reason, details);
       }
       function emitImmediately(reason) {
@@ -10802,8 +10789,8 @@
           const maxDay = props4.calendar !== "persian" ? new Date(date.year, date.month, 0).getDate() : jalaaliMonthLength(date.year, date.month);
           date.day = Math.min(Math.max(1, date.day), maxDay);
           const value2 = encodeEntry(date);
-          lastEmitValue = value2;
           const { details } = getEmitParams("", date);
+          setLastValue(value2);
           emit("update:modelValue", value2, reason, details);
         });
       }
@@ -10843,9 +10830,7 @@
         emitValue(value2, "add", date);
       }
       function removeFromModel(date) {
-        if (props4.noUnset === true) {
-          return;
-        }
+        if (props4.noUnset === true) return;
         let model = null;
         if (props4.multiple === true && Array.isArray(props4.modelValue) === true) {
           const val = encodeEntry(date);
@@ -10866,7 +10851,9 @@
         const model = daysModel.value.concat(rangeModel.value).map((entry) => encodeEntry(entry, mask2, locale2)).filter((entry) => {
           return entry.from !== void 0 ? entry.from.dateHash !== null && entry.to.dateHash !== null : entry.dateHash !== null;
         });
-        emit("update:modelValue", (props4.multiple === true ? model : model[0]) || null, reason);
+        const value2 = (props4.multiple === true ? model : model[0]) || null;
+        setLastValue(value2);
+        emit("update:modelValue", value2, reason);
       }
       function getHeader() {
         if (props4.minimal === true) return;
@@ -11294,9 +11281,7 @@
     }
   }
   function onAppleResize(evt) {
-    if (vpPendingUpdate === true) {
-      return;
-    }
+    if (vpPendingUpdate === true) return;
     vpPendingUpdate = true;
     requestAnimationFrame(() => {
       vpPendingUpdate = false;
@@ -11373,17 +11358,11 @@
         closeTimer = null;
         return;
       }
-      if (registered > 1) {
-        return;
-      }
+      if (registered > 1) return;
     } else {
-      if (registered === 0) {
-        return;
-      }
+      if (registered === 0) return;
       registered--;
-      if (registered > 0) {
-        return;
-      }
+      if (registered > 0) return;
       action = "remove";
       if (client.is.ios === true && client.is.nativeMobile === true) {
         closeTimer !== null && clearTimeout(closeTimer);
@@ -12420,11 +12399,7 @@
         if (link === null) {
           const selection = this.selectWord(this.selection);
           const url = selection ? selection.toString() : "";
-          if (!url.length) {
-            if (!this.range || !this.range.cloneContents().querySelector("img")) {
-              return;
-            }
-          }
+          if (!url.length && (!this.range || !this.range.cloneContents().querySelector("img"))) return;
           this.eVm.editLinkUrl.value = urlRegex.test(url) ? url : "https://";
           document.execCommand("createLink", false, this.eVm.editLinkUrl.value);
           this.save(selection.getRangeAt(0));
@@ -12987,9 +12962,7 @@
             link = evt.target.value;
           },
           onKeydown: (evt) => {
-            if (shouldIgnoreKey(evt) === true) {
-              return;
-            }
+            if (shouldIgnoreKey(evt) === true) return;
             switch (evt.keyCode) {
               case 13:
                 prevent(evt);
@@ -14615,9 +14588,7 @@
       focusoutTimer !== null && clearTimeout(focusoutTimer);
       focusoutTimer = setTimeout(() => {
         focusoutTimer = null;
-        if (document.hasFocus() === true && (state.hasPopupOpen === true || state.controlRef === void 0 || state.controlRef.value === null || state.controlRef.value.contains(document.activeElement) !== false)) {
-          return;
-        }
+        if (document.hasFocus() === true && (state.hasPopupOpen === true || state.controlRef === void 0 || state.controlRef.value === null || state.controlRef.value.contains(document.activeElement) !== false)) return;
         if (state.focused.value === true) {
           state.focused.value = false;
           emit("blur", e);
@@ -14764,9 +14735,7 @@
         }
       }
       const hasCounter = props4.counter === true || slots.counter !== void 0;
-      if (props4.hideBottomSpace === true && hasCounter === false && msg === void 0) {
-        return;
-      }
+      if (props4.hideBottomSpace === true && hasCounter === false && msg === void 0) return;
       const main = h("div", {
         key,
         class: "q-field__messages col"
@@ -15055,9 +15024,7 @@
       }
     }
     return typeGuard === true ? computed(() => {
-      if (props4.type !== "file") {
-        return;
-      }
+      if (props4.type !== "file") return;
       return getFormDomProps();
     }) : computed(getFormDomProps);
   }
@@ -15166,9 +15133,7 @@
           fileInput.value = "";
         }
         if (files === void 0) return;
-        if (props4.multiple === true ? props4.modelValue && files.every((f) => innerValue.value.includes(f)) : props4.modelValue === files[0]) {
-          return;
-        }
+        if (props4.multiple === true ? props4.modelValue && files.every((f) => innerValue.value.includes(f)) : props4.modelValue === files[0]) return;
         emitValue(
           isAppending.value === true ? innerValue.value.concat(files) : files
         );
@@ -15994,9 +15959,7 @@
         () => "q-infinite-scroll__loading" + (isFetching.value === true ? "" : " invisible")
       );
       function immediatePoll() {
-        if (props4.disable === true || isFetching.value === true || isWorking.value === false) {
-          return;
-        }
+        if (props4.disable === true || isFetching.value === true || isWorking.value === false) return;
         const scrollHeight = getScrollHeight(localScrollTarget), scrollPosition = getVerticalScrollPosition(localScrollTarget), containerHeight = height(localScrollTarget);
         if (props4.reverse === false) {
           if (Math.round(scrollPosition + containerHeight + props4.offset) >= Math.round(scrollHeight)) {
@@ -16007,9 +15970,7 @@
         }
       }
       function trigger3() {
-        if (props4.disable === true || isFetching.value === true || isWorking.value === false) {
-          return;
-        }
+        if (props4.disable === true || isFetching.value === true || isWorking.value === false) return;
         index++;
         isFetching.value = true;
         const heightBefore = getScrollHeight(localScrollTarget);
@@ -16486,9 +16447,7 @@
     }
     function onMaskedKeydown(e) {
       emit("keydown", e);
-      if (shouldIgnoreKey(e) === true || e.altKey === true) {
-        return;
-      }
+      if (shouldIgnoreKey(e) === true || e.altKey === true) return;
       const inp = inputRef.value, start = inp.selectionStart, end = inp.selectionEnd;
       if (!e.shiftKey) {
         selectionAnchor = void 0;
@@ -16706,9 +16665,7 @@
         if (hasMask.value === true) {
           if (stopValueWatcher === true) {
             stopValueWatcher = false;
-            if (String(v) === emitCachedValue) {
-              return;
-            }
+            if (String(v) === emitCachedValue) return;
           }
           updateMaskValue(v);
         } else if (innerValue.value !== v) {
@@ -16752,9 +16709,7 @@
         emit("paste", e);
       }
       function onInput(e) {
-        if (!e || !e.target) {
-          return;
-        }
+        if (!e || !e.target) return;
         if (props4.type === "file") {
           emit("update:modelValue", e.target.files);
           return;
@@ -17057,6 +17012,7 @@
   });
 
   // src/components/item/QList.js
+  var roleAttrExceptions = ["ul", "ol"];
   var QList_default = createComponent({
     name: "QList",
     props: {
@@ -17073,10 +17029,13 @@
     setup(props4, { slots }) {
       const vm2 = getCurrentInstance();
       const isDark = use_dark_default(props4, vm2.proxy.$q);
+      const role = computed(
+        () => roleAttrExceptions.includes(props4.tag) ? null : "list"
+      );
       const classes = computed(
         () => "q-list" + (props4.bordered === true ? " q-list--bordered" : "") + (props4.dense === true ? " q-list--dense" : "") + (props4.separator === true ? " q-list--separator" : "") + (isDark.value === true ? " q-list--dark" : "") + (props4.padding === true ? " q-list--padding" : "")
       );
-      return () => h(props4.tag, { class: classes.value }, hSlot(slots.default));
+      return () => h(props4.tag, { class: classes.value, role: role.value }, hSlot(slots.default));
     }
   });
 
@@ -17181,9 +17140,7 @@
         updatePosition(evt, true);
       }
       function onKeydown2(evt) {
-        if (!keyCodes2.includes(evt.keyCode)) {
-          return;
-        }
+        if (keyCodes2.includes(evt.keyCode) === false) return;
         stopAndPrevent(evt);
         const stepVal = ([34, 33].includes(evt.keyCode) ? 10 : 1) * step.value, offset2 = [34, 37, 40].includes(evt.keyCode) ? -stepVal : stepVal;
         model.value = between(
@@ -17313,9 +17270,7 @@
           top: top - scroll.position.top,
           left: left - scroll.position.left
         };
-        if (props4.axis === "vertical" && delta.top === 0 || props4.axis === "horizontal" && delta.left === 0) {
-          return;
-        }
+        if (props4.axis === "vertical" && delta.top === 0 || props4.axis === "horizontal" && delta.left === 0) return;
         const curDir = Math.abs(delta.top) >= Math.abs(delta.left) ? delta.top < 0 ? "up" : "down" : delta.left < 0 ? "left" : "right";
         scroll.position = { top, left };
         scroll.directionChanged = scroll.direction !== curDir;
@@ -17487,9 +17442,7 @@
           el.classList.remove("hide-scrollbar");
         }, hideScrollbar = function() {
           if (timer2 === null) {
-            if (el.scrollHeight > $q.screen.height) {
-              return;
-            }
+            if (el.scrollHeight > $q.screen.height) return;
             el.classList.add("hide-scrollbar");
           } else {
             clearTimeout(timer2);
@@ -17609,7 +17562,7 @@
   });
 
   // src/components/radio/QRadio.js
-  var svg = h("svg", {
+  var createSvg = () => h("svg", {
     key: "svg",
     class: "q-radio__bg absolute non-selectable",
     viewBox: "0 0 24 24"
@@ -17691,6 +17644,7 @@
         }
       }
       Object.assign(proxy, { set: onClick });
+      const svg = createSvg();
       return () => {
         const content = icon.value !== null ? [
           h("div", {
@@ -17782,6 +17736,11 @@
     toggle: QToggle_default
   };
   var typeValues = Object.keys(components);
+  function getPropValueFn(userPropName, defaultPropName) {
+    if (typeof userPropName === "function") return userPropName;
+    const propName = userPropName !== void 0 ? userPropName : defaultPropName;
+    return (opt) => opt[propName];
+  }
   var QOptionGroup_default = createComponent({
     name: "QOptionGroup",
     props: {
@@ -17791,8 +17750,12 @@
       },
       options: {
         type: Array,
-        validator: (opts) => opts.every((opt) => "value" in opt && "label" in opt)
+        validator: (opts) => opts.every(isObject),
+        default: () => []
       },
+      optionValue: [Function, String],
+      optionLabel: [Function, String],
+      optionDisable: [Function, String],
       name: String,
       type: {
         type: String,
@@ -17820,6 +17783,22 @@
       }
       const isDark = use_dark_default(props4, $q);
       const component = computed(() => components[props4.type]);
+      const getOptionValue = computed(() => getPropValueFn(props4.optionValue, "value"));
+      const getOptionLabel = computed(() => getPropValueFn(props4.optionLabel, "label"));
+      const getOptionDisable = computed(() => getPropValueFn(props4.optionDisable, "disable"));
+      const innerOptions = computed(() => props4.options.map((opt) => ({
+        val: getOptionValue.value(opt),
+        name: opt.name === void 0 ? props4.name : opt.name,
+        disable: props4.disable || getOptionDisable.value(opt),
+        leftLabel: opt.leftLabel === void 0 ? props4.leftLabel : opt.leftLabel,
+        color: opt.color === void 0 ? props4.color : opt.color,
+        checkedIcon: opt.checkedIcon,
+        uncheckedIcon: opt.uncheckedIcon,
+        dark: opt.dark === void 0 ? isDark.value : opt.dark,
+        size: opt.size === void 0 ? props4.size : opt.size,
+        dense: props4.dense,
+        keepColor: opt.keepColor === void 0 ? props4.keepColor : opt.keepColor
+      })));
       const classes = computed(
         () => "q-option-group q-gutter-x-sm" + (props4.inline === true ? " q-option-group--inline" : "")
       );
@@ -17843,20 +17822,10 @@
         const child = slots["label-" + i] !== void 0 ? () => slots["label-" + i](opt) : slots.label !== void 0 ? () => slots.label(opt) : void 0;
         return h("div", [
           h(component.value, {
+            label: child === void 0 ? getOptionLabel.value(opt) : null,
             modelValue: props4.modelValue,
-            val: opt.value,
-            name: opt.name === void 0 ? props4.name : opt.name,
-            disable: props4.disable || opt.disable,
-            label: child === void 0 ? opt.label : null,
-            leftLabel: opt.leftLabel === void 0 ? props4.leftLabel : opt.leftLabel,
-            color: opt.color === void 0 ? props4.color : opt.color,
-            checkedIcon: opt.checkedIcon,
-            uncheckedIcon: opt.uncheckedIcon,
-            dark: opt.dark || isDark.value,
-            size: opt.size === void 0 ? props4.size : opt.size,
-            dense: props4.dense,
-            keepColor: opt.keepColor === void 0 ? props4.keepColor : opt.keepColor,
-            "onUpdate:modelValue": onUpdateModelValue
+            "onUpdate:modelValue": onUpdateModelValue,
+            ...innerOptions.value[i]
           }, child)
         ]);
       }));
@@ -18224,9 +18193,7 @@
         get: () => props4.modelValue,
         set: (val) => {
           val = parseInt(val, 10);
-          if (props4.disable || isNaN(val)) {
-            return;
-          }
+          if (props4.disable || isNaN(val)) return;
           const value2 = between(val, minProp.value, maxProp.value);
           if (props4.modelValue !== value2) {
             emit("update:modelValue", value2);
@@ -18723,9 +18690,7 @@
         });
       });
       function set2() {
-        if (props4.validate(currentModel.value) === false) {
-          return;
-        }
+        if (props4.validate(currentModel.value) === false) return;
         if (hasModelChanged() === true) {
           emit("save", currentModel.value, initialValue.value);
           emit("update:modelValue", currentModel.value);
@@ -19050,11 +19015,11 @@
             return false;
           }
           pulling.value = true;
-          const { top, left } = $el.getBoundingClientRect();
+          const { top, left } = proxy.$el.getBoundingClientRect();
           positionCSS.value = {
             top: top + "px",
             left: left + "px",
-            width: window.getComputedStyle($el).getPropertyValue("width")
+            width: window.getComputedStyle(proxy.$el).getPropertyValue("width")
           };
         }
         prevent(event.evt);
@@ -19088,7 +19053,7 @@
           });
         });
       }
-      let $el, localScrollTarget, timer2 = null;
+      let localScrollTarget, timer2 = null;
       function animateTo({ pos, ratio }, done) {
         animating.value = true;
         pullPosition.value = pos;
@@ -19103,13 +19068,10 @@
         }, 300);
       }
       function updateScrollTarget() {
-        localScrollTarget = getScrollTarget($el, props4.scrollTarget);
+        localScrollTarget = getScrollTarget(proxy.$el, props4.scrollTarget);
       }
       watch(() => props4.scrollTarget, updateScrollTarget);
-      onMounted(() => {
-        $el = proxy.$el;
-        updateScrollTarget();
-      });
+      onMounted(updateScrollTarget);
       onBeforeUnmount(() => {
         timer2 !== null && clearTimeout(timer2);
       });
@@ -19378,9 +19340,7 @@
         }
       }
       function onKeydown2(evt) {
-        if (!keyCodes.includes(evt.keyCode)) {
-          return;
-        }
+        if (keyCodes.includes(evt.keyCode) === false) return;
         stopAndPrevent(evt);
         const stepVal = ([34, 33].includes(evt.keyCode) ? 10 : 1) * state.keyStep.value, offset2 = ([34, 37, 40].includes(evt.keyCode) ? -1 : 1) * (state.isReversed.value === true ? -1 : 1) * (props4.vertical === true ? -1 : 1) * stepVal;
         if (state.focus.value === "both") {
@@ -19548,12 +19508,14 @@
             set2(i);
             return stopAndPrevent(e);
           case 37:
+          // LEFT ARROW
           case 40:
             if (iconRefs[`rt${i - 1}`]) {
               iconRefs[`rt${i - 1}`].focus();
             }
             return stopAndPrevent(e);
           case 39:
+          // RIGHT ARROW
           case 38:
             if (iconRefs[`rt${i + 1}`]) {
               iconRefs[`rt${i + 1}`].focus();
@@ -19632,6 +19594,50 @@
     }
   });
 
+  // src/components/scroll-area/ScrollAreaControls.js
+  var ScrollAreaControls_default = createComponent({
+    props: [
+      "store",
+      "barStyle",
+      "verticalBarStyle",
+      "horizontalBarStyle"
+    ],
+    setup(props4) {
+      return () => [
+        h("div", {
+          class: props4.store.scroll.vertical.barClass.value,
+          style: [props4.barStyle, props4.verticalBarStyle],
+          "aria-hidden": "true",
+          onMousedown: props4.store.onVerticalMousedown
+        }),
+        h("div", {
+          class: props4.store.scroll.horizontal.barClass.value,
+          style: [props4.barStyle, props4.horizontalBarStyle],
+          "aria-hidden": "true",
+          onMousedown: props4.store.onHorizontalMousedown
+        }),
+        withDirectives(
+          h("div", {
+            ref: props4.store.scroll.vertical.ref,
+            class: props4.store.scroll.vertical.thumbClass.value,
+            style: props4.store.scroll.vertical.style.value,
+            "aria-hidden": "true"
+          }),
+          props4.store.thumbVertDir
+        ),
+        withDirectives(
+          h("div", {
+            ref: props4.store.scroll.horizontal.ref,
+            class: props4.store.scroll.horizontal.thumbClass.value,
+            style: props4.store.scroll.horizontal.style.value,
+            "aria-hidden": "true"
+          }),
+          props4.store.thumbHorizDir
+        )
+      ];
+    }
+  });
+
   // src/components/scroll-area/QScrollArea.js
   var axisList = ["vertical", "horizontal"];
   var dirProps = {
@@ -19654,6 +19660,14 @@
       barStyle: [Array, String, Object],
       verticalBarStyle: [Array, String, Object],
       horizontalBarStyle: [Array, String, Object],
+      verticalOffset: {
+        type: Array,
+        default: [0, 0]
+      },
+      horizontalOffset: {
+        type: Array,
+        default: [0, 0]
+      },
       contentStyle: [Array, String, Object],
       contentActiveStyle: [Array, String, Object],
       delay: {
@@ -19694,6 +19708,10 @@
       const classes = computed(
         () => "q-scrollarea" + (isDark.value === true ? " q-scrollarea--dark" : "")
       );
+      Object.assign(container, {
+        verticalInner: computed(() => container.vertical.value - props4.verticalOffset[0] - props4.verticalOffset[1]),
+        horizontalInner: computed(() => container.horizontal.value - props4.horizontalOffset[0] - props4.horizontalOffset[1])
+      });
       scroll.vertical.percentage = computed(() => {
         const diff2 = scroll.vertical.size.value - container.vertical.value;
         if (diff2 <= 0) {
@@ -19702,35 +19720,26 @@
         const p = between(scroll.vertical.position.value / diff2, 0, 1);
         return Math.round(p * 1e4) / 1e4;
       });
-      scroll.vertical.thumbHidden = computed(
-        () => (props4.visible === null ? hover.value : props4.visible) !== true && tempShowing.value === false && panning.value === false || scroll.vertical.size.value <= container.vertical.value + 1
-      );
-      scroll.vertical.thumbStart = computed(
-        () => scroll.vertical.percentage.value * (container.vertical.value - scroll.vertical.thumbSize.value)
-      );
+      scroll.vertical.thumbHidden = computed(() => (props4.visible === null ? hover.value : props4.visible) !== true && tempShowing.value === false && panning.value === false || scroll.vertical.size.value <= container.vertical.value + 1);
+      scroll.vertical.thumbStart = computed(() => props4.verticalOffset[0] + scroll.vertical.percentage.value * (container.verticalInner.value - scroll.vertical.thumbSize.value));
       scroll.vertical.thumbSize = computed(
         () => Math.round(
           between(
-            container.vertical.value * container.vertical.value / scroll.vertical.size.value,
-            getMinThumbSize(container.vertical.value),
-            container.vertical.value
+            container.verticalInner.value * container.verticalInner.value / scroll.vertical.size.value,
+            getMinThumbSize(container.verticalInner.value),
+            container.verticalInner.value
           )
         )
       );
-      scroll.vertical.style = computed(() => {
-        return {
-          ...props4.thumbStyle,
-          ...props4.verticalThumbStyle,
-          top: `${scroll.vertical.thumbStart.value}px`,
-          height: `${scroll.vertical.thumbSize.value}px`
-        };
-      });
-      scroll.vertical.thumbClass = computed(
-        () => "q-scrollarea__thumb q-scrollarea__thumb--v absolute-right" + (scroll.vertical.thumbHidden.value === true ? " q-scrollarea__thumb--invisible" : "")
-      );
-      scroll.vertical.barClass = computed(
-        () => "q-scrollarea__bar q-scrollarea__bar--v absolute-right" + (scroll.vertical.thumbHidden.value === true ? " q-scrollarea__bar--invisible" : "")
-      );
+      scroll.vertical.style = computed(() => ({
+        ...props4.thumbStyle,
+        ...props4.verticalThumbStyle,
+        top: `${scroll.vertical.thumbStart.value}px`,
+        height: `${scroll.vertical.thumbSize.value}px`,
+        right: `${props4.horizontalOffset[1]}px`
+      }));
+      scroll.vertical.thumbClass = computed(() => "q-scrollarea__thumb q-scrollarea__thumb--v absolute-right" + (scroll.vertical.thumbHidden.value === true ? " q-scrollarea__thumb--invisible" : ""));
+      scroll.vertical.barClass = computed(() => "q-scrollarea__bar q-scrollarea__bar--v absolute-right" + (scroll.vertical.thumbHidden.value === true ? " q-scrollarea__bar--invisible" : ""));
       scroll.horizontal.percentage = computed(() => {
         const diff2 = scroll.horizontal.size.value - container.horizontal.value;
         if (diff2 <= 0) {
@@ -19739,60 +19748,38 @@
         const p = between(Math.abs(scroll.horizontal.position.value) / diff2, 0, 1);
         return Math.round(p * 1e4) / 1e4;
       });
-      scroll.horizontal.thumbHidden = computed(
-        () => (props4.visible === null ? hover.value : props4.visible) !== true && tempShowing.value === false && panning.value === false || scroll.horizontal.size.value <= container.horizontal.value + 1
-      );
-      scroll.horizontal.thumbStart = computed(
-        () => scroll.horizontal.percentage.value * (container.horizontal.value - scroll.horizontal.thumbSize.value)
-      );
+      scroll.horizontal.thumbHidden = computed(() => (props4.visible === null ? hover.value : props4.visible) !== true && tempShowing.value === false && panning.value === false || scroll.horizontal.size.value <= container.horizontal.value + 1);
+      scroll.horizontal.thumbStart = computed(() => props4.horizontalOffset[0] + scroll.horizontal.percentage.value * (container.horizontalInner.value - scroll.horizontal.thumbSize.value));
       scroll.horizontal.thumbSize = computed(
         () => Math.round(
           between(
-            container.horizontal.value * container.horizontal.value / scroll.horizontal.size.value,
-            getMinThumbSize(container.horizontal.value),
-            container.horizontal.value
+            container.horizontalInner.value * container.horizontalInner.value / scroll.horizontal.size.value,
+            getMinThumbSize(container.horizontalInner.value),
+            container.horizontalInner.value
           )
         )
       );
-      scroll.horizontal.style = computed(() => {
-        return {
-          ...props4.thumbStyle,
-          ...props4.horizontalThumbStyle,
-          [proxy.$q.lang.rtl === true ? "right" : "left"]: `${scroll.horizontal.thumbStart.value}px`,
-          width: `${scroll.horizontal.thumbSize.value}px`
-        };
-      });
-      scroll.horizontal.thumbClass = computed(
-        () => "q-scrollarea__thumb q-scrollarea__thumb--h absolute-bottom" + (scroll.horizontal.thumbHidden.value === true ? " q-scrollarea__thumb--invisible" : "")
-      );
-      scroll.horizontal.barClass = computed(
-        () => "q-scrollarea__bar q-scrollarea__bar--h absolute-bottom" + (scroll.horizontal.thumbHidden.value === true ? " q-scrollarea__bar--invisible" : "")
-      );
+      scroll.horizontal.style = computed(() => ({
+        ...props4.thumbStyle,
+        ...props4.horizontalThumbStyle,
+        [proxy.$q.lang.rtl === true ? "right" : "left"]: `${scroll.horizontal.thumbStart.value}px`,
+        width: `${scroll.horizontal.thumbSize.value}px`,
+        bottom: `${props4.verticalOffset[1]}px`
+      }));
+      scroll.horizontal.thumbClass = computed(() => "q-scrollarea__thumb q-scrollarea__thumb--h absolute-bottom" + (scroll.horizontal.thumbHidden.value === true ? " q-scrollarea__thumb--invisible" : ""));
+      scroll.horizontal.barClass = computed(() => "q-scrollarea__bar q-scrollarea__bar--h absolute-bottom" + (scroll.horizontal.thumbHidden.value === true ? " q-scrollarea__bar--invisible" : ""));
       const mainStyle = computed(() => scroll.vertical.thumbHidden.value === true && scroll.horizontal.thumbHidden.value === true ? props4.contentStyle : props4.contentActiveStyle);
-      const thumbVertDir = [[
-        TouchPan_default,
-        (e) => {
-          onPanThumb(e, "vertical");
-        },
-        void 0,
-        { vertical: true, ...panOpts }
-      ]];
-      const thumbHorizDir = [[
-        TouchPan_default,
-        (e) => {
-          onPanThumb(e, "horizontal");
-        },
-        void 0,
-        { horizontal: true, ...panOpts }
-      ]];
       function getScroll() {
         const info = {};
         axisList.forEach((axis) => {
           const data = scroll[axis];
-          info[axis + "Position"] = data.position.value;
-          info[axis + "Percentage"] = data.percentage.value;
-          info[axis + "Size"] = data.size.value;
-          info[axis + "ContainerSize"] = container[axis].value;
+          Object.assign(info, {
+            [axis + "Position"]: data.position.value,
+            [axis + "Percentage"]: data.percentage.value,
+            [axis + "Size"]: data.size.value,
+            [axis + "ContainerSize"]: container[axis].value,
+            [axis + "ContainerInnerSize"]: container[axis + "Inner"].value
+          });
         });
         return info;
       }
@@ -19846,9 +19833,7 @@
       function onPanThumb(e, axis) {
         const data = scroll[axis];
         if (e.isFirst === true) {
-          if (data.thumbHidden.value === true) {
-            return;
-          }
+          if (data.thumbHidden.value === true) return;
           panRefPos = data.position.value;
           panning.value = true;
         } else if (panning.value !== true) {
@@ -19858,8 +19843,7 @@
           panning.value = false;
         }
         const dProp = dirProps[axis];
-        const containerSize = container[axis].value;
-        const multiplier = (data.size.value - containerSize) / (containerSize - data.thumbSize.value);
+        const multiplier = (data.size.value - container[axis].value) / (container[axis + "Inner"].value - data.thumbSize.value);
         const distance = e.distance[dProp.dist];
         const pos = panRefPos + (e.direction === dProp.dir ? 1 : -1) * distance * multiplier;
         setScroll3(pos, axis);
@@ -19867,21 +19851,18 @@
       function onMousedown(evt, axis) {
         const data = scroll[axis];
         if (data.thumbHidden.value !== true) {
-          const offset2 = evt[dirProps[axis].offset];
-          if (offset2 < data.thumbStart.value || offset2 > data.thumbStart.value + data.thumbSize.value) {
-            const pos = offset2 - data.thumbSize.value / 2;
-            setScroll3(pos / container[axis].value * data.size.value, axis);
+          const startOffset = axis === "vertical" ? props4.verticalOffset[0] : props4.horizontalOffset[0];
+          const offset2 = evt[dirProps[axis].offset] - startOffset;
+          const thumbStart = data.thumbStart.value - startOffset;
+          if (offset2 < thumbStart || offset2 > thumbStart + data.thumbSize.value) {
+            const targetThumbStart = offset2 - data.thumbSize.value / 2;
+            const percentage = between(targetThumbStart / (container[axis + "Inner"].value - data.thumbSize.value), 0, 1);
+            setScroll3(percentage * Math.max(0, data.size.value - container[axis].value), axis);
           }
           if (data.ref.value !== null) {
             data.ref.value.dispatchEvent(new MouseEvent(evt.type, evt));
           }
         }
-      }
-      function onVerticalMousedown(evt) {
-        onMousedown(evt, "vertical");
-      }
-      function onHorizontalMousedown(evt) {
-        onMousedown(evt, "horizontal");
       }
       function startTimer() {
         tempShowing.value = true;
@@ -19956,6 +19937,31 @@
           );
         }
       });
+      const store = {
+        scroll,
+        thumbVertDir: [[
+          TouchPan_default,
+          (e) => {
+            onPanThumb(e, "vertical");
+          },
+          void 0,
+          { vertical: true, ...panOpts }
+        ]],
+        thumbHorizDir: [[
+          TouchPan_default,
+          (e) => {
+            onPanThumb(e, "horizontal");
+          },
+          void 0,
+          { horizontal: true, ...panOpts }
+        ]],
+        onVerticalMousedown(evt) {
+          onMousedown(evt, "vertical");
+        },
+        onHorizontalMousedown(evt) {
+          onMousedown(evt, "horizontal");
+        }
+      };
       return () => {
         return h("div", {
           class: classes.value,
@@ -19985,36 +19991,12 @@
             debounce: 0,
             onResize: updateContainer
           }),
-          h("div", {
-            class: scroll.vertical.barClass.value,
-            style: [props4.barStyle, props4.verticalBarStyle],
-            "aria-hidden": "true",
-            onMousedown: onVerticalMousedown
-          }),
-          h("div", {
-            class: scroll.horizontal.barClass.value,
-            style: [props4.barStyle, props4.horizontalBarStyle],
-            "aria-hidden": "true",
-            onMousedown: onHorizontalMousedown
-          }),
-          withDirectives(
-            h("div", {
-              ref: scroll.vertical.ref,
-              class: scroll.vertical.thumbClass.value,
-              style: scroll.vertical.style.value,
-              "aria-hidden": "true"
-            }),
-            thumbVertDir
-          ),
-          withDirectives(
-            h("div", {
-              ref: scroll.horizontal.ref,
-              class: scroll.horizontal.thumbClass.value,
-              style: scroll.horizontal.style.value,
-              "aria-hidden": "true"
-            }),
-            thumbHorizDir
-          )
+          h(ScrollAreaControls_default, {
+            store,
+            barStyle: props4.barStyle,
+            verticalBarStyle: props4.verticalBarStyle,
+            horizontalBarStyle: props4.horizontalBarStyle
+          })
         ]);
       };
     }
@@ -20032,16 +20014,12 @@
   ];
   var filterProto = Array.prototype.filter;
   var setOverflowAnchor = window.getComputedStyle(document.body).overflowAnchor === void 0 ? noop : function(contentEl, index) {
-    if (contentEl === null) {
-      return;
-    }
+    if (contentEl === null) return;
     if (contentEl._qOverflowAnimationFrame !== void 0) {
       cancelAnimationFrame(contentEl._qOverflowAnimationFrame);
     }
     contentEl._qOverflowAnimationFrame = requestAnimationFrame(() => {
-      if (contentEl === null) {
-        return;
-      }
+      if (contentEl === null) return;
       contentEl._qOverflowAnimationFrame = void 0;
       const children = contentEl.children || [];
       filterProto.call(children, (el2) => el2.dataset && el2.dataset.qVsAnchor !== void 0).forEach((el2) => {
@@ -20223,9 +20201,7 @@
     }
     function scrollTo(toIndex, edge) {
       const scrollEl = getVirtualScrollTarget();
-      if (scrollEl === void 0 || scrollEl === null || scrollEl.nodeType === 8) {
-        return;
-      }
+      if (scrollEl === void 0 || scrollEl === null || scrollEl.nodeType === 8) return;
       const scrollDetails = getScrollDetails(
         scrollEl,
         getVirtualScrollEl(),
@@ -20247,9 +20223,7 @@
     }
     function localOnVirtualScrollEvt() {
       const scrollEl = getVirtualScrollTarget();
-      if (scrollEl === void 0 || scrollEl === null || scrollEl.nodeType === 8) {
-        return;
-      }
+      if (scrollEl === void 0 || scrollEl === null || scrollEl.nodeType === 8) return;
       const scrollDetails = getScrollDetails(
         scrollEl,
         getVirtualScrollEl(),
@@ -20260,9 +20234,7 @@
         props4.virtualScrollStickySizeStart,
         props4.virtualScrollStickySizeEnd
       ), listLastIndex = virtualScrollLength.value - 1, listEndOffset = scrollDetails.scrollMaxSize - scrollDetails.offsetStart - scrollDetails.offsetEnd - virtualScrollPaddingAfter.value;
-      if (prevScrollStart === scrollDetails.scrollStart) {
-        return;
-      }
+      if (prevScrollStart === scrollDetails.scrollStart) return;
       if (scrollDetails.scrollMaxSize <= 0) {
         setVirtualScrollSliceRange(scrollEl, scrollDetails, 0, 0);
         return;
@@ -20344,9 +20316,7 @@
         });
       }
       requestAnimationFrame(() => {
-        if (prevScrollStart !== scrollDetails.scrollStart) {
-          return;
-        }
+        if (prevScrollStart !== scrollDetails.scrollStart) return;
         if (rangeChanged === true) {
           updateVirtualScrollSizes(from);
         }
@@ -20568,6 +20538,11 @@
   var validateNewValueMode = (v) => ["add", "add-unique", "toggle"].includes(v);
   var reEscapeList = ".*+?^${}()|[]\\";
   var fieldPropsList = Object.keys(useFieldProps);
+  function getPropValueFn2(userPropName, defaultPropName) {
+    if (typeof userPropName === "function") return userPropName;
+    const propName = userPropName !== void 0 ? userPropName : defaultPropName;
+    return (opt) => opt !== null && typeof opt === "object" && propName in opt ? opt[propName] : opt;
+  }
   var QSelect_default = createComponent({
     name: "QSelect",
     inheritAttrs: false,
@@ -20617,6 +20592,7 @@
       },
       mapOptions: Boolean,
       emitValue: Boolean,
+      disableTabSelection: Boolean,
       inputDebounce: {
         type: [Number, String],
         default: 500
@@ -20810,10 +20786,10 @@
         () => props4.optionsCover === false && props4.outlined !== true && props4.standout !== true && props4.borderless !== true && props4.rounded !== true
       );
       const computedOptionsSelectedClass = computed(() => props4.optionsSelectedClass !== void 0 ? props4.optionsSelectedClass : props4.color !== void 0 ? `text-${props4.color}` : "");
-      const getOptionValue = computed(() => getPropValueFn(props4.optionValue, "value"));
-      const getOptionLabel = computed(() => getPropValueFn(props4.optionLabel, "label"));
-      const isOptionDisabled = computed(() => getPropValueFn(props4.optionDisable, "disable"));
-      const innerOptionsValue = computed(() => innerValue.value.map((opt) => getOptionValue.value(opt)));
+      const getOptionValue = computed(() => getPropValueFn2(props4.optionValue, "value"));
+      const getOptionLabel = computed(() => getPropValueFn2(props4.optionLabel, "label"));
+      const isOptionDisabled = computed(() => getPropValueFn2(props4.optionDisable, "disable"));
+      const innerOptionsValue = computed(() => innerValue.value.map(getOptionValue.value));
       const inputControlEvents = computed(() => {
         const evt = {
           onInput,
@@ -20879,21 +20855,15 @@
           emit("update:modelValue", props4.multiple === true ? [val] : val);
           return;
         }
-        if (unique === true && isOptionSelected(opt) === true) {
-          return;
-        }
-        if (props4.maxValues !== void 0 && props4.modelValue.length >= props4.maxValues) {
-          return;
-        }
+        if (unique === true && isOptionSelected(opt) === true) return;
+        if (props4.maxValues !== void 0 && props4.modelValue.length >= props4.maxValues) return;
         const model = props4.modelValue.slice();
         emit("add", { index: model.length, value: val });
         model.push(val);
         emit("update:modelValue", model);
       }
       function toggleOption(opt, keepOpen) {
-        if (state.editable.value !== true || opt === void 0 || isOptionDisabled.value(opt) === true) {
-          return;
-        }
+        if (state.editable.value !== true || opt === void 0 || isOptionDisabled.value(opt) === true) return;
         const optValue = getOptionValue.value(opt);
         if (props4.multiple !== true) {
           if (keepOpen !== true) {
@@ -20922,9 +20892,7 @@
         if (index !== -1) {
           emit("remove", { index, value: model.splice(index, 1)[0] });
         } else {
-          if (props4.maxValues !== void 0 && model.length >= props4.maxValues) {
-            return;
-          }
+          if (props4.maxValues !== void 0 && model.length >= props4.maxValues) return;
           const val = props4.emitValue === true ? optValue : opt;
           emit("add", { index: model.length, value: val });
           model.push(val);
@@ -20964,10 +20932,6 @@
         const fn = (opt) => isDeepEqual(getOptionValue.value(opt), value2);
         return props4.options.find(fn) || valueCache.find(fn) || value2;
       }
-      function getPropValueFn(propValue, defaultVal) {
-        const val = propValue !== void 0 ? propValue : defaultVal;
-        return typeof val === "function" ? val : (opt) => opt !== null && typeof opt === "object" && val in opt ? opt[val] : opt;
-      }
       function isOptionSelected(opt) {
         const val = getOptionValue.value(opt);
         return innerOptionsValue.value.find((v) => isDeepEqual(v, val)) !== void 0;
@@ -21004,10 +20968,8 @@
         if (typeof value2 === "string" && value2.length !== 0) {
           const needle = value2.toLocaleLowerCase();
           const findFn = (extractFn) => {
-            const option = props4.options.find((opt) => extractFn.value(opt).toLocaleLowerCase() === needle);
-            if (option === void 0) {
-              return false;
-            }
+            const option = props4.options.find((opt) => String(extractFn.value(opt)).toLocaleLowerCase() === needle);
+            if (option === void 0) return false;
             if (innerValue.value.indexOf(option) === -1) {
               toggleOption(option);
             } else {
@@ -21016,13 +20978,9 @@
             return true;
           };
           const fillFn = (afterFilter) => {
-            if (findFn(getOptionValue) === true) {
-              return;
+            if (findFn(getOptionValue) !== true && afterFilter !== true && findFn(getOptionLabel) !== true) {
+              filter(value2, true, () => fillFn(true));
             }
-            if (findFn(getOptionLabel) === true || afterFilter === true) {
-              return;
-            }
-            filter(value2, true, () => fillFn(true));
           };
           fillFn();
         } else {
@@ -21034,11 +20992,9 @@
       }
       function onTargetKeydown(e) {
         emit("keydown", e);
-        if (shouldIgnoreKey(e) === true) {
-          return;
-        }
+        if (shouldIgnoreKey(e) === true) return;
         const newValueModeValid = inputValue.value.length !== 0 && (props4.newValueMode !== void 0 || props4.onNewValue !== void 0);
-        const tabShouldSelect = e.shiftKey !== true && props4.multiple !== true && (optionIndex.value !== -1 || newValueModeValid === true);
+        const tabShouldSelect = e.shiftKey !== true && props4.disableTabSelection !== true && props4.multiple !== true && (optionIndex.value !== -1 || newValueModeValid === true);
         if (e.keyCode === 27) {
           prevent(e);
           return;
@@ -21120,16 +21076,12 @@
         if (newValueModeValid === true) {
           const done = (val, mode) => {
             if (mode) {
-              if (validateNewValueMode(mode) !== true) {
-                return;
-              }
+              if (validateNewValueMode(mode) !== true) return;
             } else {
               mode = props4.newValueMode;
             }
             updateInputValue("", props4.multiple !== true, true);
-            if (val === void 0 || val === null) {
-              return;
-            }
+            if (val === void 0 || val === null) return;
             const fn = mode === "toggle" ? toggleOption : add;
             fn(val, mode === "add-unique");
             if (props4.multiple !== true) {
@@ -21142,9 +21094,7 @@
           } else {
             done(inputValue.value);
           }
-          if (props4.multiple !== true) {
-            return;
-          }
+          if (props4.multiple !== true) return;
         }
         if (menu.value === true) {
           closeMenu();
@@ -21252,9 +21202,7 @@
           clearTimeout(inputValueTimer);
           inputValueTimer = null;
         }
-        if (e && e.target && e.target.qComposing === true) {
-          return;
-        }
+        if (e && e.target && e.target.qComposing === true) return;
         setInputValue(e.target.value || "");
         userInputValue = true;
         defaultInputValue = inputValue.value;
@@ -21292,9 +21240,7 @@
         }
       }
       function filter(val, keepClosed, afterUpdateFn) {
-        if (props4.onFilter === void 0 || keepClosed !== true && state.focused.value !== true) {
-          return;
-        }
+        if (props4.onFilter === void 0 || keepClosed !== true && state.focused.value !== true) return;
         if (state.innerLoading.value === true) {
           emit("filterAbort");
         } else {
@@ -21464,9 +21410,7 @@
         setVirtualScrollSize();
       }
       function closeMenu() {
-        if (dialog.value === true) {
-          return;
-        }
+        if (dialog.value === true) return;
         optionIndex.value = -1;
         if (menu.value === true) {
           menu.value = false;
@@ -21484,9 +21428,7 @@
         }
       }
       function showPopup(e) {
-        if (state.editable.value !== true) {
-          return;
-        }
+        if (state.editable.value !== true) return;
         if (hasDialog === true) {
           state.onControlFocusin(e);
           dialog.value = true;
@@ -21843,9 +21785,7 @@
           showing = dir === 2 ? "top" : "bottom";
           dist = evt.distance.y;
         }
-        if (pan.dir !== null && Math.abs(dir) !== Math.abs(pan.dir)) {
-          return;
-        }
+        if (pan.dir !== null && Math.abs(dir) !== Math.abs(pan.dir)) return;
         if (pan.dir !== dir) {
           ["left", "right", "top", "bottom"].forEach((d) => {
             if (dirRefs[d]) {
@@ -21926,80 +21866,16 @@
   });
 
   // src/components/space/QSpace.js
-  var space = h("div", { class: "q-space" });
   var QSpace_default = createComponent({
     name: "QSpace",
     setup() {
+      const space = h("div", { class: "q-space" });
       return () => space;
     }
   });
 
   // src/components/spinner/QSpinnerAudio.js
-  var svg2 = [
-    h("g", {
-      transform: "matrix(1 0 0 -1 0 80)"
-    }, [
-      h("rect", {
-        width: "10",
-        height: "20",
-        rx: "3"
-      }, [
-        h("animate", {
-          attributeName: "height",
-          begin: "0s",
-          dur: "4.3s",
-          values: "20;45;57;80;64;32;66;45;64;23;66;13;64;56;34;34;2;23;76;79;20",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("rect", {
-        x: "15",
-        width: "10",
-        height: "80",
-        rx: "3"
-      }, [
-        h("animate", {
-          attributeName: "height",
-          begin: "0s",
-          dur: "2s",
-          values: "80;55;33;5;75;23;73;33;12;14;60;80",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("rect", {
-        x: "30",
-        width: "10",
-        height: "50",
-        rx: "3"
-      }, [
-        h("animate", {
-          attributeName: "height",
-          begin: "0s",
-          dur: "1.4s",
-          values: "50;34;78;23;56;23;34;76;80;54;21;50",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("rect", {
-        x: "45",
-        width: "10",
-        height: "30",
-        rx: "3"
-      }, [
-        h("animate", {
-          attributeName: "height",
-          begin: "0s",
-          dur: "2s",
-          values: "30;45;13;80;56;72;45;76;34;23;67;30",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ])
-    ])
-  ];
+  var innerHTML = '<g transform="matrix(1 0 0 -1 0 80)"><rect width="10" height="20" rx="3"><animate attributeName="height" begin="0s" dur="4.3s" values="20;45;57;80;64;32;66;45;64;23;66;13;64;56;34;34;2;23;76;79;20" calcMode="linear" repeatCount="indefinite"></animate></rect><rect x="15" width="10" height="80" rx="3"><animate attributeName="height" begin="0s" dur="2s" values="80;55;33;5;75;23;73;33;12;14;60;80" calcMode="linear" repeatCount="indefinite"></animate></rect><rect x="30" width="10" height="50" rx="3"><animate attributeName="height" begin="0s" dur="1.4s" values="50;34;78;23;56;23;34;76;80;54;21;50" calcMode="linear" repeatCount="indefinite"></animate></rect><rect x="45" width="10" height="30" rx="3"><animate attributeName="height" begin="0s" dur="2s" values="30;45;13;80;56;72;45;76;34;23;67;30" calcMode="linear" repeatCount="indefinite"></animate></rect></g>';
   var QSpinnerAudio_default = createComponent({
     name: "QSpinnerAudio",
     props: useSpinnerProps,
@@ -22011,93 +21887,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 55 80",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg2);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML
+      });
     }
   });
 
   // src/components/spinner/QSpinnerBall.js
-  var svg3 = [
-    h("g", {
-      transform: "translate(1 1)",
-      "stroke-width": "2",
-      fill: "none",
-      "fill-rule": "evenodd"
-    }, [
-      h("circle", {
-        cx: "5",
-        cy: "50",
-        r: "5"
-      }, [
-        h("animate", {
-          attributeName: "cy",
-          begin: "0s",
-          dur: "2.2s",
-          values: "50;5;50;50",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "cx",
-          begin: "0s",
-          dur: "2.2s",
-          values: "5;27;49;5",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("circle", {
-        cx: "27",
-        cy: "5",
-        r: "5"
-      }, [
-        h("animate", {
-          attributeName: "cy",
-          begin: "0s",
-          dur: "2.2s",
-          from: "5",
-          to: "5",
-          values: "5;50;50;5",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "cx",
-          begin: "0s",
-          dur: "2.2s",
-          from: "27",
-          to: "27",
-          values: "27;49;5;27",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("circle", {
-        cx: "49",
-        cy: "50",
-        r: "5"
-      }, [
-        h("animate", {
-          attributeName: "cy",
-          begin: "0s",
-          dur: "2.2s",
-          values: "50;50;5;50",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "cx",
-          from: "49",
-          to: "49",
-          begin: "0s",
-          dur: "2.2s",
-          values: "49;5;27;49",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ])
-    ])
-  ];
+  var innerHTML2 = '<g transform="translate(1 1)" stroke-width="2" fill="none" fill-rule="evenodd"><circle cx="5" cy="50" r="5"><animate attributeName="cy" begin="0s" dur="2.2s" values="50;5;50;50" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="cx" begin="0s" dur="2.2s" values="5;27;49;5" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="27" cy="5" r="5"><animate attributeName="cy" begin="0s" dur="2.2s" from="5" to="5" values="5;50;50;5" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="cx" begin="0s" dur="2.2s" from="27" to="27" values="27;49;5;27" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="49" cy="50" r="5"><animate attributeName="cy" begin="0s" dur="2.2s" values="50;50;5;50" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="cx" from="49" to="49" begin="0s" dur="2.2s" values="49;5;27;49" calcMode="linear" repeatCount="indefinite"></animate></circle></g>';
   var QSpinnerBall_default = createComponent({
     name: "QSpinnerBall",
     props: useSpinnerProps,
@@ -22109,132 +21906,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 57 57",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg3);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML2
+      });
     }
   });
 
   // src/components/spinner/QSpinnerBars.js
-  var svg4 = [
-    h("rect", {
-      y: "10",
-      width: "15",
-      height: "120",
-      rx: "6"
-    }, [
-      h("animate", {
-        attributeName: "height",
-        begin: "0.5s",
-        dur: "1s",
-        values: "120;110;100;90;80;70;60;50;40;140;120",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      }),
-      h("animate", {
-        attributeName: "y",
-        begin: "0.5s",
-        dur: "1s",
-        values: "10;15;20;25;30;35;40;45;50;0;10",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("rect", {
-      x: "30",
-      y: "10",
-      width: "15",
-      height: "120",
-      rx: "6"
-    }, [
-      h("animate", {
-        attributeName: "height",
-        begin: "0.25s",
-        dur: "1s",
-        values: "120;110;100;90;80;70;60;50;40;140;120",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      }),
-      h("animate", {
-        attributeName: "y",
-        begin: "0.25s",
-        dur: "1s",
-        values: "10;15;20;25;30;35;40;45;50;0;10",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("rect", {
-      x: "60",
-      width: "15",
-      height: "140",
-      rx: "6"
-    }, [
-      h("animate", {
-        attributeName: "height",
-        begin: "0s",
-        dur: "1s",
-        values: "120;110;100;90;80;70;60;50;40;140;120",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      }),
-      h("animate", {
-        attributeName: "y",
-        begin: "0s",
-        dur: "1s",
-        values: "10;15;20;25;30;35;40;45;50;0;10",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("rect", {
-      x: "90",
-      y: "10",
-      width: "15",
-      height: "120",
-      rx: "6"
-    }, [
-      h("animate", {
-        attributeName: "height",
-        begin: "0.25s",
-        dur: "1s",
-        values: "120;110;100;90;80;70;60;50;40;140;120",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      }),
-      h("animate", {
-        attributeName: "y",
-        begin: "0.25s",
-        dur: "1s",
-        values: "10;15;20;25;30;35;40;45;50;0;10",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("rect", {
-      x: "120",
-      y: "10",
-      width: "15",
-      height: "120",
-      rx: "6"
-    }, [
-      h("animate", {
-        attributeName: "height",
-        begin: "0.5s",
-        dur: "1s",
-        values: "120;110;100;90;80;70;60;50;40;140;120",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      }),
-      h("animate", {
-        attributeName: "y",
-        begin: "0.5s",
-        dur: "1s",
-        values: "10;15;20;25;30;35;40;45;50;0;10",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ])
-  ];
+  var innerHTML3 = '<rect y="10" width="15" height="120" rx="6"><animate attributeName="height" begin="0.5s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="y" begin="0.5s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"></animate></rect><rect x="30" y="10" width="15" height="120" rx="6"><animate attributeName="height" begin="0.25s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="y" begin="0.25s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"></animate></rect><rect x="60" width="15" height="140" rx="6"><animate attributeName="height" begin="0s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="y" begin="0s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"></animate></rect><rect x="90" y="10" width="15" height="120" rx="6"><animate attributeName="height" begin="0.25s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="y" begin="0.25s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"></animate></rect><rect x="120" y="10" width="15" height="120" rx="6"><animate attributeName="height" begin="0.5s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="y" begin="0.5s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"></animate></rect>';
   var QSpinnerBars_default = createComponent({
     name: "QSpinnerBars",
     props: useSpinnerProps,
@@ -22246,50 +21925,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 135 140",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg4);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML3
+      });
     }
   });
 
   // src/components/spinner/QSpinnerBox.js
-  var svg5 = [
-    h("rect", {
-      x: "25",
-      y: "25",
-      width: "50",
-      height: "50",
-      fill: "none",
-      "stroke-width": "4",
-      stroke: "currentColor"
-    }, [
-      h("animateTransform", {
-        id: "spinnerBox",
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 50",
-        to: "180 50 50",
-        dur: "0.5s",
-        begin: "rectBox.end"
-      })
-    ]),
-    h("rect", {
-      x: "27",
-      y: "27",
-      width: "46",
-      height: "50",
-      fill: "currentColor"
-    }, [
-      h("animate", {
-        id: "rectBox",
-        attributeName: "height",
-        begin: "0s;spinnerBox.end",
-        dur: "1.3s",
-        from: "50",
-        to: "0",
-        fill: "freeze"
-      })
-    ])
-  ];
+  var innerHTML4 = '<rect x="25" y="25" width="50" height="50" fill="none" stroke-width="4" stroke="currentColor"><animateTransform id="spinnerBox" attributeName="transform" type="rotate" from="0 50 50" to="180 50 50" dur="0.5s" begin="rectBox.end"></animateTransform></rect><rect x="27" y="27" width="46" height="50" fill="currentColor"><animate id="rectBox" attributeName="height" begin="0s;spinnerBox.end" dur="1.3s" from="50" to="0" fill="freeze"></animate></rect>';
   var QSpinnerBox_default = createComponent({
     name: "QSpinnerBox",
     props: useSpinnerProps,
@@ -22301,61 +21944,14 @@
         height: cSize.value,
         viewBox: "0 0 100 100",
         preserveAspectRatio: "xMidYMid",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg5);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML4
+      });
     }
   });
 
   // src/components/spinner/QSpinnerClock.js
-  var svg6 = [
-    h("circle", {
-      cx: "50",
-      cy: "50",
-      r: "48",
-      fill: "none",
-      "stroke-width": "4",
-      "stroke-miterlimit": "10",
-      stroke: "currentColor"
-    }),
-    h("line", {
-      "stroke-linecap": "round",
-      "stroke-width": "4",
-      "stroke-miterlimit": "10",
-      stroke: "currentColor",
-      x1: "50",
-      y1: "50",
-      x2: "85",
-      y2: "50.5"
-    }, [
-      h("animateTransform", {
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 50",
-        to: "360 50 50",
-        dur: "2s",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("line", {
-      "stroke-linecap": "round",
-      "stroke-width": "4",
-      "stroke-miterlimit": "10",
-      stroke: "currentColor",
-      x1: "50",
-      y1: "50",
-      x2: "49.5",
-      y2: "74"
-    }, [
-      h("animateTransform", {
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 50",
-        to: "360 50 50",
-        dur: "15s",
-        repeatCount: "indefinite"
-      })
-    ])
-  ];
+  var innerHTML5 = '<circle cx="50" cy="50" r="48" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="currentColor"></circle><line stroke-linecap="round" stroke-width="4" stroke-miterlimit="10" stroke="currentColor" x1="50" y1="50" x2="85" y2="50.5"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="2s" repeatCount="indefinite"></animateTransform></line><line stroke-linecap="round" stroke-width="4" stroke-miterlimit="10" stroke="currentColor" x1="50" y1="50" x2="49.5" y2="74"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="15s" repeatCount="indefinite"></animateTransform></line>';
   var QSpinnerClock_default = createComponent({
     name: "QSpinnerClock",
     props: useSpinnerProps,
@@ -22367,73 +21963,14 @@
         height: cSize.value,
         viewBox: "0 0 100 100",
         preserveAspectRatio: "xMidYMid",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg6);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML5
+      });
     }
   });
 
   // src/components/spinner/QSpinnerComment.js
-  var svg7 = [
-    h("rect", {
-      x: "0",
-      y: "0",
-      width: "100",
-      height: "100",
-      fill: "none"
-    }),
-    h("path", {
-      d: "M78,19H22c-6.6,0-12,5.4-12,12v31c0,6.6,5.4,12,12,12h37.2c0.4,3,1.8,5.6,3.7,7.6c2.4,2.5,5.1,4.1,9.1,4 c-1.4-2.1-2-7.2-2-10.3c0-0.4,0-0.8,0-1.3h8c6.6,0,12-5.4,12-12V31C90,24.4,84.6,19,78,19z",
-      fill: "currentColor"
-    }),
-    h("circle", {
-      cx: "30",
-      cy: "47",
-      r: "5",
-      fill: "#fff"
-    }, [
-      h("animate", {
-        attributeName: "opacity",
-        from: "0",
-        to: "1",
-        values: "0;1;1",
-        keyTimes: "0;0.2;1",
-        dur: "1s",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "50",
-      cy: "47",
-      r: "5",
-      fill: "#fff"
-    }, [
-      h("animate", {
-        attributeName: "opacity",
-        from: "0",
-        to: "1",
-        values: "0;0;1;1",
-        keyTimes: "0;0.2;0.4;1",
-        dur: "1s",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "70",
-      cy: "47",
-      r: "5",
-      fill: "#fff"
-    }, [
-      h("animate", {
-        attributeName: "opacity",
-        from: "0",
-        to: "1",
-        values: "0;0;1;1",
-        keyTimes: "0;0.4;0.6;1",
-        dur: "1s",
-        repeatCount: "indefinite"
-      })
-    ])
-  ];
+  var innerHTML6 = '<rect x="0" y="0" width="100" height="100" fill="none"></rect><path d="M78,19H22c-6.6,0-12,5.4-12,12v31c0,6.6,5.4,12,12,12h37.2c0.4,3,1.8,5.6,3.7,7.6c2.4,2.5,5.1,4.1,9.1,4 c-1.4-2.1-2-7.2-2-10.3c0-0.4,0-0.8,0-1.3h8c6.6,0,12-5.4,12-12V31C90,24.4,84.6,19,78,19z" fill="currentColor"></path><circle cx="30" cy="47" r="5" fill="#fff"><animate attributeName="opacity" from="0" to="1" values="0;1;1" keyTimes="0;0.2;1" dur="1s" repeatCount="indefinite"></animate></circle><circle cx="50" cy="47" r="5" fill="#fff"><animate attributeName="opacity" from="0" to="1" values="0;0;1;1" keyTimes="0;0.2;0.4;1" dur="1s" repeatCount="indefinite"></animate></circle><circle cx="70" cy="47" r="5" fill="#fff"><animate attributeName="opacity" from="0" to="1" values="0;0;1;1" keyTimes="0;0.4;0.6;1" dur="1s" repeatCount="indefinite"></animate></circle>';
   var QSpinnerComment_default = createComponent({
     name: "QSpinnerComment",
     props: useSpinnerProps,
@@ -22445,121 +21982,14 @@
         height: cSize.value,
         xmlns: "http://www.w3.org/2000/svg",
         viewBox: "0 0 100 100",
-        preserveAspectRatio: "xMidYMid"
-      }, svg7);
+        preserveAspectRatio: "xMidYMid",
+        innerHTML: innerHTML6
+      });
     }
   });
 
   // src/components/spinner/QSpinnerCube.js
-  var svg8 = [
-    h("rect", {
-      x: "0",
-      y: "0",
-      width: "100",
-      height: "100",
-      fill: "none"
-    }),
-    h("g", {
-      transform: "translate(25 25)"
-    }, [
-      h("rect", {
-        x: "-20",
-        y: "-20",
-        width: "40",
-        height: "40",
-        fill: "currentColor",
-        opacity: "0.9"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "scale",
-          from: "1.5",
-          to: "1",
-          repeatCount: "indefinite",
-          begin: "0s",
-          dur: "1s",
-          calcMode: "spline",
-          keySplines: "0.2 0.8 0.2 0.8",
-          keyTimes: "0;1"
-        })
-      ])
-    ]),
-    h("g", {
-      transform: "translate(75 25)"
-    }, [
-      h("rect", {
-        x: "-20",
-        y: "-20",
-        width: "40",
-        height: "40",
-        fill: "currentColor",
-        opacity: "0.8"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "scale",
-          from: "1.5",
-          to: "1",
-          repeatCount: "indefinite",
-          begin: "0.1s",
-          dur: "1s",
-          calcMode: "spline",
-          keySplines: "0.2 0.8 0.2 0.8",
-          keyTimes: "0;1"
-        })
-      ])
-    ]),
-    h("g", {
-      transform: "translate(25 75)"
-    }, [
-      h("rect", {
-        x: "-20",
-        y: "-20",
-        width: "40",
-        height: "40",
-        fill: "currentColor",
-        opacity: "0.7"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "scale",
-          from: "1.5",
-          to: "1",
-          repeatCount: "indefinite",
-          begin: "0.3s",
-          dur: "1s",
-          calcMode: "spline",
-          keySplines: "0.2 0.8 0.2 0.8",
-          keyTimes: "0;1"
-        })
-      ])
-    ]),
-    h("g", {
-      transform: "translate(75 75)"
-    }, [
-      h("rect", {
-        x: "-20",
-        y: "-20",
-        width: "40",
-        height: "40",
-        fill: "currentColor",
-        opacity: "0.6"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "scale",
-          from: "1.5",
-          to: "1",
-          repeatCount: "indefinite",
-          begin: "0.2s",
-          dur: "1s",
-          calcMode: "spline",
-          keySplines: "0.2 0.8 0.2 0.8",
-          keyTimes: "0;1"
-        })
-      ])
-    ])
-  ];
+  var innerHTML7 = '<rect x="0" y="0" width="100" height="100" fill="none"></rect><g transform="translate(25 25)"><rect x="-20" y="-20" width="40" height="40" fill="currentColor" opacity="0.9"><animateTransform attributeName="transform" type="scale" from="1.5" to="1" repeatCount="indefinite" begin="0s" dur="1s" calcMode="spline" keySplines="0.2 0.8 0.2 0.8" keyTimes="0;1"></animateTransform></rect></g><g transform="translate(75 25)"><rect x="-20" y="-20" width="40" height="40" fill="currentColor" opacity="0.8"><animateTransform attributeName="transform" type="scale" from="1.5" to="1" repeatCount="indefinite" begin="0.1s" dur="1s" calcMode="spline" keySplines="0.2 0.8 0.2 0.8" keyTimes="0;1"></animateTransform></rect></g><g transform="translate(25 75)"><rect x="-20" y="-20" width="40" height="40" fill="currentColor" opacity="0.7"><animateTransform attributeName="transform" type="scale" from="1.5" to="1" repeatCount="indefinite" begin="0.3s" dur="1s" calcMode="spline" keySplines="0.2 0.8 0.2 0.8" keyTimes="0;1"></animateTransform></rect></g><g transform="translate(75 75)"><rect x="-20" y="-20" width="40" height="40" fill="currentColor" opacity="0.6"><animateTransform attributeName="transform" type="scale" from="1.5" to="1" repeatCount="indefinite" begin="0.2s" dur="1s" calcMode="spline" keySplines="0.2 0.8 0.2 0.8" keyTimes="0;1"></animateTransform></rect></g>';
   var QSpinnerCube_default = createComponent({
     name: "QSpinnerCube",
     props: useSpinnerProps,
@@ -22571,93 +22001,14 @@
         height: cSize.value,
         xmlns: "http://www.w3.org/2000/svg",
         viewBox: "0 0 100 100",
-        preserveAspectRatio: "xMidYMid"
-      }, svg8);
+        preserveAspectRatio: "xMidYMid",
+        innerHTML: innerHTML7
+      });
     }
   });
 
   // src/components/spinner/QSpinnerDots.js
-  var svg9 = [
-    h("circle", {
-      cx: "15",
-      cy: "15",
-      r: "15"
-    }, [
-      h("animate", {
-        attributeName: "r",
-        from: "15",
-        to: "15",
-        begin: "0s",
-        dur: "0.8s",
-        values: "15;9;15",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      }),
-      h("animate", {
-        attributeName: "fill-opacity",
-        from: "1",
-        to: "1",
-        begin: "0s",
-        dur: "0.8s",
-        values: "1;.5;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "60",
-      cy: "15",
-      r: "9",
-      "fill-opacity": ".3"
-    }, [
-      h("animate", {
-        attributeName: "r",
-        from: "9",
-        to: "9",
-        begin: "0s",
-        dur: "0.8s",
-        values: "9;15;9",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      }),
-      h("animate", {
-        attributeName: "fill-opacity",
-        from: ".5",
-        to: ".5",
-        begin: "0s",
-        dur: "0.8s",
-        values: ".5;1;.5",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "105",
-      cy: "15",
-      r: "15"
-    }, [
-      h("animate", {
-        attributeName: "r",
-        from: "15",
-        to: "15",
-        begin: "0s",
-        dur: "0.8s",
-        values: "15;9;15",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      }),
-      h("animate", {
-        attributeName: "fill-opacity",
-        from: "1",
-        to: "1",
-        begin: "0s",
-        dur: "0.8s",
-        values: "1;.5;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ])
-  ];
+  var innerHTML8 = '<circle cx="15" cy="15" r="15"><animate attributeName="r" from="15" to="15" begin="0s" dur="0.8s" values="15;9;15" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="fill-opacity" from="1" to="1" begin="0s" dur="0.8s" values="1;.5;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="60" cy="15" r="9" fill-opacity=".3"><animate attributeName="r" from="9" to="9" begin="0s" dur="0.8s" values="9;15;9" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="fill-opacity" from=".5" to=".5" begin="0s" dur="0.8s" values=".5;1;.5" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="105" cy="15" r="15"><animate attributeName="r" from="15" to="15" begin="0s" dur="0.8s" values="15;9;15" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="fill-opacity" from="1" to="1" begin="0s" dur="0.8s" values="1;.5;1" calcMode="linear" repeatCount="indefinite"></animate></circle>';
   var QSpinnerDots_default = createComponent({
     name: "QSpinnerDots",
     props: useSpinnerProps,
@@ -22669,92 +22020,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 120 30",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg9);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML8
+      });
     }
   });
 
   // src/components/spinner/QSpinnerFacebook.js
-  var svg10 = [
-    h("g", {
-      transform: "translate(20 50)"
-    }, [
-      h("rect", {
-        x: "-10",
-        y: "-30",
-        width: "20",
-        height: "60",
-        fill: "currentColor",
-        opacity: "0.6"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "scale",
-          from: "2",
-          to: "1",
-          begin: "0s",
-          repeatCount: "indefinite",
-          dur: "1s",
-          calcMode: "spline",
-          keySplines: "0.1 0.9 0.4 1",
-          keyTimes: "0;1",
-          values: "2;1"
-        })
-      ])
-    ]),
-    h("g", {
-      transform: "translate(50 50)"
-    }, [
-      h("rect", {
-        x: "-10",
-        y: "-30",
-        width: "20",
-        height: "60",
-        fill: "currentColor",
-        opacity: "0.8"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "scale",
-          from: "2",
-          to: "1",
-          begin: "0.1s",
-          repeatCount: "indefinite",
-          dur: "1s",
-          calcMode: "spline",
-          keySplines: "0.1 0.9 0.4 1",
-          keyTimes: "0;1",
-          values: "2;1"
-        })
-      ])
-    ]),
-    h("g", {
-      transform: "translate(80 50)"
-    }, [
-      h("rect", {
-        x: "-10",
-        y: "-30",
-        width: "20",
-        height: "60",
-        fill: "currentColor",
-        opacity: "0.9"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "scale",
-          from: "2",
-          to: "1",
-          begin: "0.2s",
-          repeatCount: "indefinite",
-          dur: "1s",
-          calcMode: "spline",
-          keySplines: "0.1 0.9 0.4 1",
-          keyTimes: "0;1",
-          values: "2;1"
-        })
-      ])
-    ])
-  ];
+  var innerHTML9 = '<g transform="translate(20 50)"><rect x="-10" y="-30" width="20" height="60" fill="currentColor" opacity="0.6"><animateTransform attributeName="transform" type="scale" from="2" to="1" begin="0s" repeatCount="indefinite" dur="1s" calcMode="spline" keySplines="0.1 0.9 0.4 1" keyTimes="0;1" values="2;1"></animateTransform></rect></g><g transform="translate(50 50)"><rect x="-10" y="-30" width="20" height="60" fill="currentColor" opacity="0.8"><animateTransform attributeName="transform" type="scale" from="2" to="1" begin="0.1s" repeatCount="indefinite" dur="1s" calcMode="spline" keySplines="0.1 0.9 0.4 1" keyTimes="0;1" values="2;1"></animateTransform></rect></g><g transform="translate(80 50)"><rect x="-10" y="-30" width="20" height="60" fill="currentColor" opacity="0.9"><animateTransform attributeName="transform" type="scale" from="2" to="1" begin="0.2s" repeatCount="indefinite" dur="1s" calcMode="spline" keySplines="0.1 0.9 0.4 1" keyTimes="0;1" values="2;1"></animateTransform></rect></g>';
   var QSpinnerFacebook_default = createComponent({
     name: "QSpinnerFacebook",
     props: useSpinnerProps,
@@ -22766,48 +22039,14 @@
         height: cSize.value,
         viewBox: "0 0 100 100",
         xmlns: "http://www.w3.org/2000/svg",
-        preserveAspectRatio: "xMidYMid"
-      }, svg10);
+        preserveAspectRatio: "xMidYMid",
+        innerHTML: innerHTML9
+      });
     }
   });
 
   // src/components/spinner/QSpinnerGears.js
-  var svg11 = [
-    h("g", {
-      transform: "translate(-20,-20)"
-    }, [
-      h("path", {
-        d: "M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z",
-        fill: "currentColor"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "rotate",
-          from: "90 50 50",
-          to: "0 50 50",
-          dur: "1s",
-          repeatCount: "indefinite"
-        })
-      ])
-    ]),
-    h("g", {
-      transform: "translate(20,20) rotate(15 50 50)"
-    }, [
-      h("path", {
-        d: "M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z",
-        fill: "currentColor"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "rotate",
-          from: "0 50 50",
-          to: "90 50 50",
-          dur: "1s",
-          repeatCount: "indefinite"
-        })
-      ])
-    ])
-  ];
+  var innerHTML10 = '<g transform="translate(-20,-20)"><path d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z" fill="currentColor"><animateTransform attributeName="transform" type="rotate" from="90 50 50" to="0 50 50" dur="1s" repeatCount="indefinite"></animateTransform></path></g><g transform="translate(20,20) rotate(15 50 50)"><path d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z" fill="currentColor"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="90 50 50" dur="1s" repeatCount="indefinite"></animateTransform></path></g>';
   var QSpinnerGears_default = createComponent({
     name: "QSpinnerGears",
     props: useSpinnerProps,
@@ -22819,141 +22058,14 @@
         height: cSize.value,
         viewBox: "0 0 100 100",
         preserveAspectRatio: "xMidYMid",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg11);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML10
+      });
     }
   });
 
   // src/components/spinner/QSpinnerGrid.js
-  var svg12 = [
-    h("circle", {
-      cx: "12.5",
-      cy: "12.5",
-      r: "12.5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "0s",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "12.5",
-      cy: "52.5",
-      r: "12.5",
-      "fill-opacity": ".5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "100ms",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "52.5",
-      cy: "12.5",
-      r: "12.5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "300ms",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "52.5",
-      cy: "52.5",
-      r: "12.5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "600ms",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "92.5",
-      cy: "12.5",
-      r: "12.5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "800ms",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "92.5",
-      cy: "52.5",
-      r: "12.5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "400ms",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "12.5",
-      cy: "92.5",
-      r: "12.5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "700ms",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "52.5",
-      cy: "92.5",
-      r: "12.5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "500ms",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("circle", {
-      cx: "92.5",
-      cy: "92.5",
-      r: "12.5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "200ms",
-        dur: "1s",
-        values: "1;.2;1",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ])
-  ];
+  var innerHTML11 = '<circle cx="12.5" cy="12.5" r="12.5"><animate attributeName="fill-opacity" begin="0s" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="12.5" cy="52.5" r="12.5" fill-opacity=".5"><animate attributeName="fill-opacity" begin="100ms" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="52.5" cy="12.5" r="12.5"><animate attributeName="fill-opacity" begin="300ms" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="52.5" cy="52.5" r="12.5"><animate attributeName="fill-opacity" begin="600ms" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="92.5" cy="12.5" r="12.5"><animate attributeName="fill-opacity" begin="800ms" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="92.5" cy="52.5" r="12.5"><animate attributeName="fill-opacity" begin="400ms" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="12.5" cy="92.5" r="12.5"><animate attributeName="fill-opacity" begin="700ms" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="52.5" cy="92.5" r="12.5"><animate attributeName="fill-opacity" begin="500ms" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="92.5" cy="92.5" r="12.5"><animate attributeName="fill-opacity" begin="200ms" dur="1s" values="1;.2;1" calcMode="linear" repeatCount="indefinite"></animate></circle>';
   var QSpinnerGrid_default = createComponent({
     name: "QSpinnerGrid",
     props: useSpinnerProps,
@@ -22965,43 +22077,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 105 105",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg12);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML11
+      });
     }
   });
 
   // src/components/spinner/QSpinnerHearts.js
-  var svg13 = [
-    h("path", {
-      d: "M30.262 57.02L7.195 40.723c-5.84-3.976-7.56-12.06-3.842-18.063 3.715-6 11.467-7.65 17.306-3.68l4.52 3.76 2.6-5.274c3.716-6.002 11.47-7.65 17.304-3.68 5.84 3.97 7.56 12.054 3.842 18.062L34.49 56.118c-.897 1.512-2.793 1.915-4.228.9z",
-      "fill-opacity": ".5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "0s",
-        dur: "1.4s",
-        values: "0.5;1;0.5",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("path", {
-      d: "M105.512 56.12l-14.44-24.272c-3.716-6.008-1.996-14.093 3.843-18.062 5.835-3.97 13.588-2.322 17.306 3.68l2.6 5.274 4.52-3.76c5.84-3.97 13.593-2.32 17.308 3.68 3.718 6.003 1.998 14.088-3.842 18.064L109.74 57.02c-1.434 1.014-3.33.61-4.228-.9z",
-      "fill-opacity": ".5"
-    }, [
-      h("animate", {
-        attributeName: "fill-opacity",
-        begin: "0.7s",
-        dur: "1.4s",
-        values: "0.5;1;0.5",
-        calcMode: "linear",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("path", {
-      d: "M67.408 57.834l-23.01-24.98c-5.864-6.15-5.864-16.108 0-22.248 5.86-6.14 15.37-6.14 21.234 0L70 16.168l4.368-5.562c5.863-6.14 15.375-6.14 21.235 0 5.863 6.14 5.863 16.098 0 22.247l-23.007 24.98c-1.43 1.556-3.757 1.556-5.188 0z"
-    })
-  ];
+  var innerHTML12 = '<path d="M30.262 57.02L7.195 40.723c-5.84-3.976-7.56-12.06-3.842-18.063 3.715-6 11.467-7.65 17.306-3.68l4.52 3.76 2.6-5.274c3.716-6.002 11.47-7.65 17.304-3.68 5.84 3.97 7.56 12.054 3.842 18.062L34.49 56.118c-.897 1.512-2.793 1.915-4.228.9z" fill-opacity=".5"><animate attributeName="fill-opacity" begin="0s" dur="1.4s" values="0.5;1;0.5" calcMode="linear" repeatCount="indefinite"></animate></path><path d="M105.512 56.12l-14.44-24.272c-3.716-6.008-1.996-14.093 3.843-18.062 5.835-3.97 13.588-2.322 17.306 3.68l2.6 5.274 4.52-3.76c5.84-3.97 13.593-2.32 17.308 3.68 3.718 6.003 1.998 14.088-3.842 18.064L109.74 57.02c-1.434 1.014-3.33.61-4.228-.9z" fill-opacity=".5"><animate attributeName="fill-opacity" begin="0.7s" dur="1.4s" values="0.5;1;0.5" calcMode="linear" repeatCount="indefinite"></animate></path><path d="M67.408 57.834l-23.01-24.98c-5.864-6.15-5.864-16.108 0-22.248 5.86-6.14 15.37-6.14 21.234 0L70 16.168l4.368-5.562c5.863-6.14 15.375-6.14 21.235 0 5.863 6.14 5.863 16.098 0 22.247l-23.007 24.98c-1.43 1.556-3.757 1.556-5.188 0z"></path>';
   var QSpinnerHearts_default = createComponent({
     name: "QSpinnerHearts",
     props: useSpinnerProps,
@@ -23013,101 +22096,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 140 64",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg13);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML12
+      });
     }
   });
 
   // src/components/spinner/QSpinnerHourglass.js
-  var svg14 = [
-    h("g", [
-      h("path", {
-        fill: "none",
-        stroke: "currentColor",
-        "stroke-width": "5",
-        "stroke-miterlimit": "10",
-        d: "M58.4,51.7c-0.9-0.9-1.4-2-1.4-2.3s0.5-0.4,1.4-1.4 C70.8,43.8,79.8,30.5,80,15.5H70H30H20c0.2,15,9.2,28.1,21.6,32.3c0.9,0.9,1.4,1.2,1.4,1.5s-0.5,1.6-1.4,2.5 C29.2,56.1,20.2,69.5,20,85.5h10h40h10C79.8,69.5,70.8,55.9,58.4,51.7z"
-      }),
-      h("clipPath", {
-        id: "uil-hourglass-clip1"
-      }, [
-        h("rect", {
-          x: "15",
-          y: "20",
-          width: "70",
-          height: "25"
-        }, [
-          h("animate", {
-            attributeName: "height",
-            from: "25",
-            to: "0",
-            dur: "1s",
-            repeatCount: "indefinite",
-            values: "25;0;0",
-            keyTimes: "0;0.5;1"
-          }),
-          h("animate", {
-            attributeName: "y",
-            from: "20",
-            to: "45",
-            dur: "1s",
-            repeatCount: "indefinite",
-            values: "20;45;45",
-            keyTimes: "0;0.5;1"
-          })
-        ])
-      ]),
-      h("clipPath", {
-        id: "uil-hourglass-clip2"
-      }, [
-        h("rect", {
-          x: "15",
-          y: "55",
-          width: "70",
-          height: "25"
-        }, [
-          h("animate", {
-            attributeName: "height",
-            from: "0",
-            to: "25",
-            dur: "1s",
-            repeatCount: "indefinite",
-            values: "0;25;25",
-            keyTimes: "0;0.5;1"
-          }),
-          h("animate", {
-            attributeName: "y",
-            from: "80",
-            to: "55",
-            dur: "1s",
-            repeatCount: "indefinite",
-            values: "80;55;55",
-            keyTimes: "0;0.5;1"
-          })
-        ])
-      ]),
-      h("path", {
-        d: "M29,23c3.1,11.4,11.3,19.5,21,19.5S67.9,34.4,71,23H29z",
-        "clip-path": "url(#uil-hourglass-clip1)",
-        fill: "currentColor"
-      }),
-      h("path", {
-        d: "M71.6,78c-3-11.6-11.5-20-21.5-20s-18.5,8.4-21.5,20H71.6z",
-        "clip-path": "url(#uil-hourglass-clip2)",
-        fill: "currentColor"
-      }),
-      h("animateTransform", {
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 50",
-        to: "180 50 50",
-        repeatCount: "indefinite",
-        dur: "1s",
-        values: "0 50 50;0 50 50;180 50 50",
-        keyTimes: "0;0.7;1"
-      })
-    ])
-  ];
+  var innerHTML13 = '<g><path fill="none" stroke="currentColor" stroke-width="5" stroke-miterlimit="10" d="M58.4,51.7c-0.9-0.9-1.4-2-1.4-2.3s0.5-0.4,1.4-1.4 C70.8,43.8,79.8,30.5,80,15.5H70H30H20c0.2,15,9.2,28.1,21.6,32.3c0.9,0.9,1.4,1.2,1.4,1.5s-0.5,1.6-1.4,2.5 C29.2,56.1,20.2,69.5,20,85.5h10h40h10C79.8,69.5,70.8,55.9,58.4,51.7z"></path><clipPath id="uil-hourglass-clip1"><rect x="15" y="20" width="70" height="25"><animate attributeName="height" from="25" to="0" dur="1s" repeatCount="indefinite" values="25;0;0" keyTimes="0;0.5;1"></animate><animate attributeName="y" from="20" to="45" dur="1s" repeatCount="indefinite" values="20;45;45" keyTimes="0;0.5;1"></animate></rect></clipPath><clipPath id="uil-hourglass-clip2"><rect x="15" y="55" width="70" height="25"><animate attributeName="height" from="0" to="25" dur="1s" repeatCount="indefinite" values="0;25;25" keyTimes="0;0.5;1"></animate><animate attributeName="y" from="80" to="55" dur="1s" repeatCount="indefinite" values="80;55;55" keyTimes="0;0.5;1"></animate></rect></clipPath><path d="M29,23c3.1,11.4,11.3,19.5,21,19.5S67.9,34.4,71,23H29z" clip-path="url(#uil-hourglass-clip1)" fill="currentColor"></path><path d="M71.6,78c-3-11.6-11.5-20-21.5-20s-18.5,8.4-21.5,20H71.6z" clip-path="url(#uil-hourglass-clip2)" fill="currentColor"></path><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="180 50 50" repeatCount="indefinite" dur="1s" values="0 50 50;0 50 50;180 50 50" keyTimes="0;0.7;1"></animateTransform></g>';
   var QSpinnerHourglass_default = createComponent({
     name: "QSpinnerHourglass",
     props: useSpinnerProps,
@@ -23119,32 +22115,14 @@
         height: cSize.value,
         viewBox: "0 0 100 100",
         preserveAspectRatio: "xMidYMid",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg14);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML13
+      });
     }
   });
 
   // src/components/spinner/QSpinnerInfinity.js
-  var svg15 = [
-    h("path", {
-      d: "M24.3,30C11.4,30,5,43.3,5,50s6.4,20,19.3,20c19.3,0,32.1-40,51.4-40C88.6,30,95,43.3,95,50s-6.4,20-19.3,20C56.4,70,43.6,30,24.3,30z",
-      fill: "none",
-      stroke: "currentColor",
-      "stroke-width": "8",
-      "stroke-dasharray": "10.691205342610678 10.691205342610678",
-      "stroke-dashoffset": "0"
-    }, [
-      h("animate", {
-        attributeName: "stroke-dashoffset",
-        from: "0",
-        to: "21.382410685221355",
-        begin: "0",
-        dur: "2s",
-        repeatCount: "indefinite",
-        fill: "freeze"
-      })
-    ])
-  ];
+  var innerHTML14 = '<path d="M24.3,30C11.4,30,5,43.3,5,50s6.4,20,19.3,20c19.3,0,32.1-40,51.4-40C88.6,30,95,43.3,95,50s-6.4,20-19.3,20C56.4,70,43.6,30,24.3,30z" fill="none" stroke="currentColor" stroke-width="8" stroke-dasharray="10.691205342610678 10.691205342610678" stroke-dashoffset="0"><animate attributeName="stroke-dashoffset" from="0" to="21.382410685221355" begin="0" dur="2s" repeatCount="indefinite" fill="freeze"></animate></path>';
   var QSpinnerInfinity_default = createComponent({
     name: "QSpinnerInfinity",
     props: useSpinnerProps,
@@ -23155,163 +22133,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 100 100",
-        preserveAspectRatio: "xMidYMid"
-      }, svg15);
+        preserveAspectRatio: "xMidYMid",
+        innerHTML: innerHTML14
+      });
     }
   });
 
   // src/components/spinner/QSpinnerIos.js
-  var svg16 = [
-    h("g", {
-      "stroke-width": "4",
-      "stroke-linecap": "round"
-    }, [
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(180)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: "1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0;1",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(210)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: "0;1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(240)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".1;0;1;.85;.7;.65;.55;.45;.35;.25;.15;.1",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(270)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".15;.1;0;1;.85;.7;.65;.55;.45;.35;.25;.15",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(300)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".25;.15;.1;0;1;.85;.7;.65;.55;.45;.35;.25",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(330)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".35;.25;.15;.1;0;1;.85;.7;.65;.55;.45;.35",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(0)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".45;.35;.25;.15;.1;0;1;.85;.7;.65;.55;.45",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(30)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".55;.45;.35;.25;.15;.1;0;1;.85;.7;.65;.55",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(60)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".65;.55;.45;.35;.25;.15;.1;0;1;.85;.7;.65",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(90)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".7;.65;.55;.45;.35;.25;.15;.1;0;1;.85;.7",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(120)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: ".85;.7;.65;.55;.45;.35;.25;.15;.1;0;1;.85",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("line", {
-        y1: "17",
-        y2: "29",
-        transform: "translate(32,32) rotate(150)"
-      }, [
-        h("animate", {
-          attributeName: "stroke-opacity",
-          dur: "750ms",
-          values: "1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0;1",
-          repeatCount: "indefinite"
-        })
-      ])
-    ])
-  ];
+  var innerHTML15 = '<g stroke-width="4" stroke-linecap="round"><line y1="17" y2="29" transform="translate(32,32) rotate(180)"><animate attributeName="stroke-opacity" dur="750ms" values="1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0;1" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(210)"><animate attributeName="stroke-opacity" dur="750ms" values="0;1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(240)"><animate attributeName="stroke-opacity" dur="750ms" values=".1;0;1;.85;.7;.65;.55;.45;.35;.25;.15;.1" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(270)"><animate attributeName="stroke-opacity" dur="750ms" values=".15;.1;0;1;.85;.7;.65;.55;.45;.35;.25;.15" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(300)"><animate attributeName="stroke-opacity" dur="750ms" values=".25;.15;.1;0;1;.85;.7;.65;.55;.45;.35;.25" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(330)"><animate attributeName="stroke-opacity" dur="750ms" values=".35;.25;.15;.1;0;1;.85;.7;.65;.55;.45;.35" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(0)"><animate attributeName="stroke-opacity" dur="750ms" values=".45;.35;.25;.15;.1;0;1;.85;.7;.65;.55;.45" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(30)"><animate attributeName="stroke-opacity" dur="750ms" values=".55;.45;.35;.25;.15;.1;0;1;.85;.7;.65;.55" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(60)"><animate attributeName="stroke-opacity" dur="750ms" values=".65;.55;.45;.35;.25;.15;.1;0;1;.85;.7;.65" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(90)"><animate attributeName="stroke-opacity" dur="750ms" values=".7;.65;.55;.45;.35;.25;.15;.1;0;1;.85;.7" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(120)"><animate attributeName="stroke-opacity" dur="750ms" values=".85;.7;.65;.55;.45;.35;.25;.15;.1;0;1;.85" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(150)"><animate attributeName="stroke-opacity" dur="750ms" values="1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0;1" repeatCount="indefinite"></animate></line></g>';
   var QSpinnerIos_default = createComponent({
     name: "QSpinnerIos",
     props: useSpinnerProps,
@@ -23323,40 +22152,14 @@
         height: cSize.value,
         stroke: "currentColor",
         fill: "currentColor",
-        viewBox: "0 0 64 64"
-      }, svg16);
+        viewBox: "0 0 64 64",
+        innerHTML: innerHTML15
+      });
     }
   });
 
   // src/components/spinner/QSpinnerOrbit.js
-  var svg17 = [
-    h("circle", {
-      cx: "50",
-      cy: "50",
-      r: "44",
-      fill: "none",
-      "stroke-width": "4",
-      "stroke-opacity": ".5",
-      stroke: "currentColor"
-    }),
-    h("circle", {
-      cx: "8",
-      cy: "54",
-      r: "6",
-      fill: "currentColor",
-      "stroke-width": "3",
-      stroke: "currentColor"
-    }, [
-      h("animateTransform", {
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 48",
-        to: "360 50 52",
-        dur: "2s",
-        repeatCount: "indefinite"
-      })
-    ])
-  ];
+  var innerHTML16 = '<circle cx="50" cy="50" r="44" fill="none" stroke-width="4" stroke-opacity=".5" stroke="currentColor"></circle><circle cx="8" cy="54" r="6" fill="currentColor" stroke-width="3" stroke="currentColor"><animateTransform attributeName="transform" type="rotate" from="0 50 48" to="360 50 52" dur="2s" repeatCount="indefinite"></animateTransform></circle>';
   var QSpinnerOrbit_default = createComponent({
     name: "QSpinnerOrbit",
     props: useSpinnerProps,
@@ -23368,39 +22171,14 @@
         height: cSize.value,
         viewBox: "0 0 100 100",
         preserveAspectRatio: "xMidYMid",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg17);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML16
+      });
     }
   });
 
   // src/components/spinner/QSpinnerOval.js
-  var svg18 = [
-    h("g", {
-      transform: "translate(1 1)",
-      "stroke-width": "2",
-      fill: "none",
-      "fill-rule": "evenodd"
-    }, [
-      h("circle", {
-        "stroke-opacity": ".5",
-        cx: "18",
-        cy: "18",
-        r: "18"
-      }),
-      h("path", {
-        d: "M36 18c0-9.94-8.06-18-18-18"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "rotate",
-          from: "0 18 18",
-          to: "360 18 18",
-          dur: "1s",
-          repeatCount: "indefinite"
-        })
-      ])
-    ])
-  ];
+  var innerHTML17 = '<g transform="translate(1 1)" stroke-width="2" fill="none" fill-rule="evenodd"><circle stroke-opacity=".5" cx="18" cy="18" r="18"></circle><path d="M36 18c0-9.94-8.06-18-18-18"><animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"></animateTransform></path></g>';
   var QSpinnerOval_default = createComponent({
     name: "QSpinnerOval",
     props: useSpinnerProps,
@@ -23412,70 +22190,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 38 38",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg18);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML17
+      });
     }
   });
 
   // src/components/spinner/QSpinnerPie.js
-  var svg19 = [
-    h("path", {
-      d: "M0 50A50 50 0 0 1 50 0L50 50L0 50",
-      fill: "currentColor",
-      opacity: "0.5"
-    }, [
-      h("animateTransform", {
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 50",
-        to: "360 50 50",
-        dur: "0.8s",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("path", {
-      d: "M50 0A50 50 0 0 1 100 50L50 50L50 0",
-      fill: "currentColor",
-      opacity: "0.5"
-    }, [
-      h("animateTransform", {
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 50",
-        to: "360 50 50",
-        dur: "1.6s",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("path", {
-      d: "M100 50A50 50 0 0 1 50 100L50 50L100 50",
-      fill: "currentColor",
-      opacity: "0.5"
-    }, [
-      h("animateTransform", {
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 50",
-        to: "360 50 50",
-        dur: "2.4s",
-        repeatCount: "indefinite"
-      })
-    ]),
-    h("path", {
-      d: "M50 100A50 50 0 0 1 0 50L50 50L50 100",
-      fill: "currentColor",
-      opacity: "0.5"
-    }, [
-      h("animateTransform", {
-        attributeName: "transform",
-        type: "rotate",
-        from: "0 50 50",
-        to: "360 50 50",
-        dur: "3.2s",
-        repeatCount: "indefinite"
-      })
-    ])
-  ];
+  var innerHTML18 = '<path d="M0 50A50 50 0 0 1 50 0L50 50L0 50" fill="currentColor" opacity="0.5"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="0.8s" repeatCount="indefinite"></animateTransform></path><path d="M50 0A50 50 0 0 1 100 50L50 50L50 0" fill="currentColor" opacity="0.5"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1.6s" repeatCount="indefinite"></animateTransform></path><path d="M100 50A50 50 0 0 1 50 100L50 50L100 50" fill="currentColor" opacity="0.5"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="2.4s" repeatCount="indefinite"></animateTransform></path><path d="M50 100A50 50 0 0 1 0 50L50 50L50 100" fill="currentColor" opacity="0.5"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="3.2s" repeatCount="indefinite"></animateTransform></path>';
   var QSpinnerPie_default = createComponent({
     name: "QSpinnerPie",
     props: useSpinnerProps,
@@ -23487,72 +22209,14 @@
         height: cSize.value,
         viewBox: "0 0 100 100",
         preserveAspectRatio: "xMidYMid",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg19);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML18
+      });
     }
   });
 
   // src/components/spinner/QSpinnerPuff.js
-  var svg20 = [
-    h("g", {
-      fill: "none",
-      "fill-rule": "evenodd",
-      "stroke-width": "2"
-    }, [
-      h("circle", {
-        cx: "22",
-        cy: "22",
-        r: "1"
-      }, [
-        h("animate", {
-          attributeName: "r",
-          begin: "0s",
-          dur: "1.8s",
-          values: "1; 20",
-          calcMode: "spline",
-          keyTimes: "0; 1",
-          keySplines: "0.165, 0.84, 0.44, 1",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "stroke-opacity",
-          begin: "0s",
-          dur: "1.8s",
-          values: "1; 0",
-          calcMode: "spline",
-          keyTimes: "0; 1",
-          keySplines: "0.3, 0.61, 0.355, 1",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("circle", {
-        cx: "22",
-        cy: "22",
-        r: "1"
-      }, [
-        h("animate", {
-          attributeName: "r",
-          begin: "-0.9s",
-          dur: "1.8s",
-          values: "1; 20",
-          calcMode: "spline",
-          keyTimes: "0; 1",
-          keySplines: "0.165, 0.84, 0.44, 1",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "stroke-opacity",
-          begin: "-0.9s",
-          dur: "1.8s",
-          values: "1; 0",
-          calcMode: "spline",
-          keyTimes: "0; 1",
-          keySplines: "0.3, 0.61, 0.355, 1",
-          repeatCount: "indefinite"
-        })
-      ])
-    ])
-  ];
+  var innerHTML19 = '<g fill="none" fill-rule="evenodd" stroke-width="2"><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="0s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"></animate><animate attributeName="stroke-opacity" begin="0s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"></animate></circle><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="-0.9s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"></animate><animate attributeName="stroke-opacity" begin="-0.9s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"></animate></circle></g>';
   var QSpinnerPuff_default = createComponent({
     name: "QSpinnerPuff",
     props: useSpinnerProps,
@@ -23564,65 +22228,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 44 44",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg20);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML19
+      });
     }
   });
 
   // src/components/spinner/QSpinnerRadio.js
-  var svg21 = [
-    h("g", {
-      transform: "scale(0.55)"
-    }, [
-      h("circle", {
-        cx: "30",
-        cy: "150",
-        r: "30",
-        fill: "currentColor"
-      }, [
-        h("animate", {
-          attributeName: "opacity",
-          from: "0",
-          to: "1",
-          dur: "1s",
-          begin: "0",
-          repeatCount: "indefinite",
-          keyTimes: "0;0.5;1",
-          values: "0;1;1"
-        })
-      ]),
-      h("path", {
-        d: "M90,150h30c0-49.7-40.3-90-90-90v30C63.1,90,90,116.9,90,150z",
-        fill: "currentColor"
-      }, [
-        h("animate", {
-          attributeName: "opacity",
-          from: "0",
-          to: "1",
-          dur: "1s",
-          begin: "0.1",
-          repeatCount: "indefinite",
-          keyTimes: "0;0.5;1",
-          values: "0;1;1"
-        })
-      ]),
-      h("path", {
-        d: "M150,150h30C180,67.2,112.8,0,30,0v30C96.3,30,150,83.7,150,150z",
-        fill: "currentColor"
-      }, [
-        h("animate", {
-          attributeName: "opacity",
-          from: "0",
-          to: "1",
-          dur: "1s",
-          begin: "0.2",
-          repeatCount: "indefinite",
-          keyTimes: "0;0.5;1",
-          values: "0;1;1"
-        })
-      ])
-    ])
-  ];
+  var innerHTML20 = '<g transform="scale(0.55)"><circle cx="30" cy="150" r="30" fill="currentColor"><animate attributeName="opacity" from="0" to="1" dur="1s" begin="0" repeatCount="indefinite" keyTimes="0;0.5;1" values="0;1;1"></animate></circle><path d="M90,150h30c0-49.7-40.3-90-90-90v30C63.1,90,90,116.9,90,150z" fill="currentColor"><animate attributeName="opacity" from="0" to="1" dur="1s" begin="0.1" repeatCount="indefinite" keyTimes="0;0.5;1" values="0;1;1"></animate></path><path d="M150,150h30C180,67.2,112.8,0,30,0v30C96.3,30,150,83.7,150,150z" fill="currentColor"><animate attributeName="opacity" from="0" to="1" dur="1s" begin="0.2" repeatCount="indefinite" keyTimes="0;0.5;1" values="0;1;1"></animate></path></g>';
   var QSpinnerRadio_default = createComponent({
     name: "QSpinnerRadio",
     props: useSpinnerProps,
@@ -23634,95 +22247,14 @@
         height: cSize.value,
         viewBox: "0 0 100 100",
         preserveAspectRatio: "xMidYMid",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg21);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML20
+      });
     }
   });
 
   // src/components/spinner/QSpinnerRings.js
-  var svg22 = [
-    h("g", {
-      fill: "none",
-      "fill-rule": "evenodd",
-      transform: "translate(1 1)",
-      "stroke-width": "2"
-    }, [
-      h("circle", {
-        cx: "22",
-        cy: "22",
-        r: "6"
-      }, [
-        h("animate", {
-          attributeName: "r",
-          begin: "1.5s",
-          dur: "3s",
-          values: "6;22",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "stroke-opacity",
-          begin: "1.5s",
-          dur: "3s",
-          values: "1;0",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "stroke-width",
-          begin: "1.5s",
-          dur: "3s",
-          values: "2;0",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("circle", {
-        cx: "22",
-        cy: "22",
-        r: "6"
-      }, [
-        h("animate", {
-          attributeName: "r",
-          begin: "3s",
-          dur: "3s",
-          values: "6;22",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "stroke-opacity",
-          begin: "3s",
-          dur: "3s",
-          values: "1;0",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        }),
-        h("animate", {
-          attributeName: "stroke-width",
-          begin: "3s",
-          dur: "3s",
-          values: "2;0",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("circle", {
-        cx: "22",
-        cy: "22",
-        r: "8"
-      }, [
-        h("animate", {
-          attributeName: "r",
-          begin: "0s",
-          dur: "1.5s",
-          values: "6;1;2;3;4;5;6",
-          calcMode: "linear",
-          repeatCount: "indefinite"
-        })
-      ])
-    ])
-  ];
+  var innerHTML21 = '<g fill="none" fill-rule="evenodd" transform="translate(1 1)" stroke-width="2"><circle cx="22" cy="22" r="6"><animate attributeName="r" begin="1.5s" dur="3s" values="6;22" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="stroke-opacity" begin="1.5s" dur="3s" values="1;0" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="stroke-width" begin="1.5s" dur="3s" values="2;0" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="22" cy="22" r="6"><animate attributeName="r" begin="3s" dur="3s" values="6;22" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="stroke-opacity" begin="3s" dur="3s" values="1;0" calcMode="linear" repeatCount="indefinite"></animate><animate attributeName="stroke-width" begin="3s" dur="3s" values="2;0" calcMode="linear" repeatCount="indefinite"></animate></circle><circle cx="22" cy="22" r="8"><animate attributeName="r" begin="0s" dur="1.5s" values="6;1;2;3;4;5;6" calcMode="linear" repeatCount="indefinite"></animate></circle></g>';
   var QSpinnerRings_default = createComponent({
     name: "QSpinnerRings",
     props: useSpinnerProps,
@@ -23734,73 +22266,14 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 45 45",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg22);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML21
+      });
     }
   });
 
   // src/components/spinner/QSpinnerTail.js
-  var svg23 = [
-    h("defs", [
-      h("linearGradient", {
-        x1: "8.042%",
-        y1: "0%",
-        x2: "65.682%",
-        y2: "23.865%",
-        id: "a"
-      }, [
-        h("stop", {
-          "stop-color": "currentColor",
-          "stop-opacity": "0",
-          offset: "0%"
-        }),
-        h("stop", {
-          "stop-color": "currentColor",
-          "stop-opacity": ".631",
-          offset: "63.146%"
-        }),
-        h("stop", {
-          "stop-color": "currentColor",
-          offset: "100%"
-        })
-      ])
-    ]),
-    h("g", {
-      transform: "translate(1 1)",
-      fill: "none",
-      "fill-rule": "evenodd"
-    }, [
-      h("path", {
-        d: "M36 18c0-9.94-8.06-18-18-18",
-        stroke: "url(#a)",
-        "stroke-width": "2"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "rotate",
-          from: "0 18 18",
-          to: "360 18 18",
-          dur: "0.9s",
-          repeatCount: "indefinite"
-        })
-      ]),
-      h("circle", {
-        fill: "currentColor",
-        cx: "36",
-        cy: "18",
-        r: "1"
-      }, [
-        h("animateTransform", {
-          attributeName: "transform",
-          type: "rotate",
-          from: "0 18 18",
-          to: "360 18 18",
-          dur: "0.9s",
-          repeatCount: "indefinite"
-        })
-      ])
-    ])
-  ];
+  var innerHTML22 = '<defs><linearGradient x1="8.042%" y1="0%" x2="65.682%" y2="23.865%" id="a"><stop stop-color="currentColor" stop-opacity="0" offset="0%"></stop><stop stop-color="currentColor" stop-opacity=".631" offset="63.146%"></stop><stop stop-color="currentColor" offset="100%"></stop></linearGradient></defs><g transform="translate(1 1)" fill="none" fill-rule="evenodd"><path d="M36 18c0-9.94-8.06-18-18-18" stroke="url(#a)" stroke-width="2"><animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="0.9s" repeatCount="indefinite"></animateTransform></path><circle fill="currentColor" cx="36" cy="18" r="1"><animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="0.9s" repeatCount="indefinite"></animateTransform></circle></g>';
   var QSpinnerTail_default = createComponent({
     name: "QSpinnerTail",
     props: useSpinnerProps,
@@ -23811,8 +22284,9 @@
         width: cSize.value,
         height: cSize.value,
         viewBox: "0 0 38 38",
-        xmlns: "http://www.w3.org/2000/svg"
-      }, svg23);
+        xmlns: "http://www.w3.org/2000/svg",
+        innerHTML: innerHTML22
+      });
     }
   });
 
@@ -24694,9 +23168,7 @@
       }));
     });
     watch(pagesNumber, (lastPage2, oldLastPage) => {
-      if (lastPage2 === oldLastPage) {
-        return;
-      }
+      if (lastPage2 === oldLastPage) return;
       const currentPage = computedPagination.value.page;
       if (lastPage2 && !currentPage) {
         setPagination({ page: 1 });
@@ -25334,9 +23806,7 @@
             ])
           );
         }
-        if (child.length === 0) {
-          return;
-        }
+        if (child.length === 0) return;
         return h("div", { class: topClass }, child);
       }
       const headerSelectedValue = computed(() => someRowsSelected.value === true ? null : allRowsSelected.value);
@@ -25433,13 +23903,9 @@
         return $q.lang.rtl === true ? ico.reverse() : ico;
       });
       function getBottomDiv() {
-        if (props4.hideBottom === true) {
-          return;
-        }
+        if (props4.hideBottom === true) return;
         if (nothingToDisplay.value === true) {
-          if (props4.hideNoData === true) {
-            return;
-          }
+          if (props4.hideNoData === true) return;
           const message = props4.loading === true ? props4.loadingLabel || $q.lang.table.loading : props4.filter ? props4.noResultsLabel || $q.lang.table.noResults : props4.noDataLabel || $q.lang.table.noData;
           const noData = slots["no-data"];
           const children = noData !== void 0 ? [noData({ message, icon: $q.iconSet.table.warning, filter: props4.filter })] : [
@@ -25605,7 +24071,7 @@
             ],
             style: props4.cardStyle
           };
-          if (props4.onRowClick !== void 0 || props4.onRowDblclick !== void 0) {
+          if (props4.onRowClick !== void 0 || props4.onRowDblclick !== void 0 || props4.onRowContextmenu !== void 0) {
             data.class[0] += " cursor-pointer";
             if (props4.onRowClick !== void 0) {
               data.onClick = (evt) => {
@@ -25615,6 +24081,11 @@
             if (props4.onRowDblclick !== void 0) {
               data.onDblclick = (evt) => {
                 emit("RowDblclick", evt, scope.row, scope.pageIndex);
+              };
+            }
+            if (props4.onRowContextmenu !== void 0) {
+              data.onContextmenu = (evt) => {
+                emit("rowContextmenu", evt, scope.row, scope.pageIndex);
               };
             }
           }
@@ -25749,9 +24220,10 @@
           ...routeData
         }
       );
-      watch(() => `${props4.name} | ${props4.exact} | ${(routeData.resolvedLink.value || {}).href}`, () => {
-        $tabs.verifyRouteModel();
-      });
+      watch(
+        () => `${props4.name} | ${props4.exact} | ${(routeData.resolvedLink.value || {}).href}`,
+        $tabs.verifyRouteModel
+      );
       return () => renderTab(routeData.linkTag.value, routeData.linkAttrs.value);
     }
   });
@@ -25999,9 +24471,7 @@
         };
       }
       function onPan(event) {
-        if (shouldAbortInteraction() === true) {
-          return;
-        }
+        if (shouldAbortInteraction() === true) return;
         if (event.isFirst === true) {
           draggingClockRect = getClockRect();
           dragCache = updateClock(event.evt, draggingClockRect);
@@ -26225,9 +24695,7 @@
           goToViewWhenHasModel("second");
           return;
         }
-        if (innerModel.value.hour === null || innerModel.value.minute === null || props4.withSeconds === true && innerModel.value.second === null) {
-          return;
-        }
+        if (innerModel.value.hour === null || innerModel.value.minute === null || props4.withSeconds === true && innerModel.value.second === null) return;
         updateValue2();
       }
       function updateValue2(obj) {
@@ -26743,9 +25211,7 @@
       }
       function setExpanded(key, state, node = getNodeByKey(key), m = meta.value[key]) {
         if (m.lazy && m.lazy !== "loaded") {
-          if (m.lazy === "loading") {
-            return;
-          }
+          if (m.lazy === "loading") return;
           lazy.value[key] = "loading";
           if (Array.isArray(node[props4.childrenKey]) !== true) {
             node[props4.childrenKey] = [];
@@ -27072,6 +25538,10 @@
     flat: Boolean,
     bordered: Boolean,
     noThumbnails: Boolean,
+    thumbnailFit: {
+      type: String,
+      default: "cover"
+    },
     autoUpload: Boolean,
     hideUploadBtn: Boolean,
     disable: Boolean,
@@ -27190,9 +25660,7 @@
       });
     }
     function batchRemoveFiles(statusList, cb) {
-      if (props4.disable === true) {
-        return;
-      }
+      if (props4.disable === true) return;
       const removed = {
         files: [],
         size: 0
@@ -27333,7 +25801,7 @@
       return state.files.value.map((file) => h("div", {
         key: file.__key,
         class: "q-uploader__file relative-position" + (props4.noThumbnails !== true && file.__img !== void 0 ? " q-uploader__file--img" : "") + (file.__status === "failed" ? " q-uploader__file--failed" : file.__status === "uploaded" ? " q-uploader__file--uploaded" : ""),
-        style: props4.noThumbnails !== true && file.__img !== void 0 ? { backgroundImage: 'url("' + file.__img.src + '")' } : null
+        style: props4.noThumbnails !== true && file.__img !== void 0 ? { backgroundImage: 'url("' + file.__img.src + '")', backgroundSize: props4.thumbnailFit } : null
       }, [
         h("div", {
           class: "q-uploader__file-header row flex-center no-wrap"
@@ -27589,9 +26057,7 @@
         }
       }, false);
       xhr2.onreadystatechange = () => {
-        if (xhr2.readyState < 4) {
-          return;
-        }
+        if (xhr2.readyState < 4) return;
         if (xhr2.status && xhr2.status < 400) {
           helpers.uploadedFiles.value = helpers.uploadedFiles.value.concat(files);
           files.forEach((f) => {
@@ -28450,9 +26916,7 @@
           elToClone.style.animation = `${options.duration}ms ${options.easing} ${options.delay}ms ${animationDirection} ${options.fill} ${qAnimId}-to`;
           elTo.style.animation = `${options.duration}ms ${options.easing} ${options.delay}ms ${animationDirection} ${options.fill} ${qAnimId}`;
           const cleanup = (evt) => {
-            if (evt === Object(evt) && evt.animationName !== qAnimId) {
-              return;
-            }
+            if (evt === Object(evt) && evt.animationName !== qAnimId) return;
             elTo.removeEventListener("animationend", cleanup);
             elTo.removeEventListener("animationcancel", cleanup);
             commonCleanup();
@@ -28551,9 +27015,7 @@
     }
   }
   function trigger2(group) {
-    if (group.animating === true || group.queue.length < 2) {
-      return;
-    }
+    if (group.animating === true || group.queue.length < 2) return;
     const [from, to] = group.queue;
     group.animating = true;
     from.animating = true;
@@ -28570,9 +27032,7 @@
       ...to.opts,
       onEnd(dir, aborted) {
         to.opts.onEnd !== void 0 && to.opts.onEnd(dir, aborted);
-        if (aborted === true) {
-          return;
-        }
+        if (aborted === true) return;
         from.animating = false;
         to.animating = false;
         group.animating = false;
@@ -28848,9 +27308,7 @@
       name: "touch-hold",
       beforeMount(el, binding) {
         const { modifiers } = binding;
-        if (modifiers.mouse !== true && client.has.touch !== true) {
-          return;
-        }
+        if (modifiers.mouse !== true && client.has.touch !== true) return;
         const ctx = {
           handler: binding.value,
           noop,
@@ -28994,9 +27452,7 @@
           }
           return acc;
         }, []);
-        if (modifiers.mouse !== true && client.has.touch !== true && keyboard.length === 0) {
-          return;
-        }
+        if (modifiers.mouse !== true && client.has.touch !== true && keyboard.length === 0) return;
         const durations = typeof arg === "string" && arg.length !== 0 ? arg.split(":").map((val) => parseInt(val, 10)) : [0, 600, 300];
         const durationsLast = durations.length - 1;
         const ctx = {
@@ -29017,9 +27473,7 @@
               if (durations[0] === 0 || ctx.event !== void 0) {
                 stopAndPrevent(evt);
                 el.focus();
-                if (ctx.event !== void 0) {
-                  return;
-                }
+                if (ctx.event !== void 0) return;
               }
               addEvt(ctx, "temp", [
                 [document, "keyup", "end", "notPassiveCapture"],
@@ -29070,9 +27524,7 @@
             };
             const fn = () => {
               ctx.timer = void 0;
-              if (ctx.event === void 0) {
-                return;
-              }
+              if (ctx.event === void 0) return;
               if (ctx.event.repeatCount === 0) {
                 ctx.event.evt = evt;
                 if (keyboardEvent === true) {
@@ -29106,9 +27558,7 @@
             }
           },
           end(evt) {
-            if (ctx.event === void 0) {
-              return;
-            }
+            if (ctx.event === void 0) return;
             ctx.styleCleanup !== void 0 && ctx.styleCleanup(true);
             evt !== void 0 && ctx.event.repeatCount > 0 && stopAndPrevent(evt);
             cleanEvt(ctx, "temp");
@@ -31309,7 +29759,7 @@
     console.error("[ Quasar ] Vue is required to run. Please add a script tag for it before loading Quasar.");
   }
   window.Quasar = {
-    version: "2.16.9",
+    version: "2.17.7",
     install(app2, opts) {
       install_quasar_default(app2, {
         components: components_exports,

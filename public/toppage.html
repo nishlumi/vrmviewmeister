@@ -30,7 +30,7 @@
     <link rel="manifest" href="manifest.json">
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^7.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
     <link href="static/lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
 
     <link href="static/lib/jsuites/jspreadsheet.css" rel="stylesheet">
@@ -1900,8 +1900,8 @@
             :behavior="objpropData.elements.drawer.behavior"
         >
             <q-list bordered>
-            <q-item v-ripple dense>
-                <q-item-section avatar>
+            <q-item dense>
+                <q-item-section avatar v-ripple>
                     <q-icon color="primary" name="chevron_right"
                         @click="objpropEvent.rightdrawer_minimize"
                     ></q-icon>
@@ -1918,6 +1918,7 @@
                             ></q-icon>
                         </q-item-section>
                         <q-item-section>Properties</q-item-section>
+                        
                     </q-item>
                 </q-list>
                 <q-icon name="height" size="md"></q-icon><br>
@@ -1983,7 +1984,10 @@
                 <q-card>
                     <q-card-section>
                         <div class="row">
-                            <div class="col-12">{{ $t('position') }}</div>
+                            <div class="col-9">{{ $t('position') }}</div>
+                            <div class="col-3">
+                                <q-btn flat round size="sm" color="primary" icon="adjust" @click="objpropEvent.rightdrawer_transformrefdlg_opened"></q-btn>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-4 q-pr-sm">
@@ -5693,11 +5697,13 @@
                             <q-menu v-model="timelineData.elements.menu" context-menu>
                                 <q-list>
                                     <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                        clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
+                                        :disable="ribbonEvent.chk_enableKeyframeButton"
+                                    >
                                         <q-item-section avatar>
-                                            <q-icon name="info"></q-icon>
+                                            <q-icon name="restart_alt"></q-icon>
                                         </q-item-section>
-                                        <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
                                     </q-item>
                                     <q-item v-show="timelineEvent.checkContextMenu3DModel"
                                         clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
@@ -5708,13 +5714,11 @@
                                     </q-item>
                                     <q-separator></q-separator>
                                     <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                        clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
-                                        :disable="ribbonEvent.chk_enableKeyframeButton"
-                                    >
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
                                         <q-item-section avatar>
-                                            <q-icon name="restart_alt"></q-icon>
+                                            <q-icon name="info"></q-icon>
                                         </q-item-section>
-                                        <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
                                     </q-item>
                                 </q-list>
                             </q-menu>
@@ -6195,6 +6199,7 @@
         <easytran-dlg v-model="mainData.elements.easybonetrandlg.show"
             :avatar="mainData.states.selectedAvatar"
             :sample-url="mainData.appconf.confs.fileloader.easyik.sampleurl"
+            :default-csv="mainData.elements.easybonetrandlg.defaultCSV"
         ></easytran-dlg>
         <gravitybone-dlg v-model="mainData.elements.gravitybonedlg.show"
             :avatar="mainData.states.selectedAvatar"
@@ -6274,6 +6279,11 @@
             :maxframe-number="mainData.data.project.timelineFrameLength"
             :vrms="mainData.data.project.casts"
         ></keyframe-dlg>
+        <transformref-dlg v-model="mainData.elements.transformrefdlg.show"
+            :current-cast="mainData.states.selectedCast"
+            :current-parts="mainData.states.selectedBodyParts"
+            :avatars="mainData.data.project.casts"
+        ></transformref-dlg>
         <navigation-dlg v-model="mainData.elements.navigationdlg.show"
             :webglcan="unitycontainer"
             :webglw="mainData.elements.navigationdlg.webglw"

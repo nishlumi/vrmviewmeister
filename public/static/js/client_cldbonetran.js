@@ -4,26 +4,7 @@ import { ChildReturner } from "./cls_childreturner.js";
 import { AF_TARGETTYPE, FILEOPTION, IKBoneType } from "../res/appconst.js";
 import { VFileHelper, VFileOptions } from "./filehelper.js";
 
-class UnityVector3 {
-    /**
-     * 
-     * @param {Number} x 
-     * @param {Number} y 
-     * @param {Number} z 
-     */
-    constructor (x, y, z) {
-        if (typeof(x) == "number") {
-            this.x = x ? x : 0;
-            this.y = y ? y : 0;
-            this.z = z ? z : 0;
-        }else{
-            var vec = x;
-            this.x = "x" in vec ? vec.x : 0;
-            this.y = "y" in vec ? vec.y : 0;
-            this.z = "z" in vec ? vec.z : 0;    
-        }
-    }
-}
+
 
 //import messages from "/static/locales";
 
