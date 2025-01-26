@@ -5,6 +5,9 @@
   },
   "description": "Web app for VRoid(VRM) : Posing, Animation",
   "version": "2.15.0",
+  "engines": {
+    "node" : ">=22.0.0"
+  },
   "private": true,
   "scripts": {
     "dev": "set NODE_ENV=delevopment&&set PORT=5026&&node ./app.js",
@@ -112,7 +115,7 @@
   },
   "devDependencies": {
     "@interactjs/types": "^1.10.27",
-    "@intlify/vue-i18n-loader": "^4.2.0",
+    "@intlify/vue-i18n-loader": "^5.0.1",
     "electron": "^34.0.1",
     "electron-builder": "^25.1.8",
     "interactjs": "^1.10.27",
