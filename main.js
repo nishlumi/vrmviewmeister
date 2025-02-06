@@ -1,6 +1,6 @@
 // Modules to control application life and create native browser window
 const fs = require('fs')
-const { app, BrowserWindow, shell, ipcMain, dialog, session } = require('electron')
+const { app, BrowserWindow, shell, ipcMain, dialog, session, webUtils } = require('electron')
 const path = require('path')
 const mime = require("mime-types");
 const { defineIPC4VRoidHub } = require('./ipc01vrh.js');
@@ -220,6 +220,11 @@ ipcMain.handle("enumFiles",async (event, param) => {
         }
     }
     return ret;
+});
+ipcMain.handle("showFilePath", async(event, param) => {
+    const fileobj = param;
+
+    return webUtils.getPathForFile(fileobj);
 });
 ipcMain.handle("save", async (event, param) => {
     var filters = param.filters;

@@ -762,6 +762,9 @@ export class VFileOperator {
     async checkFilepath (path, storageType = "loc") {
         return await elecAPI.fileExist({path});
     }
+    async getFilepath (fileobj) {
+        return await elecAPI.showFilePath(fileobj);
+    }
     checkEncoding (type) {
         if (
             (type.indexOf("json") > -1) ||

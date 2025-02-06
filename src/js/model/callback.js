@@ -1028,6 +1028,14 @@ export class UnityCallbackFunctioner {
             el.objectui.matopt.shadinggrade = parseFloat(arr[inx++]);
             el.objectui.matopt.lightcolorattenuation = parseFloat(arr[inx++]);
 
+            var tiling = arr[inx++].split(",");
+            el.objectui.matopt.texTiling.x = parseFloat(tiling[0]);
+            el.objectui.matopt.texTiling.y = parseFloat(tiling[1]);
+
+            var offset = arr[inx++].split(",");
+            el.objectui.matopt.texOffset.x = parseFloat(offset[0]);
+            el.objectui.matopt.texOffset.y = parseFloat(offset[1]);
+
 
         }else if (shaderName == "FX/Water4") {
 
@@ -1249,7 +1257,7 @@ export class UnityCallbackFunctioner {
             cameraui.renderTexture.x = parseInt(rendersize[0]);
             cameraui.renderTexture.y = parseInt(rendersize[1]);
             //---camera previewing ? (not register flag)
-            cameraui.previewBtnEnabled = arr[7];
+            cameraui.previewBtnEnabled = arr[7].toString() == "1" ? true : false;
 
         }else{
             AppQueue.add(new queueData(
@@ -1768,8 +1776,10 @@ export class UnityCallbackFunctioner {
         /**
          * @type {VVTimelineFrameData}
          */
-        var fk = new VVTimelineFrameData(js.frames[0].frame.index,js.frames[0]);
+        var fk = new VVTimelineFrameData(js.frames[0].frame.index,js.frames[0].frame);
         //fk.data = js;
+        if (js.frames[0].translateMoving) fk.data["translateMoving"] = js.frames[0].translateMoving;
+        if (js.frames[0].MovingTypes) fk.data["MovingTypes"] = js.frames[0].MovingTypes;
         console.log(fk);
 
         seltimeline.setFrameByKey(fk.key, fk);

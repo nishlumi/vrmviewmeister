@@ -413,8 +413,11 @@ const template = `
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12 col-sm-6">
-                                        <q-input filled label="Color of Onion skin"
+                                    <div class="col-12">
+                                        <b>{{ $t("TitleConfigTimeline_Motion") }}</b>
+                                    </div>
+                                    <div class="col-12 col-sm-4">
+                                        <q-input filled :label="$t('OnionSkinColor')"
                                             v-model="appconf.confs.animation.onion_skin_color"
                                         >
                                             <template v-slot:append>
@@ -425,7 +428,7 @@ const template = `
                                                 </q-icon>
                                             </template>
                                         </q-input>
-                                    </div>
+                                    </div>                                    
                                 </div>
                             </q-item-section>
                         </q-item>

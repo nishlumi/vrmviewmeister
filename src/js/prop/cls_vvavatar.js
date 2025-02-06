@@ -630,12 +630,26 @@ export class VVTimelineFrameData {
          */
         this.key = index || 0;
         /**
-         * AvatarAttachedNativeAnimationFrame
-         * id, role, type, frme,
+         * AvatarAttachedNativeAnimationFrame:
+         * id, role, type, 
+         * frame(duration, ease, memo, index, key),
          * translateMoving
          * MovingTypes
+         * keycolor
          */
-        this.data = data || {};
+        this.data = data || {
+            duration: 0,
+            ease: 0,
+            memo: "",
+            index: 0,
+            key: 0,
+            translateMoving: 0,
+            MovingTypes: [],
+            keycolor: "#FF4545"
+        };
+        if (!("keycolor" in this.data)) {
+            this.data["keycolor"] = "#FF4545";
+        }
         this.vclass = {
             "showsize-normal" : true,
             "showsize-small" : false,

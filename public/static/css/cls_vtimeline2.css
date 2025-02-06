@@ -208,7 +208,7 @@
     width : 32px;
 }
 .framerow-scale-one.showsize-small, .framerow-scale-one .currentcursor {
-    width : 6px;
+    width : 10px;
 }
 .framerow-scale-every10.showsize-small {
     top : -20px;
@@ -254,7 +254,6 @@
 .framekey-box {
     /*width : 32px;*/
     height : 35px;
-    background-color : rgba(255,69,69);
     color : #FFFFFF;
     z-index : 2;
     cursor : grab;
@@ -268,4 +267,12 @@
     display: inline-block;
     max-width: 300px;
     margin-left : 1rem;
+}
+.framekey-box-normalregister {
+    background-color : #ff4545;
+    color : #FFFFFF;
+}
+.framekey-box-tipregister {
+    background-color : #fcc100;
+    color : #FFFFFF;
 }

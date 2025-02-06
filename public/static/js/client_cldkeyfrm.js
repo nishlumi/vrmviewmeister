@@ -2,7 +2,7 @@ import { defineSetupLang } from "./setuplang.js";
 import { ChildReturner } from "./cls_childreturner.js";
 import { AF_TARGETTYPE, FILEOPTION, IKBoneType, UserAnimationEase } from "../res/appconst.js";
 import { VFileHelper, VFileOptions } from "./filehelper.js";
-
+import {defineUcolorPicker} from "./ucolorpicker.js";
 
 const loc = localStorage.getItem("appLocale");
 if (!loc) loc = "en-US";
@@ -69,6 +69,9 @@ const app = Vue.createApp({
                 },
                 memo : {
                     text: ""
+                },
+                cell : {
+                    color : "#ff4545",
                 },
                 copySrcVrm: {
                     selected : { label: "---", value:null},
@@ -509,6 +512,35 @@ const app = Vue.createApp({
             js.origin = location.origin;
             js.windowName = "keyframe";
             js.funcName = "duration_onchange";
+            js.data = JSON.stringify({
+                params
+            });
+            opener.postMessage(js);
+        }
+        const cellcolor_onchange = (val,evt) => {
+            const timeline = data.value.states.timeline;
+            if (timeline == null) return;
+
+            var params = [];
+            var cnt = TargetFrameLength();
+            for (var i = 0; i < cnt; i++) {
+                var frameIndex = getSingleTargetFrameIndex(i);
+        
+                var aro = {}; //new AnimationRegisterOptions();
+                aro["targetId"] = timeline.target.avatarId;
+                aro["targetRole"] = timeline.target.roleName;
+                aro["targetType"] = timeline.target.type;
+                aro["index"] = frameIndex;
+                aro["keycolor"] = MUtility.toHexaColor(val);
+                
+                var param = (aro);
+                params.push(param);
+            }                    
+
+            var js = new ChildReturner();
+            js.origin = location.origin;
+            js.windowName = "keyframe";
+            js.funcName = "keycolor_onchange";
             js.data = JSON.stringify({
                 params
             });
@@ -962,6 +994,14 @@ const app = Vue.createApp({
                     }
                     
                 });
+                AppDB.temp.getItem("kfa_getkeycolor")
+                .then(hitval => {
+                    if (hitval != null) {
+                        data.value.elements.cell.color = hitval;
+                        AppDB.temp.removeItem("kfa_getkeycolor");
+                    }
+                    
+                });
                 AppDB.temp.getItem("kfa_targetFrameIndex")
                 .then(hitval => {
                     if (hitval != null) {
@@ -1017,7 +1057,7 @@ const app = Vue.createApp({
             getFrameByKey,
             //---events
             close_onclick,resetduration_onclick,
-            memo_onchange,easing_onchange,duration_onchange,
+            memo_onchange,easing_onchange,duration_onchange,cellcolor_onchange,
             transform_onchange,
             frameno_onchange,targetframebeginno_onchange,targetframeendno_onchange,editframeno_onclick,
             copysumduration_onclick,
@@ -1049,6 +1089,7 @@ app.use(Quasar, {
 })
 
 defineSetupLang(Quasar);
+defineUcolorPicker(app,Quasar);
 
 
 app.use(i18n);

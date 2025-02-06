@@ -70,7 +70,7 @@ export class VVConfigTemplate {
             recover_tomax_overframe : true,
             enable_audio_record : false,
             save_previous_value_in_keyframeregister : false,
-            onion_skin_color : "#FF0000",
+            onion_skin_color : "#FF0000",            
         };
         this.fileloader = {
             gdrive : {

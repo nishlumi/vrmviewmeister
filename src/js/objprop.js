@@ -1458,6 +1458,14 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
         ];
         commoncall_objectMaterial(param);
     }
+    const objectVector2MaterialSend = (matname, matval) => {
+        var param = [
+            objpropData.elements.objectui.materialnameSelected,
+            matname,
+            `${matval.x}\t${matval.y}`
+        ];
+        commoncall_objectMaterial(param);
+    }
     const objectVector4MaterialSend = (matname, matval) => {
         var param = [
             objpropData.elements.objectui.materialnameSelected,
@@ -1465,6 +1473,12 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             `${matval.x}\t${matval.y}\t${matval.z}\t${matval.w}`
         ];
         commoncall_objectMaterial(param);
+    }
+    const objectTextureTiling_onchange = (val) => {
+        objectVector2MaterialSend("textiling",objpropData.elements.objectui.matopt.texTiling);
+    }
+    const objectTextureOffset_onchange = (val) => {
+        objectVector2MaterialSend("texoffset",objpropData.elements.objectui.matopt.texOffset);
     }
     const objectWaveAmplitude_onchange = (val) => {
         objectVector4MaterialSend("waveamplitude",objpropData.elements.objectui.matopt.waveAmplitude);
@@ -1926,7 +1940,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             {target:mainData.states.selectedAvatar.id,method:"PreviewCameraFromOuter"},
             "previewcamera",QD_INOUT.returnJS,
             (val) => {
-                objpropData.elements.cameraui.previewBtnEnabled = val;
+                objpropData.elements.cameraui.previewBtnEnabled = val.toString() == "1" ? true : false;
             }
         ));
         AppQueue.start();
@@ -1936,9 +1950,29 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             {target:mainData.states.selectedAvatar.id,method:"EndPreviewFromOuter"},
             "previewendcamera",QD_INOUT.returnJS,
             (val) => {
-                objpropData.elements.cameraui.previewBtnEnabled = val;
+                objpropData.elements.cameraui.previewBtnEnabled = val.toString() == "1" ? true : false
             }
         ));
+        AppQueue.start();
+    }
+    const cameraPreviewModelValue = (val) => {
+        if (val) {
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:"PreviewCameraFromOuter"},
+                "previewcamera",QD_INOUT.returnJS,
+                (val) => {
+                    objpropData.elements.cameraui.previewBtnEnabled = val.toString() == "1" ? true : false;
+                }
+            ));
+        }else{
+            AppQueue.add(new queueData(
+                {target:mainData.states.selectedAvatar.id,method:"EndPreviewFromOuter"},
+                "previewendcamera",QD_INOUT.returnJS,
+                (val) => {
+                    objpropData.elements.cameraui.previewBtnEnabled = val.toString() == "1" ? true : false
+                }
+            ));
+        }
         AppQueue.start();
     }
     const cameraFov_onchange = (val) => {
@@ -2762,6 +2796,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             objectRimColor_onchange,objectRimFresnel_onchange,
             objectSrcblend_onchange,objectDstblend_onchange,
             objectFresnelScale_onchange,objectReflectionColor_onchange,objectSpecularColor_onchange,
+            objectTextureTiling_onchange,objectTextureOffset_onchange,
             objectWaveAmplitude_onchange,objectWaveFrequency_onchange,
             objectWaveSteepness_onchange,objectWaveSpeed_onchange,
             objectWaveDirectionAB_onchange,objectWaveDirectionCD_onchange,
@@ -2782,7 +2817,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             lightRendermode_onchange,lightColor_onchange,lightPower_onchange,
             lightRange_onchange,lightSpotangle_onchange,
             lightFlareType_onchange,lightFlareColor_onchange,lightFlareBrightness_onchange,lightFlareFade_onchange,
-            cameraShowRegister_onchange,cameraPreview_onclick,cameraPreviewStop_onclick,
+            cameraShowRegister_onchange,cameraPreview_onclick,cameraPreviewStop_onclick,cameraPreviewModelValue,
             cameraFov_onchange,cameraDepth_onchange,cameraViewport_onchange,
             cameraRenderTextureFlag_onchange,cameraRenderTexture_resize,
             cameraRenderTextureEnable_onclick,cameraRenderTextureDisable_onclick,

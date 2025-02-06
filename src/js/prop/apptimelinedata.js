@@ -22,7 +22,7 @@ export class appDataTimeline {
             isExpand : true,
             toggleIcon : "expand_more",
             mobile_toggleIcon : "keyboard_arrow_up",
-            menu : false,
+            menu : false,            
             childKey : {
                 val : -1,
                 max : -1,

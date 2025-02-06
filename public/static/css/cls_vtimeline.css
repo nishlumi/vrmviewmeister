@@ -221,3 +221,11 @@
 .framekey-box .material-icons {
     margin-top : 12%;
 }
+.framekey-box-normalregister {
+    background-color : rgba(255,69,69);
+    color : #FFFFFF;
+}
+.framekey-box-tipregister {
+    background-color : rgb(252, 193, 0);
+    color : #FFFFFF;
+}

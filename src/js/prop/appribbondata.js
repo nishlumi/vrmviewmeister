@@ -93,7 +93,7 @@ export class appDataRibbon {
                     duration : 0,
                     easing : {
                         options : [],
-                        selected : UserAnimationEase.Unset
+                        selected : UserAnimationEase.Linear
                     }
                 },
                 bonelist : {
@@ -215,7 +215,7 @@ export const defineAppRibbonData = () => {
             value : UserAnimationEase[obj]
         });
     }
-    ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[0];
+    ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[1];
 
     const lnk_recdownload = Vue.ref(null);
     const lnk_saveproject = Vue.ref(null);

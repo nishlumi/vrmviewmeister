@@ -25,6 +25,10 @@ export class AnimationRegisterOptions
         //this.registerBone = IKBoneType.None;
         //this.registerMove = AF_MOVETYPE.Rest;
         this.memo = "";
+        /**
+         * @type {String} Hexa color string
+         */
+        this.keycolor = "";
         
         /**
          * @type {Array<Number>}

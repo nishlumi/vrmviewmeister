@@ -684,7 +684,7 @@ export class ChildManager {
                 this.keyframe_common_loadUnityConfig(dt.param);
                 break;
             case "resetduration_onclick":
-                this.keyframe_resetduration_onclick(dt.param);
+                this.keyframe_resetduration_onclick(dt.params);
                 break;
             case "memo_onchange":
                 this.keyframe_memo_onchange(dt.params);
@@ -694,6 +694,9 @@ export class ChildManager {
                 break;
             case "duration_onchange":
                 this.keyframe_duration_onchange(dt.params);
+                break;
+            case "keycolor_onchange":
+                this.keyframe_keycolor_onchange(dt.params);
                 break;
             case "transform_onchange":
                 this.keyframe_transform_onchange(dt.params);
@@ -740,6 +743,13 @@ export class ChildManager {
                 AppDB.temp.setItem("kfa_getmemo",val);
             }
         ));
+        AppQueue.add(new queueData(
+            {target:AppQueue.unity.ManageAnimation,method:'GetKeyColorFromOuter',param:straro},
+            "getduration",QD_INOUT.returnJS,
+            (val) => {
+                AppDB.temp.setItem("kfa_getkeycolor",val);
+            }
+        ));
         AppQueue.start();
     }
     keyframe_resetduration_onclick(params) {
@@ -766,9 +776,12 @@ export class ChildManager {
                     //console.log(js);
                 }
             ));
+            var jsp = JSON.parse(param);
+            this.mainData.states.selectedTimeline.getFrameByKey(jsp.index).data.memo = jsp.memo;
         }
         AppQueue.start();
         this.mainData.states.currentEditOperationCount++;
+
     }
     keyframe_easing_onchange (params) {
         for (var i = 0; i < params.length; i++) {
@@ -781,9 +794,11 @@ export class ChildManager {
                     //console.log(js);
                 }
             ));
+            var jsp = JSON.parse(param);
+            this.mainData.states.selectedTimeline.getFrameByKey(jsp.index).data.ease = jsp.ease;
         }
         AppQueue.start();
-        this.mainData.states.currentEditOperationCount++;
+        this.mainData.states.currentEditOperationCount++;        
     }
     keyframe_duration_onchange (params) {
         for (var i = 0; i < params.length; i++) {
@@ -793,9 +808,28 @@ export class ChildManager {
                 "",QD_INOUT.toUNITY,
                 null
             ));
+            var jsp = JSON.parse(param);
+            this.mainData.states.selectedTimeline.getFrameByKey(jsp.index).data.duration = jsp.duration;
         }
         AppQueue.start();
-        this.mainData.states.currentEditOperationCount++;
+        this.mainData.states.currentEditOperationCount++;        
+    }
+    keyframe_keycolor_onchange (params) {
+        for (var i = 0; i < params.length; i++) {
+            var param = JSON.stringify(params[i]);
+            AppQueue.add(new queueData(
+                {target:AppQueue.unity.ManageAnimation,method:'SetKeyColor',param:param},
+                "setease",QD_INOUT.returnJS,
+                (val)=>{
+                    var js = JSON.parse(val);
+                    //console.log(js);
+                }
+            ));
+            var jsp = JSON.parse(param);
+            this.mainData.states.selectedTimeline.getFrameByKey(jsp.index).data.keycolor = jsp.keycolor;
+        }
+        AppQueue.start();
+        this.mainData.states.currentEditOperationCount++; 
     }
     keyframe_transform_onchange (params) {
         for (var i = 0; i < params.length; i++) {
@@ -1016,7 +1050,7 @@ export class ChildManager {
                 var js = JSON.parse(val);
                 AppDB.temp.setItem("easyik_return_reload_tposeikparts",js);
 
-                appdata.data.TPose = js;
+                //appdata.data.TPose = js;
 
                 //---set scope data for math.js
                 //   {"Pelvis_pos_x" : 0.5, ...}

@@ -591,7 +591,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
                 
             }
         }catch(e) {
-            appNotifyWarning(e,{timeout:3000});
+            appNotifyWarning(e.toString(),{timeout:3000});
             console.error(e);
             mainData.elements.loading = false;
         }

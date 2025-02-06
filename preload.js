@@ -1,4 +1,4 @@
-const { app, BrowserWindow,  contextBridge, ipcRenderer  } = require('electron')
+const { app, BrowserWindow,  contextBridge, ipcRenderer, webUtils  } = require('electron')
 
 //const fs = require("fs")
 
@@ -102,6 +102,9 @@ contextBridge.exposeInMainWorld('elecAPI', {
     },
     focusWindow : async (name) => {
         await ipcRenderer.invoke("focusWindow",name);
+    },
+    showFilePath: async  (param) => {
+        return webUtils.getPathForFile(param);
     },
 
     //==============================================

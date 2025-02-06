@@ -1288,7 +1288,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             if (ribbonData.elements.optionArea.onionskin) {
                 var param = mainData.states.selectedAvatar.id;
                 AppQueue.add(new queueData(
-                    {target:AppQueue.unity.ManageAnimation,method:'CreateAllOnionSkin',param:param},
+                    {target:AppQueue.unity.ManageAnimation,method:'CreateAllOnionSkinFromOuter',param:param},
                     "",QD_INOUT.toUNITY,
                     null
                 ));
@@ -1481,7 +1481,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else if (ename == "openkeyframedlg") {
             if (mainData.appconf.confs.animation.save_previous_value_in_keyframeregister !== true) {
                 ribbonData.elements.frame.keylist.duration = 0;
-                ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[0];
+                ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[1];
             }
             ribbonData.elements.frame.showdlg = true;
             is_closepanel = true;
@@ -2519,7 +2519,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         }else{
             if (mainData.appconf.confs.animation.save_previous_value_in_keyframeregister !== true) {
                 ribbonData.elements.frame.keylist.duration = 0;
-                ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[0];
+                ribbonData.elements.frame.keylist.easing.selected = ribbonData.elements.frame.keylist.easing.options[1];
             }
         }
     }

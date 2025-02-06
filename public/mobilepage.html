@@ -1672,7 +1672,7 @@
                         v-for="(item, index) in objlistEvent.filtered_objectlist" :key="index"
                         :active="mainData.states.selectedAvatar && (mainData.states.selectedAvatar.id === item.id)"
                         @click="objlistEvent.objectlist_onclicked(item)"
-                        @click.right="objlistData.elements.menu = true"
+                        @click.right="objlistEvent.objectlist_onrightclick(item)"
                         active-class="list-item-selected"
                     >
                         <template v-if="item.thumbnail != null">
@@ -3172,11 +3172,11 @@
                                     </div>
                                     <div class="col-6">
                                         <q-btn flat color="primary" round xs icon="play_circle" 
-                                            :disabled="objpropData.elements.cameraui.previewBtnEnabled == '1'"
+                                            :disabled="objpropData.elements.cameraui.previewBtnEnabled"
                                             @click="objpropEvent.cameraPreview_onclick"
                                         ></q-btn>
                                         <q-btn flat color="primary" round xs icon="stop" 
-                                            :disabled="objpropData.elements.cameraui.previewBtnEnabled != '1'"
+                                            :disabled="!objpropData.elements.cameraui.previewBtnEnabled"
                                             @click="objpropEvent.cameraPreviewStop_onclick"
                                         ></q-btn>
                                     </div>
@@ -4097,7 +4097,7 @@
                                                                 </div>
                                                             </div>
                                                         </template>
-                                                        <template v-if="(ui.uitype == 'quaternion')">
+                                                        <template v-if="(ui.uitype == 'quaternion') || (ui.uitype == 'doubledim')">
                                                             <div class="row" :key="uindex">
                                                                 <div class="col-8">
                                                                     {{ ui.label }}
@@ -4122,6 +4122,7 @@
                                                                         @update:model-value="ui.event"
                                                                     ></uswipe-input>
                                                                 </div>
+                                                                <template v-if="(ui.uitype == 'quaternion')">
                                                                 <div class="col-5 offset-sm-1">
                                                                     <q-input v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].z" 
                                                                         type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="Z"
@@ -4142,6 +4143,7 @@
                                                                         @update:model-value="ui.event"
                                                                     ></uswipe-input>
                                                                 </div>
+                                                                </template>
                                                             </div>
                                                         </template>
                                                     </template>
@@ -5689,7 +5691,7 @@
                             <div v-for="(val) in timelineData.data.timelines" :key="val.roleName"
                                 class="namebox-child" :dataIndex="val.roleName" 
                                 @click="timelineEvent.namebox_onclick(val)" :class="val.selected"
-                                @click.right="timelineEvent.namebox_onrightclick"
+                                @click.right="timelineEvent.namebox_onrightclick(val)"
                             >
                                 
                                 <q-btn flat round size="0.75rem" color="primary" :icon="val.readonlyIcon" 
@@ -5747,6 +5749,17 @@
                                         </q-item-section>
                                         <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
                                     </q-item>
+                                    <template v-if="timelineEvent.checkContextMenu4Camera">
+                                        <q-separator></q-separator>
+                                        <q-item clickable v-close-popup dense>
+                                            <q-item-section side top>
+                                                <q-checkbox v-model="objpropData.elements.cameraui.previewBtnEnabled"
+                                                    @update:model-value="objpropEvent.cameraPreviewModelValue"
+                                                ></q-checkbox>
+                                            </q-item-section>
+                                            <q-item-section v-text="$t('preview')"></q-item-section>
+                                        </q-item>
+                                    </template>
                                 </q-list>
                             </q-menu>
                         </div>
@@ -5768,7 +5781,7 @@
                                     :class="timelineEvent.judgeVClass(frameitem,frameindex)"
                                 >
                                     <template v-if="timelineEvent.existsKeyFrame(item,frameindex+1)">
-                                        <div class="framekey-box" :currentFrameIndex="frameindex+1"
+                                        <div class="framekey-box" :style="timelineEvent.judgeKeyBoxColoring(item,frameindex+1)" :currentFrameIndex="frameindex+1"
                                             @click="timelineEvent.keyframebox_onclick(item, frameitem)"
                                             @dblclick="timelineEvent.keyframebox_ondblclick(item, frameitem)"
                                             @pointerenter="timelineEvent.keyframebox_popuptip(item, frameitem)"
@@ -6372,6 +6385,7 @@
             :timeline="mainData.states.selectedTimeline"
             :maxframe-number="mainData.data.project.timelineFrameLength"
             :vrms="mainData.data.project.casts"
+            @update-timeline-target="timelineEvent.keyframedlg_get_update_return"
         ></keyframe-dlg>
         <transformref-dlg v-model="mainData.elements.transformrefdlg.show"
             :current-cast="mainData.states.selectedCast"

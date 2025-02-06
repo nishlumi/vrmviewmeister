@@ -445,7 +445,7 @@ function appNotifySuccess(message,options) {
 function appNotifyWarning(message,options) {
 	var param = {
 		message : message,
-		type : "warning"
+		type : "warning",
 	};
 	if (options["position"]) param["position"] = options["position"];
 	if (options["timeout"]) param["timeout"] = options["timeout"];

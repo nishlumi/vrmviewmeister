@@ -3208,6 +3208,21 @@ export class appModelOperator {
         AppDB.temp.setItem("easyik_avatar",JSON.original((this.mainData.states.selectedAvatar)));
         AppDB.temp.setItem("easyik_sampleurl",this.mainData.appconf.confs.fileloader.easyik.sampleurl);
         AppDB.temp.setItem("easyik_defaultcsv",this.mainData.elements.easybonetrandlg.defaultCSV);
+
+        //---save T-pose
+        AppQueue.add(new queueData(
+            {target:this.mainData.states.selectedAvatar.id,method:'GetTPoseIKTransformAll'},
+            "tposetransform",QD_INOUT.returnJS,
+            (val) => {
+                /**
+                 * @type {AvatarAllIKParts}
+                 */
+                var js = JSON.parse(val);
+                AppDB.temp.setItem("easyik_return_reload_tposeikparts",js);
+                
+            }
+        ));
+        AppQueue.start();
     } 
 }
 
@@ -3269,6 +3284,7 @@ export const defineModelOperator = (mainData, ribbonData, objlistData, objpropDa
         modelOperator.returnKeyframeWindowChangeTimeline();
         modelOperator.returnKeyFrameWindowTemporaryCastArray();
         modelOperator.returnTransrefReloadBtn({avatarId:newval.id});
+        modelOperator.returnEasyIKReloadBtn({avatarId:newval.id});
     });
     const wa_percentCurrent = Vue.watch(() => mainData.elements.percentLoad.current,(newval)=>{
         if (mainData.elements.percentLoad.current >= 1.0) {

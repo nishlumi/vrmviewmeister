@@ -115,6 +115,15 @@ const template = `
                         ></q-select>
                     </div>
                 </div>
+                <div class="row q-mt-md">
+                    <div class="col-12">
+                        <ucolor-picker v-model="kfapp.elements.cell.color"
+                            :label="$t('keyframe color')"
+                            :disable="kfapp.states.disable"
+                            @change="cellcolor_onchange"
+                        ></ucolor-picker>
+                    </div>
+                </div>
             </q-tab-panel>
             <q-tab-panel name="duration">
                 <div class="row">
@@ -239,6 +248,7 @@ export function defineKeyframeDlg(app, Quasar) {
         },
         emits : [
             "update:model-value",
+            "update-timeline-target"
         ],
         setup(props, context) {
             const {modelValue, frameIndex, timeline,maxframeNumber,vrms } = Vue.toRefs(props);
@@ -285,6 +295,9 @@ export function defineKeyframeDlg(app, Quasar) {
                     },
                     memo : {
                         text: ""
+                    },
+                    cell : {
+                        color : "#ff4545",
                     },
                     copySrcVrm: {
                         selected : { label: "---", value:null},
@@ -618,6 +631,8 @@ export function defineKeyframeDlg(app, Quasar) {
     
                 if (timeline.value == null) return;
 
+                var ret = [];
+
                 var cnt = TargetFrameLength();
                 for (var i = 0; i < cnt; i++) {
                     var frameIndex = getSingleTargetFrameIndex(i);
@@ -639,13 +654,22 @@ export function defineKeyframeDlg(app, Quasar) {
                             console.log(js);
                         }
                     ));
+                    ret.push({
+                        index: frameIndex,
+                        memo: newval
+                    });
                 }
                 AppQueue.start();
+                context.emit("update-timeline-target",{
+                    timeline: timeline.value,
+                    data: ret
+                });
             }
             const easing_onchange = (val) => {
                 var newval = val.value;
     
                 if (timeline.value == null) return;
+                var ret = [];
 
                 var cnt = TargetFrameLength();
                 for (var i = 0; i < cnt; i++) {
@@ -665,14 +689,23 @@ export function defineKeyframeDlg(app, Quasar) {
                         "setease",QD_INOUT.returnJS,
                         (val)=>{
                             var js = JSON.parse(val);
-                            //console.log(js);
+                            //console.log(js);                            
                         }
                     ));
+                    ret.push({
+                        index: frameIndex,
+                        ease: newval,
+                    });
                 }
                 AppQueue.start();
+                context.emit("update-timeline-target",{
+                    timeline: timeline.value,
+                    data: ret
+                });
             }
             const duration_onchange = (val) => {
                 if (timeline.value == null) return;
+                var ret = [];
     
                 var cnt = TargetFrameLength();
                 for (var i = 0; i < cnt; i++) {
@@ -692,9 +725,55 @@ export function defineKeyframeDlg(app, Quasar) {
                         "",QD_INOUT.toUNITY,
                         null
                     ));
+                    ret.push({
+                        index: frameIndex,
+                        duration: aro.duration,
+                    });
                 }
                 
                 AppQueue.start();
+
+                context.emit("update-timeline-target",{
+                    timeline: timeline.value,
+                    data: ret
+                });
+            }
+            const cellcolor_onchange = (val,evt) => {
+                if (timeline.value == null) return;
+                var ret = [];
+
+                var cnt = TargetFrameLength();
+                for (var i = 0; i < cnt; i++) {
+                    var frameIndex = getSingleTargetFrameIndex(i);
+            
+                    var aro = new AnimationRegisterOptions();
+                    aro.targetId = timeline.value.target.avatarId;
+                    aro.targetRole = timeline.value.target.roleName;
+                    aro.targetType = timeline.value.target.type;
+                    aro.index = frameIndex;
+                    aro.keycolor = MUtility.toHexaColor(val);
+            
+                    var param = JSON.stringify(aro);
+            
+                    AppQueue.add(new queueData(
+                        {target:AppQueue.unity.ManageAnimation,method:'SetKeyColor',param:param},
+                        "setkeycolor",QD_INOUT.returnJS,
+                        (val)=>{
+                            var js = JSON.parse(val);
+                            //console.log(js);                            
+                        }
+                    ));
+                    
+                    ret.push({
+                        index: frameIndex,
+                        cellcolor: aro.keycolor
+                    });
+                }                    
+
+                context.emit("update-timeline-target",{
+                    timeline: timeline.value,
+                    data: ret
+                });
             }
             const transform_onchange = (evt) => {
                 /**
@@ -1047,7 +1126,7 @@ export function defineKeyframeDlg(app, Quasar) {
                 checkAvailableTimeline,showAvatarName,showAvatarImage,cmp_vrmlist,
                 //---method---
                 close_onclick,resetduration_onclick,
-                memo_onchange,easing_onchange,duration_onchange,
+                memo_onchange,easing_onchange,duration_onchange,cellcolor_onchange,
                 transform_onchange,
                 frameno_onchange,targetframebeginno_onchange,targetframeendno_onchange,editframeno_onclick,
                 copysumduration_onclick,

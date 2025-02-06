@@ -304,6 +304,7 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
             //for (var i = 0; i < fileHandles.length; i++) {
             for await (const handle of fileHandles) {
                 //console.log(handle);
+
                 /**
                  * @type {VOSFile}
                  */
@@ -315,6 +316,11 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
                 tmpfile.type = handle.type;
                 tmpfile.size = handle.size;
                 tmpfile.storageType = STORAGE_TYPE.LOCAL;
+
+                if (VFileHelper.checkNativeAPI) {
+                    tmpfile.path = await VFileHelper.getFilepath(handle);
+                }
+
                 /**
                  * @type {File} tmpfile.data
                  */

@@ -20,7 +20,8 @@ export const UITYPE = {
     CHECK : "checkbox",
     COLOR : "color",
     SLIDER : "slider",
-    QUATER : "quaternion"
+    QUATER : "quaternion",
+    DOUBLE : "doubledim"
 };
 export class MaterialUIItem {
     constructor(shader,uitype, objprop, objlabel, objpropEvent, objcompute, options) {
@@ -60,7 +61,12 @@ export function defineMaterialPropertyUI(app,Quasar,objpropData, objpropEvent) {
         }),
         new MaterialUIItem(shaderarr[SHADERINDEX.STD],UITYPE.COLOR,"emissioncolor", t('Emission color'), objpropEvent.objectEmissionColor_onchange,null ),
         //new MaterialUIItem(shaderarr[SHADERINDEX.STD],UITYPE.COLOR,"shadetexcolor", t('Shade color'), objpropEvent.objectShadetexColor_onchange,null ),
-
+        new MaterialUIItem(shaderarr[SHADERINDEX.STD],UITYPE.DOUBLE,"texTiling", t('Texture Tiling'), objpropEvent.objectTextureTiling_onchange,null,{
+            min : 1, max:100, step:1
+        }),
+        new MaterialUIItem(shaderarr[SHADERINDEX.STD],UITYPE.DOUBLE,"texOffset", t('Texture Offset'), objpropEvent.objectTextureOffset_onchange,null,{
+            min : 0, max:100, step:1
+        }),
     ];
     const mat_vrmmtoon = [
         new MaterialUIItem(shaderarr[SHADERINDEX.VRM],UITYPE.COLOR,"colorselected", t('Color filter'), objpropEvent.objectShaderColor_onchange,null ),
@@ -100,6 +106,12 @@ export function defineMaterialPropertyUI(app,Quasar,objpropData, objpropEvent) {
         new MaterialUIItem(shaderarr[SHADERINDEX.VRM],UITYPE.SLIDER,"dstblend", t("DstBlend"),objpropEvent.objectDstblend_onchange,null,{
             min : 0, max: 5, step:0.01
         }),
+        new MaterialUIItem(shaderarr[SHADERINDEX.VRM],UITYPE.DOUBLE,"texTiling", t('Texture Tiling'), objpropEvent.objectTextureTiling_onchange,null,{
+            min : 1, max:100, step:1
+        }),
+        new MaterialUIItem(shaderarr[SHADERINDEX.VRM],UITYPE.DOUBLE,"texOffset", t('Texture Offset'), objpropEvent.objectTextureOffset_onchange,null,{
+            min : 0, max:100, step:1
+        }),
     ];
     const mat_vrmmtoon10 = [
         new MaterialUIItem(shaderarr[SHADERINDEX.VRM10],UITYPE.COLOR,"colorselected", t('Color filter'), objpropEvent.objectShaderColor_onchange,null ),
@@ -138,6 +150,12 @@ export function defineMaterialPropertyUI(app,Quasar,objpropData, objpropEvent) {
         }),
         new MaterialUIItem(shaderarr[SHADERINDEX.VRM10],UITYPE.SLIDER,"dstblend", t("DstBlend"),objpropEvent.objectDstblend_onchange,null,{
             min : 0, max: 5, step:0.01
+        }),
+        new MaterialUIItem(shaderarr[SHADERINDEX.VRM10],UITYPE.DOUBLE,"texTiling", t('Texture Tiling'), objpropEvent.objectTextureTiling_onchange,null,{
+            min : 1, max:100, step:1
+        }),
+        new MaterialUIItem(shaderarr[SHADERINDEX.VRM10],UITYPE.DOUBLE,"texOffset", t('Texture Offset'), objpropEvent.objectTextureOffset_onchange,null,{
+            min : 0, max:100, step:1
         }),
     ];
     const mat_water = [

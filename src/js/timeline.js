@@ -73,6 +73,9 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             return true;
         }
     });
+    const checkContextMenu4Camera = Vue.computed(() => {
+        return (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Camera);
+    });
     //---events, watch-------------------------------
     
     const wa_tlLength = Vue.watch(() => mainData.data.project.timelineFrameLength,(newval) => {
@@ -519,7 +522,17 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
         ));
         AppQueue.start();
     }
-    const namebox_onrightclick = () => {
+    const namebox_onrightclick = (item) => {
+        //---if target is different, change selection timeline.
+        if (mainData.states.selectedTimeline.target.roleName != item.target.roleName) {
+            for (var obj = 0; obj < timelineData.data.timelines.length; obj++) {
+                timelineData.data.timelines[obj].selected.currentcursor = false;
+            }
+            item.selected.currentcursor = true;
+            mainData.states.selectedTimeline = item;
+    
+            modelOperator.select_keyframePosition(ribbonData.elements.frame.current-1);
+        }
         if (
             (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.SystemEffect) ||
             (mainData.states.selectedTimeline.target.avatar.type == AF_TARGETTYPE.Stage) ||
@@ -566,7 +579,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             }else{
                 mainData.elements.win_keyframe = window.open("./static/win/keyframe/index.html",
                     "keyframe",
-                    "width=350,height=480,alwaysRaised=yes,resizable=false,autoHideMenuBar=true"
+                    "width=350,height=520,alwaysRaised=yes,resizable=true,autoHideMenuBar=true"
                 );
             }
             
@@ -676,7 +689,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
          */
         return (item, frameitem) => {
             var frameIndex = parseInt(frameitem.text);
-            if (item && item['frames'] && item.getFrameByKey && !isNaN(frameIndex)) {
+            if (item && item.getFrameByKey && !isNaN(frameIndex)) {
                 var fr = item.getFrameByKey(frameIndex);
                 return fr.data.translateMoving || " ";
             }else{
@@ -692,6 +705,24 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             timelineData.elements.mobile_toggleIcon = "keyboard_arrow_up";
         }
 
+    }
+    const keyframedlg_get_update_return = (evt) => {
+        for (var i = 0; i < evt.data.length; i++) {
+            var edata = evt.data[i];
+            var timeline = mainData.states.selectedTimeline.getFrameByKey(edata.index);
+            if ("memo" in edata) {
+                timeline.data.memo = edata.memo;
+            }
+            if ("ease" in edata) {
+                timeline.data.ease = edata.ease;
+            }
+            if ("duration" in edata) {
+                timeline.data.duration = edata.duration;
+            }
+            if ("cellcolor" in edata) {
+                timeline.data["keycolor"] = edata.cellcolor;
+            }
+        }
     }
 
     //===functions================================
@@ -723,6 +754,32 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
                 item.vclass["currentcursor"] = false;
             }
             return item.vclass;
+        }
+    });
+    const judgeKeyBoxColoring = Vue.computed(() => {
+        /**
+         * @param {VVTimelineTarget} item
+         */
+        return (item, index) => {
+            const changeTextColor = (backgroundColor) =>{
+                // 16進数カラーコードをRGBに変換
+                const r = parseInt(backgroundColor.slice(1, 3), 16);
+                const g = parseInt(backgroundColor.slice(3, 5), 16);
+                const b = parseInt(backgroundColor.slice(5, 7), 16);
+                
+                // 輝度を計算
+                const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+                
+                // テキスト色を決定
+                const textColor = brightness > 0.5 ? '#000000' : '#FFFFFF';
+                return textColor;
+            }
+            var fr = item.getFrameByKey(index);
+            
+            return {
+                "background-color": fr.data.keycolor,
+                "color" : changeTextColor(fr.data.keycolor)
+            };
         }
     });
     /**
@@ -830,7 +887,8 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             judgeVClass,existsKeyFrame,getCurrentModeSize,chechAvatarThumbnail,checkAvatarLabel,
             keyframeHasTranslateCount,
             setupMobileSize,
-            checkContextMenu3DModel,
+            checkContextMenu3DModel,checkContextMenu4Camera,
+            judgeKeyBoxColoring,
             //---events, watches-------------------
             wa_tlLength,
             //common_loadFrame,
@@ -846,6 +904,7 @@ export function defineTimeline(app,Quasar,mainData,ribbonData,timelineData,callb
             wa_frame_current,wa_selectedTimeline,
 
             mobile_timeline_show_clicked,
+            keyframedlg_get_update_return,
             
         })
         

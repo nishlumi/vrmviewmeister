@@ -231,6 +231,8 @@ export class appDataObjectProp {
                     //textureCameraRenderOptions : []
                     srcblend : 1,
                     dstblend : 0,
+                    texTiling: {x: 1, y: 1},
+                    texOffset: {x: 0, y: 0},
 
                     //---water4
                     fresnelScale : 0.75,

@@ -193,6 +193,13 @@ export function defineObjlist (app,Quasar,mainData,objlistData,modelOperator) {
             mainData.states.selectedAvatar = item;
         }
     }
+    const objectlist_onrightclick = (item) => {
+        if (item != null) {
+            //---send information to Unity
+            if (mainData.states.selectedAvatar.id != item.id) mainData.states.selectedAvatar = item;
+        }
+        objlistData.elements.menu = true;
+    }
     const listmenu_rename_onclick = () => {
         appPrompt(t("mm_objlist_rename_msg"),(value) => {
             mainData.states.selectedAvatar.title = value;
@@ -271,7 +278,7 @@ export function defineObjlist (app,Quasar,mainData,objlistData,modelOperator) {
             filtered_objectlist,objectlist_typename,objectlist_selectedclass,checkListSelStage,
             leftdrawer_minimize,getCurrentModeSize,setupMobileSize,
             leftminidrawer_minimize,timeline_leftdrawer_minimize,
-            objectlist_onclicked,
+            objectlist_onclicked,objectlist_onrightclick,
             //---context menu---
             listmenu_rename_onclick,listmenu_info_onclick,listmenu_focus_onclick,
             listmenu_addkeyframe_onclick,listmenu_overwritekeyframe_onclick,
