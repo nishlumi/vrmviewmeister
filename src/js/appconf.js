@@ -33,6 +33,11 @@ export class VVConfigTemplate {
             use_gamepad: true,
             gamepad_using_html: false
         };
+        this.files = {
+            record_framerate : 25,
+            record_codec : "video/webm",
+            record_videobps : 2.5,
+        }
         this.model = {
             use_animation_generic_when_otherobject :false,
             ikbone_adjust_leg_x : 1.0,
@@ -236,6 +241,7 @@ export class VVAppConfig{
         cp.confs.animation = Vue.toRaw(this.confs.animation);
         cp.confs.fileloader = Vue.toRaw(this.confs.fileloader);
         cp.confs.aiapis = Vue.toRaw(this.confs.aiapis);
+        cp.confs.files = Vue.toRaw(this.confs.files);
         return cp;
     }
     save() {

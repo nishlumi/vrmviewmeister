@@ -10,6 +10,7 @@ import { appModelOperator } from "./operator.js";
 import { AnimationParsingOptions, ManagedVRMA } from "../prop/cls_unityrel.js";
 import { appDataTimeline } from "../prop/apptimelinedata.js";
 import { appMainData } from "../prop/appmaindata.js";
+import { UnityCallbackFunctioner } from "./callback.js";
 
 /**
  * 
@@ -18,11 +19,12 @@ import { appMainData } from "../prop/appmaindata.js";
  * @param {appMainData} mainData 
  * @param {appDataTimeline} timelineData
  * @param {appModelOperator} modelOperator 
- * @param {*} callback 
+ * @param {UnityCallbackFunctioner} callback 
  * @param {*} refs 
+ * @param {*} othercallbacks
  * @returns 
  */
-export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOperator, callback, refs) => {
+export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOperator, callback, refs, othercallbacks) => {
     const { t } = VueI18n.useI18n({ useScope: 'global' });
 
     
@@ -850,6 +852,9 @@ export const defineModelLoader = (app, Quasar, mainData, timelineData, modelOper
         }else{
             mainData.elements.easybonetrandlg.defaultCSV = "";
         }
+
+        //---re-setup recording
+        othercallbacks.setupRecordingConfig(callback.unity, mainData, refs);
 
         //---backup functions
         schedulingBackup();

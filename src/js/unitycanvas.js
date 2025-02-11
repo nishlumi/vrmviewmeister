@@ -5,6 +5,40 @@ import { appModelOperator } from './model/operator.js';
 import { UnityCallbackFunctioner } from './model/callback.js';
 import { appMainData } from './prop/appmaindata.js';
 
+export class UnityConfigClass  {
+    /**
+     * 
+     * @param {String} buildUrl
+     * @param {appMainData} mainData 
+     */
+    constructor (buildUrl, mainData) {
+        this.loaderUrl = buildUrl + "/Builds.loader.js";
+        this.config = {
+            TOTAL_MEMORY : DEFAULTMEM * mainData.appconf.confs.application.UseMemory,
+            dataUrl: buildUrl + "/Builds.data.unityweb",
+            frameworkUrl: buildUrl + "/Builds.framework.js.unityweb",
+            codeUrl: buildUrl + "/Builds.wasm.unityweb",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: mainData.appinfo.author, //"DefaultCompany",
+            productName: mainData.appinfo.name, //"VRMViewer",
+            productVersion: mainData.appinfo.version //"0.1",
+        };
+        this.canvasID = "#unity-canvas";
+        this.screen = {
+            width : 0,
+            height : 0,
+            recordStream : new MediaStream(),
+            /**
+             * @type {MediaRecorder}
+             */
+            recorder : null,
+            downloadLink : "",
+            chunks : [],
+        };
+        this.instance = null;
+    }
+    
+};
 
 /**
  * 
@@ -17,33 +51,15 @@ import { appMainData } from './prop/appmaindata.js';
 export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData, objpropData, timelineData, refs) => {
     const buildUrl = document.getElementById("UnityBuildPath").value;
     const unitycontainer = Vue.ref(null);
-    const unityConfig = Vue.ref({
-        loaderUrl : buildUrl + "/Builds.loader.js",
-        config : {
-            TOTAL_MEMORY : DEFAULTMEM * mainData.appconf.confs.application.UseMemory,
-            dataUrl: buildUrl + "/Builds.data.unityweb",
-            frameworkUrl: buildUrl + "/Builds.framework.js.unityweb",
-            codeUrl: buildUrl + "/Builds.wasm.unityweb",
-            streamingAssetsUrl: "StreamingAssets",
-            companyName: mainData.appinfo.author, //"DefaultCompany",
-            productName: mainData.appinfo.name, //"VRMViewer",
-            productVersion: mainData.appinfo.version //"0.1",
-        },
-        canvasID : "#unity-canvas",
-        screen : {
-            width : 0,
-            height : 0,
-            recordStream : new MediaStream(),
-            recorder : null,
-            downloadLink : "",
-        },
-        instance : null
-    });
+    const unityConfig = Vue.ref(new UnityConfigClass(buildUrl, mainData));
 
     //-----------------------------------------------------
     const setupUnity = async () => {
         var prom = new Promise((resolve,reject)=>{
             var container = document.querySelector("#unity-container");
+            /**
+             * @type {HTMLCanvasElement}
+             */
             var canvas = document.querySelector("#unity-canvas");
             var loadingBar = document.querySelector("#unity-loading-bar");
             var progressBarFull = document.querySelector("#unity-progress-bar-full");
@@ -92,7 +108,9 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
     
                 loadingBar.style.display = "none";
     
-                var stream = canvas.captureStream();
+                await setupRecordingConfig(unityConfig.value, mainData, refs);
+                /*
+                var stream = canvas.captureStream(25);
                 unityConfig.value.screen.recordStream.addTrack(stream.getTracks()[0]);
                 if (mainData.appconf.confs.animation["enable_audio_record"] === true) {
                     var audioStream = await navigator.mediaDevices.getUserMedia({
@@ -102,16 +120,25 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
                     unityConfig.value.screen.recordStream.addTrack(audioStream.getTracks()[0]);
                 }
                 
-                unityConfig.value.screen.recorder = new MediaRecorder(unityConfig.value.screen.recordStream);
+
+                unityConfig.value.screen.recorder = new MediaRecorder(unityConfig.value.screen.recordStream,{
+                    mimeType: MediaRecorder.isTypeSupported("video/webm;codecs=h264") ?
+                        "video/webm;codecs=h264" : "video/webm"
+                });
                 unityConfig.value.screen.recorder.ondataavailable = (e) => {
-                    var bb = new Blob([e.data], { type: e.data.type });
+                    unityConfig.value.screen.chunks.push(e.data);
+                };
+                unityConfig.value.screen.recorder.onstop = () => {
+                    var bb = new Blob(unityConfig.value.screen.chunks, { type: "video/webm" });
                     var burl = window.URL.createObjectURL(bb);
                     //this.recordLink = burl;
                     //ID("lnk_recdownload").href = burl;
                     sessionStorage.setItem("tempvideo",burl);
                     refs.lnk_recdownload.value.href = burl;
                     //$("#btn_rec_download").linkbutton("enable");
-                };
+                }
+                console.log("bps=" + unityConfig.value.screen.recorder.videoBitsPerSecond);
+                */
                 
                 resolve(true);
             };
@@ -130,6 +157,48 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
         });
         return prom;
         
+    }
+    //-----------------------------------------------------------------
+    /**
+     * 
+     * @param {UnityConfigClass} unitycon 
+     * @param {appMainData} mainData 
+     * @param {*} refs 
+     */
+    const setupRecordingConfig = async (unitycon, mainData, refs) => {
+        var stream = document.querySelector(unitycon.canvasID).captureStream(
+            mainData.appconf.confs.files.record_framerate
+        );
+        unitycon.screen.recordStream.addTrack(stream.getTracks()[0]);
+        if (mainData.appconf.confs.animation["enable_audio_record"] === true) {
+            var audioStream = await navigator.mediaDevices.getUserMedia({
+                audio : true,
+                video : false
+            });
+            unitycon.screen.recordStream.addTrack(audioStream.getTracks()[0]);
+        }
+        
+
+        unitycon.screen.recorder = new MediaRecorder(unitycon.screen.recordStream,{
+            mimeType: 
+                MediaRecorder.isTypeSupported(mainData.appconf.confs.files.record_codec) ? 
+                mainData.appconf.confs.files.record_codec : "video/webm",
+            videoBitsPerSecond: mainData.appconf.confs.files.record_videobps * 1000000
+        });
+        unitycon.screen.recorder.ondataavailable = (e) => {
+            unityConfig.value.screen.chunks.push(e.data);
+        };
+        unitycon.screen.recorder.onstop = () => {
+            var bb = new Blob(unitycon.screen.chunks, { type: "video/webm" });
+            var burl = window.URL.createObjectURL(bb);
+            //this.recordLink = burl;
+            //ID("lnk_recdownload").href = burl;
+            sessionStorage.setItem("tempvideo",burl);
+            refs.lnk_recdownload.value.href = burl;
+            //$("#btn_rec_download").linkbutton("enable");
+        }
+        console.log("bps=" + unitycon.screen.recorder.videoBitsPerSecond);
+        console.log("mimeType=" + unitycon.screen.recorder.mimeType);
     }
     //-----------------------------------------------------------------
     /**
@@ -424,6 +493,7 @@ export const defineUnityCanvas = (app, Quasar, mainData, ribbonData, objlistData
         unitycontainer,
         unityConfig,
         setupUnity,
+        setupRecordingConfig,
         setupFixUnityEvent,
         //setupDefaultObject,
         CanvasPointerEnter,

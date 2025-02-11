@@ -251,7 +251,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     const chkDevicePlatform = () => {
         if (navigator.userAgent.indexOf(" VR ") > -1) {
             return "vr";
-        }else if (navigator.userAgent.indexOf(" Mobile ") > -1) { 
+        }else if (Quasar.Platform.is.mobile) { 
             return "mobile";
         }else{
             return "pc";
@@ -2074,8 +2074,9 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
     }
     const wa_lnkdownload_onoff = Vue.watch(() => ribbonData.elements.lnk_download.state, (newval) => {
         if (newval === true) {
+            callback.unity.screen.chunks.splice(0, callback.unity.screen.chunks.length);
             if (refs.lnk_recdownload.value) window.URL.revokeObjectURL(refs.lnk_recdownload.value.href);
-            callback.unity.screen.recorder.start();
+            callback.unity.screen.recorder.start(1000);
             changeStateLnkdownload("start");
         }else if (newval === false) {
             callback.unity.screen.recorder.stop();

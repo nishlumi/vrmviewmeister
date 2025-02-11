@@ -9,6 +9,7 @@ import { appMainData } from "../prop/appmaindata.js";
 import { appDataTimeline } from "../prop/apptimelinedata.js";
 import { appDataRibbon } from "../prop/appribbondata.js";
 import { appDataObjectProp } from "../prop/appobjpropdata.js";
+import { UnityConfigClass } from "../unitycanvas.js";
 const yaml = require("js-yaml");
 
 
@@ -20,7 +21,7 @@ export class UnityCallbackFunctioner {
      * @param {*} objlist 
      * @param {appDataObjectProp} objprop 
      * @param {appDataTimeline} timeline 
-     * @param {*} unityConfig
+     * @param {UnityConfigClass} unityConfig
      */
      constructor(main, ribbon, objlist, objprop, timeline,unityConfig,refs) {
         /**
@@ -40,6 +41,9 @@ export class UnityCallbackFunctioner {
          * @type {appDataTimeline}
          */
         this.timelineData = timeline;
+        /**
+         * @type {UnityConfigClass}
+         */
         this.unity = unityConfig;
         this.refs = refs;
 
@@ -51,6 +55,8 @@ export class UnityCallbackFunctioner {
         this.modelOperator = null;
 
         this.modelLoader = null;
+        
+        this.recordingConfig = null;
 
         const { t } = VueI18n.useI18n({ useScope: 'global' });
         this.t = t;

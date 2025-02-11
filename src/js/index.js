@@ -73,7 +73,7 @@ const app = Vue.createApp({
         //---Method, Properties
         const { 
             unitycontainer,unityConfig, 
-            setupUnity, setupFixUnityEvent, setupDefaultObject, 
+            setupUnity, setupRecordingConfig, setupFixUnityEvent, setupDefaultObject, 
             CanvasPointerEnter, CanvasPointerLeave
         } = defineUnityCanvas(app, Quasar, mainData, ribbonData, objlistData, objpropData, timelineData, {
             lnk_recdownload,
@@ -85,8 +85,8 @@ const app = Vue.createApp({
             unitycontainer
         });
         const { modelLoader, dnd } = defineModelLoader(app, Quasar, mainData, timelineData, modelOperator, UnityCallback, {
-            fil_animproject,file_audio,fil_animmotion,hid_file,lnk_saveproject
-        });
+            fil_animproject,file_audio,fil_animmotion,hid_file,lnk_saveproject,lnk_recdownload
+        },{ setupRecordingConfig });
         const { childman } = defineChildManager(modelOperator, mainData, UnityCallback);
         //===set up the other referrence
 
@@ -254,10 +254,15 @@ const app = Vue.createApp({
                 //AppQueue.start();
                 
                 //---1st: load app material
-                modelOperator.load_materialFile(true);
+                await modelOperator.load_materialFile(true)
+                
+                
+                
                 ID("splash").classList.add("fadeout");
                 modelLoader.downloadAddressableAssetBundles();
                 //modelLoader.onload_effectDirectory();
+
+
                 AppQueue.start();
                 mainData.states.currentEditOperationCount = 0;
                 mainData.states.backupEditOperationCount = 0;
@@ -266,6 +271,7 @@ const app = Vue.createApp({
                 
                 //---load easy-ui data
                 modelOperator.loadDefaultDataForEasyUI();
+
                 
             });
 
@@ -437,7 +443,7 @@ const app = Vue.createApp({
             mobilePadEvent,
             //filtered_objectlist: objlistEvent.filtered_objectlist,
             objpropEvent,
-            setupUnity, setupFixUnityEvent, setupDefaultObject, CanvasPointerEnter, CanvasPointerLeave,
+            setupUnity, setupRecordingConfig, setupFixUnityEvent, setupDefaultObject, CanvasPointerEnter, CanvasPointerLeave,
             timelineEvent,
             projectdlgEvent,
             projectSelectorEvent,

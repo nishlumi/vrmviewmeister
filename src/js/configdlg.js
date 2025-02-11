@@ -247,6 +247,39 @@ const template = `
                                 </div>
                             </div>
                         </q-item-section>
+                        <q-item-section>
+                            <div class="row">
+                                <div class="col-12 q-pt-sm">
+                                    <b>{{ $t('Recording parameters') }}</b>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-7 q-pt-sm">
+                                    <span class="">{{ $t('msg_record_codes')}}</span>
+                                </div>
+                                <div class="col-5">
+                                    <q-select
+                                        :options="SupportedRecordCodecs"
+                                        v-model="elements.record.codec.selected"
+                                        @update:model-value="recordcodec_onchange"
+                                    ></q-select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8 col-sm-3 q-pt-sm q-pl-sm">
+                                    <span class="">{{ $t('msg_record_framerate')}}</span>
+                                </div>
+                                <div class="col-4 col-sm-2 q-pl-sm">
+                                    <q-input v-model="appconf.confs.files.record_framerate" type="number" min="1" max="120" step="1" dense></q-input>
+                                </div>
+                                <div class="col-8 col-sm-3 q-pt-sm q-pl-sm">
+                                    <span class="">{{ $t('msg_record_videobps')}}</span>
+                                </div>
+                                <div class="col-4 col-sm-2 q-pl-sm">
+                                    <q-input v-model="appconf.confs.files.record_videobps" type="number" min="1" max="5" step="0.1" dense></q-input>
+                                </div>
+                            </div>
+                        </q-item-section>
                     </q-list>
                 </q-tab-panel>
                 <q-tab-panel name="model">
@@ -799,6 +832,14 @@ export function defineConfigDlg(app, Quasar) {
                         vrm : false, other: false, image: false
                     }
                 },
+                record : {
+                    codec: {
+                        selected : "video/webm",
+                        options : [
+
+                        ]
+                    }
+                },
                 aiapis : {
                     tabIndex: "txt2img",
                     txt2img : {
@@ -831,13 +872,30 @@ export function defineConfigDlg(app, Quasar) {
                     
                     elements.value.model.vrarctrl_left.selected = cns_vrarctrllist[appconf.value.confs.model.vrarctrl_panel_left];
                     elements.value.model.vrarctrl_right.selected = cns_vrarctrllist[appconf.value.confs.model.vrarctrl_panel_right];
+
+                    elements.value.record.codec.selected = appconf.value.confs.files.record_codec;
                 }
             });
 
             //---computed-------------------------------
             const showPreviewMemory = Vue.computed( () => {
                 return (DEFAULTMEM * appconf.value.confs.application.UseMemory) / 1024 / 1024;
-            })
+            });
+            const SupportedRecordCodecs = Vue.computed( () => {
+                var checkCodecs = [
+                    "video/webm",
+                    "video/mp4",
+                    "video/webm;codecs=vp8",
+                    "video/webm;codecs=vp9",
+                    "video/webm;codecs=h264",
+                    "video/webm;codecs=av1",
+                ];
+                var ret = [];
+                for (var obj of checkCodecs) {
+                    if (MediaRecorder.isTypeSupported(obj)) ret.push(obj);
+                }
+                return ret;
+            });
 
             //---method----------------------------------
             const historyClear_onclick = () => {
@@ -871,17 +929,20 @@ export function defineConfigDlg(app, Quasar) {
                 const tmpcon = new VVConfigTemplate();
                 appconf.value.confs.fileloader.easyik.sampleurl = tmpcon.fileloader.easyik.sampleurl;
             }
+            const recordcodec_onchange = (val) => {
+                appconf.value.confs.files.record_codec = val;
+            }
 
             return {
                 show, tabIndex, appconf, elements,
                 //---watch---
                 wa_modelValue,
                 //---computed---
-                showPreviewMemory,
+                showPreviewMemory,SupportedRecordCodecs,
                 //---method---
                 ok_onclick,cancel_onclick,historyClear_onclick,
                 vrarctrl_panel_left_onchange,vrarctrl_panel_right_onchange,
-                easyIkModeURL_reset_onclick,
+                easyIkModeURL_reset_onclick,recordcodec_onchange,
             }
         }
     });

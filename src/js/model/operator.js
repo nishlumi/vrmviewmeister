@@ -1833,7 +1833,7 @@ export class appModelOperator {
      * @param {Boolean} isEffectiveLoad 
      * @returns 
      */
-    load_materialFile (isEffectiveLoad = false)  {
+    async load_materialFile (isEffectiveLoad = false)  {
         const apptbl = this.mainData.elements.projdlg.materialLoadedRows[this.mainData.elements.projdlg.mat_tabradio];
         this.mainData.elements.projdlg.materialrows = this.mainData.elements.projdlg.materialLoadedRows[this.mainData.elements.projdlg.mat_tabradio];
         return AppDB.materials.iterate( (value,key,num) => {
@@ -1851,7 +1851,7 @@ export class appModelOperator {
         },() => {
             //this.mainData.elements.projdlg.mat_firstload = true;
             return true;
-        });   
+        });        
     }
     /**
      * 
@@ -2281,21 +2281,21 @@ export class appModelOperator {
                             //this.mainData.states.fileloadname = f.name;
                             //this.mainData.states.fileloadtype = "o";
                             //this.mainData.states.loadingfileHandle = f;
-                            var filearr =  f.name.split(".");
+                            var filearr =  dbf.name.split(".");
                             var ext = filearr[filearr.length-1];
                             
-                            var param = [fdata,f.name,ext].join("\t");
+                            var param = [fdata,dbf.name,ext].join("\t");
                             AppQueue.add(new queueData(
                                 {target:AppQueue.unity.FileMenuCommands,method:'LoadOtherObjectURI',param:param},
                                 "sendobjectinfo",QD_INOUT.returnJS,
                                 this.UnityCallback.sendObjectInfo,
-                                {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
+                                {callback:this.UnityCallback,objectURL:fdata,filename: dbf.name,
                                     fileloadtype: "o",
                                     loadingfileHandle : dbf}
                             ));
                         }else{
                             this.mainData.elements.percentLoad.current += this.mainData.elements.percentLoad.percent;
-                            overmessage(f.name);
+                            overmessage(dbf.name);
                         }
                     }else{
                         if (cast.path == "%BLANK%") {
@@ -2333,7 +2333,7 @@ export class appModelOperator {
                             //this.mainData.states.fileloadname = f.name;
                             //this.mainData.states.loadingfile = fdata;
                             //this.mainData.states.loadingfileHandle = f;
-                            var filearr =  f.name.split(".");
+                            var filearr =  dbf.name.split(".");
                             var ext = filearr[filearr.length-1];
                             
                             var param = [fdata,f.name,ext].join("\t");
@@ -2341,7 +2341,7 @@ export class appModelOperator {
                                 {target:AppQueue.unity.FileMenuCommands,method:'ImageFileSelected',param:param},
                                 "sendobjectinfo",QD_INOUT.returnJS,
                                 this.UnityCallback.sendObjectInfo,
-                                {callback:this.UnityCallback,objectURL:fdata,filename:f.name,
+                                {callback:this.UnityCallback,objectURL:fdata,filename:dbf.name,
                                     fileloadtype: "img",
                                     loadingfileHandle : f}
                             ));
