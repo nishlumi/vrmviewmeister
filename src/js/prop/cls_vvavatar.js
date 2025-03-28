@@ -647,7 +647,7 @@ export class VVTimelineFrameData {
             MovingTypes: [],
             keycolor: "#FF4545"
         };
-        if (!("keycolor" in this.data)) {
+        if (!("keycolor" in this.data) || (this.data["keycolor"] == "")) {
             this.data["keycolor"] = "#FF4545";
         }
         this.vclass = {
@@ -1011,6 +1011,11 @@ export class EasySelectRow {
          * @type {String}
          */
         this.lang = "";
+
+        /**
+         * @type {String} base64 embedded image
+         */
+        this.image = "";
 
         /**
          * @type {Boolean}

@@ -200,7 +200,7 @@ export class appModelOperator {
             }
 
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'NewProject',param:parseFloat(this.mainData.appconf.confs.animation.base_duration)},
+                {target:AppQueue.unity.ManageAnimation,method:'NewProjectFromOuter',param:parseFloat(this.mainData.appconf.confs.animation.base_duration)},
                 "newproject",QD_INOUT.returnJS,
                 (val) => {
                     console.log(val);

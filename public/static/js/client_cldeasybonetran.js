@@ -81,27 +81,27 @@ class BaseData {
             },
 
             postureBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             eyeBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             armBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             legBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             rightArmBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             rightLegBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
         }
@@ -193,7 +193,7 @@ const app = Vue.createApp({
             }else{
                 return false;
             }*/
-           return false;
+           return true;
 
         });
         const cmp_webelectron_path = (iconname) => {
@@ -206,6 +206,72 @@ const app = Vue.createApp({
             
             return locpath + iconname;
         }
+        const cmp_select_eye_image = Vue.computed(() => {
+            if (appdata.elements.eyeBox.selected) {
+                if (appdata.elements.eyeBox.selected.image == "") {
+                    return cmp_webelectron_path('vvmtrans_eyeview.png');    
+                }else{
+                    return appdata.elements.eyeBox.selected.image;
+                }
+            }else{
+                return cmp_webelectron_path('vvmtrans_eyeview.png');
+            }
+        });
+        const cmp_select_posture_image = Vue.computed(() => {
+            if (appdata.elements.postureBox.selected) {
+                if (appdata.elements.postureBox.selected.image == "") {
+                    return cmp_webelectron_path('vvmtrans_body.png');    
+                }else{
+                    return appdata.elements.postureBox.selected.image;
+                }
+            }else{
+                return cmp_webelectron_path('vvmtrans_body.png');
+            }
+        });
+        const cmp_select_rightarm_image = Vue.computed(() => {
+            if (appdata.elements.rightArmBox.selected) {
+                if (appdata.elements.rightArmBox.selected.image == "") {
+                    return cmp_webelectron_path('vvmtrans_rightarm.png');    
+                }else{
+                    return appdata.elements.rightArmBox.selected.image;
+                }
+            }else{
+                return cmp_webelectron_path('vvmtrans_rightarm.png');
+            }
+        });
+        const cmp_select_leftarm_image = Vue.computed(() => {
+            if (appdata.elements.armBox.selected) {
+                if (appdata.elements.armBox.selected.image == "") {
+                    return cmp_webelectron_path('vvmtrans_leftarm.png');    
+                }else{
+                    return appdata.elements.armBox.selected.image;
+                }
+            }else{
+                return cmp_webelectron_path('vvmtrans_leftarm.png');
+            }
+        });
+        const cmp_select_rightleg_image = Vue.computed(() => {
+            if (appdata.elements.rightLegBox.selected) {
+                if (appdata.elements.rightLegBox.selected.image == "") {
+                    return cmp_webelectron_path('vvmtrans_rightleg.png');    
+                }else{
+                    return appdata.elements.rightLegBox.selected.image;
+                }
+            }else{
+                return cmp_webelectron_path('vvmtrans_rightleg.png');
+            }
+        });
+        const cmp_select_leftleg_image = Vue.computed(() => {
+            if (appdata.elements.legBox.selected) {
+                if (appdata.elements.legBox.selected.image == "") {
+                    return cmp_webelectron_path('vvmtrans_leftleg.png');
+                }else{
+                    return appdata.elements.legBox.selected.image;
+                }
+            }else{
+                return cmp_webelectron_path('vvmtrans_leftleg.png');
+            }
+        });
 
 
         //---functions---------------------------------------------------------
@@ -239,7 +305,7 @@ const app = Vue.createApp({
                     area.useTPose = line[3] == "1" ? true : false;
 
                     //appdata.data.easySelectList.arealist[postureIndex].name = line[1];
-                    for (var p = 4; p < line.length; p++) {
+                    for (var p = 4; p < line.length-1; p++) {
                         var partsarr = PARTS_LABEL[p-4].split("_");
                         area.calclist.push({
                             parts : partsarr[0],
@@ -248,6 +314,9 @@ const app = Vue.createApp({
                             expression : line[p],
                         });
                     }
+                    //---last col: embedded image
+                    area.image = line[line.length-1];
+                    
                     appdata.data.easySelectList.arealist.push(area);
                 }
             }catch(e) {
@@ -268,11 +337,12 @@ const app = Vue.createApp({
                 return false;
             });
             appdata.elements.postureBox.options.splice(0, appdata.elements.postureBox.options.length);
-            appdata.elements.postureBox.options.push({label:"---",value:null});
+            appdata.elements.postureBox.options.push({label:"---",value:null,image:""});
             for (var o of postures) {
                 appdata.elements.postureBox.options.push( {
                     label: o.name,
-                    value : o
+                    value : o,
+                    image: o.image,
                 });
             }
             //---reload current select data
@@ -291,11 +361,12 @@ const app = Vue.createApp({
                 return false;
             });
             appdata.elements.eyeBox.options.splice(0, appdata.elements.eyeBox.options.length);
-            appdata.elements.eyeBox.options.push({label:"---",value:null});
+            appdata.elements.eyeBox.options.push({label:"---",value:null,image:""});
             for (var o of eyeview) {
                 appdata.elements.eyeBox.options.push( {
                     label: o.name,
-                    value : o
+                    value : o,
+                    image: o.image,
                 });
             }
             //---reload current select data
@@ -314,22 +385,22 @@ const app = Vue.createApp({
                 return false;
             });
             appdata.elements.armBox.options.splice(0, appdata.elements.armBox.options.length);
-            appdata.elements.armBox.options.push({label:"---",value:null});
+            appdata.elements.armBox.options.push({label:"---",value:null,image:""});
             for (var o of arms) {
                 appdata.elements.armBox.options.push( {
                     label: o.name,
-                    value : o
+                    value : o,
+                    image: o.image,
                 });
             }
             //---reload current select data
             if (appdata.elements.armBox.selected) {
-                for (var o = 0; o < appdata.elements.armBox.selected.length; o++) {
-                    var ishit = appdata.elements.armBox.options.find(v => {
-                        if (v.label == appdata.elements.armBox.selected[o].label) return true;
-                        return false;
-                    });
-                    if(ishit) appdata.elements.armBox.selected[o].value = ishit.value;
-                }
+                var ishit = appdata.elements.armBox.options.find(v => {
+                    if (v.label == appdata.elements.armBox.selected.label) return true;
+                    return false;
+                });
+                if(ishit) appdata.elements.armBox.selected.value = ishit.value;
+               
                 
             }
             //---right arm
@@ -338,22 +409,22 @@ const app = Vue.createApp({
                 return false;
             });
             appdata.elements.rightArmBox.options.splice(0, appdata.elements.rightArmBox.options.length);
-            appdata.elements.rightArmBox.options.push({label:"---",value:null});
+            appdata.elements.rightArmBox.options.push({label:"---",value:null,image:""});
             for (var o of arms) {
                 appdata.elements.rightArmBox.options.push( {
                     label: o.name,
-                    value : o
+                    value : o,
+                    image: o.image,
                 });
             }
             //---reload current select data
             if (appdata.elements.rightArmBox.selected) {
-                for (var o = 0; o < appdata.elements.rightArmBox.selected.length; o++) {
-                    var ishit = appdata.elements.rightArmBox.options.find(v => {
-                        if (v.label == appdata.elements.rightArmBox.selected[o].label) return true;
-                        return false;
-                    });
-                    if(ishit) appdata.elements.rightArmBox.selected[o].value = ishit.value;
-                }
+                var ishit = appdata.elements.rightArmBox.options.find(v => {
+                    if (v.label == appdata.elements.rightArmBox.selected.label) return true;
+                    return false;
+                });
+                if(ishit) appdata.elements.rightArmBox.selected.value = ishit.value;
+            
                 
             }
             
@@ -364,22 +435,22 @@ const app = Vue.createApp({
                 return false;
             });
             appdata.elements.legBox.options.splice(0, appdata.elements.legBox.options.length);
-            appdata.elements.legBox.options.push({label:"---",value:null});
+            appdata.elements.legBox.options.push({label:"---",value:null,image:""});
             for (var o of legs) {
                 appdata.elements.legBox.options.push( {
                     label: o.name,
-                    value : o
+                    value : o,
+                    image: o.image,
                 });
             }
             //---reload current select data
             if (appdata.elements.legBox.selected) {
-                for (var o = 0; o < appdata.elements.legBox.selected.length; o++) {
-                    var ishit = appdata.elements.legBox.options.find(v => {
-                        if (v.label == appdata.elements.legBox.selected[o].label) return true;
-                        return false;
-                    });
-                    if (ishit) appdata.elements.legBox.selected[o].value = ishit.value;
-                }
+                var ishit = appdata.elements.legBox.options.find(v => {
+                    if (v.label == appdata.elements.legBox.selected.label) return true;
+                    return false;
+                });
+                if (ishit) appdata.elements.legBox.selected.value = ishit.value;
+            
                 
             }
             //---right leg
@@ -388,22 +459,22 @@ const app = Vue.createApp({
                 return false;
             });
             appdata.elements.rightLegBox.options.splice(0, appdata.elements.rightLegBox.options.length);
-            appdata.elements.rightLegBox.options.push({label:"---",value:null});
+            appdata.elements.rightLegBox.options.push({label:"---",value:null,image:""});
             for (var o of legs) {
                 appdata.elements.rightLegBox.options.push( {
                     label: o.name,
-                    value : o
+                    value : o,
+                    image: o.image,
                 });
             }
             //---reload current select data
             if (appdata.elements.rightLegBox.selected) {
-                for (var o = 0; o < appdata.elements.rightLegBox.selected.length; o++) {
-                    var ishit = appdata.elements.rightLegBox.options.find(v => {
-                        if (v.label == appdata.elements.rightLegBox.selected[o].label) return true;
-                        return false;
-                    });
-                    if (ishit) appdata.elements.rightLegBox.selected[o].value = ishit.value;
-                }
+                var ishit = appdata.elements.rightLegBox.options.find(v => {
+                    if (v.label == appdata.elements.rightLegBox.selected.label) return true;
+                    return false;
+                });
+                if (ishit) appdata.elements.rightLegBox.selected.value = ishit.value;
+            
                 
             }
             
@@ -820,12 +891,39 @@ const app = Vue.createApp({
             }
         }
         const selclear_onclick = () => {
-            appdata.elements.postureBox.selected = {label:"---",value:null};
-            appdata.elements.eyeBox.selected = {label:"---",value:null};
-            appdata.elements.armBox.selected = [];
-            appdata.elements.legBox.selected = [];
-            appdata.elements.rightArmBox.selected = [];
-            appdata.elements.rightLegBox.selected = [];
+            appdata.elements.postureBox.selected = appdata.elements.postureBox.options[0];
+            appdata.elements.eyeBox.selected = appdata.elements.eyeBox.options[0];
+            appdata.elements.armBox.selected = appdata.elements.armBox.options[0];
+            appdata.elements.legBox.selected = appdata.elements.legBox.options[0];
+            appdata.elements.rightArmBox.selected = appdata.elements.rightArmBox.options[0];
+            appdata.elements.rightLegBox.selected = appdata.elements.rightLegBox.options[0];
+    }
+        const selrandom_onclick = () => {
+            const getRandomInt = (min, max) => {
+                min = Math.ceil(min)
+                max = Math.floor(max)
+                return Math.floor(Math.random() * (max - min + 1) + min)
+            }
+            //---posture
+            var sel = getRandomInt(1,appdata.elements.postureBox.options.length-1);
+            appdata.elements.postureBox.selected = appdata.elements.postureBox.options[sel];
+            //---eyeview
+            var sel = getRandomInt(1,appdata.elements.eyeBox.options.length-1);
+            appdata.elements.eyeBox.selected = appdata.elements.eyeBox.options[sel];
+
+            //---right arm
+            var sel = getRandomInt(1,appdata.elements.rightArmBox.options.length-1);
+            appdata.elements.rightArmBox.selected = appdata.elements.rightArmBox.options[sel];
+            //---left arm
+            var sel = getRandomInt(1,appdata.elements.armBox.options.length-1);
+            appdata.elements.armBox.selected = appdata.elements.armBox.options[sel];
+
+            //---right leg
+            var sel = getRandomInt(1,appdata.elements.rightLegBox.options.length-1);
+            appdata.elements.rightLegBox.selected = appdata.elements.rightLegBox.options[sel];
+            //---left leg
+            var sel = getRandomInt(1,appdata.elements.legBox.options.length-1);
+            appdata.elements.legBox.selected = appdata.elements.legBox.options[sel];
         }
 
 
@@ -929,13 +1027,16 @@ const app = Vue.createApp({
             //---event-------------
             defaultbtn_onclick,openfile_onclick,apply_onclick,reload_onclick,
             rfile_onchange,
-            posturebox_onchange,selclear_onclick,
+            posturebox_onchange,selclear_onclick,selrandom_onclick,
             //element--------------
             btpdlg,btpdlg_bar,rfile,
             //watch----------------
             wa_dark,wa_avatar_type,
             cmp_is_screen_xs,
             cmp_webelectron_path,
+            cmp_select_eye_image,cmp_select_posture_image,
+            cmp_select_rightarm_image,cmp_select_leftarm_image,
+            cmp_select_rightleg_image,cmp_select_leftleg_image,
         };
     }
 });

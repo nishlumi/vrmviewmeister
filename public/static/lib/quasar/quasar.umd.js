@@ -1,5 +1,5 @@
 /*!
- * Quasar Framework v2.17.7
+ * Quasar Framework v2.18.1
  * (c) 2015-present Razvan Stoenescu
  * Released under the MIT License.
  */
@@ -490,7 +490,7 @@
         visualViewport.width * visualViewport.scale + window.innerWidth - scrollingElement.clientWidth,
         visualViewport.height * visualViewport.scale + window.innerHeight - scrollingElement.clientHeight
       ];
-      const classes = $q.config.screen !== void 0 && $q.config.screen.bodyClasses === true;
+      const classes = $q.config.screen?.bodyClasses === true;
       this.__update = (force) => {
         const [w, h2] = getSize();
         if (h2 !== this.height) {
@@ -728,7 +728,7 @@
       if (false) {
         const { $q, ssrContext } = opts;
         const cls = getBodyClasses($q.platform, $q.config);
-        if ($q.config.screen !== void 0 && $q.config.screen.bodyClass === true) {
+        if ($q.config.screen?.bodyClass === true) {
           cls.push("screen--xs");
         }
         ssrContext._meta.bodyClasses += cls.join(" ");
@@ -788,7 +788,7 @@
       const { cordova: cordova2, capacitor } = client.is;
       if (cordova2 !== true && capacitor !== true) return;
       const qConf = $q.config[cordova2 === true ? "cordova" : "capacitor"];
-      if (qConf !== void 0 && qConf.backButton === false) return;
+      if (qConf?.backButton === false) return;
       if (
         // if we're on Capacitor mode
         capacitor === true && (window.Capacitor === void 0 || window.Capacitor.Plugins.App === void 0)
@@ -863,7 +863,14 @@
       firstDayOfWeek: 0,
       // 0-6, 0 - Sunday, 1 Monday, ...
       format24h: false,
-      pluralDay: "days"
+      pluralDay: "days",
+      prevMonth: "Previous month",
+      nextMonth: "Next month",
+      prevYear: "Previous year",
+      nextYear: "Next year",
+      today: "Today",
+      prevRangeYears: (range) => `Previous ${range} years`,
+      nextRangeYears: (range) => `Next ${range} years`
     },
     table: {
       noData: "No data available",
@@ -874,6 +881,12 @@
       allRows: "All",
       pagination: (start, end, total) => start + "-" + end + " of " + total,
       columns: "Columns"
+    },
+    pagination: {
+      first: "First page",
+      prev: "Previous page",
+      next: "Next page",
+      last: "Last page"
     },
     editor: {
       url: "URL",
@@ -1378,7 +1391,7 @@
   }
   var install_quasar_default = false ? function(parentApp, opts = {}, ssrContext) {
     const $q = {
-      version: "2.17.7",
+      version: "2.18.1",
       config: opts.config || {}
     };
     Object.assign(ssrContext, {
@@ -1408,7 +1421,7 @@
       ssrContext
     });
   } : function(parentApp, opts = {}) {
-    const $q = { version: "2.17.7" };
+    const $q = { version: "2.18.1" };
     if (globalConfigIsFrozen === false) {
       if (opts.config !== void 0) {
         Object.assign(globalConfig, opts.config);
@@ -1867,7 +1880,9 @@
     "ion-logo": ionFn,
     "iconfont ": sameFn,
     "ti-": (i) => `themify-icon ${i}`,
-    "bi-": (i) => `bootstrap-icons ${i}`
+    "bi-": (i) => `bootstrap-icons ${i}`,
+    "i-": sameFn
+    // UnoCSS pure icons
   };
   var matMap = {
     o_: "-outlined",
@@ -1987,8 +2002,7 @@
         const data = {
           class: classes.value,
           style: sizeStyle.value,
-          "aria-hidden": "true",
-          role: "presentation"
+          "aria-hidden": "true"
         };
         if (type.value.none === true) {
           return h(props4.tag, data, hSlot(slots.default));
@@ -2259,9 +2273,9 @@
         );
         if (vnodes.length === 0) return;
         let els = 1;
-        const child = [], len = vnodes.filter((c) => c.type !== void 0 && c.type.name === "QBreadcrumbsEl").length, separator = slots.separator !== void 0 ? slots.separator : () => props4.separator;
+        const child = [], len = vnodes.filter((c) => c.type?.name === "QBreadcrumbsEl").length, separator = slots.separator !== void 0 ? slots.separator : () => props4.separator;
         vnodes.forEach((comp) => {
-          if (comp.type !== void 0 && comp.type.name === "QBreadcrumbsEl") {
+          if (comp.type?.name === "QBreadcrumbsEl") {
             const middle = els < len;
             const disabled = comp.props !== null && disabledValues.includes(comp.props.disable);
             const cls = (middle === true ? "" : " q-breadcrumbs--last") + (disabled !== true && middle === true ? activeClass.value : "");
@@ -2974,11 +2988,11 @@
           if (e.defaultPrevented === true) return;
           const el = document.activeElement;
           if (props4.type === "submit" && el !== document.body && rootRef.value.contains(el) === false && el.contains(rootRef.value) === false) {
-            rootRef.value.focus();
+            e.qAvoidFocus !== true && rootRef.value.focus();
             const onClickCleanup = () => {
               document.removeEventListener("keydown", stopAndPrevent, true);
               document.removeEventListener("keyup", onClickCleanup, passiveCapture);
-              rootRef.value !== null && rootRef.value.removeEventListener("blur", onClickCleanup, passiveCapture);
+              rootRef.value?.removeEventListener("blur", onClickCleanup, passiveCapture);
             };
             document.addEventListener("keydown", stopAndPrevent, true);
             document.addEventListener("keyup", onClickCleanup, passiveCapture);
@@ -2993,7 +3007,7 @@
         if (isKeyCode(e, [13, 32]) === true && keyboardTarget !== rootRef.value) {
           keyboardTarget !== null && cleanup();
           if (e.defaultPrevented !== true) {
-            rootRef.value.focus();
+            e.qAvoidFocus !== true && rootRef.value.focus();
             keyboardTarget = rootRef.value;
             rootRef.value.classList.add("q-btn--active");
             document.addEventListener("keyup", onPressEnd, true);
@@ -3033,8 +3047,8 @@
       }
       function onPressEnd(e) {
         if (rootRef.value === null) return;
-        if (e !== void 0 && e.type === "blur" && document.activeElement === rootRef.value) return;
-        if (e !== void 0 && e.type === "keyup") {
+        if (e?.type === "blur" && document.activeElement === rootRef.value) return;
+        if (e?.type === "keyup") {
           if (keyboardTarget === rootRef.value && isKeyCode(e, [13, 32]) === true) {
             const evt = new MouseEvent("click", e);
             evt.qKeyEvent = true;
@@ -3067,10 +3081,10 @@
         }
         if (keyboardTarget === rootRef.value) {
           document.removeEventListener("keyup", onPressEnd, true);
-          rootRef.value !== null && rootRef.value.removeEventListener("blur", onPressEnd, passiveCapture);
+          rootRef.value?.removeEventListener("blur", onPressEnd, passiveCapture);
           keyboardTarget = null;
         }
-        rootRef.value !== null && rootRef.value.classList.remove("q-btn--active");
+        rootRef.value?.classList.remove("q-btn--active");
       }
       function onLoadingEvt(evt) {
         stopAndPrevent(evt);
@@ -3438,7 +3452,7 @@
       }
     }
     function show(evt) {
-      if (props4.disable === true || evt !== void 0 && evt.qAnchorHandled === true || canShow !== void 0 && canShow(evt) !== true) return;
+      if (props4.disable === true || evt?.qAnchorHandled === true || canShow !== void 0 && canShow(evt) !== true) return;
       const listener = props4["onUpdate:modelValue"] !== void 0;
       if (listener === true && true) {
         emit("update:modelValue", true);
@@ -3604,7 +3618,7 @@
         }
       } else if (proxy.__qPortal === true) {
         const parent = getParentProxy(proxy);
-        if (parent !== void 0 && parent.$options.name === "QPopupProxy") {
+        if (parent?.$options.name === "QPopupProxy") {
           proxy.hide(evt);
           return parent;
         } else {
@@ -4313,6 +4327,7 @@
       persistent: Boolean,
       autoClose: Boolean,
       separateClosePopup: Boolean,
+      noEscDismiss: Boolean,
       noRouteDismiss: Boolean,
       noRefocus: Boolean,
       noFocus: Boolean,
@@ -4462,7 +4477,7 @@
         anchorCleanup(true);
         if (refocusTarget !== null && // menu was hidden from code or ESC plugin
         (evt === void 0 || evt.qClickOutside !== true)) {
-          ((evt && evt.type.indexOf("key") === 0 ? refocusTarget.closest('[tabindex]:not([tabindex^="-"])') : void 0) || refocusTarget).focus();
+          ((evt?.type.indexOf("key") === 0 ? refocusTarget.closest('[tabindex]:not([tabindex^="-"])') : void 0) || refocusTarget).focus();
           refocusTarget = null;
         }
         registerTimeout(() => {
@@ -4506,8 +4521,10 @@
         }
       }
       function onEscapeKey(evt) {
-        emit("escapeKey");
-        hide(evt);
+        if (props4.noEscDismiss !== true) {
+          emit("escapeKey");
+          hide(evt);
+        }
       }
       function updatePosition() {
         setPosition({
@@ -4639,8 +4656,11 @@
       contentStyle: [Array, String, Object],
       cover: Boolean,
       persistent: Boolean,
+      noEscDismiss: Boolean,
       noRouteDismiss: Boolean,
       autoClose: Boolean,
+      noRefocus: Boolean,
+      noFocus: Boolean,
       menuAnchor: {
         type: String,
         default: "bottom end"
@@ -4679,7 +4699,7 @@
       const btnDesignAttr = computed(() => getBtnDesignAttr(props4));
       const btnProps = computed(() => passBtnProps(props4));
       watch(() => props4.modelValue, (val) => {
-        menuRef.value !== null && menuRef.value[val ? "show" : "hide"]();
+        menuRef.value?.[val ? "show" : "hide"]();
       });
       watch(() => props4.split, hide);
       function onBeforeShow(e) {
@@ -4707,13 +4727,13 @@
         emit("click", e);
       }
       function toggle(evt) {
-        menuRef.value !== null && menuRef.value.toggle(evt);
+        menuRef.value?.toggle(evt);
       }
       function show(evt) {
-        menuRef.value !== null && menuRef.value.show(evt);
+        menuRef.value?.show(evt);
       }
       function hide(evt) {
-        menuRef.value !== null && menuRef.value.hide(evt);
+        menuRef.value?.hide(evt);
       }
       Object.assign(proxy, {
         show,
@@ -4739,8 +4759,11 @@
             cover: props4.cover,
             fit: true,
             persistent: props4.persistent,
+            noEscDismiss: props4.noEscDismiss,
             noRouteDismiss: props4.noRouteDismiss,
             autoClose: props4.autoClose,
+            noFocus: props4.noFocus,
+            noRefocus: props4.noRefocus,
             anchor: props4.menuAnchor,
             self: props4.menuSelf,
             offset: props4.menuOffset,
@@ -5184,8 +5207,8 @@
             if (ctx.event === void 0) return;
             cleanEvt(ctx, "temp");
             client.is.firefox === true && preventDraggable(el, false);
-            ctx.styleCleanup !== void 0 && ctx.styleCleanup(true);
-            evt !== void 0 && ctx.event.dir !== false && stopAndPrevent(evt);
+            ctx.styleCleanup?.(true);
+            if (evt !== void 0 && ctx.event.dir !== false) stopAndPrevent(evt);
             ctx.event = void 0;
           }
         };
@@ -5218,7 +5241,7 @@
           cleanEvt(ctx, "main");
           cleanEvt(ctx, "temp");
           client.is.firefox === true && preventDraggable(el, false);
-          ctx.styleCleanup !== void 0 && ctx.styleCleanup();
+          ctx.styleCleanup?.();
           delete el.__qtouchswipe;
         }
       }
@@ -5936,11 +5959,12 @@
     });
     function refocusTarget(e) {
       const root = rootRef.value;
-      if (e !== void 0 && e.type.indexOf("key") === 0) {
-        if (root !== null && document.activeElement !== root && root.contains(document.activeElement) === true) {
+      if (e?.qAvoidFocus === true) return;
+      if (e?.type.indexOf("key") === 0) {
+        if (document.activeElement !== root && root?.contains(document.activeElement) === true) {
           root.focus();
         }
-      } else if (refocusRef.value !== null && (e === void 0 || root !== null && root.contains(e.target) === true)) {
+      } else if (refocusRef.value !== null && (e === void 0 || root?.contains(e.target) === true)) {
         refocusRef.value.focus();
       }
     }
@@ -6687,7 +6711,7 @@
             cleanEvt(ctx, "temp");
             client.is.firefox === true && preventDraggable(el, false);
             if (abort === true) {
-              ctx.styleCleanup !== void 0 && ctx.styleCleanup();
+              ctx.styleCleanup?.();
               if (ctx.event.detected !== true && ctx.initialEvent !== void 0) {
                 ctx.initialEvent.target.dispatchEvent(ctx.initialEvent.event);
               }
@@ -6738,7 +6762,7 @@
           cleanEvt(ctx, "main");
           cleanEvt(ctx, "temp");
           client.is.firefox === true && preventDraggable(el, false);
-          ctx.styleCleanup !== void 0 && ctx.styleCleanup();
+          ctx.styleCleanup?.();
           delete el.__qtouchpan;
         }
       }
@@ -7443,7 +7467,7 @@
           }
         }, onObjLoad = function() {
           cleanup();
-          if (targetEl && targetEl.contentDocument) {
+          if (targetEl?.contentDocument) {
             curDocView = targetEl.contentDocument.defaultView;
             curDocView.addEventListener("resize", trigger3, listenOpts.passive);
             emitEvent();
@@ -7765,7 +7789,7 @@
       }
       function updateActiveRoute() {
         let name2 = null, bestScore = { matchedLen: 0, queryDiff: 9999, hrefLen: 0 };
-        const list = tabDataList.filter((tab) => tab.routeData !== void 0 && tab.routeData.hasRouterLink.value === true);
+        const list = tabDataList.filter((tab) => tab.routeData?.hasRouterLink.value === true);
         const { hash: currentHash, query: currentQuery } = proxy.$route;
         const currentQueryLen = Object.keys(currentQuery).length;
         for (const tab of list) {
@@ -7898,7 +7922,7 @@
       function cleanup() {
         animateTimer !== null && clearTimeout(animateTimer);
         stopAnimScroll();
-        unwatchRoute !== void 0 && unwatchRoute();
+        unwatchRoute?.();
       }
       let hadRouteWatcher, hadActivated;
       onBeforeUnmount(cleanup);
@@ -7995,11 +8019,11 @@
     );
     const tabIndex = computed(() => props4.disable === true || $tabs.hasFocus.value === true || isActive.value === false && $tabs.hasActiveTab.value === true ? -1 : props4.tabindex || 0);
     function onClick(e, keyboard) {
-      if (keyboard !== true && blurTargetRef.value !== null) {
-        blurTargetRef.value.focus();
+      if (keyboard !== true && e?.qAvoidFocus !== true) {
+        blurTargetRef.value?.focus();
       }
       if (props4.disable === true) {
-        if (routeData !== void 0 && routeData.hasRouterLink.value === true) {
+        if (routeData?.hasRouterLink.value === true) {
           stopAndPrevent(e);
         }
         return;
@@ -8018,7 +8042,7 @@
           }).then((softError) => {
             if (reqId === $tabs.avoidRouteWatcher) {
               $tabs.avoidRouteWatcher = false;
-              if (hardError === void 0 && (softError === void 0 || softError.message !== void 0 && softError.message.startsWith("Avoided redundant navigation") === true)) {
+              if (hardError === void 0 && (softError === void 0 || softError.message?.startsWith("Avoided redundant navigation") === true)) {
                 $tabs.updateModel({ name: props4.name });
               }
             }
@@ -8675,7 +8699,7 @@
           model.value.v = hsv.v;
         }
         updateModel2(rgb2, change);
-        if (evt !== void 0 && change !== true && evt.target.selectionEnd !== void 0) {
+        if (change !== true && evt?.target.selectionEnd !== void 0) {
           const index = evt.target.selectionEnd;
           nextTick(() => {
             evt.target.setSelectionRange(index, index);
@@ -10735,7 +10759,7 @@
       }
       function toggleDate(date, monthHash) {
         const month = daysMap.value[monthHash];
-        const fn = month !== void 0 && month.includes(date.day) === true ? removeFromModel : addToModel;
+        const fn = month?.includes(date.day) === true ? removeFromModel : addToModel;
         fn(date);
       }
       function getShortDate(date) {
@@ -10904,6 +10928,7 @@
             props4.todayBtn === true ? h(QBtn_default, {
               class: "q-date__header-today self-start",
               icon: $q.iconSet.datetime.today,
+              ariaLabel: $q.lang.date.today,
               flat: true,
               size: "sm",
               round: true,
@@ -10924,6 +10949,7 @@
               size: "sm",
               flat: true,
               icon: dateArrow.value[0],
+              ariaLabel: type === "Years" ? $q.lang.date.prevYear : $q.lang.date.prevMonth,
               tabindex: tabindex.value,
               disable: boundaries.prev === false,
               ...getCache("go-#" + type, { onClick() {
@@ -10958,6 +10984,7 @@
               size: "sm",
               flat: true,
               icon: dateArrow.value[1],
+              ariaLabel: type === "Years" ? $q.lang.date.nextYear : $q.lang.date.nextMonth,
               tabindex: tabindex.value,
               disable: boundaries.next === false,
               ...getCache("go+#" + type, { onClick() {
@@ -11113,6 +11140,7 @@
                 dense: true,
                 flat: true,
                 icon: dateArrow.value[0],
+                ariaLabel: $q.lang.date.prevRangeYears(yearsInterval),
                 tabindex: tabindex.value,
                 disable: isDisabled(start),
                 ...getCache("y-", { onClick: () => {
@@ -11131,6 +11159,7 @@
                 dense: true,
                 flat: true,
                 icon: dateArrow.value[1],
+                ariaLabel: $q.lang.date.nextRangeYears(yearsInterval),
                 tabindex: tabindex.value,
                 disable: isDisabled(stop2),
                 ...getCache("y+", { onClick: () => {
@@ -11503,7 +11532,7 @@
         showPortal();
         animating.value = true;
         if (props4.noFocus !== true) {
-          document.activeElement !== null && document.activeElement.blur();
+          document.activeElement?.blur();
           registerTick(focus);
         } else {
           removeTick();
@@ -11536,7 +11565,7 @@
         animating.value = true;
         hidePortal();
         if (refocusTarget !== null) {
-          ((evt && evt.type.indexOf("key") === 0 ? refocusTarget.closest('[tabindex]:not([tabindex^="-"])') : void 0) || refocusTarget).focus();
+          ((evt?.type.indexOf("key") === 0 ? refocusTarget.closest('[tabindex]:not([tabindex^="-"])') : void 0) || refocusTarget).focus();
           refocusTarget = null;
         }
         registerTimeout(() => {
@@ -11765,7 +11794,7 @@
         applyPosition(0);
         if (belowBreakpoint.value === true) {
           const otherInstance = $layout.instances[otherSide.value];
-          if (otherInstance !== void 0 && otherInstance.belowBreakpoint === true) {
+          if (otherInstance?.belowBreakpoint === true) {
             otherInstance.hide(false);
           }
           applyBackdrop(1);
@@ -12005,9 +12034,7 @@
         timerMini = setTimeout(() => {
           timerMini = null;
           flagMiniAnimate.value = false;
-          if (vm2 && vm2.proxy && vm2.proxy.$el) {
-            vm2.proxy.$el.classList.remove("q-drawer--mini-animate");
-          }
+          vm2?.proxy?.$el?.classList.remove("q-drawer--mini-animate");
         }, 150);
       }
       function onOpenPan(evt) {
@@ -12105,7 +12132,7 @@
         });
       });
       onBeforeUnmount(() => {
-        layoutTotalWidthWatcher !== void 0 && layoutTotalWidthWatcher();
+        layoutTotalWidthWatcher?.();
         if (timerMini !== null) {
           clearTimeout(timerMini);
           timerMini = null;
@@ -12249,7 +12276,7 @@
     }
     get range() {
       const sel = this.selection;
-      if (sel !== null && sel.rangeCount) {
+      if (sel?.rangeCount) {
         return sel.getRangeAt(0);
       }
       return this._range;
@@ -12711,7 +12738,7 @@
       });
       function onClick(e) {
         if (isClickable.value === true) {
-          if (blurTargetRef.value !== null) {
+          if (blurTargetRef.value !== null && e.qAvoidFocus !== true) {
             if (e.qKeyEvent !== true && document.activeElement === rootRef.value) {
               blurTargetRef.value.focus();
             } else if (document.activeElement === blurTargetRef.value) {
@@ -12813,7 +12840,7 @@
       disable: btn.disable ? typeof btn.disable === "function" ? btn.disable(eVm) : true : false,
       size: "sm",
       onClick(e) {
-        clickHandler && clickHandler();
+        clickHandler?.();
         run(e, btn, eVm);
       }
     }, () => child);
@@ -12857,7 +12884,7 @@
           dense: true,
           onClick(e) {
             closeDropdown();
-            eVm.contentRef.value !== null && eVm.contentRef.value.focus();
+            e?.qAvoidFocus !== true && eVm.contentRef.value?.focus();
             eVm.caret.restore();
             run(e, btn2, eVm);
           }
@@ -13430,7 +13457,7 @@
       }
       function focus() {
         addFocusFn(() => {
-          contentRef.value !== null && contentRef.value.focus({ preventScroll: true });
+          contentRef.value?.focus({ preventScroll: true });
         });
       }
       function getContentEl() {
@@ -13546,7 +13573,7 @@
       let animating = false, doneFn, element;
       let timer2 = null, timerFallback = null, animListener, lastEvent;
       function cleanup() {
-        doneFn && doneFn();
+        doneFn?.();
         doneFn = null;
         animating = false;
         if (timer2 !== null) {
@@ -13557,7 +13584,7 @@
           clearTimeout(timerFallback);
           timerFallback = null;
         }
-        element !== void 0 && element.removeEventListener("transitionend", animListener);
+        element?.removeEventListener("transitionend", animListener);
         animListener = null;
       }
       function begin(el, height2, done) {
@@ -13782,7 +13809,7 @@
         };
       });
       watch(() => props4.group, (name2) => {
-        exitGroup !== void 0 && exitGroup();
+        exitGroup?.();
         name2 !== void 0 && enterGroup();
       });
       function onHeaderClick(e) {
@@ -13793,7 +13820,9 @@
         e.keyCode === 13 && toggleIcon(e, true);
       }
       function toggleIcon(e, keyboard) {
-        keyboard !== true && blurTargetRef.value !== null && blurTargetRef.value.focus();
+        if (keyboard !== true && e.qAvoidFocus !== true) {
+          blurTargetRef.value?.focus();
+        }
         toggle(e);
         stopAndPrevent(e);
       }
@@ -13950,7 +13979,7 @@
       }
       props4.group !== void 0 && enterGroup();
       onBeforeUnmount(() => {
-        exitGroup !== void 0 && exitGroup();
+        exitGroup?.();
       });
       return () => h("div", { class: classes.value }, [
         h("div", { class: "q-expansion-item__container relative-position" }, getContent())
@@ -14111,8 +14140,8 @@
         showing,
         onChildClick(evt) {
           hide(evt);
-          if (triggerRef.value !== null) {
-            triggerRef.value.$el.focus();
+          if (evt?.qAvoidFocus !== true) {
+            triggerRef.value?.$el.focus();
           }
         }
       });
@@ -14366,7 +14395,7 @@
     }
     const debouncedValidate = debounce_default(validate, 0);
     onBeforeUnmount(() => {
-      unwatchRules !== void 0 && unwatchRules();
+      unwatchRules?.();
       debouncedValidate.cancel();
     });
     Object.assign(proxy, { resetValidation, validate });
@@ -14556,11 +14585,11 @@
     });
     function focusHandler() {
       const el = document.activeElement;
-      let target2 = state.targetRef !== void 0 && state.targetRef.value;
+      let target2 = state.targetRef?.value;
       if (target2 && (el === null || el.id !== state.targetUid.value)) {
         target2.hasAttribute("tabindex") === true || (target2 = target2.querySelector("[tabindex]"));
-        if (target2 && target2 !== el) {
-          target2.focus({ preventScroll: true });
+        if (target2 !== el) {
+          target2?.focus({ preventScroll: true });
         }
       }
     }
@@ -14593,13 +14622,13 @@
           state.focused.value = false;
           emit("blur", e);
         }
-        then !== void 0 && then();
+        then?.();
       });
     }
     function clearValue(e) {
       stopAndPrevent(e);
       if ($q.platform.is.mobile !== true) {
-        const el = state.targetRef !== void 0 && state.targetRef.value || state.rootRef.value;
+        const el = state.targetRef?.value || state.rootRef.value;
         el.focus();
       } else if (state.rootRef.value.contains(document.activeElement) === true) {
         document.activeElement.blur();
@@ -14840,7 +14869,9 @@
     return acceptedFiles;
   }
   function stopAndPreventDrag(e) {
-    e && e.dataTransfer && (e.dataTransfer.dropEffect = "copy");
+    if (e?.dataTransfer) {
+      e.dataTransfer.dropEffect = "copy";
+    }
     stopAndPrevent(e);
   }
   var useFileProps = {
@@ -14877,11 +14908,11 @@
         if (e !== Object(e)) {
           e = { target: null };
         }
-        if (e.target !== null && e.target.matches('input[type="file"]') === true) {
+        if (e.target?.matches('input[type="file"]') === true) {
           e.clientX === 0 && e.clientY === 0 && stop(e);
         } else {
           const input = getFileInput();
-          input && input !== e.target && input.click(e);
+          if (input !== e.target) input?.click(e);
         }
       }
     }
@@ -15441,7 +15472,7 @@
           if (index === validateIndex && val === true) {
             if (props4.onSubmit !== void 0) {
               emit("submit", evt);
-            } else if (evt !== void 0 && evt.target !== void 0 && typeof evt.target.submit === "function") {
+            } else if (evt?.target !== void 0 && typeof evt.target.submit === "function") {
               evt.target.submit();
             }
           }
@@ -15461,7 +15492,7 @@
         addFocusFn(() => {
           if (rootRef.value === null) return;
           const target2 = rootRef.value.querySelector("[autofocus][tabindex], [data-autofocus][tabindex]") || rootRef.value.querySelector("[autofocus] [tabindex], [data-autofocus] [tabindex]") || rootRef.value.querySelector("[autofocus], [data-autofocus]") || Array.prototype.find.call(rootRef.value.querySelectorAll("[tabindex]"), (el) => el.tabIndex !== -1);
-          target2 !== null && target2 !== void 0 && target2.focus({ preventScroll: true });
+          target2?.focus({ preventScroll: true });
         });
       }
       provide(formKey, {
@@ -15529,12 +15560,14 @@
       }
     },
     mounted() {
-      const $form = this.$.provides[formKey];
-      $form !== void 0 && this.disable !== true && $form.bindComponent(this);
+      if (this.disable !== true) {
+        this.$.provides[formKey]?.bindComponent(this);
+      }
     },
     beforeUnmount() {
-      const $form = this.$.provides[formKey];
-      $form !== void 0 && this.disable !== true && $form.unbindComponent(this);
+      if (this.disable !== true) {
+        this.$.provides[formKey]?.unbindComponent(this);
+      }
     }
   };
 
@@ -16006,9 +16039,7 @@
           isWorking.value = false;
           isFetching.value = false;
           localScrollTarget.removeEventListener("scroll", poll, passive2);
-          if (poll !== void 0 && poll.cancel !== void 0) {
-            poll.cancel();
-          }
+          poll?.cancel?.();
         }
       }
       function updateScrollTarget() {
@@ -16093,7 +16124,7 @@
       const vm2 = getCurrentInstance();
       Object.assign(vm2.proxy, {
         poll: () => {
-          poll !== void 0 && poll();
+          poll?.();
         },
         trigger: trigger3,
         stop: stop2,
@@ -16699,7 +16730,7 @@
         });
       }
       function select() {
-        inputRef.value !== null && inputRef.value.select();
+        inputRef.value?.select();
       }
       function onPaste(e) {
         if (hasMask.value === true && props4.reverseFillMask !== true) {
@@ -16792,7 +16823,7 @@
           clearTimeout(emitTimer);
           emitTimer = null;
         }
-        emitValueFn !== void 0 && emitValueFn();
+        emitValueFn?.();
         emit("change", e.target.value);
       }
       function onFinishEditing(e) {
@@ -16801,7 +16832,7 @@
           clearTimeout(emitTimer);
           emitTimer = null;
         }
-        emitValueFn !== void 0 && emitValueFn();
+        emitValueFn?.();
         typedNumber = false;
         stopValueWatcher = false;
         delete temp.value;
@@ -16890,7 +16921,7 @@
     }
     if (changed2 === true) {
       ctx.cfg = cfg;
-      ctx.observer !== void 0 && ctx.observer.unobserve(el);
+      ctx.observer?.unobserve(el);
       ctx.observer = new IntersectionObserver(([entry]) => {
         if (typeof ctx.handler === "function") {
           if (entry.rootBounds === null && document.body.contains(el) === true) {
@@ -16910,7 +16941,7 @@
   function destroy(el) {
     const ctx = el.__qvisible;
     if (ctx !== void 0) {
-      ctx.observer !== void 0 && ctx.observer.unobserve(el);
+      ctx.observer?.unobserve(el);
       delete el.__qvisible;
     }
   }
@@ -17263,7 +17294,7 @@
         configureScrollTarget();
       });
       function emitEvent() {
-        clearTimer !== null && clearTimer();
+        clearTimer?.();
         const top = Math.max(0, getVerticalScrollPosition(localScrollTarget));
         const left = getHorizontalScrollPosition(localScrollTarget);
         const delta = {
@@ -17310,7 +17341,7 @@
         configureScrollTarget();
       });
       onBeforeUnmount(() => {
-        clearTimer !== null && clearTimer();
+        clearTimer?.();
         unconfigureScrollTarget();
       });
       Object.assign(proxy, {
@@ -18338,14 +18369,16 @@
             getBtn2({
               key: "bls",
               disable: props4.disable || props4.modelValue <= minProp.value,
-              icon: icons.value[0]
+              icon: icons.value[0],
+              "aria-label": $q.lang.pagination.first
             }, minProp.value)
           );
           contentEnd.unshift(
             getBtn2({
               key: "ble",
               disable: props4.disable || props4.modelValue >= maxProp.value,
-              icon: icons.value[3]
+              icon: icons.value[3],
+              "aria-label": $q.lang.pagination.last
             }, maxProp.value)
           );
         }
@@ -18354,14 +18387,16 @@
             getBtn2({
               key: "bdp",
               disable: props4.disable || props4.modelValue <= minProp.value,
-              icon: icons.value[1]
+              icon: icons.value[1],
+              "aria-label": $q.lang.pagination.prev
             }, props4.modelValue - 1)
           );
           contentEnd.unshift(
             getBtn2({
               key: "bdn",
               disable: props4.disable || props4.modelValue >= maxProp.value,
-              icon: icons.value[2]
+              icon: icons.value[2],
+              "aria-label": $q.lang.pagination.next
             }, props4.modelValue + 1)
           );
         }
@@ -18577,7 +18612,7 @@
       });
       onBeforeUnmount(() => {
         stop2();
-        observer !== void 0 && observer.disconnect();
+        observer?.disconnect();
         mediaEl.onload = mediaEl.onloadstart = mediaEl.loadedmetadata = null;
       });
       return () => {
@@ -18765,10 +18800,10 @@
         set: set2,
         cancel,
         show(e) {
-          menuRef.value !== null && menuRef.value.show(e);
+          menuRef.value?.show(e);
         },
         hide(e) {
-          menuRef.value !== null && menuRef.value.hide(e);
+          menuRef.value?.hide(e);
         },
         updatePosition
       });
@@ -19064,7 +19099,7 @@
         timer2 = setTimeout(() => {
           timer2 = null;
           animating.value = false;
-          done && done();
+          done?.();
         }, 300);
       }
       function updateScrollTarget() {
@@ -20026,7 +20061,7 @@
         delete el2.dataset.qVsAnchor;
       });
       const el = children[index];
-      if (el && el.dataset) {
+      if (el?.dataset) {
         el.dataset.qVsAnchor = "";
       }
     });
@@ -20298,7 +20333,7 @@
       if (rangeChanged === true && contentEl !== null && contentEl !== activeElement && contentEl.contains(activeElement) === true) {
         contentEl.addEventListener("focusout", onBlurRefocusFn);
         setTimeout(() => {
-          contentEl !== null && contentEl.removeEventListener("focusout", onBlurRefocusFn);
+          contentEl?.removeEventListener("focusout", onBlurRefocusFn);
         });
       }
       setOverflowAnchor(contentEl, toIndex - from);
@@ -20362,7 +20397,7 @@
       }
     }
     function onBlurRefocusFn() {
-      contentRef.value !== null && contentRef.value !== void 0 && contentRef.value.focus();
+      contentRef.value?.focus();
     }
     function localResetVirtualScroll(toIndex, fullReset) {
       const defaultSize = 1 * virtualScrollItemSizeComputed.value;
@@ -20700,7 +20735,7 @@
         () => innerValue.value.map((opt) => getOptionLabel.value(opt)).join(", ")
       );
       const ariaCurrentValue = computed(() => props4.displayValue !== void 0 ? props4.displayValue : selectedString.value);
-      const needsHtmlFn = computed(() => props4.optionsHtml === true ? () => true : (opt) => opt !== void 0 && opt !== null && opt.html === true);
+      const needsHtmlFn = computed(() => props4.optionsHtml === true ? () => true : (opt) => opt?.html === true);
       const valueAsHtml = computed(() => props4.displayValueHtml === true || props4.displayValue === void 0 && (props4.optionsHtml === true || innerValue.value.some(needsHtmlFn.value)));
       const tabindex = computed(() => state.focused.value === true ? props4.tabindex : -1);
       const comboboxAttrs = computed(() => {
@@ -20874,13 +20909,15 @@
             );
             hidePopup();
           }
-          targetRef.value !== null && targetRef.value.focus();
+          targetRef.value?.focus();
           if (innerValue.value.length === 0 || isDeepEqual(getOptionValue.value(innerValue.value[0]), optValue) !== true) {
             emit("update:modelValue", props4.emitValue === true ? optValue : opt);
           }
           return;
         }
-        (hasDialog !== true || dialogFieldFocused.value === true) && state.focus();
+        if (hasDialog !== true || dialogFieldFocused.value === true) {
+          state.focus();
+        }
         selectInputText();
         if (innerValue.value.length === 0) {
           const val = props4.emitValue === true ? optValue : opt;
@@ -21085,7 +21122,7 @@
             const fn = mode === "toggle" ? toggleOption : add;
             fn(val, mode === "add-unique");
             if (props4.multiple !== true) {
-              targetRef.value !== null && targetRef.value.focus();
+              targetRef.value?.focus();
               hidePopup();
             }
           };
@@ -21135,6 +21172,7 @@
         }
         return [
           h("span", {
+            class: "ellipsis",
             [valueAsHtml.value === true ? "innerHTML" : "textContent"]: ariaCurrentValue.value
           })
         ];
@@ -21330,7 +21368,7 @@
       }
       function onDialogFieldFocus(e) {
         stop(e);
-        targetRef.value !== null && targetRef.value.focus();
+        targetRef.value?.focus();
         dialogFieldFocused.value = true;
         window.scrollTo(window.pageXOffset || window.scrollX || document.body.scrollLeft || 0, 0);
       }
@@ -21559,7 +21597,7 @@
             prevent(e);
             if (hasDialog !== true && menu.value === true) {
               closeMenu();
-              targetRef.value !== null && targetRef.value.focus();
+              targetRef.value?.focus();
               return;
             }
             showPopup(e);
@@ -22508,7 +22546,7 @@
       });
       const ripple = computed(() => props4.stepper.headerNav !== true ? false : headerNav.value);
       function onActivate() {
-        blurRef.value !== null && blurRef.value.focus();
+        blurRef.value?.focus();
         isActive.value === false && props4.goToPanel(props4.step.name);
       }
       function onKeyup2(e) {
@@ -22998,7 +23036,7 @@
         col = col.name;
       } else {
         const def = colList.value.find((def2) => def2.name === col);
-        if (def !== void 0 && def.sortOrder) {
+        if (def?.sortOrder) {
           sortOrder = def.sortOrder;
         }
       }
@@ -23428,10 +23466,14 @@
       tableClass: [String, Array, Object],
       tableHeaderStyle: [String, Array, Object],
       tableHeaderClass: [String, Array, Object],
+      tableRowStyleFn: Function,
+      tableRowClassFn: Function,
       cardContainerClass: [String, Array, Object],
       cardContainerStyle: [String, Array, Object],
       cardStyle: [String, Array, Object],
       cardClass: [String, Array, Object],
+      cardStyleFn: Function,
+      cardClassFn: Function,
       hideBottom: Boolean,
       hideSelectedBanner: Boolean,
       hideNoData: Boolean,
@@ -23467,16 +23509,16 @@
       const cardDefaultClass = computed(
         () => " q-table__card" + (isDark.value === true ? " q-table__card--dark q-dark" : "") + (props4.square === true ? " q-table--square" : "") + (props4.flat === true ? " q-table--flat" : "") + (props4.bordered === true ? " q-table--bordered" : "")
       );
-      const __containerClass = computed(
+      const containerClass = computed(
         () => `q-table__container q-table--${props4.separator}-separator column no-wrap` + (props4.grid === true ? " q-table--grid" : cardDefaultClass.value) + (isDark.value === true ? " q-table--dark" : "") + (props4.dense === true ? " q-table--dense" : "") + (props4.wrapCells === false ? " q-table--no-wrap" : "") + (inFullscreen.value === true ? " fullscreen scroll" : "")
       );
-      const containerClass = computed(
-        () => __containerClass.value + (props4.loading === true ? " q-table--loading" : "")
+      const rootContainerClass = computed(
+        () => containerClass.value + (props4.loading === true ? " q-table--loading" : "")
       );
       watch(
-        () => props4.tableStyle + props4.tableClass + props4.tableHeaderStyle + props4.tableHeaderClass + __containerClass.value,
+        () => props4.tableStyle + props4.tableClass + props4.tableHeaderStyle + props4.tableHeaderClass + containerClass.value,
         () => {
-          hasVirtScroll.value === true && virtScrollRef.value !== null && virtScrollRef.value.reset();
+          hasVirtScroll.value === true && virtScrollRef.value?.reset();
         }
       );
       const {
@@ -23644,13 +23686,23 @@
       function getTBodyTR(row, bodySlot, pageIndex) {
         const key = getRowKey.value(row), selected = isRowSelected(key);
         if (bodySlot !== void 0) {
+          const cfg = {
+            key,
+            row,
+            pageIndex,
+            __trClass: selected ? "selected" : ""
+          };
+          if (props4.tableRowStyleFn !== void 0) {
+            cfg.__trStyle = props4.tableRowStyleFn(row);
+          }
+          if (props4.tableRowClassFn !== void 0) {
+            const cls = props4.tableRowClassFn(row);
+            if (cls) {
+              cfg.__trClass = `${cls} ${cfg.__trClass}`;
+            }
+          }
           return bodySlot(
-            getBodyScope({
-              key,
-              row,
-              pageIndex,
-              __trClass: selected ? "selected" : ""
-            })
+            getBodyScope(cfg)
           );
         }
         const bodyCell = slots["body-cell"], child = computedCols.value.map((col) => {
@@ -23695,6 +23747,15 @@
           data.onContextmenu = (evt) => {
             emit("rowContextmenu", evt, row, pageIndex);
           };
+        }
+        if (props4.tableRowStyleFn !== void 0) {
+          data.style = props4.tableRowStyleFn(row);
+        }
+        if (props4.tableRowClassFn !== void 0) {
+          const cls = props4.tableRowClassFn(row);
+          if (cls) {
+            data.class[cls] = true;
+          }
         }
         return h("tr", data, child);
       }
@@ -23949,28 +24010,26 @@
         child.push(
           h("div", { class: "q-table__separator col" })
         );
-        if (hasOpts === true) {
-          child.push(
-            h("div", { class: "q-table__control" }, [
-              h("span", { class: "q-table__bottom-item" }, [
-                props4.rowsPerPageLabel || $q.lang.table.recordsPerPage
-              ]),
-              h(QSelect_default, {
-                class: "q-table__select inline q-table__bottom-item",
-                color: props4.color,
-                modelValue: rowsPerPage,
-                options: computedRowsPerPageOptions.value,
-                displayValue: rowsPerPage === 0 ? $q.lang.table.allRows : rowsPerPage,
-                dark: isDark.value,
-                borderless: true,
-                dense: true,
-                optionsDense: true,
-                optionsCover: true,
-                "onUpdate:modelValue": onPagSelection
-              })
-            ])
-          );
-        }
+        hasOpts === true && child.push(
+          h("div", { class: "q-table__control" }, [
+            h("span", { class: "q-table__bottom-item" }, [
+              props4.rowsPerPageLabel || $q.lang.table.recordsPerPage
+            ]),
+            h(QSelect_default, {
+              class: "q-table__select inline q-table__bottom-item",
+              color: props4.color,
+              modelValue: rowsPerPage,
+              options: computedRowsPerPageOptions.value,
+              displayValue: rowsPerPage === 0 ? $q.lang.table.allRows : rowsPerPage,
+              dark: isDark.value,
+              borderless: true,
+              dense: true,
+              optionsDense: true,
+              optionsCover: true,
+              "onUpdate:modelValue": onPagSelection
+            })
+          ])
+        );
         if (paginationSlot !== void 0) {
           control = paginationSlot(marginalsScope.value);
         } else {
@@ -23995,6 +24054,7 @@
                 ...btnProps,
                 icon: navIcon.value[0],
                 disable: isFirstPage.value,
+                ariaLabel: $q.lang.pagination.first,
                 onClick: firstPage
               })
             );
@@ -24004,6 +24064,7 @@
                 ...btnProps,
                 icon: navIcon.value[1],
                 disable: isFirstPage.value,
+                ariaLabel: $q.lang.pagination.prev,
                 onClick: prevPage
               }),
               h(QBtn_default, {
@@ -24011,6 +24072,7 @@
                 ...btnProps,
                 icon: navIcon.value[2],
                 disable: isLastPage.value,
+                ariaLabel: $q.lang.pagination.next,
                 onClick: nextPage
               })
             );
@@ -24020,6 +24082,7 @@
                 ...btnProps,
                 icon: navIcon.value[3],
                 disable: isLastPage.value,
+                ariaLabel: $q.lang.pagination.last,
                 onClick: lastPage
               })
             );
@@ -24071,6 +24134,15 @@
             ],
             style: props4.cardStyle
           };
+          if (props4.cardStyleFn !== void 0) {
+            data.style = [data.style, props4.cardStyleFn(scope.row)];
+          }
+          if (props4.cardClassFn !== void 0) {
+            const cls = props4.cardClassFn(scope.row);
+            if (cls) {
+              data.class[0] += ` ${cls}`;
+            }
+          }
           if (props4.onRowClick !== void 0 || props4.onRowDblclick !== void 0 || props4.onRowContextmenu !== void 0) {
             data.class[0] += " cursor-pointer";
             if (props4.onRowClick !== void 0) {
@@ -24132,7 +24204,7 @@
       });
       return () => {
         const child = [getTopDiv()];
-        const data = { ref: rootRef, class: containerClass.value };
+        const data = { ref: rootRef, class: rootContainerClass.value };
         if (props4.grid === true) {
           child.push(getGridHeader());
         } else {
@@ -24166,7 +24238,10 @@
       const classes = computed(
         () => "q-tr" + (props4.props === void 0 || props4.props.header === true ? "" : " " + props4.props.__trClass) + (props4.noHover === true ? " q-tr--no-hover" : "")
       );
-      return () => h("tr", { class: classes.value }, hSlot(slots.default));
+      return () => h("tr", {
+        style: props4.props?.__trStyle,
+        class: classes.value
+      }, hSlot(slots.default));
     }
   });
 
@@ -24370,7 +24445,7 @@
         }
         const pos = [];
         for (let val = start, index = start; val <= end; val += step, index++) {
-          const actualVal = val + offset2, disable = values !== void 0 && values.includes(actualVal) === false, label = view.value === "hour" && val === 0 ? computedFormat24h.value === true ? "00" : "12" : val;
+          const actualVal = val + offset2, disable = values?.includes(actualVal) === false, label = view.value === "hour" && val === 0 ? computedFormat24h.value === true ? "00" : "12" : val;
           pos.push({ val: actualVal, index, disable, label });
         }
         return pos;
@@ -25224,7 +25299,7 @@
               node[props4.childrenKey] = Array.isArray(children) === true ? children : [];
               nextTick(() => {
                 const localMeta = meta.value[key];
-                if (localMeta && localMeta.isParent === true) {
+                if (localMeta?.isParent === true) {
                   localSetExpanded(key, true);
                 }
               });
@@ -25449,8 +25524,7 @@
         ]);
       }
       function blur(key) {
-        const blurTarget = blurTargets[key];
-        blurTarget && blurTarget.focus();
+        blurTargets[key]?.focus();
       }
       function onClick(node, meta2, e, keyboard) {
         keyboard !== true && meta2.selectable !== false && blur(meta2.key);
@@ -26428,7 +26502,7 @@
     elFrom.qMorphCancel = () => {
       cancelStatus = true;
       elFromClone.remove();
-      elFromTween !== void 0 && elFromTween.remove();
+      elFromTween?.remove();
       options.hideFromClone === true && elFromClone.classList.remove("q-morph--internal");
       elFrom.qMorphCancel = void 0;
     };
@@ -26453,7 +26527,7 @@
       elTo.qMorphCancel = () => {
         cancelStatus = true;
         elFromClone.remove();
-        elFromTween !== void 0 && elFromTween.remove();
+        elFromTween?.remove();
         options.hideFromClone === true && elFromClone.classList.remove("q-morph--internal");
         options.keepToClone !== true && elTo.classList.remove("q-morph--internal");
         elFrom.qMorphCancel = void 0;
@@ -26609,10 +26683,12 @@
             elTo.style.cssText = elToStyleSaved;
             elTo.className = elToClassSaved;
           }
-          elToClone.parentNode === elToParent && elToParent.insertBefore(elTo, elToClone);
+          if (elToClone.parentNode === elToParent) {
+            elToParent.insertBefore(elTo, elToClone);
+          }
           elFromClone.remove();
           elToClone.remove();
-          elFromTween !== void 0 && elFromTween.remove();
+          elFromTween?.remove();
           cancel = () => false;
           elFrom.qMorphCancel = void 0;
           elTo.qMorphCancel = void 0;
@@ -26744,9 +26820,9 @@
             delay: options.delay
           });
           const cleanup = (abort) => {
-            animationFromClone !== void 0 && animationFromClone.cancel();
-            animationFromTween !== void 0 && animationFromTween.cancel();
-            animationToClone !== void 0 && animationToClone.cancel();
+            animationFromClone?.cancel();
+            animationFromTween?.cancel();
+            animationToClone?.cancel();
             animationTo.cancel();
             animationTo.removeEventListener("finish", cleanup);
             animationTo.removeEventListener("cancel", cleanup);
@@ -26777,9 +26853,9 @@
               return true;
             }
             endElementTo = endElementTo !== true;
-            animationFromClone !== void 0 && animationFromClone.reverse();
-            animationFromTween !== void 0 && animationFromTween.reverse();
-            animationToClone !== void 0 && animationToClone.reverse();
+            animationFromClone?.reverse();
+            animationFromTween?.reverse();
+            animationToClone?.reverse();
             animationTo.reverse();
             return true;
           };
@@ -27031,7 +27107,7 @@
       },
       ...to.opts,
       onEnd(dir, aborted) {
-        to.opts.onEnd !== void 0 && to.opts.onEnd(dir, aborted);
+        to.opts.onEnd?.(dir, aborted);
         if (aborted === true) return;
         from.animating = false;
         to.animating = false;
@@ -27148,7 +27224,7 @@
           if (index !== -1) {
             group.queue = group.queue.filter((item) => item !== ctx);
             if (group.queue.length === 0) {
-              group.cancel !== void 0 && group.cancel();
+              group.cancel?.();
               delete morphGroups[ctx.group];
             }
           }
@@ -27172,7 +27248,7 @@
   };
   function update3(el, ctx, value2) {
     ctx.handler = value2;
-    ctx.observer !== void 0 && ctx.observer.disconnect();
+    ctx.observer?.disconnect();
     ctx.observer = new MutationObserver((list) => {
       if (typeof ctx.handler === "function") {
         const res = ctx.handler(list);
@@ -27186,7 +27262,7 @@
   function destroy2(el) {
     const ctx = el.__qmutation;
     if (ctx !== void 0) {
-      ctx.observer !== void 0 && ctx.observer.disconnect();
+      ctx.observer?.disconnect();
       delete el.__qmutation;
     }
   }
@@ -27375,7 +27451,7 @@
           },
           end(evt) {
             cleanEvt(ctx, "temp");
-            ctx.styleCleanup !== void 0 && ctx.styleCleanup(ctx.triggered);
+            ctx.styleCleanup?.(ctx.triggered);
             if (ctx.triggered === true) {
               evt !== void 0 && stopAndPrevent(evt);
             } else if (ctx.timer !== void 0) {
@@ -27417,7 +27493,7 @@
           cleanEvt(ctx, "main");
           cleanEvt(ctx, "temp");
           ctx.timer !== void 0 && clearTimeout(ctx.timer);
-          ctx.styleCleanup !== void 0 && ctx.styleCleanup();
+          ctx.styleCleanup?.();
           delete el.__qtouchhold;
         }
       }
@@ -27559,8 +27635,8 @@
           },
           end(evt) {
             if (ctx.event === void 0) return;
-            ctx.styleCleanup !== void 0 && ctx.styleCleanup(true);
-            evt !== void 0 && ctx.event.repeatCount > 0 && stopAndPrevent(evt);
+            ctx.styleCleanup?.(true);
+            if (evt !== void 0 && ctx.event.repeatCount > 0) stopAndPrevent(evt);
             cleanEvt(ctx, "temp");
             if (ctx.timer !== void 0) {
               clearTimeout(ctx.timer);
@@ -27600,7 +27676,7 @@
           ctx.timer !== void 0 && clearTimeout(ctx.timer);
           cleanEvt(ctx, "main");
           cleanEvt(ctx, "temp");
-          ctx.styleCleanup !== void 0 && ctx.styleCleanup();
+          ctx.styleCleanup?.();
           delete el.__qtouchrepeat;
         }
       }
@@ -27964,12 +28040,12 @@
       const dialogRef = ref(null);
       const el = createGlobalNode(false, "dialog");
       const applyState = (cmd) => {
-        if (dialogRef.value !== null && dialogRef.value[cmd] !== void 0) {
+        if (dialogRef.value?.[cmd] !== void 0) {
           dialogRef.value[cmd]();
           return;
         }
         const target2 = vm2.$.subTree;
-        if (target2 && target2.component) {
+        if (target2?.component) {
           if (target2.component.proxy && target2.component.proxy[cmd]) {
             target2.component.proxy[cmd]();
             return;
@@ -28454,7 +28530,7 @@
   };
   var defaults = { ...originalDefaults };
   function registerProps(opts) {
-    if (opts && opts.group !== void 0 && activeGroups[opts.group] !== void 0) {
+    if (opts?.group !== void 0 && activeGroups[opts.group] !== void 0) {
       return Object.assign(activeGroups[opts.group], opts);
     }
     const newProps = isObject(opts) === true && opts.ignoreDefaults === true ? { ...originalDefaults, ...opts } : { ...defaults, ...opts };
@@ -28897,7 +28973,7 @@
     const actions = (Array.isArray(config.actions) === true ? config.actions : []).concat(
       config.ignoreDefaults !== true && Array.isArray(defaults2.actions) === true ? defaults2.actions : []
     ).concat(
-      notifTypes[config.type] !== void 0 && Array.isArray(notifTypes[config.type].actions) === true ? notifTypes[config.type].actions : []
+      Array.isArray(notifTypes[config.type]?.actions) === true ? notifTypes[config.type].actions : []
     );
     const { closeBtn } = notif;
     closeBtn && actions.push({
@@ -29549,9 +29625,9 @@
   function openWindow(url, reject, windowFeatures) {
     let open2 = window.open;
     if (Platform_default.is.cordova === true) {
-      if (cordova !== void 0 && cordova.InAppBrowser !== void 0 && cordova.InAppBrowser.open !== void 0) {
+      if (cordova?.InAppBrowser?.open !== void 0) {
         open2 = cordova.InAppBrowser.open;
-      } else if (navigator !== void 0 && navigator.app !== void 0) {
+      } else if (navigator?.app !== void 0) {
         return navigator.app.loadUrl(url, {
           openExternal: true
         });
@@ -29562,7 +29638,7 @@
       Platform_default.is.desktop && win.focus();
       return win;
     } else {
-      reject && reject();
+      reject?.();
     }
   }
   var open_url_default = (url, reject, windowFeatures) => {
@@ -29759,7 +29835,7 @@
     console.error("[ Quasar ] Vue is required to run. Please add a script tag for it before loading Quasar.");
   }
   window.Quasar = {
-    version: "2.17.7",
+    version: "2.18.1",
     install(app2, opts) {
       install_quasar_default(app2, {
         components: components_exports,

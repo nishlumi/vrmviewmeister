@@ -227,7 +227,7 @@ const app = Vue.createApp({
 
                 mainData.appconf.applyUnity(false);
                 //---test: moving to firstLoad_effectDirectory
-                modelOperator.newProject(false);
+                modelOperator.newProject(true);
                 AppQueue.add(new queueData(
                     {target:AppQueue.unity.ManageAnimation,method:'SetBaseDuration',param:parseFloat(mainData.appconf.confs.animation.base_duration)},
                     "",QD_INOUT.toUNITY,

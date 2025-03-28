@@ -1461,6 +1461,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             ));
             AppQueue.start();
             is_closepanel = true;
+            ribbonData.elements.frame.keylist.duration = param;
         }else if (ename == "setloop") {
         }else if (ename == "setcurrentframe") {
             if (mainData.stetes.animationPlaying) return;

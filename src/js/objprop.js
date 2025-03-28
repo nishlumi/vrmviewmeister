@@ -724,7 +724,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
             }else{
                 mainData.elements.win_easyikmode = window.open("./static/win/easybonetran/index.html",
                     "easybonetran",
-                    "width=320,height=550,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
+                    "width=390,height=560,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
                 );
             }
     

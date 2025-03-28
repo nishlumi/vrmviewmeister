@@ -32,6 +32,9 @@ const template = `
             <q-btn flat round dense icon="clear" style="margin-left:1rem;" @click="selclear_onclick" :disabled="appdata.elements.header.btndisable">
                 <q-tooltip v-text="$t('easyik_selclear')"></q-tooltip>
             </q-btn>
+            <q-btn flat round dense icon="shuffle" style="margin-left:1rem;" @click="selrandom_onclick" :disabled="appdata.elements.header.btndisable">
+                <q-tooltip v-text="$t('easyik_selrandom')"></q-tooltip>
+            </q-btn>
             
             <q-space></q-space>
             <input type="file" ref="rfile" accept=".csv,.tsv" @change="rfile_onchange" class="common_ui_off">
@@ -57,27 +60,27 @@ const template = `
                         v-model="appdata.elements.tab"
                     >
                         <q-tab name="gaze">
-                            <img src="static/img/vvmtrans_eyeview.png" width="32" height="32">
+                            <img :src="cmp_select_eye_image" width="40" height="40">
                         </q-tab>
                     </q-tabs>
                     <q-tabs
                         v-model="appdata.elements.tab"
                     >
                         <q-tab name="rightarm">
-                            <img src="static/img/vvmtrans_rightarm.png" width="32" height="32">
+                            <img :src="cmp_select_rightarm_image" width="40" height="40">
                         </q-tab>
                         <q-tab name="rightleg">
-                            <img src="static/img/vvmtrans_rightleg.png" width="32" height="32">
+                            <img :src="cmp_select_rightleg_image" width="40" height="40">
                         </q-tab>
 
                         <q-tab name="posture">
-                            <img src="static/img/vvmtrans_body.png" width="32" height="32">
+                            <img :src="cmp_select_posture_image" width="40" height="40">
                         </q-tab>
                         <q-tab name="leftleg">
-                            <img src="static/img/vvmtrans_leftleg.png" width="32" height="32">
+                            <img :src="cmp_select_leftleg_image" width="40" height="40">
                         </q-tab>
                         <q-tab name="leftarm">
-                            <img src="static/img/vvmtrans_leftarm.png" width="32" height="32">
+                            <img :src="cmp_select_leftarm_image" width="40" height="40">
                         </q-tab>
                     </q-tabs>
                     
@@ -88,42 +91,108 @@ const template = `
                                 :label="$t('posture')"
                                 filled 
                                 @update:model-value="posturebox_onchange"
-                            ></q-select>
+                            >
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </q-tab-panel>
                         <q-tab-panel name="gaze">
                             <q-select v-model="appdata.elements.eyeBox.selected" 
                                 :options="appdata.elements.eyeBox.options" 
                                 :label="$t('gaze')"
                                 filled 
-                            ></q-select>
+                            >
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </q-tab-panel>
                         <q-tab-panel name="rightarm">
                             <q-select v-model="appdata.elements.rightArmBox.selected" 
                                 :options="appdata.elements.rightArmBox.options" 
                                 :label="$t('RightHand')"
                                 filled 
-                            ></q-select>
+                            >
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </q-tab-panel>
                         <q-tab-panel name="leftarm">
                             <q-select v-model="appdata.elements.armBox.selected" 
                                 :options="appdata.elements.armBox.options" 
                                 :label="$t('LeftHand')"
                                 filled 
-                            ></q-select>
+                            >
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </q-tab-panel>
                         <q-tab-panel name="rightleg">
                             <q-select v-model="appdata.elements.rightLegBox.selected" 
                                 :options="appdata.elements.rightLegBox.options" 
                                 :label="$t('RightFoot')"
                                 filled
-                            ></q-select>
+                            >
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </q-tab-panel>
                         <q-tab-panel name="leftleg">
                             <q-select v-model="appdata.elements.legBox.selected" 
                                 :options="appdata.elements.legBox.options" 
                                 :label="$t('LeftFoot')"
                                 filled 
-                            ></q-select>
+                            >
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </q-tab-panel>
                     </q-tab-panels>
                 </template>
@@ -134,9 +203,21 @@ const template = `
                                 :options="appdata.elements.eyeBox.options" 
                                 :label="$t('gaze')"
                                 filled 
-                            ><template v-slot:prepend>
-                                <img src="static/img/vvmtrans_eyeview.png" width="32" height="32">
-                            </template></q-select>
+                            >
+                                <template v-slot:prepend>
+                                    <img :src="cmp_select_eye_image" width="48" height="48">
+                                </template>
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                     </div>
                     <div class="row q-mb-sm">                        
@@ -146,9 +227,21 @@ const template = `
                                 :label="$t('posture')"
                                 filled 
                                 @update:model-value="posturebox_onchange"
-                            ><template v-slot:prepend>
-                                <img src="static/img/vvmtrans_body.png" width="32" height="32">
-                            </template></q-select>
+                            >
+                                <template v-slot:prepend>
+                                    <img :src="cmp_select_posture_image" width="48" height="48">
+                                </template>
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48"></img>
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                     </div>
                     <div class="row q-mb-sm">                        
@@ -157,9 +250,21 @@ const template = `
                                 :options="appdata.elements.rightArmBox.options" 
                                 :label="$t('RightHand')"
                                 filled 
-                            ><template v-slot:prepend>
-                                <img src="static/img/vvmtrans_rightarm.png" width="32" height="32">
-                            </template></q-select>
+                            >
+                                <template v-slot:prepend>
+                                    <img :src="cmp_select_rightarm_image" width="48" height="48">
+                                </template>
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                     </div>
                     <div class="row q-mb-sm">                        
@@ -168,9 +273,21 @@ const template = `
                                 :options="appdata.elements.armBox.options" 
                                 :label="$t('LeftHand')"
                                 filled 
-                            ><template v-slot:prepend>
-                                <img src="static/img/vvmtrans_leftarm.png" width="32" height="32">
-                            </template></q-select>
+                            >
+                                <template v-slot:prepend>
+                                    <img :src="cmp_select_leftarm_image" width="48" height="48">
+                                </template>
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                     </div>
                     <div class="row q-mb-sm">                        
@@ -179,9 +296,21 @@ const template = `
                                 :options="appdata.elements.rightLegBox.options" 
                                 :label="$t('RightFoot')"
                                 filled 
-                            ><template v-slot:prepend>
-                                <img src="static/img/vvmtrans_rightleg.png" width="32" height="32">
-                            </template></q-select>
+                            >
+                                <template v-slot:prepend>
+                                    <img :src="cmp_select_rightleg_image" width="48" height="48">
+                                </template>
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                     </div>
                     <div class="row q-mb-sm">                        
@@ -190,9 +319,21 @@ const template = `
                                 :options="appdata.elements.legBox.options" 
                                 :label="$t('LeftFoot')"
                                 filled 
-                            ><template v-slot:prepend>
-                                <img src="static/img/vvmtrans_leftleg.png" width="32" height="32">
-                            </template></q-select>
+                            >
+                                <template v-slot:prepend>
+                                    <img :src="cmp_select_leftleg_image" width="48" height="48">
+                                </template>
+                                <template v-slot:option="scope">
+                                    <q-item v-bind="scope.itemProps">
+                                        <q-item-section avatar v-if="scope.opt.image!=''">
+                                        <img :src="scope.opt.image" width="48" height="48">
+                                        </q-item-section>
+                                        <q-item-section>
+                                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                     </div>
                 </template>
@@ -287,27 +428,27 @@ export class BaseData {
             },
 
             postureBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             eyeBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             armBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             legBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             rightArmBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
             rightLegBox : {
-                options : [{label:"---",value:null}],
+                options : [{label:"---",value:null,image:""}],
                 selected : null
             },
         }
@@ -363,7 +504,9 @@ export function defineEasyBoneTranDlg(app, Quasar) {
             //---watch ----------------------------------------
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
                 show.value = newval;
-                if (Quasar.Screen.xs || (ID("uimode").value == "mobile")) {
+                var ishit = Quasar.Screen.xs || (ID("uimode").value == "mobile");
+                ishit = true;
+                if (ishit) {
                     //---real mobile or UI is mobile mode (real size nothing)
 
                     //---position
@@ -445,9 +588,76 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 if (Quasar.Screen.xs || (ID("uimode").value == "mobile")) {
                     return true;
                 }else{
-                    return false;
+                    return true;
                 }
 
+            });
+
+            const cmp_select_eye_image = Vue.computed(() => {
+                if (appdata.elements.eyeBox.selected) {
+                    if (appdata.elements.eyeBox.selected.image == "") {
+                        return "static/img/vvmtrans_eyeview.png";    
+                    }else{
+                        return appdata.elements.eyeBox.selected.image;
+                    }
+                }else{
+                    return "static/img/vvmtrans_eyeview.png";
+                }
+            });
+            const cmp_select_posture_image = Vue.computed(() => {
+                if (appdata.elements.postureBox.selected) {
+                    if (appdata.elements.postureBox.selected.image == "") {
+                        return "static/img/vvmtrans_body.png";    
+                    }else{
+                        return appdata.elements.postureBox.selected.image;
+                    }
+                }else{
+                    return "static/img/vvmtrans_body.png";
+                }
+            });
+            const cmp_select_rightarm_image = Vue.computed(() => {
+                if (appdata.elements.rightArmBox.selected) {
+                    if (appdata.elements.rightArmBox.selected.image == "") {
+                        return "static/img/vvmtrans_rightarm.png";    
+                    }else{
+                        return appdata.elements.rightArmBox.selected.image;
+                    }
+                }else{
+                    return "static/img/vvmtrans_rightarm.png";
+                }
+            });
+            const cmp_select_leftarm_image = Vue.computed(() => {
+                if (appdata.elements.armBox.selected) {
+                    if (appdata.elements.armBox.selected.image == "") {
+                        return "static/img/vvmtrans_leftarm.png";    
+                    }else{
+                        return appdata.elements.armBox.selected.image;
+                    }
+                }else{
+                    return "static/img/vvmtrans_leftarm.png";
+                }
+            });
+            const cmp_select_rightleg_image = Vue.computed(() => {
+                if (appdata.elements.rightLegBox.selected) {
+                    if (appdata.elements.rightLegBox.selected.image == "") {
+                        return "static/img/vvmtrans_rightleg.png";    
+                    }else{
+                        return appdata.elements.rightLegBox.selected.image;
+                    }
+                }else{
+                    return "static/img/vvmtrans_rightleg.png";
+                }
+            });
+            const cmp_select_leftleg_image = Vue.computed(() => {
+                if (appdata.elements.legBox.selected) {
+                    if (appdata.elements.legBox.selected.image == "") {
+                        return "static/img/vvmtrans_leftleg.png";    
+                    }else{
+                        return appdata.elements.legBox.selected.image;
+                    }
+                }else{
+                    return "static/img/vvmtrans_leftleg.png";
+                }
             });
 
 
@@ -482,7 +692,7 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                         area.useTPose = line[3] == "1" ? true : false;
 
                         //appdata.data.easySelectList.arealist[postureIndex].name = line[1];
-                        for (var p = 4; p < line.length; p++) {
+                        for (var p = 4; p < line.length-1; p++) {
                             var partsarr = PARTS_LABEL[p-4].split("_");
                             area.calclist.push({
                                 parts : partsarr[0],
@@ -491,6 +701,9 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                                 expression : line[p],
                             });
                         }
+                        //---last col: embedded image
+                        area.image = line[line.length-1];
+
                         appdata.data.easySelectList.arealist.push(area);
                     }
                 }catch(e) {
@@ -511,11 +724,12 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     return false;
                 });
                 appdata.elements.postureBox.options.splice(0, appdata.elements.postureBox.options.length);
-                appdata.elements.postureBox.options.push({label:"---",value:null});
+                appdata.elements.postureBox.options.push({label:"---",value:null,image:""});
                 for (var o of postures) {
                     appdata.elements.postureBox.options.push( {
                         label: o.name,
-                        value : o
+                        value : o,
+                        image: o.image,
                     });
                 }
                 //---reload current select data
@@ -534,11 +748,12 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     return false;
                 });
                 appdata.elements.eyeBox.options.splice(0, appdata.elements.eyeBox.options.length);
-                appdata.elements.eyeBox.options.push({label:"---",value:null});
+                appdata.elements.eyeBox.options.push({label:"---",value:null,image:""});
                 for (var o of eyeview) {
                     appdata.elements.eyeBox.options.push( {
                         label: o.name,
-                        value : o
+                        value : o,
+                        image: o.image,
                     });
                 }
                 //---reload current select data
@@ -557,22 +772,21 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     return false;
                 });
                 appdata.elements.armBox.options.splice(0, appdata.elements.armBox.options.length);
-                appdata.elements.armBox.options.push({label:"---",value:null});
+                appdata.elements.armBox.options.push({label:"---",value:null,image:""});
                 for (var o of arms) {
                     appdata.elements.armBox.options.push( {
                         label: o.name,
-                        value : o
+                        value : o,
+                        image: o.image,
                     });
                 }
                 //---reload current select data
                 if (appdata.elements.armBox.selected) {
-                    for (var o = 0; o < appdata.elements.armBox.selected.length; o++) {
-                        var ishit = appdata.elements.armBox.options.find(v => {
-                            if (v.label == appdata.elements.armBox.selected[o].label) return true;
-                            return false;
-                        });
-                        if(ishit) appdata.elements.armBox.selected[o].value = ishit.value;
-                    }
+                    var ishit = appdata.elements.armBox.options.find(v => {
+                        if (v.label == appdata.elements.armBox.selected.label) return true;
+                        return false;
+                    });
+                    if(ishit) appdata.elements.armBox.selected.value = ishit.value;
                     
                 }
                 //---right arm
@@ -581,22 +795,21 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     return false;
                 });
                 appdata.elements.rightArmBox.options.splice(0, appdata.elements.rightArmBox.options.length);
-                appdata.elements.rightArmBox.options.push({label:"---",value:null});
+                appdata.elements.rightArmBox.options.push({label:"---",value:null,image:""});
                 for (var o of arms) {
                     appdata.elements.rightArmBox.options.push( {
                         label: o.name,
-                        value : o
+                        value : o,
+                        image: o.image,
                     });
                 }
                 //---reload current select data
                 if (appdata.elements.rightArmBox.selected) {
-                    for (var o = 0; o < appdata.elements.rightArmBox.selected.length; o++) {
-                        var ishit = appdata.elements.rightArmBox.options.find(v => {
-                            if (v.label == appdata.elements.rightArmBox.selected[o].label) return true;
-                            return false;
-                        });
-                        if(ishit) appdata.elements.rightArmBox.selected[o].value = ishit.value;
-                    }
+                    var ishit = appdata.elements.rightArmBox.options.find(v => {
+                        if (v.label == appdata.elements.rightArmBox.selected.label) return true;
+                        return false;
+                    });
+                    if(ishit) appdata.elements.rightArmBox.selected.value = ishit.value;
                     
                 }
                 
@@ -607,22 +820,21 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     return false;
                 });
                 appdata.elements.legBox.options.splice(0, appdata.elements.legBox.options.length);
-                appdata.elements.legBox.options.push({label:"---",value:null});
+                appdata.elements.legBox.options.push({label:"---",value:null,image:""});
                 for (var o of legs) {
                     appdata.elements.legBox.options.push( {
                         label: o.name,
-                        value : o
+                        value : o,
+                        image: o.image,
                     });
                 }
                 //---reload current select data
                 if (appdata.elements.legBox.selected) {
-                    for (var o = 0; o < appdata.elements.legBox.selected.length; o++) {
-                        var ishit = appdata.elements.legBox.options.find(v => {
-                            if (v.label == appdata.elements.legBox.selected[o].label) return true;
-                            return false;
-                        });
-                        if (ishit) appdata.elements.legBox.selected[o].value = ishit.value;
-                    }
+                    var ishit = appdata.elements.legBox.options.find(v => {
+                        if (v.label == appdata.elements.legBox.selected.label) return true;
+                        return false;
+                    });
+                    if (ishit) appdata.elements.legBox.selected.value = ishit.value;
                     
                 }
                 //---right leg
@@ -631,22 +843,21 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                     return false;
                 });
                 appdata.elements.rightLegBox.options.splice(0, appdata.elements.rightLegBox.options.length);
-                appdata.elements.rightLegBox.options.push({label:"---",value:null});
+                appdata.elements.rightLegBox.options.push({label:"---",value:null,image:""});
                 for (var o of legs) {
                     appdata.elements.rightLegBox.options.push( {
                         label: o.name,
-                        value : o
+                        value : o,
+                        image: o.image,
                     });
                 }
                 //---reload current select data
                 if (appdata.elements.rightLegBox.selected) {
-                    for (var o = 0; o < appdata.elements.rightLegBox.selected.length; o++) {
-                        var ishit = appdata.elements.rightLegBox.options.find(v => {
-                            if (v.label == appdata.elements.rightLegBox.selected[o].label) return true;
-                            return false;
-                        });
-                        if (ishit) appdata.elements.rightLegBox.selected[o].value = ishit.value;
-                    }
+                    var ishit = appdata.elements.rightLegBox.options.find(v => {
+                        if (v.label == appdata.elements.rightLegBox.selected.label) return true;
+                        return false;
+                    });
+                    if (ishit) appdata.elements.rightLegBox.selected.value = ishit.value;
                     
                 }
                 
@@ -1041,12 +1252,39 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 }
             }
             const selclear_onclick = () => {
-                appdata.elements.postureBox.selected = {label:"---",value:null};
-                appdata.elements.eyeBox.selected = {label:"---",value:null};
-                appdata.elements.armBox.selected = [];
-                appdata.elements.legBox.selected = [];
-                appdata.elements.rightArmBox.selected = [];
-                appdata.elements.rightLegBox.selected = [];
+                appdata.elements.postureBox.selected = appdata.elements.postureBox.options[0];
+                appdata.elements.eyeBox.selected = appdata.elements.eyeBox.options[0];
+                appdata.elements.armBox.selected = appdata.elements.armBox.options[0];
+                appdata.elements.legBox.selected = appdata.elements.legBox.options[0];
+                appdata.elements.rightArmBox.selected = appdata.elements.rightArmBox.options[0];
+                appdata.elements.rightLegBox.selected = appdata.elements.rightLegBox.options[0];
+            }
+            const selrandom_onclick = () => {
+                const getRandomInt = (min, max) => {
+                    min = Math.ceil(min)
+                    max = Math.floor(max)
+                    return Math.floor(Math.random() * (max - min + 1) + min)
+                }
+                //---posture
+                var sel = getRandomInt(1,appdata.elements.postureBox.options.length-1);
+                appdata.elements.postureBox.selected = appdata.elements.postureBox.options[sel];
+                //---eyeview
+                var sel = getRandomInt(1,appdata.elements.eyeBox.options.length-1);
+                appdata.elements.eyeBox.selected = appdata.elements.eyeBox.options[sel];
+
+                //---right arm
+                var sel = getRandomInt(1,appdata.elements.rightArmBox.options.length-1);
+                appdata.elements.rightArmBox.selected = appdata.elements.rightArmBox.options[sel];
+                //---left arm
+                var sel = getRandomInt(1,appdata.elements.armBox.options.length-1);
+                appdata.elements.armBox.selected = appdata.elements.armBox.options[sel];
+
+                //---right leg
+                var sel = getRandomInt(1,appdata.elements.rightLegBox.options.length-1);
+                appdata.elements.rightLegBox.selected = appdata.elements.rightLegBox.options[sel];
+                //---left leg
+                var sel = getRandomInt(1,appdata.elements.legBox.options.length-1);
+                appdata.elements.legBox.selected = appdata.elements.legBox.options[sel];
             }
 
             return {
@@ -1055,12 +1293,15 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 //---event-------------
                 defaultbtn_onclick,openfile_onclick,apply_onclick,reload_onclick,
                 rfile_onchange,
-                posturebox_onchange,selclear_onclick,
+                posturebox_onchange,selclear_onclick,selrandom_onclick,
                 //element--------------
                 btpdlg,btpdlg_bar,rfile,
                 //watch----------------
                 wa_modelValue,wa_show,wa_dark,wa_avatar_type,wa_locale,
                 cmp_is_screen_xs,
+                cmp_select_eye_image,cmp_select_posture_image,
+                cmp_select_rightarm_image,cmp_select_leftarm_image,
+                cmp_select_rightleg_image,cmp_select_leftleg_image,
             };
         }
     });
