@@ -791,7 +791,10 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
             if (f.data.text) {
                 textdata = await f.data.text();
                 js = JSON.parse(textdata);
-            }            
+            }
+            if (typeof(f.data) == "string") {
+                js = JSON.parse(f.data);
+            }
             
 
             if (("mkey" in js) && ("casts" in js) && ("timeline" in js)) {
@@ -822,6 +825,7 @@ export function defineProjectSelector(app, Quasar, mainData, modelLoader, modelO
     const onclick_upload_projectSelector = async () => {
         const fopt = new VFileOptions();
         fopt.types = FILEOPTION.PROJECT.types;
+        fopt.encoding = "utf-8";
         VFileHelper.openFromDialog(fopt, 0, (files,cd,err)=>{
             if (cd == 0) onchange_fil_projselector(files);
         });
