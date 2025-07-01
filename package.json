@@ -4,7 +4,7 @@
     "name": "ISHII Eiju"
   },
   "description": "Web app for VRoid(VRM) : Posing, Animation",
-  "version": "2.17.1",
+  "version": "2.17.2",
   "engines": {
     "node" : ">=22.0.0"
   },
