@@ -2420,7 +2420,7 @@ export class UnityCallbackFunctioner {
             });
         }
 
-        var js = JSON.parse(val);
+        var js = typeof(val) == "string" ? JSON.parse(val) : val;
 
         //console.log(js);
         //---default is parameter savetype

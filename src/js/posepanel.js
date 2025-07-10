@@ -7,181 +7,227 @@ import { AnimationParsingOptions } from "./prop/cls_unityrel";
 import { VVAvatar, VVCast } from "./prop/cls_vvavatar";
 
 const template = `
-<q-dialog v-model="poseapp.show" :fullwidth="poseapp.dialog.fullwidth" :fullheight="poseapp.dialog.fullheight" :maximized="poseapp.dialog.maximized" @hide="dialogHide">
-    <q-card :style="poseapp.dialog.styles" >
-        <q-toolbar class="bg-primary text-white">
+<div class="vvposecatalog-area" v-if="poseapp.show" :class="poseapp.toppanelCSS">
+    <div class="vvps-seekbar" :style="poseapp.seekbar_styles">
+        <q-toolbar >
+            <q-btn flat round dense icon="close" @click="close_onclick"></q-btn>
             <q-btn flat round dense icon="refresh" @click="refresh_onclick">
                 <q-tooltip v-text="$t('refresh')"></q-tooltip>
             </q-btn>
-            <q-btn flat round dense icon="bookmark_added" :label="$t('cons_apply')"
+            <q-btn flat round dense icon="bookmark_added" :label="$t('cons_apply')" class="desktop-only"
                 @click="apply_onclick" no-caps style="width:7rem;"
             >
                 <q-tooltip v-text="$t('cons_apply')"></q-tooltip>
             </q-btn>
-            <q-btn flat round dense icon="delete" 
+            <q-btn flat round dense icon="bookmark_added" class="mobile-only"
+                @click="apply_onclick" no-caps style="width:7rem;"
+            >
+                <q-tooltip v-text="$t('cons_apply')"></q-tooltip>
+            </q-btn>
+
+            <!--q-btn flat round dense icon="delete" 
                 @click="delete_onclick"
                 :disable="poseapp.header.list_selected.value == 'mystorage' ? false : true"
             >
                 <q-tooltip v-text="$t('cons_delete')"></q-tooltip>
-            </q-btn>
-            <q-btn flat round dense icon="file_download" @click="download_onclick">
+            </q-btn-->
+            <!--q-btn flat round dense icon="file_download" @click="download_onclick">
                 <q-tooltip v-text="$t('download as file')"></q-tooltip>
-            </q-btn>
+            </q-btn-->
             <q-btn flat round dense icon="file_upload" @click="upload_onclick"
                 :disable="poseapp.header.list_selected.value == 'mystorage' ? false : true"
             >
                 <q-tooltip v-text="$t('open from file')"></q-tooltip>
             </q-btn>
-            
+            <q-btn-toggle v-model="poseapp.states.item_mode"
+                toggle-color="secondary" push
+                :options="poseapp.btntoggle.options"
+                @update:model-value="modetab_change"
+            >
+                <template v-slot:pose>
+                    <div class="row items-center no-wrap">
+                        <q-icon left name="directions_walk"></q-icon>
+                        <q-tooltip class="text-center">
+                            Pose
+                        </q-tooltip>
+                    </div>
+                </template>
+                <template v-slot:motion>
+                    <div class="row items-center no-wrap">
+                        <q-icon left name="animation"></q-icon>
+                        <q-tooltip class="text-center">
+                            Motion
+                        </q-tooltip>
+                    </div>
+                </template>
+            </q-btn-toggle>
+            <q-select v-model="poseapp.header.list_selected" 
+                :options="poseapp.header.list_origin" 
+                filled dense
+                @update:model-value="listorigin_onchange"
+            ></q-select>
+            <q-space></q-space>
+            <q-input v-model="poseapp.search_str"  class="desktop-only"
+                type="text" label="Search..." dense outlined
+                @update:model-value="onchange_searchstr"
+            ></q-input>
             <q-spinner v-if="poseapp.header.loading"
                 color="secondary"
                 size="3em"
             ></q-spinner>
-
-            
             <q-space></q-space>
-            <q-btn flat round dense icon="close" @click="close_onclick"></q-btn>
+            <q-btn flat round :icon="poseapp.toggleIcon" class="desktop-only"
+                @click="panelToggleBtn_onclick"
+            ></q-btn>
         </q-toolbar>
-        <q-card-section class="q-pa-none" style="height:calc(100% - 50px);">
-            <div class="row">
-                <div class="col-6">
-                    <q-tabs inline-label no-caps mobile-arrows
-                        v-model="poseapp.states.item_mode"
-                        @update:model-value="modetab_change"
-                    >   
-                        <q-tab name="pose" icon="directions_walk" label="Pose"></q-tab>
-                        <q-tab name="motion" icon="animation" label="Motion"></q-tab>
-                    </q-tabs>
-                </div>
-                <div class="col-6 q-pl-xs">
-                    <q-select v-model="poseapp.header.list_selected" 
-                        :options="poseapp.header.list_origin" 
-                        filled dense
-                        @update:model-value="listorigin_onchange"
-                    ></q-select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <q-input v-model="poseapp.search_str" 
-                        type="text" label="Search..." dense outlined
-                        @update:model-value="onchange_searchstr"
-                    ></q-input>
-                </div>
-            </div>
-            <div class="row poseliststyle" style="height: calc(100% - 48px - 40px);overflow:auto">
-                <div class="posecard-grid" :style="poseapp.card.styles">
-                    <template v-for="(item,index) in poseapp.list.options">
-                        <div class="posecard-itembase"
-                            :key="index"
-                            v-if="item.visibility==true"
+    </div>
+    <div class="q-pa-none" style="height:calc(100% - 50px);">
+        <q-scroll-area class="row poseliststyle" style="height: calc(100%);overflow:auto">
+            <div class="row no-wrap">
+                <template v-for="(item,index) in poseapp.list.options">
+                    <div class="vvposecatalog-card"
+                        :key="index"
+                        v-if="item.visibility==true"
+                        @dblclick="apply_onclick"
+                    >
+                        <q-card v-ripple :class="item.styleclass" @click.stop="selectListItem(item)">
+                            <template v-if="poseapp.states.item_mode == 'pose'">
+                                <q-card-section class="q-pa-xs ellipsis">
+                                    <div class="text-h5">{{ item.name.replace(".vvmpose","") }}</div>
+                                </q-card-section>
+                                <q-card-section horizontal>
+                                    <q-img :src="item.thumbnail" style="height:128px;max-width:150px;" :alt="item.name"></q-img>
+                                    <q-card-section>
+                                        
+                                        
+                                        
+                                    </q-card-section>
+                                    
+                                </q-card-section>
+                                <q-tooltip>
+                                    <div class="text-h5">{{ item.name}}</div>
+                                    <div class="row">
+                                        <div class="col-12 text-subtitle1">
+                                            <b>{{ $t("Sample avatar") }}:</b>
+                                        </div>
+                                        <div class="col-11 offset-1 text-subtitle1">
+                                            {{ item.sample }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 text-subtitle1">
+                                            <b>{{ $t("Recommended height") }}:</b>
+                                        </div>
+                                        <div class="col-6 text-subtitle1">
+                                            {{ listitem_height(item) }}
+                                        </div>
+                                    </div>
+                                </q-tooltip>
+                            </template>
+                            <template v-else-if="poseapp.states.item_mode == 'motion'">
+                                <q-card-section class="q-pa-xs ellipsis">
+                                    <div class="text-h5">{{ item.name.replace(".vvmmot","") }}</div>
+                                </q-card-section>
+                                <q-card-section horizontal>
+                                    <q-img :src="item.thumbnail" style="height:128px;max-width:150px;" :alt="item.name"></q-img>
+                                    <q-card-section>
+                                        
+                                        
+                                    </q-card-section>
+                                    
+                                </q-card-section>
+                                <q-tooltip>
+                                    <div class="text-h5">{{ item.name}}</div>
+                                    <div class="row">
+                                        <div class="col-6 offset-1">
+                                            <b>{{ $t("type") }}:</b>
+                                        </div>
+                                        <div class="col-5">
+                                            {{ targetTypeName(item.type) }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 offset-1">
+                                            <b>{{ $t("fileformatver") }}:</b>
+                                        </div>
+                                        <div class="col-5">
+                                            {{ item.version }}
+                                        </div>
+                                    </div>
+                                    <div class="row" v-if="item.type == 0">
+                                        <div class="col-6 offset-1">
+                                            <b>{{ $t("Recommended height") }}:</b>
+                                        </div>
+                                        <div class="col-5">
+                                            {{ item.height }} m
+                                        </div>
+                                    </div>
+                                    <div class="row q-mt-sm">
+                                        <div class="col-12">
+                                            <b>{{ $t("frameinfo") }}</b>
+                                        </div>
+                                        <div class="col-4">
+                                            <b>{{ $t("framecount") }}</b>
+                                        </div>
+                                        <div class="col-4">
+                                            <b>{{ $t("framestart") }}</b>
+                                        </div>
+                                        <div class="col-4">
+                                            <b>{{ $t("frameend") }}</b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            {{ item.frameCount }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ item.startFrame }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ item.endFrame }}
+                                        </div>
+                                    </div>
+                                </q-tooltip>
+                            </template>
+                            <q-menu context-menu touch-position>
+                                <q-list dense>
+                                    <q-item clickable v-close-popup 
+                                        @click="download_onclick"
+                                    >
+                                        <q-item-section avatar>
+                                            <q-icon name="file_download"></q-icon>
+                                        </q-item-section>
+                                        <q-item-section>
+                                            {{ $t('download as file') }}
+                                        </q-item-section>
+                                    </q-item>
+                                    <template v-if="poseapp.header.list_selected.value == 'mystorage'">
+                                        <q-item clickable v-close-popup 
+                                            @click="delete_onclick"
+                                        >
+                                            <q-item-section avatar>
+                                                <q-icon name="delete"></q-icon>
+                                            </q-item-section>
+                                            <q-item-section>
+                                                {{ $t('cons_delete') }}
+                                            </q-item-section>
+                                        </q-item>
+                                    </template>
+                                </q-list>
+                            </q-menu>
                             
-                        >
-                            <q-card v-ripple :class="item.styleclass" @click.stop="selectListItem(item)">
-                                <template v-if="poseapp.states.item_mode == 'pose'">
-                                    <q-card-section class="q-pa-xs">
-                                        <div class="text-h5">{{ item.name}}</div>
-                                    </q-card-section>
-                                    <q-card-section horizontal>
-                                        <q-img :src="item.thumbnail" style="height:128px;max-width:150px;" :alt="item.name"></q-img>
-                                        <q-card-section>
-                                            
-                                            <div class="row">
-                                                <div class="col-12 text-subtitle1">
-                                                    <b>{{ $t("Sample avatar") }}:</b>
-                                                </div>
-                                                <div class="col-11 offset-1 text-subtitle1">
-                                                    {{ item.sample }}
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6 text-subtitle1">
-                                                    <b>{{ $t("Recommended height") }}:</b>
-                                                </div>
-                                                <div class="col-6 text-subtitle1">
-                                                    {{ listitem_height(item) }}
-                                                </div>
-                                            </div>
-                                            
-                                        </q-card-section>
-                                        
-                                    </q-card-section>
-                                </template>
-                                <template v-else-if="poseapp.states.item_mode == 'motion'">
-                                    <q-card-section class="q-pa-xs">
-                                        <div class="text-h5">{{ item.name}}</div>
-                                    </q-card-section>
-                                    <q-card-section horizontal>
-                                        <q-img :src="item.thumbnail" style="height:128px;max-width:150px;" :alt="item.name"></q-img>
-                                        <q-card-section>
-                                            <div class="row">
-                                                <div class="col-6 offset-1">
-                                                    <b>{{ $t("type") }}:</b>
-                                                </div>
-                                                <div class="col-5">
-                                                    {{ targetTypeName(item.type) }}
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6 offset-1">
-                                                    <b>{{ $t("fileformatver") }}:</b>
-                                                </div>
-                                                <div class="col-5">
-                                                    {{ item.version }}
-                                                </div>
-                                            </div>
-                                            <div class="row" v-if="item.type == 0">
-                                                <div class="col-6 offset-1">
-                                                    <b>{{ $t("Recommended height") }}:</b>
-                                                </div>
-                                                <div class="col-5">
-                                                    {{ item.height }} m
-                                                </div>
-                                            </div>
-                                            <div class="row q-mt-sm">
-                                                <div class="col-12">
-                                                    <b>{{ $t("frameinfo") }}</b>
-                                                </div>
-                                                <div class="col-4">
-                                                    <b>{{ $t("framecount") }}</b>
-                                                </div>
-                                                <div class="col-4">
-                                                    <b>{{ $t("framestart") }}</b>
-                                                </div>
-                                                <div class="col-4">
-                                                    <b>{{ $t("frameend") }}</b>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-4">
-                                                    {{ item.frameCount }}
-                                                </div>
-                                                <div class="col-4">
-                                                    {{ item.startFrame }}
-                                                </div>
-                                                <div class="col-4">
-                                                    {{ item.endFrame }}
-                                                </div>
-                                            </div>
-                                            
-                                        </q-card-section>
-                                        
-                                    </q-card-section>
-                                </template>
-                                
-                                
-                            </q-card>
-                        </div>
-                    </template>
-                </div>
+                        </q-card>
+                    </div>
+                </template>
             </div>
-        </q-card-section>
-    </q-card>
-</q-dialog>
+        </q-scroll-area>
+    </div>
+    
+</div>
 `;
 
-export function definePoseMotionDlg(app, Quasar) {
-    app.component("PosemotionDlg", {
+export function definePoseMotionPanel(app, Quasar) {
+    app.component("PosemotionPanel", {
         template: template,
         props : {
             modelValue: Boolean,
@@ -189,6 +235,7 @@ export function definePoseMotionDlg(app, Quasar) {
                 type: String,
                 default: "p",
             },
+            darkmode: Boolean,
             appconf : VVAppConfig,
             avatar: VVAvatar,
             cast: VVCast,
@@ -197,9 +244,10 @@ export function definePoseMotionDlg(app, Quasar) {
         emits : [
             "update:model-value",
             "applyafter",
+            "hidepanel",
         ],
         setup(props, context) {
-            const {modelValue, mode, appconf, avatar, cast } = Vue.toRefs(props);
+            const { modelValue, mode, darkmode, appconf, avatar, cast } = Vue.toRefs(props);
             const { t  } = VueI18n.useI18n({ useScope: 'global' });
 
             var cns_list_origin = [
@@ -217,6 +265,21 @@ export function definePoseMotionDlg(app, Quasar) {
                         width : "auto",
                         height: "100%",
                     }
+                },
+                toggleIcon : "expand_more",
+                toppanelCSS : {
+                    "q-dark" : false,
+                    "text-dark" : true,
+                },
+                btntoggle : {
+                    options : [
+                        {value:"pose", slot:"pose"},
+                        {value:"motion", slot:"motion"}
+                    ],
+                    selected : {label: "Pose", value:"pose"}
+                },
+                seekbar_styles : {
+                    height : "48px",
                 },
                 card: {
                     styles : {
@@ -343,29 +406,7 @@ export function definePoseMotionDlg(app, Quasar) {
             const wa_modelValue = Vue.watch(() => modelValue.value, (newval) => {
                 poseapp.value.show = newval;
                 if (newval === true) {
-                    if ((Quasar.Screen.name == "xs") 
-                    //    || (Quasar.Screen.name == "sm")
-                    ) 
-                    {
-                        poseapp.value.dialog.maximized = true;
-                        poseapp.value.dialog.fullwidth = false;
-                        poseapp.value.dialog.fullheight = false;
-                        poseapp.value.card.styles["grid-template-columns"] = "100%";
-                    }else if (Quasar.Screen.name == "sm") {
-                        poseapp.value.dialog.maximized = false;
-                        poseapp.value.dialog.fullwidth = true;
-                        poseapp.value.dialog.fullheight = true;
-                        poseapp.value.card.styles["grid-template-columns"] = "1fr 1fr";
-                    }else{
-                        poseapp.value.dialog.styles.width = "65%";
-                        if (Quasar.Screen.name == "md") {
-                            poseapp.value.card.styles["grid-template-columns"] = "1fr 1fr";
-                        }else if (Quasar.Screen.name == "lg") {
-                            poseapp.value.card.styles["grid-template-columns"] = "1fr 1fr";
-                        }else if (Quasar.Screen.name == "xl") {
-                            poseapp.value.card.styles["grid-template-columns"] = "1fr 1fr 1fr";
-                        }
-                    }
+                    
                 }
             });
             const wa_mode = Vue.watch(() => mode.value, (newval) => {
@@ -376,6 +417,11 @@ export function definePoseMotionDlg(app, Quasar) {
                     poseapp.value.states.item_mode = "motion";
                 }
                 modetab_change();
+            });
+            const wa_darkmode = Vue.watch(()=> darkmode.value, (newval) => {
+                poseapp.value.toppanelCSS["q-dark"] = newval.value;
+                poseapp.value.toppanelCSS["text-dark"] = !newval.value;
+                
             });
 
             //---event---------------------------------------------
@@ -680,6 +726,14 @@ export function definePoseMotionDlg(app, Quasar) {
                 poseapp.value.show = false;
                 context.emit("update:model-value",poseapp.value.show);
             }
+            const panelToggleBtn_onclick = () => {
+                if (poseapp.value.toggleIcon == "expand_less") {
+                    poseapp.value.toggleIcon = "expand_more";
+                }else{
+                    poseapp.value.toggleIcon = "expand_less";
+                }
+                context.emit("hidepanel",poseapp.value.toggleIcon);
+            }
 
             //---computed---------------------------------------------
             const list_actived = Vue.computed(() => {
@@ -718,6 +772,10 @@ export function definePoseMotionDlg(app, Quasar) {
                 
             }
 
+            /**
+             * load function main body by each storages.
+             * @param {*} val 
+             */
             const listorigin_onchange = (val) =>  {
                 const enumrate_data = (data, originType) => {
                     for (var obj of data) {
@@ -832,6 +890,7 @@ export function definePoseMotionDlg(app, Quasar) {
                             remoteload(finalurl,val.value);
                         }
                     });
+                    
                 }else if (val.value == "appserver") {
                     //---decide URL
                     var baseurl = "/samplesv/enumdir";
@@ -867,6 +926,7 @@ export function definePoseMotionDlg(app, Quasar) {
                         var finalurl = baseurl;
                         finalurl += "?" + urlparams.toString();
 
+                        //remoteload(finalurl,val.value);
                         var tempkey = generate_tempkey(poseapp.value.states.item_mode,val.value);
                         AppDB.temp.getItem(tempkey)
                         .then((data)=> {
@@ -1057,9 +1117,9 @@ export function definePoseMotionDlg(app, Quasar) {
                 listorigin_onchange,modetab_change,
                 btn_savebvhmotion_onclick,btn_saveanimmotion_onclick,btn_savevrmamotion_onclick,
                 checkSelectVRMObject,
-                dialogHide,
+                dialogHide,panelToggleBtn_onclick,
                 //---watch------
-                wa_modelValue, wa_mode,
+                wa_modelValue, wa_mode,wa_darkmode,
                 //---computed---
                 list_actived,listitem_height,targetTypeName,
                 //---other method---

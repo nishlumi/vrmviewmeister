@@ -14,8 +14,8 @@ export class appMainData {
         this.appinfo = {
             name : appName,
             description : appDesc,
-            version : "2.17.2",
-            revision : "20250702-01",
+            version : "2.18.0",
+            revision : "20250710-01",
             platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
@@ -81,6 +81,9 @@ export class appMainData {
             posemotiondlg : {
                 show: false,
                 mode : "p",
+            },
+            posemotinopanel : {
+                show : false,
             },
             projdlg : {
                 show : false,

@@ -289,6 +289,9 @@
                                         <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentuimg')">
                                             <q-item-section>{{ $t('UImage') }}</q-item-section>
                                         </q-item>
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentvrma')">
+                                            <q-item-section>{{ $t('VRMAnimation') }}</q-item-section>
+                                        </q-item>
                                         <!--
                                         <q-item clickable  v-close-popup @click="ribbonEvent.openproject_internal_onclick">
                                             <q-item-section>Project</q-item-section>
@@ -5528,6 +5531,15 @@
 <!--[] Timeline  ================================================================================= -->
         <q-footer v-model="mainData.elements.footer" class="bg-grey-1" bordered :style="timelineData.elements.boxStyle">
             
+            <posemotion-panel
+                v-model="mainData.elements.posemotinopanel.show"
+                :mode="mainData.elements.posemotiondlg.mode"
+                :darkmode="mainData.appconf.confs.application.UseDarkTheme"
+                :appconf="mainData.appconf"
+                :cast="mainData.states.selectedCast"
+                @hidepanel="timelineEvent.panelToggleBtn_onclick"
+            ></posemotion-panel>
+            
             <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
                 <div class="vvtl-seekbar" :style="timelineData.elements.seekbar_styles">
                     <div class="row xgrid-oneline">
@@ -5540,6 +5552,9 @@
                                 <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
                             </q-btn>
                             -->
+                            <q-btn flat round icon="animation" @click="mainData.elements.posemotinopanel.show=true;">
+                                <q-tooltip>Pose/Motion</q-tooltip>
+                            </q-btn>
                             <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
                                 <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
                             </q-btn>

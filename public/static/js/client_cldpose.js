@@ -96,6 +96,7 @@ const app = Vue.createApp({
             }else if (poseapp.value.states.item_mode == "motion") {
                 AppDB.motion.iterate((value,key,index)=>{
                     poseapp.value.list.options.push({
+                        thumbnail : value.thumbnail,
                         name: key,
                         type: value.targetType,
                         version : value.version,
@@ -126,9 +127,16 @@ const app = Vue.createApp({
                 poseapp.value.appconf.confs = tmp;
             }
         }
+        const generate_tempkey = (itemtype, server) => {
+            return `pmdlg_temp_${itemtype}_${server}`;
+        }
         //---event---------------------------------------------
         const refresh_onclick = () => {
-            listorigin_onchange(poseapp.value.header.list_selected);
+            var tempkey = generate_tempkey(poseapp.value.states.item_mode,poseapp.value.header.list_selected.value);
+            AppDB.temp.removeItem(tempkey)
+            .then(val => {
+                listorigin_onchange(poseapp.value.header.list_selected);
+            });
         }
         const apply_onclick = async () => {
             if (poseapp.value.list.selected) {
@@ -407,6 +415,7 @@ const app = Vue.createApp({
                         });
                     }else if (poseapp.value.states.item_mode == "motion") {
                         poseapp.value.list.options.push({
+                            thumbnail : posedata.thumbnail,
                             name: obj.name,
                             type: posedata.targetType,
                             version : posedata.version,
@@ -435,6 +444,9 @@ const app = Vue.createApp({
                         var js = await ret.json();
                         if (js.cd == 0) {
                             enumrate_data(js.data, originType);
+                            //---save to cache
+                            let key = generate_tempkey(poseapp.value.states.item_mode,val.value);
+                            AppDB.temp.setItem(key,js.data);
                         }else{
                             alert(js.msg);
                         }
@@ -487,7 +499,16 @@ const app = Vue.createApp({
                     //---specified google drive id
                     finalurl += `&dirid=${dirid}`;
                 }*/
-                remoteload(finalurl,val.value);
+                var tempkey = generate_tempkey(poseapp.value.states.item_mode,val.value);
+                AppDB.temp.getItem(tempkey)
+                .then((data)=> {
+                    if (data) {
+                        poseapp.value.header.loading = false;
+                        enumrate_data(data, val.value);
+                    }else{
+                        remoteload(finalurl,val.value);
+                    }
+                });
             }else if (val.value == "appserver") {
                 //---decide URL
                 var baseurl = "/samplesv/enumdir";
@@ -523,7 +544,16 @@ const app = Vue.createApp({
                     var finalurl = baseurl;
                     finalurl += "?" + urlparams.toString();
 
-                    remoteload(finalurl,val.value);
+                    var tempkey = generate_tempkey(poseapp.value.states.item_mode,val.value);
+                    AppDB.temp.getItem(tempkey)
+                    .then((data)=> {
+                        if (data) {
+                            poseapp.value.header.loading = false;
+                            enumrate_data(data, val.value);
+                        }else{
+                            remoteload(finalurl,val.value);
+                        }
+                    });
                 }
             }else if (val.value == "mystorage") {
                 loadData();
@@ -626,6 +656,7 @@ const app = Vue.createApp({
 
             loadData();
             loadSetting();
+            modetab_change();
 
             if (poseapp.value.appconf.confs.fileloader.gdrive.enabled && 
                 (poseapp.value.appconf.confs.fileloader.gdrive.url != "")

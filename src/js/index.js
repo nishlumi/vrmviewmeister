@@ -38,6 +38,7 @@ import { defineCaptureDlg } from "./capturedlg.js";
 import { defineTearchManagerDlg } from "./teachman.js";
 import { defineEasyBoneTranDlg } from "./easybonetran.js";
 import { defineTransformRefDlg } from "./transformrefdlg.js";
+import { definePoseMotionPanel } from "./posepanel.js";
 
 var loc = localStorage.getItem("appLocale");
 //loc = await AppDB.app.getItem("appLocale");
@@ -344,6 +345,7 @@ const app = Vue.createApp({
                 if (mainData.elements.win_vplayer) mainData.elements.win_vplayer.close();
                 if (mainData.elements.win_keyframe) mainData.elements.win_keyframe.close();
                 if (mainData.elements.win_gravitybone) mainData.elements.win_gravitybone.close();
+
             });
 
 
@@ -393,12 +395,12 @@ const app = Vue.createApp({
             
         });
         Vue.onBeforeUnmount(() => {
-            
+            AppDB.clearAll();
         });
         Vue.onUnmounted(() => {
             modelOperator.destroy();
             modelLoader.destroy_materialFile();
-            AppDB.clearAll();
+            
             mainData.appconf.save();
 
         });
@@ -509,6 +511,7 @@ defineCaptureDlg(app, Quasar);
 defineTearchManagerDlg(app, Quasar);
 defineEasyBoneTranDlg(app, Quasar);
 defineTransformRefDlg(app, Quasar);
+definePoseMotionPanel(app, Quasar);
 
 app.use(i18n);
 //---Start app

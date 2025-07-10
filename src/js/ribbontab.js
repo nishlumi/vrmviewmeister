@@ -441,6 +441,14 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
             modelOperator.enumerateFilesToProjectSelector("IMAGES");
             mainData.elements.projectSelector.show = true;
             is_closepanel = true;
+        }else if (ename == "recentvrma") {
+            mainData.elements.projectSelector.selectStorageType = STORAGE_TYPE.INTERNAL;
+            mainData.elements.projectSelector.selectTypeName = FILEOPTION.VRMA.types[0].description;
+            mainData.elements.projectSelector.selectDB = INTERNAL_FILE.VRMA;
+            mainData.elements.projectSelector.selectType = FILEOPTION.VRMA.types;
+            modelOperator.enumerateFilesToProjectSelector("VRMA");
+            mainData.elements.projectSelector.show = true;
+            is_closepanel = true;
         }else if (ename == "getcapture") {
             Sub_getcapture();
             is_closepanel = true;

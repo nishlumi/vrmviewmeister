@@ -289,6 +289,9 @@
                                         <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentuimg')">
                                             <q-item-section>{{ $t('UImage') }}</q-item-section>
                                         </q-item>
+                                        <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentvrma')">
+                                            <q-item-section>{{ $t('VRMAnimation') }}</q-item-section>
+                                        </q-item>
                                         <!--
                                         <q-item clickable  v-close-popup @click="ribbonEvent.openproject_internal_onclick">
                                             <q-item-section>Project</q-item-section>
@@ -5473,371 +5476,384 @@
             style="max-height:298px;height:calc(100% - 60px);padding-bottom:48px;z-index:100;"
         >
             <q-card style="height:100%;">
-            <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
-                <div class="vvtl-seekbar" :style="timelineData.elements.seekbar_styles">
-                    <template v-if="judgeDeviceLandscape">
-                        <div class="grid-oneline">
-                            <div class="seekbar-buttonbox">
-                                <!--
-                                <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
-                                    <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round icon="skip_next" @click="timelineEvent.skip_next_onclick">
-                                    <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
-                                </q-btn>
-                                -->
-                                <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
-                                    <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round icon="zoom_in" @click="timelineEvent.zoom_in_onclick">
-                                    <q-tooltip>{{ $t('tl_util_zoomin') }}</q-tooltip>
-                                </q-btn>
-                                <span class="seekbar-button-separator"></span>
-                                <q-btn flat round icon="play_circle_filled" no-caps 
-                                        @click="ribbonEvent.RibbonFuncAnimation('playfirst')"
-                                ></q-btn>
-                                <q-btn flat round icon="stop" no-caps 
-                                    @click="ribbonEvent.RibbonFuncAnimation('stop')"
-                                ></q-btn>
-    
-                                <span class="seekbar-button-separator"></span>
-                                <template v-if="mainData.appconf.confs.animation.recover_pose_whenselected == false">
-                                    <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
-                                        <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
+                <posemotion-panel
+                    v-model="mainData.elements.posemotinopanel.show"
+                    :mode="mainData.elements.posemotiondlg.mode"
+                    :darkmode="mainData.appconf.confs.application.UseDarkTheme"
+                    :appconf="mainData.appconf"
+                    :cast="mainData.states.selectedCast"
+                ></posemotion-panel>
+                <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
+                    <div class="vvtl-seekbar" :style="timelineData.elements.seekbar_styles">
+                        <template v-if="judgeDeviceLandscape">
+                            <div class="grid-oneline">
+                                <div class="seekbar-buttonbox">
+                                    <!--
+                                    <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
+                                        <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
                                     </q-btn>
-                                </template>
-                                <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
-                                    <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
-                                </q-btn>
-                                
-                                
-                                <q-btn flat round icon="delete"
-                                    @click="ribbonEvent.RibbonFuncAnimation('delkeyframe')"
-                                >
-                                    <q-tooltip>{{ $t('tl_utl_del1') }}</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
-                                    <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
-                                    <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
-                                </q-btn>
-                                
-    
-                                
-                                <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
-                                    <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
-                                </q-btn-->
-                                <!--q-input v-model.number="timelineData.elements.childKey.val" 
-                                    type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
-                                    @update:model-value="timelineEvent.OnChange_childKeyVal"
-                                ></q-input-->
-                                
-                                <!--q-btn flat round icon="playlist_remove" 
-                                    :disable="timelineData.elements.childKey.disable_remove"
-                                    @click="timelineEvent.deleteChildKey_onclick"
-                                >
-                                    <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
-                                </q-btn-->
-                            </div>
-                            <div class="seekbar-currentframe">
-                                <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
-                            </div>
-                            <div class="seekbar-seekbox q-pl-md q-pr-md">
-                                
-                                <div style="padding-top : 1.1rem;">
-                                    <q-slider
-                                        v-model.number="timelineData.elements.seekbar"
-                                        :min="1"
-                                        :max="mainData.data.project.timelineFrameLength"
-                                        :step="1" 
-                                        color="primary" 
-                                        @update:model-value="timelineEvent.seekbar_onchange"
-                                    ></q-slider>
-                                </div>
-                                
-                                
-                            </div>
-                        </div>
-                    </template>
-                    <template v-else>
-                        <div class="row" style="overflow:hidden;height:auto;">
-                            <div class="col-10">
-                                <!--
-                                <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
-                                    <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round icon="skip_next" @click="timelineEvent.skip_next_onclick">
-                                    <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
-                                </q-btn>
-                                -->
-                                <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
-                                    <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round icon="zoom_in" @click="timelineEvent.zoom_in_onclick">
-                                    <q-tooltip>{{ $t('tl_util_zoomin') }}</q-tooltip>
-                                </q-btn>
-                                <span class="seekbar-button-separator"></span>
-                                <q-btn flat round icon="play_circle_filled" no-caps 
-                                        @click="ribbonEvent.RibbonFuncAnimation('playfirst')"
-                                ></q-btn>
-                                <q-btn flat round icon="stop" no-caps 
-                                    @click="ribbonEvent.RibbonFuncAnimation('stop')"
-                                ></q-btn>
-    
-                                <span class="seekbar-button-separator"></span>
-                                <template v-if="mainData.appconf.confs.animation.recover_pose_whenselected == false">
-                                    <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
-                                        <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
+                                    <q-btn flat round icon="skip_next" @click="timelineEvent.skip_next_onclick">
+                                        <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
                                     </q-btn>
-                                </template>
-                                <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
-                                    <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
-                                </q-btn>
-                                
-                                
-                                <q-btn flat round icon="delete"
-                                    @click="ribbonEvent.RibbonFuncAnimation('delkeyframe')"
-                                >
-                                    <q-tooltip>{{ $t('tl_utl_del1') }}</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
-                                    <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
-                                    <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
-                                </q-btn>
-                                
-    
-                                
-                                <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
-                                    <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
-                                </q-btn-->
-                                <!--q-input v-model.number="timelineData.elements.childKey.val" 
-                                    type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
-                                    @update:model-value="timelineEvent.OnChange_childKeyVal"
-                                ></q-input-->
-                                
-                                <!--q-btn flat round icon="playlist_remove" 
-                                    :disable="timelineData.elements.childKey.disable_remove"
-                                    @click="timelineEvent.deleteChildKey_onclick"
-                                >
-                                    <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
-                                </q-btn-->
-                                
-                            </div>
-                            <div class="col-2">
-                                <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
-                            </div>
-                        </div>
-                        <div class="row common_ui_off">
-                            
-                            <div class="col-8 q-pl-md q-pr-md">
-                                
-                                <div style="padding-top : 1.1rem;">
-                                    <q-slider 
-                                        v-model.number="timelineData.elements.seekbar"
-                                        :min="1"
-                                        :max="mainData.data.project.timelineFrameLength"
-                                        :step="1" 
-                                        color="primary" 
-                                        @update:model-value="timelineEvent.seekbar_onchange"
-                                    ></q-slider>
-                                </div>
-                                
-                                
-                            </div>
-                            <!--
-                            <div class="oneline-dlgbox">
-                                <q-btn flat round :icon="timelineData.elements.toggleIcon" @click="timelineEvent.panelToggleBtn_onclick">
-                                </q-btn>
-                            </div>
-                            -->
-                        </div>
-    
-                    </template>
-                </div>
-                <div class="vvtl-timeline" :style="timelineData.elements.timeline_styles" v-if="timelineData.elements.isExpand">
-                    <div class="grid-oneline grid-headerarea">
-                        <div class="oneline-namebox">
-                            <div class="namebox-child"></div>
-                        </div>
-                        <div class="oneline-timelinebox" ref="scroll_header_x" @scroll="timelineEvent.scroll_header_x_onscroll">
-                            <!-- frame number -->
-                            <template v-if="timelineData.data.headercounts != null">
-                                <div class="timelinebox-content">
-                                    <div v-for="(item,index) in timelineData.data.headercounts" :key="index" 
-                                        class="frameheader"
-                                        :class="timelineEvent.judgeVClass(item,index)"
-                                        @click="timelineEvent.frameheaderNumber_onclick(item,index)"
+                                    -->
+                                    <q-btn flat round icon="animation" @click="mainData.elements.posemotinopanel.show=true;">
+                                        <q-tooltip>Pose/Motion</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
+                                        <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="zoom_in" @click="timelineEvent.zoom_in_onclick">
+                                        <q-tooltip>{{ $t('tl_util_zoomin') }}</q-tooltip>
+                                    </q-btn>
+                                    <span class="seekbar-button-separator"></span>
+                                    <q-btn flat round icon="play_circle_filled" no-caps 
+                                            @click="ribbonEvent.RibbonFuncAnimation('playfirst')"
+                                    ></q-btn>
+                                    <q-btn flat round icon="stop" no-caps 
+                                        @click="ribbonEvent.RibbonFuncAnimation('stop')"
+                                    ></q-btn>
+        
+                                    <span class="seekbar-button-separator"></span>
+                                    <template v-if="mainData.appconf.confs.animation.recover_pose_whenselected == false">
+                                        <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
+                                            <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
+                                        </q-btn>
+                                    </template>
+                                    <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
+                                        <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
+                                    </q-btn>
+                                    
+                                    
+                                    <q-btn flat round icon="delete"
+                                        @click="ribbonEvent.RibbonFuncAnimation('delkeyframe')"
                                     >
-                                        <span class="text-dark">{{ item["text"] }}</span>
-                                    </div>
+                                        <q-tooltip>{{ $t('tl_utl_del1') }}</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
+                                        <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
+                                        <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
+                                    </q-btn>
+                                    
+        
+                                    
+                                    <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
+                                        <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
+                                    </q-btn-->
+                                    <!--q-input v-model.number="timelineData.elements.childKey.val" 
+                                        type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
+                                        @update:model-value="timelineEvent.OnChange_childKeyVal"
+                                    ></q-input-->
+                                    
+                                    <!--q-btn flat round icon="playlist_remove" 
+                                        :disable="timelineData.elements.childKey.disable_remove"
+                                        @click="timelineEvent.deleteChildKey_onclick"
+                                    >
+                                        <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
+                                    </q-btn-->
                                 </div>
-                                <!--<q-scroll-area style="width: 100%; height: 35px;"
-                                    ref="scr_header_width"
-                                >
-                                </q-scroll-area>-->
-                            </template>
-                        </div>
-                    </div>
-                    <div class="grid-oneline grid-mainarea" >
-                        <!-- timeline name(cast name) -->
-                        <div class="oneline-namebox" style="padding-bottom:0"
-                            ref="scroll_namebox_y"  
-                            @wheel="timelineEvent.namebox_onwheel"
-                            v-touch-pan.prevent.mouse="timelineEvent.timelinebox_onswipe"
-                        >
-                            <div v-for="(val) in timelineData.data.timelines" :key="val.roleName"
-                                class="namebox-child" :dataIndex="val.roleName" 
-                                @click="timelineEvent.namebox_onclick(val)" :class="val.selected"
-                                @click.right="timelineEvent.namebox_onrightclick(val)"
-                            >
+                                <div class="seekbar-currentframe">
+                                    <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
+                                </div>
+                                <div class="seekbar-seekbox q-pl-md q-pr-md">
+                                    
+                                    <div style="padding-top : 1.1rem;">
+                                        <q-slider
+                                            v-model.number="timelineData.elements.seekbar"
+                                            :min="1"
+                                            :max="mainData.data.project.timelineFrameLength"
+                                            :step="1" 
+                                            color="primary" 
+                                            @update:model-value="timelineEvent.seekbar_onchange"
+                                        ></q-slider>
+                                    </div>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="row" style="overflow:hidden;height:auto;">
+                                <div class="col-10">
+                                    <!--
+                                    <q-btn flat round icon="skip_previous" @click="timelineEvent.skip_previous_onclick">
+                                        <q-tooltip>{{ $t('tl_util_skip_prev') }}</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="skip_next" @click="timelineEvent.skip_next_onclick">
+                                        <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
+                                    </q-btn>
+                                    -->
+                                    <q-btn flat round icon="animation" @click="mainData.elements.posemotinopanel.show=true;">
+                                        <q-tooltip>Pose/Motion</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
+                                        <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="zoom_in" @click="timelineEvent.zoom_in_onclick">
+                                        <q-tooltip>{{ $t('tl_util_zoomin') }}</q-tooltip>
+                                    </q-btn>
+                                    <span class="seekbar-button-separator"></span>
+                                    <q-btn flat round icon="play_circle_filled" no-caps 
+                                            @click="ribbonEvent.RibbonFuncAnimation('playfirst')"
+                                    ></q-btn>
+                                    <q-btn flat round icon="stop" no-caps 
+                                        @click="ribbonEvent.RibbonFuncAnimation('stop')"
+                                    ></q-btn>
+        
+                                    <span class="seekbar-button-separator"></span>
+                                    <template v-if="mainData.appconf.confs.animation.recover_pose_whenselected == false">
+                                        <q-btn flat round icon="recent_actors" @click="timelineEvent.loadFrame_onclick">
+                                            <q-tooltip>{{ $t('tl_util_loadframe') }}</q-tooltip>
+                                        </q-btn>
+                                    </template>
+                                    <q-btn flat round icon="manage_accounts" @click="timelineEvent.openProperty_onclick">
+                                        <q-tooltip>{{ $t('tl_util_openproperty') }}</q-tooltip>
+                                    </q-btn>
+                                    
+                                    
+                                    <q-btn flat round icon="delete"
+                                        @click="ribbonEvent.RibbonFuncAnimation('delkeyframe')"
+                                    >
+                                        <q-tooltip>{{ $t('tl_utl_del1') }}</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="new_label" @click="timelineEvent.insertFrame_onclick">
+                                        <q-tooltip>{{ $t('tl_util_insfrm') }}</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round icon="backspace" @click="timelineEvent.deleteFrame_onclick">
+                                        <q-tooltip>{{ $t('tl_util_delfrm') }}</q-tooltip>
+                                    </q-btn>
+                                    
+        
+                                    
+                                    <!--q-btn flat round icon="playlist_add" @click="timelineEvent.addChildKey_onclick">
+                                        <q-tooltip>{{ $t('tl_util_addchildkey') }}</q-tooltip>
+                                    </q-btn-->
+                                    <!--q-input v-model.number="timelineData.elements.childKey.val" 
+                                        type="number" label="child key" dense :min="-1" :max="timelineData.elements.childKey.max" :step="1" 
+                                        @update:model-value="timelineEvent.OnChange_childKeyVal"
+                                    ></q-input-->
+                                    
+                                    <!--q-btn flat round icon="playlist_remove" 
+                                        :disable="timelineData.elements.childKey.disable_remove"
+                                        @click="timelineEvent.deleteChildKey_onclick"
+                                    >
+                                        <q-tooltip>{{ $t('tl_util_delchildkey') }}</q-tooltip>
+                                    </q-btn-->
+                                    
+                                </div>
+                                <div class="col-2">
+                                    <q-input type="number" v-model="ribbonData.elements.frame.current" :label="$t('current')" @update:model-value="ribbonEvent.setcurrentframe_onchange" dense filled :min="1" :max="99999" :step="1" readonly class="animtab-inputbox"></q-input>
+                                </div>
+                            </div>
+                            <div class="row common_ui_off">
                                 
-                                <q-btn flat round size="0.75rem" color="primary" :icon="val.readonlyIcon" 
-                                    class="btn-visibility"
-                                    @click.stop="timelineEvent.namebox_readonly_onclick(val)" 
-                                ></q-btn>
+                                <div class="col-8 q-pl-md q-pr-md">
+                                    
+                                    <div style="padding-top : 1.1rem;">
+                                        <q-slider 
+                                            v-model.number="timelineData.elements.seekbar"
+                                            :min="1"
+                                            :max="mainData.data.project.timelineFrameLength"
+                                            :step="1" 
+                                            color="primary" 
+                                            @update:model-value="timelineEvent.seekbar_onchange"
+                                        ></q-slider>
+                                    </div>
+                                    
+                                    
+                                </div>
                                 <!--
-                                <q-btn flat round size="0.75rem" color="primary" :icon="val.enableIcon" 
-                                    class="btn-visibility"
-                                    @click.stop="val.enabled=!val.enabled" 
-                                ></q-btn>
+                                <div class="oneline-dlgbox">
+                                    <q-btn flat round :icon="timelineData.elements.toggleIcon" @click="timelineEvent.panelToggleBtn_onclick">
+                                    </q-btn>
+                                </div>
                                 -->
-                                
-                                <img
-                                    :src="timelineEvent.chechAvatarThumbnail(val)"
-                                    :width="32" ratio="1/1" style="float:left;"
+                            </div>
+        
+                        </template>
+                    </div>
+                    <div class="vvtl-timeline" :style="timelineData.elements.timeline_styles" v-if="timelineData.elements.isExpand">
+                        <div class="grid-oneline grid-headerarea">
+                            <div class="oneline-namebox">
+                                <div class="namebox-child"></div>
+                            </div>
+                            <div class="oneline-timelinebox" ref="scroll_header_x" @scroll="timelineEvent.scroll_header_x_onscroll">
+                                <!-- frame number -->
+                                <template v-if="timelineData.data.headercounts != null">
+                                    <div class="timelinebox-content">
+                                        <div v-for="(item,index) in timelineData.data.headercounts" :key="index" 
+                                            class="frameheader"
+                                            :class="timelineEvent.judgeVClass(item,index)"
+                                            @click="timelineEvent.frameheaderNumber_onclick(item,index)"
+                                        >
+                                            <span class="text-dark">{{ item["text"] }}</span>
+                                        </div>
+                                    </div>
+                                    <!--<q-scroll-area style="width: 100%; height: 35px;"
+                                        ref="scr_header_width"
+                                    >
+                                    </q-scroll-area>-->
+                                </template>
+                            </div>
+                        </div>
+                        <div class="grid-oneline grid-mainarea" >
+                            <!-- timeline name(cast name) -->
+                            <div class="oneline-namebox" style="padding-bottom:0"
+                                ref="scroll_namebox_y"  
+                                @wheel="timelineEvent.namebox_onwheel"
+                                v-touch-pan.prevent.mouse="timelineEvent.timelinebox_onswipe"
+                            >
+                                <div v-for="(val) in timelineData.data.timelines" :key="val.roleName"
+                                    class="namebox-child" :dataIndex="val.roleName" 
+                                    @click="timelineEvent.namebox_onclick(val)" :class="val.selected"
+                                    @click.right="timelineEvent.namebox_onrightclick(val)"
                                 >
-                                <div v-text="timelineEvent.checkAvatarLabel(val)" style="height:35px;overflow:hidden;"></div>
-                                <q-tooltip :delay="500">
+                                    
+                                    <q-btn flat round size="0.75rem" color="primary" :icon="val.readonlyIcon" 
+                                        class="btn-visibility"
+                                        @click.stop="timelineEvent.namebox_readonly_onclick(val)" 
+                                    ></q-btn>
+                                    <!--
+                                    <q-btn flat round size="0.75rem" color="primary" :icon="val.enableIcon" 
+                                        class="btn-visibility"
+                                        @click.stop="val.enabled=!val.enabled" 
+                                    ></q-btn>
+                                    -->
+                                    
                                     <img
                                         :src="timelineEvent.chechAvatarThumbnail(val)"
-                                        :width="32" ratio="1/1" 
+                                        :width="32" ratio="1/1" style="float:left;"
                                     >
-                                    <span v-text="timelineEvent.checkAvatarLabel(val)"></span>
-                                </q-tooltip>
+                                    <div v-text="timelineEvent.checkAvatarLabel(val)" style="height:35px;overflow:hidden;"></div>
+                                    <q-tooltip :delay="500">
+                                        <img
+                                            :src="timelineEvent.chechAvatarThumbnail(val)"
+                                            :width="32" ratio="1/1" 
+                                        >
+                                        <span v-text="timelineEvent.checkAvatarLabel(val)"></span>
+                                    </q-tooltip>
+                                </div>
+                                
+                                <!--<q-scroll-area style="width: 100%; height: 100%;"
+                                    ref="scr_main_name_height"
+                                >
+                                </q-scroll-area>-->
+                                <q-menu v-model="timelineData.elements.menu" context-menu>
+                                    <q-list>
+                                        <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                            clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
+                                            :disable="ribbonEvent.chk_enableKeyframeButton"
+                                        >
+                                            <q-item-section avatar>
+                                                <q-icon name="restart_alt"></q-icon>
+                                            </q-item-section>
+                                            <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
+                                        </q-item>                                    
+                                        <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                            clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
+                                            <q-item-section avatar>
+                                                <q-icon name="filter_center_focus"></q-icon>
+                                            </q-item-section>
+                                            <q-item-section v-text="$t('objlistmenu_centerfocus')"></q-item-section>
+                                        </q-item>
+                                        <q-separator></q-separator>
+                                        <q-item v-show="timelineEvent.checkContextMenu3DModel"
+                                            clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
+                                            <q-item-section avatar>
+                                                <q-icon name="info"></q-icon>
+                                            </q-item-section>
+                                            <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
+                                        </q-item>
+                                        <template v-if="timelineEvent.checkContextMenu4Camera">
+                                            <q-separator></q-separator>
+                                            <q-item clickable v-close-popup dense>
+                                                <q-item-section side top>
+                                                    <q-checkbox v-model="objpropData.elements.cameraui.previewBtnEnabled"
+                                                        @update:model-value="objpropEvent.cameraPreviewModelValue"
+                                                    ></q-checkbox>
+                                                </q-item-section>
+                                                <q-item-section v-text="$t('preview')"></q-item-section>
+                                            </q-item>
+                                        </template>
+                                    </q-list>
+                                </q-menu>
                             </div>
                             
-                            <!--<q-scroll-area style="width: 100%; height: 100%;"
-                                ref="scr_main_name_height"
+                            <div class="oneline-timelinebox" style="overflow-x:auto;" 
+                                ref="scroll_keyframe_xy" 
+                                
+                                @wheel="timelineEvent.timelinebox_onwheel"
+                                v-touch-pan.prevent.mouse="timelineEvent.timelinebox_onswipe"
                             >
-                            </q-scroll-area>-->
-                            <q-menu v-model="timelineData.elements.menu" context-menu>
-                                <q-list>
-                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                        clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
-                                        :disable="ribbonEvent.chk_enableKeyframeButton"
-                                    >
-                                        <q-item-section avatar>
-                                            <q-icon name="restart_alt"></q-icon>
-                                        </q-item-section>
-                                        <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
-                                    </q-item>                                    
-                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                        clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
-                                        <q-item-section avatar>
-                                            <q-icon name="filter_center_focus"></q-icon>
-                                        </q-item-section>
-                                        <q-item-section v-text="$t('objlistmenu_centerfocus')"></q-item-section>
-                                    </q-item>
-                                    <q-separator></q-separator>
-                                    <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                        clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
-                                        <q-item-section avatar>
-                                            <q-icon name="info"></q-icon>
-                                        </q-item-section>
-                                        <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
-                                    </q-item>
-                                    <template v-if="timelineEvent.checkContextMenu4Camera">
-                                        <q-separator></q-separator>
-                                        <q-item clickable v-close-popup dense>
-                                            <q-item-section side top>
-                                                <q-checkbox v-model="objpropData.elements.cameraui.previewBtnEnabled"
-                                                    @update:model-value="objpropEvent.cameraPreviewModelValue"
-                                                ></q-checkbox>
-                                            </q-item-section>
-                                            <q-item-section v-text="$t('preview')"></q-item-section>
-                                        </q-item>
-                                    </template>
-                                </q-list>
-                            </q-menu>
-                        </div>
-                        
-                        <div class="oneline-timelinebox" style="overflow-x:auto;" 
-                            ref="scroll_keyframe_xy" 
-                            
-                            @wheel="timelineEvent.timelinebox_onwheel"
-                            v-touch-pan.prevent.mouse="timelineEvent.timelinebox_onswipe"
-                        >
-                            <!-- timeline key frames 
-                                @scroll="timelineEvent.scroll_keyframe_xy_onscroll" 
-                            -->
-                            <div v-for="(item) in timelineData.data.timelines" :key="item.roleName"
-                                 :dataIndex="item.roleName" :class="item.selected"
-                            >
-                                <div v-for="(frameitem, frameindex) in timelineData.data.headercounts" :key="frameindex"
-                                    class="framecell" :dataFrameIndex="frameindex"
-                                    :class="timelineEvent.judgeVClass(frameitem,frameindex)"
+                                <!-- timeline key frames 
+                                    @scroll="timelineEvent.scroll_keyframe_xy_onscroll" 
+                                -->
+                                <div v-for="(item) in timelineData.data.timelines" :key="item.roleName"
+                                    :dataIndex="item.roleName" :class="item.selected"
                                 >
-                                    <template v-if="timelineEvent.existsKeyFrame(item,frameindex+1)">
-                                        <div class="framekey-box" :style="timelineEvent.judgeKeyBoxColoring(item,frameindex+1)" :currentFrameIndex="frameindex+1"
-                                            @click="timelineEvent.keyframebox_onclick(item, frameitem)"
-                                            @dblclick="timelineEvent.keyframebox_ondblclick(item, frameitem)"
-                                            @pointerenter="timelineEvent.keyframebox_popuptip(item, frameitem)"
-                                        ><b>{{ timelineEvent.keyframeHasTranslateCount(item, frameitem) }}</b>
-                                            <q-tooltip anchor="top middle" self="bottom left" class="bg-secondary text-dark text-body1">
-                                                [<b style="font-size:12pt">{{ (frameindex+1) }}</b>] :
-                                                <b style="font-size:12pt">{{ timelineData.states.popup.time.current }}</b>/
-                                                <b>{{ timelineData.states.popup.time.whole }}</b>: 
-                                                <strong class="q-ml-md">{{ timelineData.states.popup.memo }}</strong><br>
-                                                <br>
-                                                <span>{{ $t("duration") }}: {{ timelineData.states.popup.duration }}</span><br>
-                                                <span>{{ $t("easing") }}: {{ timelineData.states.popup.easing }}</span><br>
-                                                <span>{{ $t("contents_to_register") }} /IK-Marker :</span>
-                                                <template v-for="ico in timelineData.states.popup.ikmarkers">
-                                                    <template v-if="ico != ''">
-                                                        <template v-if="ico == 'props'">
-                                                            <q-icon name="manage_accounts" class="q-pb-md" style="font-size:32px;"></q-icon>
+                                    <div v-for="(frameitem, frameindex) in timelineData.data.headercounts" :key="frameindex"
+                                        class="framecell" :dataFrameIndex="frameindex"
+                                        :class="timelineEvent.judgeVClass(frameitem,frameindex)"
+                                    >
+                                        <template v-if="timelineEvent.existsKeyFrame(item,frameindex+1)">
+                                            <div class="framekey-box" :style="timelineEvent.judgeKeyBoxColoring(item,frameindex+1)" :currentFrameIndex="frameindex+1"
+                                                @click="timelineEvent.keyframebox_onclick(item, frameitem)"
+                                                @dblclick="timelineEvent.keyframebox_ondblclick(item, frameitem)"
+                                                @pointerenter="timelineEvent.keyframebox_popuptip(item, frameitem)"
+                                            ><b>{{ timelineEvent.keyframeHasTranslateCount(item, frameitem) }}</b>
+                                                <q-tooltip anchor="top middle" self="bottom left" class="bg-secondary text-dark text-body1">
+                                                    [<b style="font-size:12pt">{{ (frameindex+1) }}</b>] :
+                                                    <b style="font-size:12pt">{{ timelineData.states.popup.time.current }}</b>/
+                                                    <b>{{ timelineData.states.popup.time.whole }}</b>: 
+                                                    <strong class="q-ml-md">{{ timelineData.states.popup.memo }}</strong><br>
+                                                    <br>
+                                                    <span>{{ $t("duration") }}: {{ timelineData.states.popup.duration }}</span><br>
+                                                    <span>{{ $t("easing") }}: {{ timelineData.states.popup.easing }}</span><br>
+                                                    <span>{{ $t("contents_to_register") }} /IK-Marker :</span>
+                                                    <template v-for="ico in timelineData.states.popup.ikmarkers">
+                                                        <template v-if="ico != ''">
+                                                            <template v-if="ico == 'props'">
+                                                                <q-icon name="manage_accounts" class="q-pb-md" style="font-size:32px;"></q-icon>
+                                                            </template>
+                                                            <template v-else>
+                                                                <img :src="'static/img/vvmico_bn_' + ico +'.png'" width="24" height="24" style="margin-left:3px;margin-right:3px;">
+                                                            </template>
+                                                            
                                                         </template>
-                                                        <template v-else>
-                                                            <img :src="'static/img/vvmico_bn_' + ico +'.png'" width="24" height="24" style="margin-left:3px;margin-right:3px;">
-                                                        </template>
-                                                        
                                                     </template>
-                                                </template>
-                                                <!--<div class="tlkeyframe-popup-ikmarker" v-html="timelineData.states.popup.ikmarkers"></div>-->
-                                            </q-tooltip>
+                                                    <!--<div class="tlkeyframe-popup-ikmarker" v-html="timelineData.states.popup.ikmarkers"></div>-->
+                                                </q-tooltip>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <!--<q-scroll-area style="width: 100%; height: 100%;">
+                                </q-scroll-area>-->
+                            </div>
+                            <div class="grid-scrollbary" ref="grid_scrolly" @scroll="timelineEvent.gridscrolly_onscroll">
+                                <div class="scroll-content">
+                                    <div v-for="(item) in timelineData.data.timelines" :key="item.roleName" style="visibility:hidden"> [&nbsp;]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-oneline grid-scrollarea">
+                            
+                            <div class="grid-scrollbarx scroll-on common_ui_off" ref="grid_scrollx" @scroll="timelineEvent.gridscrollx_onscroll">
+                                <div class="scroll-content">
+                                    <template v-if="timelineData.data.headercounts != null">
+                                        <div v-for="(item,index) in timelineData.data.headercounts" :key="index" 
+                                            class="frameheader"
+                                            :class="timelineEvent.judgeVClass(item,index)"
+                                        >
+                                            <span>{{ item["text"] }}</span>
                                         </div>
                                     </template>
                                 </div>
                             </div>
-                            <!--<q-scroll-area style="width: 100%; height: 100%;">
-                            </q-scroll-area>-->
-                        </div>
-                        <div class="grid-scrollbary" ref="grid_scrolly" @scroll="timelineEvent.gridscrolly_onscroll">
-                            <div class="scroll-content">
-                                <div v-for="(item) in timelineData.data.timelines" :key="item.roleName" style="visibility:hidden"> [&nbsp;]</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="grid-oneline grid-scrollarea">
-                        
-                        <div class="grid-scrollbarx scroll-on common_ui_off" ref="grid_scrollx" @scroll="timelineEvent.gridscrollx_onscroll">
-                            <div class="scroll-content">
-                                <template v-if="timelineData.data.headercounts != null">
-                                    <div v-for="(item,index) in timelineData.data.headercounts" :key="index" 
-                                        class="frameheader"
-                                        :class="timelineEvent.judgeVClass(item,index)"
-                                    >
-                                        <span>{{ item["text"] }}</span>
-                                    </div>
-                                </template>
-                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </q-card>
         </div>
 <!--[] Dialog etc  ================================================================================= -->

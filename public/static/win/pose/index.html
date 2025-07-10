@@ -201,60 +201,74 @@
                                             </q-card-section>
                                         </template>
                                         <template v-else-if="poseapp.states.item_mode == 'motion'">
+                                            <q-card-section class="q-pa-xs">
+                                                <div class="text-h5">{{ item.name}}</div>
+                                            </q-card-section>
+                                            <q-card-section horizontal>
+                                                <q-img :src="item.thumbnail" style="height:128px;max-width:150px;" :alt="item.name"></q-img>
+                                                <q-card-section>
+                                                    <div class="row">
+                                                        <div class="col-6 offset-1">
+                                                            <b>{{ _T("type") }}:</b>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            {{ targetTypeName(item.type) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6 offset-1">
+                                                            <b>{{ _T("fileformatver") }}:</b>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            {{ item.version }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" v-if="item.type == 0">
+                                                        <div class="col-6 offset-1">
+                                                            <b>{{ _T("Recommended height") }}:</b>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            {{ item.height }} m
+                                                        </div>
+                                                    </div>
+                                                    <div class="row q-mt-sm">
+                                                        <div class="col-12">
+                                                            <b>{{ _T("frameinfo") }}</b>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <b>{{ _T("framecount") }}</b>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <b>{{ _T("framestart") }}</b>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <b>{{ _T("frameend") }}</b>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-4">
+                                                            {{ item.frameCount }}
+                                                        </div>
+                                                        <div class="col-4">
+                                                            {{ item.startFrame }}
+                                                        </div>
+                                                        <div class="col-4">
+                                                            {{ item.endFrame }}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </q-card-section>
+                                                
+                                            </q-card-section>
+                                            <!-- old 
                                             <q-card-section>
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <b class="text-h5">{{ item.name}}</b>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-6 offset-1">
-                                                        <b>{{ _T("obj_kind") }}:</b>
-                                                    </div>
-                                                    <div class="col-5">
-                                                        {{ targetTypeName(item.type) }}
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-6 offset-1">
-                                                        <b>{{ _T("fileformatver") }}:</b>
-                                                    </div>
-                                                    <div class="col-5">
-                                                        {{ item.version }}
-                                                    </div>
-                                                </div>
-                                                <div class="row" v-if="item.type == 0">
-                                                    <div class="col-6 offset-1">
-                                                        <b>{{ _T("Recommended height") }}:</b>
-                                                    </div>
-                                                    <div class="col-5">
-                                                        {{ item.height }} cm
-                                                    </div>
-                                                </div>
-                                                <div class="row q-mt-sm">
-
-                                                    <div class="col-4">
-                                                        <b>{{ _T("framecount") }}</b>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <b>{{ _T("target_begin_frame") }}</b>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <b>{{ _T("target_end_frame") }}</b>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-4">
-                                                        {{ item.frameCount }}
-                                                    </div>
-                                                    <div class="col-4">
-                                                        {{ item.startFrame }}
-                                                    </div>
-                                                    <div class="col-4">
-                                                        {{ item.endFrame }}
-                                                    </div>
-                                                </div>
-                                            </q-card-section>
+                                                
+                                            </q-card-section>-->
                                         </template>
                                         
                                         
