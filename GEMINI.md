@@ -68,11 +68,12 @@
 
 #### 共通
 
-1. `npm run prepare1:sh`: zipファイルをダウンロードする。
-2. `npm run prepare2:sh`: zipファイルを展開し、各フォルダにコピーして貼り付ける。
-3. `npm run fullbuild`: webpackとworkbox両方実行する
-4. `npm run compile:electron`: HTMLファイルを編集した場合はこれも実行する
-5. `npm run electron`: Electronの起動。目視や手作業で更新を確認する。
+1. `chmod u+x z_mng/*.sh`: 管理系のシェルに実行権限を付与する。
+2. `npm run prepare1:sh`: zipファイルをダウンロードする。
+3. `npm run prepare2:sh`: zipファイルを展開し、各フォルダにコピーして貼り付ける。
+4. `npm run fullbuild`: webpackとworkbox両方実行する
+5. `npm run compile:electron`: HTMLファイルを編集した場合はこれも実行する
+6. `npm run electron`: Electronの起動。目視や手作業で更新を確認する。
 
 #### mac版
 
