@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>MediaPipe Pose Window</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <video class="input_video" style="display: none;"></video>
+    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+  </div>
+  <div class="control-panel">
+    <div class="mdc-select mdc-select--filled">
+      <!-- ... (select contents are unchanged) ... -->
+      <div class="mdc-select__anchor" role="button" aria-haspopup="listbox" aria-expanded="false"
+        aria-labelledby="camera-label">
+        <span class="mdc-select__ripple"></span>
+        <span id="camera-label" class="mdc-floating-label">Camera</span>
+        <span class="mdc-select__selected-text-container">
+          <span class="mdc-select__selected-text"></span>
+        </span>
+        <span class="mdc-select__dropdown-icon">
+          <svg class="mdc-select__dropdown-icon-graphic" viewBox="7 10 10 5" focusable="false">
+            <polygon class="mdc-select__dropdown-icon-inactive" stroke="none" fill-rule="evenodd"
+              points="7 10 12 15 17 10"></polygon>
+            <polygon class="mdc-select__dropdown-icon-active" stroke="none" fill-rule="evenodd"
+              points="7 15 12 10 17 15"></polygon>
+          </svg>
+        </span>
+        <span class="mdc-line-ripple"></span>
+      </div>
+      <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
+        <ul class="mdc-list" id="camera-select-list" role="listbox">
+        </ul>
+      </div>
+    </div>
+    <!-- Camera Toggle Button -->
+    <button class="mdc-button mdc-button--raised" id="toggle-camera-button">
+      <span class="mdc-button__ripple"></span>
+      <i class="material-icons mdc-button__icon" aria-hidden="true">play_arrow</i>
+      <span class="mdc-button__label">START CAMERA</span>
+    </button>
+    <!-- Shutter Button -->
+    <button class="mdc-button mdc-button--raised" id="shutter-button">
+      <span class="mdc-button__ripple"></span>
+      <i class="material-icons mdc-button__icon" aria-hidden="true">camera</i>
+      <span class="mdc-button__label">Shutter</span>
+    </button>
+    <!-- Auto play Button -->
+    <button class="mdc-button mdc-button--raised" id="autoplay-button">
+      <span class="mdc-button__ripple"></span>
+      <i class="material-icons mdc-button__icon" aria-hidden="true">video_camera_front</i>
+      <span class="mdc-button__label">Auto</span>
+    </button>
+  </div>
+
+  <audio src="../../res/aud01_capture.mp3" id="aud01_capture" class="common_ui_off"></audio>
+  <script src="../../js/util.js"></script>
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+  <script src="script.js" type="module"></script>
+</body>
+
+</html>

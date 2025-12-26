@@ -403,7 +403,7 @@ export class appDataObjectProp {
                 dlight_rotation : {x:0, y:0, z:0},
                 dlight_power : 1,
                 dlight_strength : 0.27,
-                dlight_color : "#808080FF",
+                dlight_color : "#aaaaaaff",
                 dlight_halo : 0.0,
                 dlight_flare_type : {
                     selected : template.tmplightflaretype[1],

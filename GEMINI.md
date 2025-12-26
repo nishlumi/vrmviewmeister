@@ -31,6 +31,14 @@
   - `src/lib/`: サードパーティのライブラリが含まれています。
   - `src/locales/`: 国際化（i18n）のための言語ファイルが格納されています。
   - `src/res/`: アプリケーション定数など、静的なリソースファイルが含まれています。
+  - `public/static/`: アプリケーションの静的ファイルが含まれます。
+      - `css/`: アプリケーション全体のスタイルシートや、特定のUIコンポーネントのスタイルを定義します。
+      - `img/`: アイコン、ボタン、背景画像など、UIで使用される画像ファイルが格納されています。
+      - `js/`: 各種ダイアログやUIパーツなど、クライアントサイドのJavaScriptロジックが含まれています。
+      - `lib/`: Vue, Quasar, three.js といった、サードパーティ製のライブラリが格納されています。
+      - `locales/`: サポートする各言語の翻訳ファイル（i18n）が格納されています。
+      - `res/`: アプリケーションで利用する定数や設定などの静的なリソースファイルが格納されています。
+      - `win/`: Electronのウィンドウ（ダイアログ）として表示されるHTMLファイルや、それに関連するJavaScriptファイルが格納されています。
 
 
 ## 各種作業概要
@@ -87,4 +95,53 @@
 
 AzureDevOpsのリポジトリにコミット後、Pushする。（安全性を考慮し、アプリ自体のビルドとは別作業）
 
+
+## 個別の機能
+
+### VRMViewMeisterのIKのボーンの順番
+
+|index|bone name|
+|-|-|
+|0 | IKParent|
+|1 | EyeViewHandle|
+|2 |Head|
+|3 |LookAt|
+|4 |Aim|
+|5 |Chest|
+|6 |Pelvis|
+|7 |LeftShoulder|
+|8 |LeftLowerArm|
+|9 |LeftHand|
+|10 |RightShoulder|
+|11 |RightLowerArm|
+|12 |RightHand|
+|13 |LeftLowerLeg|
+|14 |LeftLeg|
+|15 |RightLowerLeg|
+|16 |RightLeg|
+|17 | |
+|18 | |
+|19 | |
+|20 |LeftToes|
+|21 |RightToes|
+
+### MediaPipe
+
+MediaPipeにより、カメラからリアルタイムでポーズ情報を取得している。
+そのポーズデータを所定の形式にして、Unityに受け渡してVRMViewMeisterで使用しているポーズ情報に変換して反映している。
+
+#### MediaPipeが返すポーズ情報
+
+```
+{
+    poseLandmarks : [
+        {x: 0.700, y: 0.444, z: -1.36, visibility: 0.99},
+        ...
+    ],
+    poseWorldLandmarks : [
+        {x: 0.700, y: 0.444, z: -1.36, visibility: 0.99},
+        ...
+    ]
+}
+```
 

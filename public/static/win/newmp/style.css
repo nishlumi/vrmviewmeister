@@ -1,0 +1,76 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #121212;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.output_canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Updated Control Panel Style --- */
+.control-panel {
+  position: absolute;
+  bottom: 20px; /* Position from the bottom */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%);
+  z-index: 10;
+
+  /* Flexbox for responsive layout */
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line on small screens */
+  justify-content: center; /* Center items horizontally */
+  align-items: center;
+  gap: 16px; /* Spacing between controls */
+
+  /* Styling for the panel itself */
+  max-width: 95%;
+  padding: 12px;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Add a subtle shadow */
+}
+
+/* Style adjustments for Material Components */
+.mdc-select--filled {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mdc-select .mdc-floating-label,
+.mdc-select .mdc-select__selected-text,
+.mdc-select .mdc-select__dropdown-icon {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+.mdc-list-item .mdc-list-item__text {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.mdc-select .mdc-line-ripple::before,
+.mdc-select .mdc-line-ripple::after {
+  border-bottom-color: rgba(255, 255, 255, 0.42);
+}
+
+.mdc-button--raised {
+    /* Default button color will be the start color */
+    background-color: #4CAF50; /* Green for Start */
+}
+
+.button-start {
+    background-color: #f44336 !important; /* Red for Stop/Active */
+}
+
+.button-stop {
+    background-color: #4CAF50 !important; /* Green for Start/Inactive */
+}

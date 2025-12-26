@@ -300,6 +300,12 @@ ID("btn_rec").addEventListener("click",(evt)=>{
     }else{
         ID("btn_rec").querySelector("i").innerHTML = "video_camera_front";
     }
+    var js = new ChildReturner();
+    js.origin = location.origin;
+    js.windowName = "mediapipe";
+    js.funcName = "autoprepare_pose";
+    js.data = JSON.stringify({flag:mediaapp.states.is_recording});
+    opener.postMessage(js);
     
 });
 

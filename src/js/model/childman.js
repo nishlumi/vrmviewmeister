@@ -1,4 +1,4 @@
-import { AF_TARGETTYPE, AF_MOVETYPE, CNS_BODYBONES, IKBoneType, INTERNAL_FILE, FILEEXTENSION_ANIMATION} from "../../res/appconst.js"
+import { AF_TARGETTYPE, AF_MOVETYPE, CNS_BODYBONES, IKBoneType, INTERNAL_FILE, FILEEXTENSION_ANIMATION } from "../../res/appconst.js"
 import { appModelOperator } from "./operator";
 import { AnimationParsingOptions, AnimationRegisterOptions, BvhData, BvhNode, UnityVector3 } from "../prop/cls_unityrel.js";
 import { ChildReturner } from "../../../public/static/js/cls_childreturner.js";
@@ -19,7 +19,7 @@ export class ChildManager {
         this.mainData = mainData;
         this.UnityCallback = unitycallback;
 
-        const { t   } = VueI18n.useI18n({ useScope: 'global' });
+        const { t } = VueI18n.useI18n({ useScope: 'global' });
         this._t = t;
 
     }
@@ -38,60 +38,63 @@ export class ChildManager {
             if (data.funcName == "apply_pose") {
                 var js = JSON.parse(data.data);
                 this.returnPoseDialogValue(js);
-            }else if (data.funcName == "apply_motion") {
+            } else if (data.funcName == "apply_motion") {
                 var js = JSON.parse(data.data);
                 this.returnMotionDialogValue(js);
-            }else if (data.funcName == "savebvhmotion") {
+            } else if (data.funcName == "savebvhmotion") {
                 var js = JSON.parse(data.data);
                 this.saveBVHMotion(js);
-            }else if (data.funcName == "saveanimmotion") {
+            } else if (data.funcName == "saveanimmotion") {
                 var js = JSON.parse(data.data);
                 this.saveAnimMotion(js);
-            }else if (data.funcName == "savevrmamotion") {
+            } else if (data.funcName == "savevrmamotion") {
                 var js = JSON.parse(data.data);
                 this.saveVRMAMotion(js);
             }
-        }else if (data.windowName == "mediapipe") {
+        } else if (data.windowName == "mediapipe") {
             if (data.funcName == "apply_pose") {
                 var js = JSON.parse(data.data);
                 this.returnMediaPipePose(js);
-            }else if (data.funcName == "autoapply_pose") {
+            } else if (data.funcName == "autoapply_pose") {
                 var js = JSON.parse(data.data);
                 this.autoApplyMediaPipe(js);
+            } else if (data.funcName == "autoprepare_pose") {
+                var js = JSON.parse(data.data);
+                this.autoPrepareMediaPipe(js);
             }
-        }else if (data.windowName == "bonetransform") {
+        } else if (data.windowName == "bonetransform") {
             if (data.funcName == "apply_pose") {
                 var js = JSON.parse(data.data);
                 this.returnBoneTransformApply(js);
-            }else if (data.funcName == "call_getikvalue") {
+            } else if (data.funcName == "call_getikvalue") {
                 var js = JSON.parse(data.data);
                 this.returnBoneTransformReloadBtn(js);
             }
-        }else if (data.windowName == "keyframe") {
+        } else if (data.windowName == "keyframe") {
             var js = JSON.parse(data.data);
-            this.keyframeFiltering(data.funcName,js);
-        }else if (data.windowName == "gravitybone") {
+            this.keyframeFiltering(data.funcName, js);
+        } else if (data.windowName == "gravitybone") {
             if (data.funcName == "on_afterchange") {
                 var js = JSON.parse(data.data);
                 this.gravitybone_on_afterchange(js);
-            }else if (data.funcName == "reload_onclick") {
+            } else if (data.funcName == "reload_onclick") {
                 var js = JSON.parse(data.data);
                 this.gravitybone_reload_onclick(js);
             }
-        }else if (data.windowName == "transref") {
+        } else if (data.windowName == "transref") {
             var js = JSON.parse(data.data);
             if (data.funcName == "call_setpositionikmarker") {
                 this.transref_position_onchange(js);
-            }else if (data.funcName == "call_setrotationikmarker") {
+            } else if (data.funcName == "call_setrotationikmarker") {
                 this.transref_rotation_onchange(js);
             }
-        }else if (data.windowName == "easyik") {
+        } else if (data.windowName == "easyik") {
             var js = JSON.parse(data.data);
             if (data.funcName == "easyik_apply_curpose") {
                 this.easyik_apply_onclick_curpose(js);
-            }else if (data.funcName == "easyik_apply_apply") {
+            } else if (data.funcName == "easyik_apply_apply") {
                 this.easyik_apply_onclick_applybody(js);
-            }else if (data.funcName == "easyik_reload_onclick") {
+            } else if (data.funcName == "easyik_reload_onclick") {
                 this.easyik_reload_onclick(js);
             }
         }
@@ -110,17 +113,17 @@ export class ChildManager {
         }
         if (!this.mainData.appconf.confs.model.apply_pose_global_position) {
             //---apply global position of pose data or not apply
-            for (var i = pose.frameData.frames[0].movingData.length-1; i >= 0; i--) {
+            for (var i = pose.frameData.frames[0].movingData.length - 1; i >= 0; i--) {
                 var ln = pose.frameData.frames[0].movingData[i];
                 var arr = ln.split(",");
                 if (arr[0] == "0") {
-                    pose.frameData.frames[0].movingData.splice(i,1);
+                    pose.frameData.frames[0].movingData.splice(i, 1);
                 }
             }
         }
         AppQueue.add(new queueData(
-            {target:this.mainData.states.selectedAvatar.id,method:'AnimateAvatarTransform',param:JSON.stringify(pose)},
-            "",QD_INOUT.toUNITY,
+            { target: this.mainData.states.selectedAvatar.id, method: 'AnimateAvatarTransform', param: JSON.stringify(pose) },
+            "", QD_INOUT.toUNITY,
             null
         ));
         AppQueue.start();
@@ -141,22 +144,22 @@ export class ChildManager {
 
         //---Firstly, set target.
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'SetLoadTargetSingleMotion',param:tmpcast.roleName},
-            "",QD_INOUT.toUNITY,
+            { target: AppQueue.unity.ManageAnimation, method: 'SetLoadTargetSingleMotion', param: tmpcast.roleName },
+            "", QD_INOUT.toUNITY,
             null
         ));
         //---Second load a motion data.
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'LoadSingleMotionDirect',param:motiondata},
-            "openmotionresult",QD_INOUT.returnJS,
+            { target: AppQueue.unity.ManageAnimation, method: 'LoadSingleMotionDirect', param: motiondata },
+            "openmotionresult", QD_INOUT.returnJS,
             this.UnityCallback.openmotionresult,
-            {callback:this.UnityCallback}
+            { callback: this.UnityCallback }
         ));
         {
             var param = new AnimationParsingOptions();
             param.index = 1;
             param.isCameraPreviewing = 0;
-            
+
             param.isExecuteForDOTween = 1;
             param.targetRole = tmpcast.roleName;
             param.targetType = tmpcast.type.toString();
@@ -164,15 +167,15 @@ export class ChildManager {
             var js = JSON.stringify(param);
 
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'PreviewSingleFrame',param:js},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.ManageAnimation, method: 'PreviewSingleFrame', param: js },
+                "", QD_INOUT.toUNITY,
                 null
             ));
         }
         AppQueue.start();
         this.mainData.states.currentEditOperationCount++;
     }
-    saveBVHMotion (data) {
+    saveBVHMotion(data) {
         if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
             appAlert(t("msg_error_mediapipe1"));
             return;
@@ -182,14 +185,14 @@ export class ChildManager {
         var param = tmpcast.roleName + "," + tmpcast.type + ",m";
         //AppQueue.unity.ManageAnimation
         AppQueue.add(new queueData(
-            {target:tmpcast.avatar.id,method:'ExportRecordedBVH'},
-            "savebvhmotion",QD_INOUT.returnJS,
+            { target: tmpcast.avatar.id, method: 'ExportRecordedBVH' },
+            "savebvhmotion", QD_INOUT.returnJS,
             this.UnityCallback.savebvhmotion,
-            {callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle}
+            { callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle }
         ));
         AppQueue.start();
     }
-    saveAnimMotion (data) {
+    saveAnimMotion(data) {
         if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
             appAlert(t("msg_error_mediapipe1"));
             return;
@@ -198,14 +201,14 @@ export class ChildManager {
         var param = tmpcast.roleName + "," + tmpcast.type + ",m";
         //AppQueue.unity.ManageAnimation
         AppQueue.add(new queueData(
-            {target:tmpcast.avatar.id,method:'GenerateAnimationCurve'},
-            "savebvhmotion",QD_INOUT.returnJS,
+            { target: tmpcast.avatar.id, method: 'GenerateAnimationCurve' },
+            "savebvhmotion", QD_INOUT.returnJS,
             this.UnityCallback.saveanimmotion,
-            {callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle}
+            { callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle }
         ));
         AppQueue.start();
     }
-    saveVRMAMotion (data) {
+    saveVRMAMotion(data) {
         if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
             appAlert(t("msg_error_mediapipe1"));
             return;
@@ -214,27 +217,72 @@ export class ChildManager {
         var param = tmpcast.roleName + "," + tmpcast.type + ",m";
         //AppQueue.unity.ManageAnimation
         AppQueue.add(new queueData(
-            {target:tmpcast.avatar.id,method:'ExportVRMA'},
-            "savebvhmotion",QD_INOUT.returnJS,
+            { target: tmpcast.avatar.id, method: 'ExportVRMA' },
+            "savebvhmotion", QD_INOUT.returnJS,
             this.UnityCallback.savevrmamotion,
-            {callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle}
+            { callback: this.UnityCallback, selRoleTitle: tmpcast.roleTitle }
         ));
         AppQueue.start();
     }
     //----------------------------------------------------------------------------------------------------
     // Mediapipe window
     //----------------------------------------------------------------------------------------------------
-    returnMediaPipePose (pose) {
+    returnMediaPipePose(pose) {
         if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) {
             appAlert(t("msg_error_mediapipe1"));
             return;
         }
-        AppQueue.add(new queueData(
+        /*AppQueue.add(new queueData(
             {target:this.mainData.states.selectedAvatar.id,method:'GetIKTransformAll'},
             "saveTPoseInfo",QD_INOUT.returnJS,
             this.UnityCallback.saveTPoseInfo,
             {pose : pose, callback : this.UnityCallback}
         ));
+        AppQueue.start();*/
+        //---natural rotation on/off
+        for (let obj of ["leftarm", "rightarm", "leftleg", "rightleg"]) {
+            AppQueue.add(new queueData(
+                { target: this.mainData.states.selectedAvatar.id, method: 'ApplyRotationHuman2IK', param: obj },
+                "", QD_INOUT.toUNITY,
+                null
+            ));
+        }
+        let poseland = pose.poseWorldLandmarks;
+        let unitylist = [];
+        poseland.forEach((item, index, arr) => {
+            unitylist.push({
+                ikname: index.toString(),
+                position: new UnityVector3(item.x, item.y, item.z),
+                rotation: new UnityVector3(0, 0, 0),
+                visibility: item.visibility
+            });
+        });
+        //---end---
+        let param = JSON.stringify({
+            list: unitylist
+        });
+
+
+        //AppQueue.canvas.SendMessage(AppQueue.unity.ManageAnimation, "SetBoneLimited", 0);
+        //AppQueue.canvas.SendMessage(this.mainData.states.selectedAvatar.id, "SetIKTransformAll2", param);
+        //AppQueue.canvas.SendMessage(AppQueue.unity.ManageAnimation, "SetBoneLimited", 1);
+        AppQueue.add(new queueData(
+            { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 0 },
+            "", QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            { target: this.mainData.states.selectedAvatar.id, method: 'SetIKTransformAll2', param: param },
+            "", QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 1 },
+            "", QD_INOUT.toUNITY,
+            null
+        ));
+
+
         AppQueue.start();
     }
     applyMediaPipe(pose) {
@@ -248,23 +296,23 @@ export class ChildManager {
             var dir = 0;
             if (le2 > ri2) {
                 dir = -1;
-            }else{
+            } else {
                 dir = 1;
             }
             return calc * dir;
         }
 
-        var height = parseFloat(this.mainData.states.selectedAvatar.height.replace("cm","").trim());
-        var pelvisY = !this.mainData.states.selectedAvatar.TPoseInfo ? 
-            parseFloat((height/100.0) * 0.55) 
+        var height = parseFloat(this.mainData.states.selectedAvatar.height.replace("cm", "").trim());
+        var pelvisY = !this.mainData.states.selectedAvatar.TPoseInfo ?
+            parseFloat((height / 100.0) * 0.55)
             : parseFloat(this.mainData.states.selectedAvatar.TPoseInfo.list[6].position.y);
-            //: parseFloat(this.states.selectedAvatar.TPoseInfo.y);
+        //: parseFloat(this.states.selectedAvatar.TPoseInfo.y);
         var posx = 1; var posy = 2; var posz = 3; var rotx = 4; var roty = 5; var rotz = 6;
         var pelvis = 6;
-        var leftshoulder = IKBoneType.LeftShoulder; var rightshoulder = IKBoneType.RightShoulder; 
-        var leftlowerarm = IKBoneType.LeftLowerArm; var rightlowerarm = IKBoneType.RightLowerArm; 
+        var leftshoulder = IKBoneType.LeftShoulder; var rightshoulder = IKBoneType.RightShoulder;
+        var leftlowerarm = IKBoneType.LeftLowerArm; var rightlowerarm = IKBoneType.RightLowerArm;
         var lefthand = IKBoneType.LeftHand; var righthand = IKBoneType.RightHand;
-        var leftlowerleg = IKBoneType.LeftLowerLeg; var rightlowerleg = IKBoneType.RightLowerLeg; 
+        var leftlowerleg = IKBoneType.LeftLowerLeg; var rightlowerleg = IKBoneType.RightLowerLeg;
         var leftfoot = IKBoneType.LeftLeg; var rightfoot = IKBoneType.RightLeg;
 
         var poseland = pose.poseWorldLandmarks;
@@ -464,32 +512,44 @@ export class ChildManager {
         unitylist = [];
         poseland.forEach((item, index, arr) => {
             unitylist.push({
-                ikname : index.toString(),
-                position : new UnityVector3(item.x, item.y, item.z),
-                rotation : new UnityVector3(0, 0, 0)
+                ikname: index.toString(),
+                position: new UnityVector3(item.x, item.y, item.z),
+                rotation: new UnityVector3(0, 0, 0),
+                visibility: item.visibility
             });
         });
         //---end---
         var param = JSON.stringify({
-            list : unitylist
+            list: unitylist
         });
         console.log(param);
-        
+
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:0},
-            "",QD_INOUT.toUNITY,
+            { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 0 },
+            "", QD_INOUT.toUNITY,
             null
         ));
         AppQueue.add(new queueData(
-            {target:this.mainData.states.selectedAvatar.id,method:'SetIKTransformAll2',param:param},
-            "",QD_INOUT.toUNITY,
+            { target: this.mainData.states.selectedAvatar.id, method: 'SetIKTransformAll2', param: param },
+            "", QD_INOUT.toUNITY,
             null
         ));
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:1},
-            "",QD_INOUT.toUNITY,
+            { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 1 },
+            "", QD_INOUT.toUNITY,
             null
         ));
+        AppQueue.start();
+    }
+    autoPrepareMediaPipe(param) {
+        //---natural rotation on/off
+        for (var obj of ["leftarm", "rightarm", "leftleg", "rightleg"]) {
+            AppQueue.add(new queueData(
+                { target: this.mainData.states.selectedAvatar.id, method: 'ApplyRotationHuman2IK', param: obj },
+                "", QD_INOUT.toUNITY,
+                null
+            ));
+        }
         AppQueue.start();
     }
     autoApplyMediaPipe(pose) {
@@ -497,20 +557,39 @@ export class ChildManager {
         var unitylist = [];
         poseland.forEach((item, index, arr) => {
             unitylist.push({
-                ikname : index.toString(),
-                position : new UnityVector3(item.x, item.y, item.z),
-                rotation : new UnityVector3(0, 0, 0)
+                ikname: index.toString(),
+                position: new UnityVector3(item.x, item.y, item.z),
+                rotation: new UnityVector3(0, 0, 0),
+                visibility: item.visibility
             });
         });
         //---end---
         var param = JSON.stringify({
-            list : unitylist
+            list: unitylist
         });
-        
-        AppQueue.canvas.SendMessage(AppQueue.unity.ManageAnimation, "SetBoneLimited", 0);
-        AppQueue.canvas.SendMessage(this.mainData.states.selectedAvatar.id, "SetIKTransformAll2", param);
-        AppQueue.canvas.SendMessage(AppQueue.unity.ManageAnimation, "SetBoneLimited", 1);
-        
+
+
+        //AppQueue.canvas.SendMessage(AppQueue.unity.ManageAnimation, "SetBoneLimited", 0);
+        //AppQueue.canvas.SendMessage(this.mainData.states.selectedAvatar.id, "SetIKTransformAll2", param);
+        //AppQueue.canvas.SendMessage(AppQueue.unity.ManageAnimation, "SetBoneLimited", 1);
+        AppQueue.add(new queueData(
+            { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 0 },
+            "", QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            { target: this.mainData.states.selectedAvatar.id, method: 'SetIKTransformAll2', param: param },
+            "", QD_INOUT.toUNITY,
+            null
+        ));
+        AppQueue.add(new queueData(
+            { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 1 },
+            "", QD_INOUT.toUNITY,
+            null
+        ));
+
+
+        AppQueue.start();
     }
     //----------------------------------------------------------------------------------------------------
     // bonetransform window
@@ -524,24 +603,24 @@ export class ChildManager {
             appAlert(this._t("msg_pose_noselectmodel"));
             return;
         }
-        
+
         var param = JSON.stringify({
-            list : data.list
+            list: data.list
         });
         if (this.mainData.states.selectedAvatar.type == AF_TARGETTYPE.VRM) {
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:0},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 0 },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.add(new queueData(
-                {target:data.avatarId,method:'SetIKTransformAll',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: data.avatarId, method: 'SetIKTransformAll', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:1},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 1 },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
@@ -552,27 +631,27 @@ export class ChildManager {
         if (this.mainData.states.selectedAvatar.type != AF_TARGETTYPE.VRM) return;
 
         AppQueue.add(new queueData(
-            {target:this.mainData.states.selectedAvatar.id,method:'GetIKTransformAll'},
-            "alliktransform",QD_INOUT.returnJS,
+            { target: this.mainData.states.selectedAvatar.id, method: 'GetIKTransformAll' },
+            "alliktransform", QD_INOUT.returnJS,
             (val) => {
                 var js = JSON.parse(val);
 
                 var clsdata = {
                     //avatarId : this.mainData.states.selectedAvatar.id,
                     //avatarType: this.mainData.states.selectedAvatar.type,
-                    data : js
+                    data: js
                 };
-                AppDB.temp.setItem("btapp_call_getikvalue",clsdata);
-                AppDB.temp.setItem("bonetran_avatar_id",this.mainData.states.selectedAvatar.id);
-                AppDB.temp.setItem("bonetran_avatar_title",this.mainData.states.selectedAvatar.title);
-                AppDB.temp.setItem("bonetran_avatar_type",this.mainData.states.selectedAvatar.type);
-        
+                AppDB.temp.setItem("btapp_call_getikvalue", clsdata);
+                AppDB.temp.setItem("bonetran_avatar_id", this.mainData.states.selectedAvatar.id);
+                AppDB.temp.setItem("bonetran_avatar_title", this.mainData.states.selectedAvatar.title);
+                AppDB.temp.setItem("bonetran_avatar_type", this.mainData.states.selectedAvatar.type);
+
             }
         ));
         AppQueue.start();
     }
 
-    analyzeBVH (text) {
+    analyzeBVH(text) {
         var filearr = text.split(/\r|\n|\r\n/);
         if (filearr[0] !== "HIERARCHY") {
             console.error("BVH file error.");
@@ -601,7 +680,7 @@ export class ChildManager {
                     }
                     motionList.push(flist);
                 }
-            }else{
+            } else {
                 //---analyze bone
                 if (tokens[0].toUpperCase() == "ROOT") {
                     rootNode.joint = tokens[1];
@@ -611,16 +690,16 @@ export class ChildManager {
                     //---finish previous node
                     nodeList.push(isCurrentJoint);
                     isCurrentJoint = null;
-    
+
                     //---start node
                     childNode.joint = tokens[1];
                     isCurrentJoint = childNode;
                 }
                 if (tokens[0].toUpperCase() == "OFFSET") {
                     isCurrentJoint.offset = tokens.filter(item => {
-                        if (!isNaN(parseFloat(item))) return true; 
+                        if (!isNaN(parseFloat(item))) return true;
                         return false;
-                    });   
+                    });
                 }
                 if (tokens[0].toUpperCase() == "CHANNELS") {
                     for (var cha = 2; cha < tokens.length; cha++) {
@@ -632,7 +711,7 @@ export class ChildManager {
                 }
             }
             if (tokens[0].toUpperCase() == "MOTION") isMotionPhase = true;
-            
+
         }
         var rowIndex = 0;
         var motionTL = [];
@@ -647,22 +726,22 @@ export class ChildManager {
                     var chastr = nodeList[nd].channels[cha];
                     if (chastr.toLowerCase() == "xposition") {
                         vpos.x = ml[rowIndex + cha];
-                    }else if (chastr.toLowerCase() == "yposition") {
+                    } else if (chastr.toLowerCase() == "yposition") {
                         vpos.y = ml[rowIndex + cha];
-                    }else if (chastr.toLowerCase() == "zposition") {
+                    } else if (chastr.toLowerCase() == "zposition") {
                         vpos.z = ml[rowIndex + cha];
-                    }else if (chastr.toLowerCase() == "xrotation") {
+                    } else if (chastr.toLowerCase() == "xrotation") {
                         vrot.x = ml[rowIndex + cha];
-                    }else if (chastr.toLowerCase() == "yrotation") {
+                    } else if (chastr.toLowerCase() == "yrotation") {
                         vrot.y = ml[rowIndex + cha];
-                    }else if (chastr.toLowerCase() == "zrotation") {
+                    } else if (chastr.toLowerCase() == "zrotation") {
                         vrot.z = ml[rowIndex + cha];
                     }
                 }
                 var mtdata = {
-                    "bone" : nodeList[nd].joint,
-                    "position" : vpos,
-                    "rotation" : vrot
+                    "bone": nodeList[nd].joint,
+                    "position": vpos,
+                    "rotation": vrot
                 };
                 mtline[nodeList[nd].joint] = mtdata;
             }
@@ -677,7 +756,7 @@ export class ChildManager {
     //----------------------------------------------------------------------------------------------------
     // KeyFrame window
     //----------------------------------------------------------------------------------------------------
-    keyframeFiltering (funcName, data) {
+    keyframeFiltering(funcName, data) {
         const dt = (data);
         switch (funcName) {
             case "get_ease_duration":
@@ -720,34 +799,34 @@ export class ChildManager {
                 break;
         }
     }
-    keyframe_common_loadUnityConfig (aro) {
+    keyframe_common_loadUnityConfig(aro) {
         var straro = JSON.stringify(aro);
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'GetEaseFromOuter',param:straro},
-            "getease",QD_INOUT.returnJS,
+            { target: AppQueue.unity.ManageAnimation, method: 'GetEaseFromOuter', param: straro },
+            "getease", QD_INOUT.returnJS,
             (val) => {
-                AppDB.temp.setItem("kfa_getease",val);
+                AppDB.temp.setItem("kfa_getease", val);
             }
         ));
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'GetDurationFromOuter',param:straro},
-            "getduration",QD_INOUT.returnJS,
+            { target: AppQueue.unity.ManageAnimation, method: 'GetDurationFromOuter', param: straro },
+            "getduration", QD_INOUT.returnJS,
             (val) => {
-                AppDB.temp.setItem("kfa_getduration",val);
+                AppDB.temp.setItem("kfa_getduration", val);
             }
         ));
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'GetMemoFromOuter',param:straro},
-            "getmemo",QD_INOUT.returnJS,
+            { target: AppQueue.unity.ManageAnimation, method: 'GetMemoFromOuter', param: straro },
+            "getmemo", QD_INOUT.returnJS,
             (val) => {
-                AppDB.temp.setItem("kfa_getmemo",val);
+                AppDB.temp.setItem("kfa_getmemo", val);
             }
         ));
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'GetKeyColorFromOuter',param:straro},
-            "getduration",QD_INOUT.returnJS,
+            { target: AppQueue.unity.ManageAnimation, method: 'GetKeyColorFromOuter', param: straro },
+            "getduration", QD_INOUT.returnJS,
             (val) => {
-                AppDB.temp.setItem("kfa_getkeycolor",val);
+                AppDB.temp.setItem("kfa_getkeycolor", val);
             }
         ));
         AppQueue.start();
@@ -756,22 +835,22 @@ export class ChildManager {
         for (var i = 0; i < params.length; i++) {
             var param = JSON.stringify(params[i]);
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'ResetAutoDuration',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.ManageAnimation, method: 'ResetAutoDuration', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
         }
-        
+
         AppQueue.start();
         this.mainData.states.currentEditOperationCount++;
     }
-    keyframe_memo_onchange (params) {
+    keyframe_memo_onchange(params) {
         for (var i = 0; i < params.length; i++) {
             var param = JSON.stringify(params[i]);
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetMemo',param:param},
-                "setmemo",QD_INOUT.returnJS,
-                (val)=>{
+                { target: AppQueue.unity.ManageAnimation, method: 'SetMemo', param: param },
+                "setmemo", QD_INOUT.returnJS,
+                (val) => {
                     var js = JSON.parse(val);
                     //console.log(js);
                 }
@@ -783,13 +862,13 @@ export class ChildManager {
         this.mainData.states.currentEditOperationCount++;
 
     }
-    keyframe_easing_onchange (params) {
+    keyframe_easing_onchange(params) {
         for (var i = 0; i < params.length; i++) {
             var param = JSON.stringify(params[i]);
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetEase',param:param},
-                "setease",QD_INOUT.returnJS,
-                (val)=>{
+                { target: AppQueue.unity.ManageAnimation, method: 'SetEase', param: param },
+                "setease", QD_INOUT.returnJS,
+                (val) => {
                     var js = JSON.parse(val);
                     //console.log(js);
                 }
@@ -798,29 +877,29 @@ export class ChildManager {
             this.mainData.states.selectedTimeline.getFrameByKey(jsp.index).data.ease = jsp.ease;
         }
         AppQueue.start();
-        this.mainData.states.currentEditOperationCount++;        
+        this.mainData.states.currentEditOperationCount++;
     }
-    keyframe_duration_onchange (params) {
+    keyframe_duration_onchange(params) {
         for (var i = 0; i < params.length; i++) {
             var param = JSON.stringify(params[i]);
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetDuration',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.ManageAnimation, method: 'SetDuration', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             var jsp = JSON.parse(param);
             this.mainData.states.selectedTimeline.getFrameByKey(jsp.index).data.duration = jsp.duration;
         }
         AppQueue.start();
-        this.mainData.states.currentEditOperationCount++;        
+        this.mainData.states.currentEditOperationCount++;
     }
-    keyframe_keycolor_onchange (params) {
+    keyframe_keycolor_onchange(params) {
         for (var i = 0; i < params.length; i++) {
             var param = JSON.stringify(params[i]);
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetKeyColor',param:param},
-                "setease",QD_INOUT.returnJS,
-                (val)=>{
+                { target: AppQueue.unity.ManageAnimation, method: 'SetKeyColor', param: param },
+                "setease", QD_INOUT.returnJS,
+                (val) => {
                     var js = JSON.parse(val);
                     //console.log(js);
                 }
@@ -829,14 +908,14 @@ export class ChildManager {
             this.mainData.states.selectedTimeline.getFrameByKey(jsp.index).data.keycolor = jsp.keycolor;
         }
         AppQueue.start();
-        this.mainData.states.currentEditOperationCount++; 
+        this.mainData.states.currentEditOperationCount++;
     }
-    keyframe_transform_onchange (params) {
+    keyframe_transform_onchange(params) {
         for (var i = 0; i < params.length; i++) {
             var param = JSON.stringify(params[i]);
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'SetGlobalTransform',param:param},
-                "",QD_INOUT.toUNITY,null
+                { target: AppQueue.unity.ManageAnimation, method: 'SetGlobalTransform', param: param },
+                "", QD_INOUT.toUNITY, null
             ));
         }
         AppQueue.start();
@@ -844,41 +923,41 @@ export class ChildManager {
     }
     keyframe_body_targetframeno(param) {
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'CheckTargetFrameIndexList',param:param},
-            "checktargetframe",QD_INOUT.returnJS,
+            { target: AppQueue.unity.ManageAnimation, method: 'CheckTargetFrameIndexList', param: param },
+            "checktargetframe", QD_INOUT.returnJS,
             (val, options) => {
-                AppDB.temp.setItem("kfa_targetFrameIndex",val);
+                AppDB.temp.setItem("kfa_targetFrameIndex", val);
             },
-            {oldindex: -1}
+            { oldindex: -1 }
         ));
-        
+
         AppQueue.start();
     }
     keyframe_frameno_onchange(param) {
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'CheckTargetFrameIndexList',param:param},
-            "checktargetframe",QD_INOUT.returnJS,
+            { target: AppQueue.unity.ManageAnimation, method: 'CheckTargetFrameIndexList', param: param },
+            "checktargetframe", QD_INOUT.returnJS,
             (val, options) => {
-                AppDB.temp.setItem("kfa_frameno_frameIndex",val);
+                AppDB.temp.setItem("kfa_frameno_frameIndex", val);
             },
-            {oldindex: -1}
+            { oldindex: -1 }
         ));
-        
+
         AppQueue.start();
     }
     keyframe_editframeno_onclick(params) {
         for (var i = 0; i < params.length; i++) {
-            
+
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'ChangeFramePosition',param:params[i].param},
-                "changeframepos",QD_INOUT.returnJS,
+                { target: AppQueue.unity.ManageAnimation, method: 'ChangeFramePosition', param: params[i].param },
+                "changeframepos", QD_INOUT.returnJS,
                 (val, options) => {
                     if (val > -1) {
                         this.mainData.states.selectedTimeline.exchangeFrame(options.oldindex, options.newindex);
                     }
-                    
+
                 },
-                {oldindex: parseInt(params[i].oldindex), newindex: parseInt(params[i].newindex)}
+                { oldindex: parseInt(params[i].oldindex), newindex: parseInt(params[i].newindex) }
             ));
         }
         AppQueue.start();
@@ -888,23 +967,23 @@ export class ChildManager {
         for (var i = 0; i < params.length; i++) {
             var param = `${params[i].roleName},${params[i].type},${params[i].oldindex},0`;
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'CopyFrame',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.ManageAnimation, method: 'CopyFrame', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             var param2 = `${params[i].roleName},${params[i].type},${params[i].newindex}`;
             var clipboard = {
-                mode : "copy",
-                index : params[i].oldindex,
-                roleName : params[i].roleName,
-                roleType : params[i].type
+                mode: "copy",
+                index: params[i].oldindex,
+                roleName: params[i].roleName,
+                roleType: params[i].type
             };
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.ManageAnimation,method:'PasteFrame',param:param2},
-                "paste_keyframe",QD_INOUT.returnJS,
+                { target: AppQueue.unity.ManageAnimation, method: 'PasteFrame', param: param2 },
+                "paste_keyframe", QD_INOUT.returnJS,
                 this.UnityCallback.paste_keyframe,
-                {callback:this.UnityCallback,clipboard}
-            ));            
+                { callback: this.UnityCallback, clipboard }
+            ));
         }
         AppQueue.start();
         this.mainData.states.currentEditOperationCount++;
@@ -924,16 +1003,16 @@ export class ChildManager {
     }
     keyframe_copysumduration_onclick(param) {
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'GetAvatarDurationBetween',param:param},
-            "getsumduration",QD_INOUT.returnJS,
+            { target: AppQueue.unity.ManageAnimation, method: 'GetAvatarDurationBetween', param: param },
+            "getsumduration", QD_INOUT.returnJS,
             (val, options) => {
                 if (val > -1) {
                     //kfapp.value.elements.duration = val;
-                    AppDB.temp.setItem("kfa_getsumduration",val);
+                    AppDB.temp.setItem("kfa_getsumduration", val);
                 }
-                
+
             },
-            {oldindex: -1}
+            { oldindex: -1 }
         ));
         AppQueue.start();
     }
@@ -943,15 +1022,15 @@ export class ChildManager {
     gravitybone_on_afterchange(param) {
         for (var i = 0; i < param.powerlist.length; i++) {
             AppQueue.add(new queueData(
-                {target:param.avatarId,method:'SetGravityPower',param:param.powerlist[i]},
-                "",QD_INOUT.toUNITY,
+                { target: param.avatarId, method: 'SetGravityPower', param: param.powerlist[i] },
+                "", QD_INOUT.toUNITY,
                 null
             ));
         }
         for (var i = 0; i < param.dirlist.length; i++) {
             AppQueue.add(new queueData(
-                {target:param.avatarId,method:'SetGravityDirFromOuter',param:param.dirlist[i]},
-                "",QD_INOUT.toUNITY,
+                { target: param.avatarId, method: 'SetGravityDirFromOuter', param: param.dirlist[i] },
+                "", QD_INOUT.toUNITY,
                 null
             ));
         }
@@ -959,11 +1038,11 @@ export class ChildManager {
     }
     gravitybone_reload_onclick(param) {
         AppQueue.add(new queueData(
-            {target:param.avatarId,method:'ListGravityInfoFromOuter'},
-            "list_gravitybone",QD_INOUT.returnJS,
+            { target: param.avatarId, method: 'ListGravityInfoFromOuter' },
+            "list_gravitybone", QD_INOUT.returnJS,
             (val) => {
                 var js = JSON.parse(val);
-                AppDB.temp.setItem("grapp_list_gravitybone",js);
+                AppDB.temp.setItem("grapp_list_gravitybone", js);
             }
         ));
         AppQueue.start();
@@ -973,16 +1052,16 @@ export class ChildManager {
     //----------------------------------------------------------------------------------------------------
     transref_position_onchange(param) {
         AppQueue.add(new queueData(
-            {target:param.avatarId,method:'SetPositionIKMarkerFromOuter',param:param.param},
-            "",QD_INOUT.toUNITY,
+            { target: param.avatarId, method: 'SetPositionIKMarkerFromOuter', param: param.param },
+            "", QD_INOUT.toUNITY,
             null
         ));
         AppQueue.start();
     }
     transref_rotation_onchange(param) {
         AppQueue.add(new queueData(
-            {target:param.avatarId,method:'SetRotationIKMarkerFromOuter',param:param.param},
-            "",QD_INOUT.toUNITY,
+            { target: param.avatarId, method: 'SetRotationIKMarkerFromOuter', param: param.param },
+            "", QD_INOUT.toUNITY,
             null
         ));
         AppQueue.start();
@@ -992,70 +1071,70 @@ export class ChildManager {
     //----------------------------------------------------------------------------------------------------
     easyik_apply_onclick_curpose(param) {
         AppQueue.add(new queueData(
-            {target:param.avatarId,method:'GetIKTransformAll'},
-            "alliktransform",QD_INOUT.returnJS,
+            { target: param.avatarId, method: 'GetIKTransformAll' },
+            "alliktransform", QD_INOUT.returnJS,
             (val) => {
                 /**
                  * @type {AvatarAllIKParts}
                  */
                 var js = JSON.parse(val);
 
-                AppDB.temp.setItem("easyik_return_allikparts",js);
+                AppDB.temp.setItem("easyik_return_allikparts", js);
             }
         ));
         AppQueue.start();
     }
     easyik_apply_onclick_applybody(param) {
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:0},
-            "",QD_INOUT.toUNITY,
+            { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 0 },
+            "", QD_INOUT.toUNITY,
             null
         ));
         AppQueue.add(new queueData(
-            {target:param.avatarId,method:'SetIKTransformAll',param:param.param},
-            "",QD_INOUT.toUNITY,
+            { target: param.avatarId, method: 'SetIKTransformAll', param: param.param },
+            "", QD_INOUT.toUNITY,
             null
         ));
         AppQueue.add(new queueData(
-            {target:AppQueue.unity.ManageAnimation,method:'SetBoneLimited',param:1},
-            "",QD_INOUT.toUNITY,
+            { target: AppQueue.unity.ManageAnimation, method: 'SetBoneLimited', param: 1 },
+            "", QD_INOUT.toUNITY,
             null
         ));
         AppQueue.start();
     }
     easyik_reload_onclick(param) {
         AppQueue.add(new queueData(
-            {target:param.avatarId,method:'GetIKTransformAll'},
-            "alliktransform",QD_INOUT.returnJS,
+            { target: param.avatarId, method: 'GetIKTransformAll' },
+            "alliktransform", QD_INOUT.returnJS,
             (val) => {
                 /**
                  * @type {AvatarAllIKParts}
                  */
                 var js = JSON.parse(val);
 
-                AppDB.temp.setItem("easyik_return_reloadikparts",js);
+                AppDB.temp.setItem("easyik_return_reloadikparts", js);
 
-                
-                
+
+
             }
         ));
         //---default T-pose data
         AppQueue.add(new queueData(
-            {target:param.avatarId,method:'GetTPoseIKTransformAll'},
-            "tposetransform",QD_INOUT.returnJS,
+            { target: param.avatarId, method: 'GetTPoseIKTransformAll' },
+            "tposetransform", QD_INOUT.returnJS,
             (val) => {
                 /**
                  * @type {AvatarAllIKParts}
                  */
                 var js = JSON.parse(val);
-                AppDB.temp.setItem("easyik_return_reload_tposeikparts",js);
+                AppDB.temp.setItem("easyik_return_reload_tposeikparts", js);
 
                 //appdata.data.TPose = js;
 
                 //---set scope data for math.js
                 //   {"Pelvis_pos_x" : 0.5, ...}
                 //reloadMathScope(appdata.data.bodyList.list);
-                
+
             }
         ));
         AppQueue.start();

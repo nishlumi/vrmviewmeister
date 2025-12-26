@@ -976,7 +976,7 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
                 if (mainData.elements.win_mediapipe && !mainData.elements.win_mediapipe.closed) {
 
                 }else{
-                    mainData.elements.win_mediapipe = window.open("./static/win/mp/index.html",
+                    mainData.elements.win_mediapipe = window.open("./static/win/newmp/index.html",
                         "_blank",
                         "width=1280,height=720,alwaysRaised=yes,resizable=yes,autoHideMenuBar=true"
                     );
@@ -1868,11 +1868,11 @@ export function defineRibbonTab(app,Quasar,mainData,ribbonData,timelineData,mode
         if (ribbonData.elements.audio.operatetype == "bgm") {
             unityTarget = AppQueue.unity.AudioBGM;
             audioobj = ribbonData.elements.audio.bgm;
-            return;
+            //return;
         }else if (ribbonData.elements.audio.operatetype == "se") {
             unityTarget = AppQueue.unity.AudioSE;
             audioobj = ribbonData.elements.audio.se;
-            return;
+            //return;
         }else{
             return;
         }

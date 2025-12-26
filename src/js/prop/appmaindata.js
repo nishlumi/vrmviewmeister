@@ -1,4 +1,4 @@
-import { VVAvatar, VVCast,VVAnimationProject, VVTimelineTarget, VVProp, VVTimelineFrameData } from "./cls_vvavatar.js"
+import { VVAvatar, VVCast, VVAnimationProject, VVTimelineTarget, VVProp, VVTimelineFrameData } from "./cls_vvavatar.js"
 import { AppDBMeta, VVAppConfig } from "../appconf.js";
 import { AF_TARGETTYPE, EFFECTLIST, FILEOPTION, INTERNAL_FILE, STORAGE_TYPE, UserAnimationEase } from "../../res/appconst.js";
 import { VOSFile } from "../../../public/static/js/filehelper.js";
@@ -10,38 +10,38 @@ export class appMainData {
     constructor(appName, appDesc) {
         const { t } = VueI18n.useI18n({ useScope: 'global' });
 
-        
+
         this.appinfo = {
-            name : appName,
-            description : appDesc,
-            version : "2.18.0",
-            revision : "20250710-02",
-            platform : `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
+            name: appName,
+            description: appDesc,
+            version: "2.19.0",
+            revision: "20251227-01",
+            platform: `${Quasar.Platform.is.platform}(${Quasar.Platform.is.name})`
         };
         this.appconf = new VVAppConfig();
         this.vroidhubapi = new VRoidHubConnector();
         this.vroidhubdata = {};
         this.elements = {
-            header : true,
-            appinfodlg : false,
-            loading : false,
-            loadmsg : "",
-            loadingTypePercent : false,
-            percentLoad : {
-                percent : 0,
-                current : 0,                
+            header: true,
+            appinfodlg: false,
+            loading: false,
+            loadmsg: "",
+            loadingTypePercent: false,
+            percentLoad: {
+                percent: 0,
+                current: 0,
             },
-            landvpad : {
-                showLeft : false,
+            landvpad: {
+                showLeft: false,
                 showRight: false
             },
-            initialOrientation : "landscape", //portrait, landscape
-            canvas : {
-                width : 960,
+            initialOrientation: "landscape", //portrait, landscape
+            canvas: {
+                width: 960,
                 height: 480,
-                styles : {
-                    width : "100%",
-                    height : "100%"
+                styles: {
+                    width: "100%",
+                    height: "100%"
                 },
                 thumbStyle: {
                     right: '4px',
@@ -57,105 +57,105 @@ export class appMainData {
                     width: '9px',
                     opacity: 0.2
                 },
-                scrollArea : {
-                    width : "calc(100% - 300px - 225px)",
-                    height : "calc(100% - 165px - 250px)", //"calc(100% - 128px - 36px - 200px)",
-                    overflow : "auto"
+                scrollArea: {
+                    width: "calc(100% - 300px - 225px)",
+                    height: "calc(100% - 165px - 250px)", //"calc(100% - 128px - 36px - 200px)",
+                    overflow: "auto"
                 },
                 /*win_poselist : null,
                 win_screenshot : null,
                 win_vplayer : null,
                 win_mediapipe : null,*/
             },
-            vrminfodlg : {
-                show : false,
-                showmode : false,
+            vrminfodlg: {
+                show: false,
+                showmode: false,
                 /**
                  * @type {VVAvatar}
                  */
-                selectedAvatar : null
+                selectedAvatar: null
             },
-            capturedlg : {
+            capturedlg: {
                 show: false,
             },
-            posemotiondlg : {
+            posemotiondlg: {
                 show: false,
-                mode : "p",
+                mode: "p",
             },
-            posemotinopanel : {
-                show : false,
+            posemotinopanel: {
+                show: false,
             },
-            projdlg : {
-                show : false,
-                maximized : false,
-                fullwidth : false,
-                fullheight : false,
-                tab : "pinfo", //pinfo, role, avatar
-                pinfo : {
+            projdlg: {
+                show: false,
+                maximized: false,
+                fullwidth: false,
+                fullheight: false,
+                tab: "pinfo", //pinfo, role, avatar
+                pinfo: {
                     name: "",
-                    description : "",
-                    license : "",
-                    url : "",
-                    fps : 60,
-                    oldfps : 60,
-                    baseDuration : 0.01,
-                    oldbaseDuration : 0.01,
+                    description: "",
+                    license: "",
+                    url: "",
+                    fps: 60,
+                    oldfps: 60,
+                    baseDuration: 0.01,
+                    oldbaseDuration: 0.01,
                 },
                 //---table [editrole]-----------------
-                editroleColumns : [
+                editroleColumns: [
                     { name: 'name', align: 'left', label: t('name'), field: 'name' },
                     { name: 'type', align: 'left', label: t('type'), field: 'type' },
                     { name: 'typeId', align: 'left', label: 'type', field: 'typeId' },
                     { name: 'roleTitle', align: 'left', label: t('role'), field: 'roleTitle' },
                     { name: 'oldroleTitle', align: 'left', label: t('role'), field: 'oldroleTitle' },
-                    { name: "id", align:"left", label:"id", field:"id"},
-                    { name: "roleName", align:"left", label:"roleName", field:"roleName"},
+                    { name: "id", align: "left", label: "id", field: "id" },
+                    { name: "roleName", align: "left", label: "roleName", field: "roleName" },
                 ],
-                editroleVisiblecCol : [
+                editroleVisiblecCol: [
                     "name", "type", "roleTitle"
                 ],
-                editrolePagenation : {
-                    rowsPerPage : [10]
+                editrolePagenation: {
+                    rowsPerPage: [10]
                 },
-                editroles : [],
-                roleselection : null,
+                editroles: [],
+                roleselection: null,
                 //---table [selavatar]---------------
-                selavatarColumns : [
+                selavatarColumns: [
                     { name: 'roleTitle', align: 'left', label: t('role'), field: 'roleTitle' },
                     { name: 'type', align: 'left', label: t('type'), field: 'type' },
                     { name: 'typeId', align: 'left', label: 'type', field: 'typeId' },
                     { name: 'name', align: 'left', label: t('cast'), field: 'name' },
                     { name: 'oldname', align: 'left', label: t('cast'), field: 'oldname' },
-                    { name: "id", align:"left", label:"id", field:"id"},
-                    { name: "roleName", align:"left", label:"roleName", field:"roleName"},
+                    { name: "id", align: "left", label: "id", field: "id" },
+                    { name: "roleName", align: "left", label: "roleName", field: "roleName" },
                 ],
-                selavatarVisiblecCol : [
+                selavatarVisiblecCol: [
                     "roleTitle", "type", "name"
                 ],
-                selavatarPagenation : {
-                    rowsPerPage : [20]
+                selavatarPagenation: {
+                    rowsPerPage: [20]
                 },
-                selavatars : [],
-                selavatarOptions : ["none"],
-                avatarselection : null,
+                selavatars: [],
+                selavatarOptions: ["none"],
+                avatarselection: null,
                 //---table [material]-----------------------
-                mat_materialTypeOptions : [
+                mat_materialTypeOptions: [
                     "Texture"
                 ],
-                sel_mat_materialType : "",
-                mat_textureFile : null,
-                mat_textureFileShow : "",
-                mat_textureFileActionFrom : "n", //n - new, u - update(existed)
-                mat_ActionFromPreviewRow : null,
-                mat_textureLabel : "",
-                mat_tabradio : "a",
-                mat_firstload : false,
-                materialLoadedRows : {
-                    "a" : [],
-                    "p" : []
+                sel_mat_materialType: "",
+                mat_textureFile: null,
+                mat_textureFileShow: "",
+                mat_textureFileActionFrom: "n", //n - new, u - update(existed)
+                mat_ActionFromPreviewRow: null,
+                mat_textureLabel: "",
+                mat_tabradio: "a",
+                mat_firstload: false,
+                materialLoadedRows: {
+                    "a": [],
+                    "p": []
                 },
-                materialrows : null,
-                selmaterialColumns : [
+                materialrows: null,
+                selmaterialColumns: [
                     { name: 'preview', align: 'left', label: t('preview'), field: 'preview' },
                     { name: 'name', align: 'left', label: t('mat_name'), field: 'name' },
                     { name: 'oldname', align: 'left', label: t('mat_name'), field: 'oldname' },
@@ -163,15 +163,15 @@ export class appMainData {
                     { name: 'typeId', align: 'left', label: 'type', field: 'typeId' },
                     { name: 'path', align: 'left', label: t('fullname'), field: 'path' }
                 ],
-                materialVisiblecCol : [
+                materialVisiblecCol: [
                     "preview", "name", "type", "path"
                 ],
-                materialrowPagenation : {
-                    rowsPerPage : [20],
+                materialrowPagenation: {
+                    rowsPerPage: [20],
                 },
-                materialselection : "",
+                materialselection: "",
                 //---table [vrma store]------------------------------
-                vrmaTableColumns : [
+                vrmaTableColumns: [
                     { name: 'filename', align: 'left', label: t('filename'), field: 'filename' },
                     { name: 'clipCount', align: 'right', label: t('clipCount'), field: 'clipCount' },
                     { name: 'filepath', align: 'left', label: t('file path'), field: 'filepath' },
@@ -179,408 +179,408 @@ export class appMainData {
                     { name: 'storageType', align: 'left', label: t('storageType'), field: 'storageType' },
                     { name: 'save', align: 'left', label: t('save in project'), field: 'save' },
                 ],
-                vrmaTableVisiblecCol : [
+                vrmaTableVisiblecCol: [
                     "filename", "clipCount", "filepath", "storageType", "save"
                 ],
-                vrmaTablePagenation : {
-                    rowsPerPage : [10]
+                vrmaTablePagenation: {
+                    rowsPerPage: [10]
                 },
-                vrmaList :[],
-                vrmaselection : "",
+                vrmaList: [],
+                vrmaselection: "",
                 vrmaSaveSelection: [],
             },
-            materialadddlg : {
-                show : false,
-                textureFile : null,
-                textureFileShow : "",
-                textureLabel : "",
+            materialadddlg: {
+                show: false,
+                textureFile: null,
+                textureFileShow: "",
+                textureLabel: "",
                 addtype: "f", //f - file, sd - AI(Stable Diffusion)
-                ai : {
-                    prompt : "",
-                    size : {x: 128, y: 128},
-                    preview : null,
-                    resultBlob : null,
-                    loading : false,
+                ai: {
+                    prompt: "",
+                    size: { x: 128, y: 128 },
+                    preview: null,
+                    resultBlob: null,
+                    loading: false,
                 }
             },
-            keyframedlg : {
-                target : null,
-                frame : 1,
-                easying : UserAnimationEase.Unset,
-                show : false,
+            keyframedlg: {
+                target: null,
+                frame: 1,
+                easying: UserAnimationEase.Unset,
+                show: false,
             },
-            transformrefdlg : {
-                show : false
+            transformrefdlg: {
+                show: false
             },
-            bonetrandlg : {
-                show : false,
-                
+            bonetrandlg: {
+                show: false,
+
             },
-            easybonetrandlg : {
-                show : false,
+            easybonetrandlg: {
+                show: false,
                 defaultCSV: "",
             },
-            gravitybonedlg : {
-                show : false
+            gravitybonedlg: {
+                show: false
             },
-            imageSelector : {
-                show : false,
+            imageSelector: {
+                show: false,
             },
-            configdlg : {
-                show : false,
+            configdlg: {
+                show: false,
             },
-            vpaddlg : {
-                show : false
+            vpaddlg: {
+                show: false
             },
-            mobilepad : {
-                left : {
-                    rotation : {
-                        icon : "radio_button_unchecked",
-                        info : null,
-                        power : 2,
-                        current : new UnityVector3(0,0,0)
+            mobilepad: {
+                left: {
+                    rotation: {
+                        icon: "radio_button_unchecked",
+                        info: null,
+                        power: 2,
+                        current: new UnityVector3(0, 0, 0)
                     },
-                    progress : {
-                        icon : "radio_button_unchecked",
-                        info : null,
-                        power : 2,
-                        current : new UnityVector3(0, 0, 0)
+                    progress: {
+                        icon: "radio_button_unchecked",
+                        info: null,
+                        power: 2,
+                        current: new UnityVector3(0, 0, 0)
                     },
-                    translation : {
-                        icon : "radio_button_unchecked",
-                        info : null,
-                        power : 2,
-                        current : new UnityVector3(0,0,0)
+                    translation: {
+                        icon: "radio_button_unchecked",
+                        info: null,
+                        power: 2,
+                        current: new UnityVector3(0, 0, 0)
                     },
-                    targetzoom : {
-                        icon : "radio_button_unchecked",
-                        info : null,
-                        power : 2,
-                        current : new UnityVector3(0, 0, 0)
+                    targetzoom: {
+                        icon: "radio_button_unchecked",
+                        info: null,
+                        power: 2,
+                        current: new UnityVector3(0, 0, 0)
                     },
-                    panelCSS : {
-                        "q-dark" : false,
-                        "text-dark" : true,
+                    panelCSS: {
+                        "q-dark": false,
+                        "text-dark": true,
                     },
-                    cpadCSS : {
-                        "bg-grey-9" : false,
-                        "text-white" : false,
-                        "bg-grey-1" : true,
-                        "text-dark" : true,
+                    cpadCSS: {
+                        "bg-grey-9": false,
+                        "text-white": false,
+                        "bg-grey-1": true,
+                        "text-dark": true,
                     },
-                    tgl_changetarget : {
+                    tgl_changetarget: {
                         selected: "c", //c, o
-                        icon : "videocam", //videocam, dashboard_customize
+                        icon: "videocam", //videocam, dashboard_customize
                         tooltip: "Main Camera", //Main camera Object
                     },
-                    tgl_changespace : {
+                    tgl_changespace: {
                         selected: "w", //w, l
-                        icon : "public", //public, self_improvement
+                        icon: "public", //public, self_improvement
                         tooltip: "World" //World, Local
                     }
                 },
-                right : {
-                    rotation : {
-                        icon : "radio_button_unchecked",
-                        info : null,
-                        power : 2,
-                        current : new UnityVector3(0,0,0)
+                right: {
+                    rotation: {
+                        icon: "radio_button_unchecked",
+                        info: null,
+                        power: 2,
+                        current: new UnityVector3(0, 0, 0)
                     },
-                    progress : {
-                        icon : "radio_button_unchecked",
-                        info : null,
-                        power : 2,
-                        current : new UnityVector3(0, 0, 0)
+                    progress: {
+                        icon: "radio_button_unchecked",
+                        info: null,
+                        power: 2,
+                        current: new UnityVector3(0, 0, 0)
                     },
-                    translation : {
-                        icon : "radio_button_unchecked",
-                        info : null,
-                        power : 2,
-                        current : new UnityVector3(0,0,0)
+                    translation: {
+                        icon: "radio_button_unchecked",
+                        info: null,
+                        power: 2,
+                        current: new UnityVector3(0, 0, 0)
                     },
-                    targetzoom : {
-                        icon : "radio_button_unchecked",
-                        info : null,
-                        power : 2,
-                        current : new UnityVector3(0, 0, 0)
+                    targetzoom: {
+                        icon: "radio_button_unchecked",
+                        info: null,
+                        power: 2,
+                        current: new UnityVector3(0, 0, 0)
                     },
-                    panelCSS : {
-                        "q-dark" : false,
-                        "text-dark" : true,
+                    panelCSS: {
+                        "q-dark": false,
+                        "text-dark": true,
                     },
-                    cpadCSS : {
-                        "bg-grey-9" : false,
-                        "text-white" : false,
-                        "bg-grey-1" : true,
-                        "text-dark" : true,
+                    cpadCSS: {
+                        "bg-grey-9": false,
+                        "text-white": false,
+                        "bg-grey-1": true,
+                        "text-dark": true,
                     },
-                    tgl_changetarget : {
+                    tgl_changetarget: {
                         selected: "c", //c, o
-                        icon : "videocam", //videocam, dashboard_customize
+                        icon: "videocam", //videocam, dashboard_customize
                         tooltip: "Main Camera", //Main camera Object
                     },
-                    tgl_changespace : {
+                    tgl_changespace: {
                         selected: "w", //w, l
-                        icon : "public", //public, self_improvement
+                        icon: "public", //public, self_improvement
                         tooltip: "World" //World, Local
                     }
                 },
             },
-            navigationdlg : {
-                show : false,
-                webglw : 0,
-                webglh : 0,
-                scrollTop : 0,
-                scrollLeft : 0,
-                selectRect : new DOMRect(),
+            navigationdlg: {
+                show: false,
+                webglw: 0,
+                webglh: 0,
+                scrollTop: 0,
+                scrollLeft: 0,
+                selectRect: new DOMRect(),
             },
-            projectSelector : {
-                show : false,
-                maximized : false,
-                fullwidth : false,
-                fullheight : false,
+            projectSelector: {
+                show: false,
+                maximized: false,
+                fullwidth: false,
+                fullheight: false,
                 /**
                  * @type {STORAGE_TYPE}
                  */
-                selectStorageType : STORAGE_TYPE.INTERNAL,
+                selectStorageType: STORAGE_TYPE.INTERNAL,
                 /**
                  * @type {FILEOPTION.*.types}
                  */
-                selectType : FILEOPTION.PROJECT.types,
+                selectType: FILEOPTION.PROJECT.types,
                 /**
                  * @type {INTERNAL_FILE}
                  */
-                selectDB : INTERNAL_FILE.PROJECT,
-                selectDBName : "",
-                selectTypeName : "",
-                columns : [
+                selectDB: INTERNAL_FILE.PROJECT,
+                selectDBName: "",
+                selectTypeName: "",
+                columns: [
                     { name: 'fullname', align: 'left', label: t('fullname'), field: 'fullname', sortable: true },
-                    { name: 'name', align: 'left', label: t('name'), field: 'name', sortable: true  },
+                    { name: 'name', align: 'left', label: t('name'), field: 'name', sortable: true },
                     { name: 'type', align: 'left', label: t('type'), field: 'type' },
-                    { name: 'size', align: 'right', label: t('size'), field: 'size', sortable: true  },
-                    { name: 'createdDate', align: 'left', label: t("created_date"), field: 'createdDate', sortable: true  },
-                    { name: 'updatedDate', align: 'left', label: t("updated_date"), field: 'updatedDate', sortable: true  },
+                    { name: 'size', align: 'right', label: t('size'), field: 'size', sortable: true },
+                    { name: 'createdDate', align: 'left', label: t("created_date"), field: 'createdDate', sortable: true },
+                    { name: 'updatedDate', align: 'left', label: t("updated_date"), field: 'updatedDate', sortable: true },
 
                 ],
-                visiblecCol : [
-                    "fullname",  "size", "createdDate", "updatedDate"
+                visiblecCol: [
+                    "fullname", "size", "createdDate", "updatedDate"
                 ],
-                pagenation : {
-                    rowsPerPage : 40
+                pagenation: {
+                    rowsPerPage: 40
                 },
                 /**
                  * Internal, File - name
                  * Google Drive - file ID
                  * @type {String}
                  */
-                selected : "",
+                selected: "",
                 /**
                  * @type {AppDBMeta[]}
                  */
-                files : [],
+                files: [],
                 /**
                  * @type {AppDBMeta[]}
                  */
-                searchedFiles : [],
-                searchstr : "",
+                searchedFiles: [],
+                searchstr: "",
             },
-            vroidhubSelector : {
-                show : false,
-                maximized : false,
-                fullwidth : false,
-                fullheight : false,
-                style : {
+            vroidhubSelector: {
+                show: false,
+                maximized: false,
+                fullwidth: false,
+                fullheight: false,
+                style: {
                     width: "850px",
                     height: "550px",
                     overflow: "hidden"
                 },
 
-                loading : false,
+                loading: false,
                 kind: "model", //models, hearts, staffpicks
-                kindName : "My models",
-                next: {maxid:"", previd:""},
-                rand : "",
+                kindName: "My models",
+                next: { maxid: "", previd: "" },
+                rand: "",
 
                 selected: "",
                 /**
                  * @type {{data:Object, selectStyle:String}[]}
                  */
-                files : [],
-                searchedFiles : [],
-                searchstr : "",
+                files: [],
+                searchedFiles: [],
+                searchstr: "",
             },
-            vroidhubAuthorizer : {
-                show : false,
-                maximized : false,
-                fullwidth : false,
-                fullheight : false,
-                style : {
+            vroidhubAuthorizer: {
+                show: false,
+                maximized: false,
+                fullwidth: false,
+                fullheight: false,
+                style: {
                     width: "640px",
                     height: "280px",
                     overflow: "hidden"
                 },
 
 
-                url : "",
-                progress_authorize : false,
-                code_inputBox : "",
+                url: "",
+                progress_authorize: false,
+                code_inputBox: "",
             },
-            vroidhubSelectCondition : {
-                show : false,
-                maximized : false,
-                fullwidth : false,
-                fullheight : false,
-                style : {
+            vroidhubSelectCondition: {
+                show: false,
+                maximized: false,
+                fullwidth: false,
+                fullheight: false,
+                style: {
                     overflow: "hidden"
                 },
-                condition_accept : false,
-                modelData : null,
+                condition_accept: false,
+                modelData: null,
             },
-            tearchManager : {
-                show : false,
-                modelName : "rot",
+            tearchManager: {
+                show: false,
+                modelName: "rot",
             },
-            win_screenshot : null,
-            win_pose : null,
-            win_vplayer : null,
-            win_mediapipe : null,
-            win_bonetransform : null,
-            win_keyframe : null,
+            win_screenshot: null,
+            win_pose: null,
+            win_vplayer: null,
+            win_mediapipe: null,
+            win_bonetransform: null,
+            win_keyframe: null,
             win_gravitybone: null,
             win_transref: null,
             win_easyikmode: null,
-            footer : true
+            footer: true
         };
         this.states = {
             /**
              * @type {VVAvatar}
              */
-            selectedAvatar : null,
+            selectedAvatar: null,
 
             /**
              * VRM's body parts IK-Marker
              * @type {String}
              */
             selectedBodyParts: "",
-            
-            old_selectedAvatar : null,
+
+            old_selectedAvatar: null,
 
             /**
              * @type {VVCast}
              */
-            selectedCast : null,
+            selectedCast: null,
 
             /**
              * @type {VVTimelineTarget}
              */
-            selectedTimeline : null,
+            selectedTimeline: null,
 
             /**
              * @type {Array<VVTimelineFrameData>}
              */
-            selectedKeyframeTarget : {},
+            selectedKeyframeTarget: {},
             /**
              * @type {VVProp}
              */
-            selectedProp : null,
+            selectedProp: null,
 
             /**
              * @type {String}
              */
-            fileloadtype : "v",  //v - vrm, o - object
+            fileloadtype: "v",  //v - vrm, o - object
             /**
              * @type {String}
              */
-            fileloadname : "",
+            fileloadname: "",
             /**
              * @type {File}
              */
-            loadingfile : null,
+            loadingfile: null,
             /**
              * @type {VOSFile}
              */
-            loadingfileHandle : null,
+            loadingfileHandle: null,
             //avoidSetEvent : false,
-            animationPlaying : false,
-            currentProjectFromFile : true,
+            animationPlaying: false,
+            currentProjectFromFile: true,
             /**
              * Saved storage type.
              * "i"nternal, "f"ile, "g"oogleDrive
              * @type {String}
              */
-            currentProjectFromStorageType : "i", // internal, file, googleDrive,
-            currentProjectFilename : "project",
-            currentProjectFilepath : "project",
-            currentProjectFileID : "",
+            currentProjectFromStorageType: "i", // internal, file, googleDrive,
+            currentProjectFilename: "project",
+            currentProjectFilepath: "project",
+            currentProjectFileID: "",
             /**
              * @type {FileSystemFileHandle or String}
              */
-            currentProjectHandle : null,
+            currentProjectHandle: null,
 
-            currentEditOperationCount : 0,
-            backupEditOperationCount : 0,
+            currentEditOperationCount: 0,
+            backupEditOperationCount: 0,
 
             /**
              * Is enable access token and connect?
              * @type {Boolean}
              */
-            vroidhub_api : false,
+            vroidhub_api: false,
 
-            googledrive_gas : false,
+            googledrive_gas: false,
 
             /**
              * check orientation screen ?
              * @type {Boolean}
              */
-            turnOrientation : false,
+            turnOrientation: false,
 
             uimode: "",
 
             inputstep: {
-                id : null,
-                start:null,
-                prevstamp : null,
+                id: null,
+                start: null,
+                prevstamp: null,
                 done: false
             },
-            inputman : new InputManager(),
+            inputman: new InputManager(),
         };
         this.data = {
-            clipboard : {
-                frame : null
+            clipboard: {
+                frame: null
             },
             /**
              * @type {VVAvatar}
              */
-            preview : null,
+            preview: null,
             /**
              * @type {Array<VVAvatar>}
              */
-            vrms : [],
+            vrms: [],
 
             /**
              * @type {Array<VVTimelineTarget>}
              */
-            timelineCasts : {},
+            timelineCasts: {},
 
-            savingPoseName : "",
+            savingPoseName: "",
 
             /**
              * @type {VVAnimationProject}
              */
-            project : new VVAnimationProject(),
+            project: new VVAnimationProject(),
 
             /**
              * @type {MediaStream}
              */
-            recordStream : new MediaStream(),
+            recordStream: new MediaStream(),
 
-            objectUrl : {
-                vrm : null,
-                audio : null
+            objectUrl: {
+                vrm: null,
+                audio: null
             },
-            EffectDirectory : EFFECTLIST
+            EffectDirectory: EFFECTLIST
             ,
-      
+
         };
     }
 }
@@ -591,80 +591,80 @@ export const defineAppMainData = () => {
      * @type {appMainData}
      */
     const mainData = Vue.reactive(new appMainData(t("appName"), t("appDescription")));
-    
+
     //---setup gamepad events
     mainData.states.inputman.callbacks.push(
-        new InputManageCallback({},true,false,(values) => {
+        new InputManageCallback({}, true, false, (values) => {
             var param = `${values.x},${values.y * -1}`;
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadLeftStickFromOuter',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.Camera, method: 'GamepadLeftStickFromOuter', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
         })
     );
     mainData.states.inputman.callbacks.push(
-        new InputManageCallback({},false,true,(values) => {
+        new InputManageCallback({}, false, true, (values) => {
             var param = `${values.x},${values.y * -1}`;
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadRightStickFromOuter',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.Camera, method: 'GamepadRightStickFromOuter', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
         })
     );
     mainData.states.inputman.callbacks.push(
-        new InputManageCallback({Up:true},false,false,(values) => {
+        new InputManageCallback({ Up: true }, false, false, (values) => {
             var param = `0,1`;
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadDpadFromOuter',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.Camera, method: 'GamepadDpadFromOuter', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
         })
     );
     mainData.states.inputman.callbacks.push(
-        new InputManageCallback({Down:true},false,false,(values) => {
+        new InputManageCallback({ Down: true }, false, false, (values) => {
             var param = `0,-1`;
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadDpadFromOuter',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.Camera, method: 'GamepadDpadFromOuter', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
         })
     );
     mainData.states.inputman.callbacks.push(
-        new InputManageCallback({L1:true},false,false,(values) => {
+        new InputManageCallback({ L1: true }, false, false, (values) => {
             var param = "L1";
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.Camera, method: 'GamepadKeyFromOuter', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
         })
     );
     mainData.states.inputman.callbacks.push(
-        new InputManageCallback({R1:true},false,false,(values) => {
+        new InputManageCallback({ R1: true }, false, false, (values) => {
             var param = "R1";
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.Camera, method: 'GamepadKeyFromOuter', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
         })
     );
     mainData.states.inputman.callbacks.push(
-        new InputManageCallback({Select:true},false,false,(values) => {
+        new InputManageCallback({ Select: true }, false, false, (values) => {
             var param = "select";
             AppQueue.add(new queueData(
-                {target:AppQueue.unity.Camera,method:'GamepadKeyFromOuter',param:param},
-                "",QD_INOUT.toUNITY,
+                { target: AppQueue.unity.Camera, method: 'GamepadKeyFromOuter', param: param },
+                "", QD_INOUT.toUNITY,
                 null
             ));
             AppQueue.start();
@@ -676,9 +676,9 @@ export const defineAppMainData = () => {
     const fil_animmotion = Vue.ref(null);
     const hid_file = Vue.ref(null);
     const aud01_capture = Vue.ref(null);
-    
+
     return {
         mainData,
-        fil_animproject,file_audio,fil_animmotion,hid_file,aud01_capture
+        fil_animproject, file_audio, fil_animmotion, hid_file, aud01_capture
     };
 }

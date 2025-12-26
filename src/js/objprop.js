@@ -2040,7 +2040,7 @@ export function defineObjprop (app,Quasar,mainData,objpropData,UnityCallback,mod
     }
     const cameraRenderTextureDisable_onclick = () => {
         AppQueue.add(new queueData(
-            {target:mainData.states.selectedAvatar.id,method:'DestroyRenderTexture'},
+            {target:mainData.states.selectedAvatar.id,method:'DisableRenderTexture'},
             "",QD_INOUT.toUNITY,
             null
         ));

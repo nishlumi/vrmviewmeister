@@ -30,7 +30,7 @@
     <link rel="manifest" href="manifest.json">
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^7.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@^6.0.0/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
     <link href="static/lib/quasar/quasar.prod.css" rel="stylesheet" type="text/css">
 
     <link href="static/lib/jsuites/jspreadsheet.css" rel="stylesheet">
@@ -288,9 +288,6 @@
                                         </q-item>
                                         <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentuimg')">
                                             <q-item-section>{{ $t('UImage') }}</q-item-section>
-                                        </q-item>
-                                        <q-item clickable  v-close-popup @click="ribbonEvent.RibbonFuncHome('recentvrma')">
-                                            <q-item-section>{{ $t('VRMAnimation') }}</q-item-section>
                                         </q-item>
                                         <!--
                                         <q-item clickable  v-close-popup @click="ribbonEvent.openproject_internal_onclick">
@@ -783,7 +780,7 @@
                         </div>
                         <div class="ribbon-group-title">Reset</div>
                     </div>
-                    <template v-if="1==1"><!--ribbonEvent.chkEnableVRAR == false-->
+                    <template v-if="ribbonEvent.chkEnableVRAR == false">
                         <div class="ribbon-group-sep"></div>
                         <div class="ribbon-group">
                             <q-btn flat icon="view_in_ar" :label="$t('MediaPipe')" class="qbtn-fullheight" stack no-caps stretch 
@@ -1696,7 +1693,7 @@
                         v-for="(item, index) in objlistEvent.filtered_objectlist" :key="index"
                         :active="mainData.states.selectedAvatar && (mainData.states.selectedAvatar.id === item.id)"
                         @click="objlistEvent.objectlist_onclicked(item)"
-                        @click.right="objlistEvent.objectlist_onrightclick(item)"
+                        @click.right="objlistData.elements.menu = true"
                         active-class="list-item-selected"
                     >
                         <template v-if="item.thumbnail != null">
@@ -1903,8 +1900,8 @@
             :behavior="objpropData.elements.drawer.behavior"
         >
             <q-list bordered>
-            <q-item dense>
-                <q-item-section avatar v-ripple>
+            <q-item v-ripple dense>
+                <q-item-section avatar>
                     <q-icon color="primary" name="chevron_right"
                         @click="objpropEvent.rightdrawer_minimize"
                     ></q-icon>
@@ -1921,7 +1918,6 @@
                             ></q-icon>
                         </q-item-section>
                         <q-item-section>Properties</q-item-section>
-                        
                     </q-item>
                 </q-list>
                 <q-icon name="height" size="md"></q-icon><br>
@@ -1987,10 +1983,7 @@
                 <q-card>
                     <q-card-section>
                         <div class="row">
-                            <div class="col-9">{{ $t('position') }}</div>
-                            <div class="col-3">
-                                <q-btn flat round size="sm" color="primary" icon="adjust" @click="objpropEvent.rightdrawer_transformrefdlg_opened"></q-btn>
-                            </div>
+                            <div class="col-12">{{ $t('position') }}</div>
                         </div>
                         <div class="row">
                             <div class="col-4 q-pr-sm">
@@ -3270,11 +3263,11 @@
                                 </div>
                                 <div class="col-6">
                                     <q-btn flat color="primary" round xs icon="play_circle" 
-                                        :disabled="objpropData.elements.cameraui.previewBtnEnabled"
+                                        :disabled="objpropData.elements.cameraui.previewBtnEnabled == '1'"
                                         @click="objpropEvent.cameraPreview_onclick"
                                     ></q-btn>
                                     <q-btn flat color="primary" round xs icon="stop" 
-                                        :disabled="!objpropData.elements.cameraui.previewBtnEnabled"
+                                        :disabled="objpropData.elements.cameraui.previewBtnEnabled != '1'"
                                         @click="objpropEvent.cameraPreviewStop_onclick"
                                     ></q-btn>
                                 </div>
@@ -4195,7 +4188,7 @@
                                                             </div>
                                                         </div>
                                                     </template>
-                                                    <template v-if="(ui.uitype == 'quaternion') || (ui.uitype == 'doubledim')">
+                                                    <template v-if="(ui.uitype == 'quaternion')">
                                                         <div class="row" :key="uindex">
                                                             <div class="col-8">
                                                                 {{ ui.label }}
@@ -4220,7 +4213,6 @@
                                                                     @update:model-value="ui.event"
                                                                 ></uswipe-input>
                                                             </div>
-                                                            <template v-if="(ui.uitype == 'quaternion')">
                                                             <div class="col-5 offset-sm-1">
                                                                 <q-input v-model.number="objpropData.elements.objectui.matopt[ui.vmodel].z" 
                                                                     type="number" :min="ui.options.min" :max="ui.options.max" :step="ui.options.step" dense label="Z"
@@ -4241,7 +4233,6 @@
                                                                     @update:model-value="ui.event"
                                                                 ></uswipe-input>
                                                             </div>
-                                                            </template>
                                                         </div>
                                                     </template>
                                                 </template>
@@ -5531,15 +5522,6 @@
 <!--[] Timeline  ================================================================================= -->
         <q-footer v-model="mainData.elements.footer" class="bg-grey-1" bordered :style="timelineData.elements.boxStyle">
             
-            <posemotion-panel
-                v-model="mainData.elements.posemotinopanel.show"
-                :mode="mainData.elements.posemotiondlg.mode"
-                :darkmode="mainData.appconf.confs.application.UseDarkTheme"
-                :appconf="mainData.appconf"
-                :cast="mainData.states.selectedCast"
-                @hidepanel="timelineEvent.panelToggleBtn_onclick"
-            ></posemotion-panel>
-            
             <div class="vvtimeline-area" :class="timelineData.states.toppanelCSS">
                 <div class="vvtl-seekbar" :style="timelineData.elements.seekbar_styles">
                     <div class="row xgrid-oneline">
@@ -5552,9 +5534,6 @@
                                 <q-tooltip>{{ $t('tl_util_skip_next') }}</q-tooltip>
                             </q-btn>
                             -->
-                            <q-btn flat round icon="animation" @click="mainData.elements.posemotinopanel.show=true;">
-                                <q-tooltip>Pose/Motion</q-tooltip>
-                            </q-btn>
                             <q-btn flat round icon="zoom_out" @click="timelineEvent.zoom_out_onclick">
                                 <q-tooltip>{{ $t('tl_util_zoomout') }}</q-tooltip>
                             </q-btn>
@@ -5682,7 +5661,7 @@
                             <div v-for="(val) in timelineData.data.timelines" :key="val.roleName"
                                 class="namebox-child" :dataIndex="val.roleName" 
                                 @click="timelineEvent.namebox_onclick(val)" :class="val.selected"
-                                @click.right.prevent="timelineEvent.namebox_onrightclick(val)"
+                                @click.right.prevent="timelineEvent.namebox_onrightclick"
                             >
                                 <q-btn flat round size="0.75rem" color="primary" :icon="val.readonlyIcon" 
                                     class="btn-visibility"
@@ -5714,13 +5693,11 @@
                             <q-menu v-model="timelineData.elements.menu" context-menu>
                                 <q-list>
                                     <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                        clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
-                                        :disable="ribbonEvent.chk_enableKeyframeButton"
-                                    >
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
                                         <q-item-section avatar>
-                                            <q-icon name="restart_alt"></q-icon>
+                                            <q-icon name="info"></q-icon>
                                         </q-item-section>
-                                        <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
                                     </q-item>
                                     <q-item v-show="timelineEvent.checkContextMenu3DModel"
                                         clickable v-close-popup dense @click="objlistEvent.listmenu_focus_onclick">
@@ -5731,23 +5708,14 @@
                                     </q-item>
                                     <q-separator></q-separator>
                                     <q-item v-show="timelineEvent.checkContextMenu3DModel"
-                                        clickable v-close-popup dense @click="objlistEvent.listmenu_info_onclick">
+                                        clickable v-close-popup dense @click="objlistEvent.listmenu_allbonereset_onclick"
+                                        :disable="ribbonEvent.chk_enableKeyframeButton"
+                                    >
                                         <q-item-section avatar>
-                                            <q-icon name="info"></q-icon>
+                                            <q-icon name="restart_alt"></q-icon>
                                         </q-item-section>
-                                        <q-item-section v-text="$t('objlistmenu_info')"></q-item-section>
+                                        <q-item-section v-text="$t('objlistmenu_reset')"></q-item-section>
                                     </q-item>
-                                    <template v-if="timelineEvent.checkContextMenu4Camera">
-                                        <q-separator></q-separator>
-                                        <q-item clickable v-close-popup dense>
-                                            <q-item-section side top>
-                                                <q-checkbox v-model="objpropData.elements.cameraui.previewBtnEnabled"
-                                                    @update:model-value="objpropEvent.cameraPreviewModelValue"
-                                                ></q-checkbox>
-                                            </q-item-section>
-                                            <q-item-section v-text="$t('preview')"></q-item-section>
-                                        </q-item>
-                                    </template>
                                 </q-list>
                             </q-menu>
                         </div>
@@ -5767,7 +5735,7 @@
                                     :class="timelineEvent.judgeVClass(frameitem,frameindex)"
                                 >
                                     <template v-if="timelineEvent.existsKeyFrame(item,frameindex+1)">
-                                        <div class="framekey-box" :style="timelineEvent.judgeKeyBoxColoring(item,frameindex+1)" :currentFrameIndex="frameindex+1"
+                                        <div class="framekey-box" :currentFrameIndex="frameindex+1"
                                             @click="timelineEvent.keyframebox_onclick(item, frameitem)"
                                             @dblclick="timelineEvent.keyframebox_ondblclick(item, frameitem)"
                                             @pointerenter="timelineEvent.keyframebox_popuptip(item, frameitem)"
@@ -6227,7 +6195,6 @@
         <easytran-dlg v-model="mainData.elements.easybonetrandlg.show"
             :avatar="mainData.states.selectedAvatar"
             :sample-url="mainData.appconf.confs.fileloader.easyik.sampleurl"
-            :default-csv="mainData.elements.easybonetrandlg.defaultCSV"
         ></easytran-dlg>
         <gravitybone-dlg v-model="mainData.elements.gravitybonedlg.show"
             :avatar="mainData.states.selectedAvatar"
@@ -6306,13 +6273,7 @@
             :timeline="mainData.states.selectedTimeline"
             :maxframe-number="mainData.data.project.timelineFrameLength"
             :vrms="mainData.data.project.casts"
-            @update-timeline-target="timelineEvent.keyframedlg_get_update_return"
         ></keyframe-dlg>
-        <transformref-dlg v-model="mainData.elements.transformrefdlg.show"
-            :current-cast="mainData.states.selectedCast"
-            :current-parts="mainData.states.selectedBodyParts"
-            :avatars="mainData.data.project.casts"
-        ></transformref-dlg>
         <navigation-dlg v-model="mainData.elements.navigationdlg.show"
             :webglcan="unitycontainer"
             :webglw="mainData.elements.navigationdlg.webglw"

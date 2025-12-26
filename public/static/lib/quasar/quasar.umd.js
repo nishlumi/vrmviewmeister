@@ -1,5 +1,5 @@
 /*!
- * Quasar Framework v2.18.1
+ * Quasar Framework v2.18.6
  * (c) 2015-present Razvan Stoenescu
  * Released under the MIT License.
  */
@@ -604,7 +604,7 @@
       }
     },
     install({ $q, ssrContext }) {
-      const { dark } = $q.config;
+      const dark = false ? document.body.classList.contains("body--dark") : $q.config.dark;
       if (false) {
         this.isActive = dark === true;
         $q.dark = {
@@ -1391,7 +1391,7 @@
   }
   var install_quasar_default = false ? function(parentApp, opts = {}, ssrContext) {
     const $q = {
-      version: "2.18.1",
+      version: "2.18.6",
       config: opts.config || {}
     };
     Object.assign(ssrContext, {
@@ -1421,7 +1421,7 @@
       ssrContext
     });
   } : function(parentApp, opts = {}) {
-    const $q = { version: "2.18.1" };
+    const $q = { version: "2.18.6" };
     if (globalConfigIsFrozen === false) {
       if (opts.config !== void 0) {
         Object.assign(globalConfig, opts.config);
@@ -9694,7 +9694,7 @@
         date.timezoneOffset = (tzString[0] === "+" ? -1 : 1) * (60 * tzString.slice(1, 3) + 1 * tzString.slice(3, 5));
       }
     }
-    date.dateHash = pad(date.year, 6) + "/" + pad(date.month) + "/" + pad(date.day);
+    date.dateHash = pad(date.year, 4) + "/" + pad(date.month) + "/" + pad(date.day);
     date.timeHash = pad(date.hour) + ":" + pad(date.minute) + ":" + pad(date.second) + tzString;
     return date;
   }
@@ -10928,7 +10928,7 @@
             props4.todayBtn === true ? h(QBtn_default, {
               class: "q-date__header-today self-start",
               icon: $q.iconSet.datetime.today,
-              ariaLabel: $q.lang.date.today,
+              "aria-label": $q.lang.date.today,
               flat: true,
               size: "sm",
               round: true,
@@ -10949,7 +10949,7 @@
               size: "sm",
               flat: true,
               icon: dateArrow.value[0],
-              ariaLabel: type === "Years" ? $q.lang.date.prevYear : $q.lang.date.prevMonth,
+              "aria-label": type === "Years" ? $q.lang.date.prevYear : $q.lang.date.prevMonth,
               tabindex: tabindex.value,
               disable: boundaries.prev === false,
               ...getCache("go-#" + type, { onClick() {
@@ -10984,7 +10984,7 @@
               size: "sm",
               flat: true,
               icon: dateArrow.value[1],
-              ariaLabel: type === "Years" ? $q.lang.date.nextYear : $q.lang.date.nextMonth,
+              "aria-label": type === "Years" ? $q.lang.date.nextYear : $q.lang.date.nextMonth,
               tabindex: tabindex.value,
               disable: boundaries.next === false,
               ...getCache("go+#" + type, { onClick() {
@@ -11140,7 +11140,7 @@
                 dense: true,
                 flat: true,
                 icon: dateArrow.value[0],
-                ariaLabel: $q.lang.date.prevRangeYears(yearsInterval),
+                "aria-label": $q.lang.date.prevRangeYears(yearsInterval),
                 tabindex: tabindex.value,
                 disable: isDisabled(start),
                 ...getCache("y-", { onClick: () => {
@@ -11159,7 +11159,7 @@
                 dense: true,
                 flat: true,
                 icon: dateArrow.value[1],
-                ariaLabel: $q.lang.date.nextRangeYears(yearsInterval),
+                "aria-label": $q.lang.date.nextRangeYears(yearsInterval),
                 tabindex: tabindex.value,
                 disable: isDisabled(stop2),
                 ...getCache("y+", { onClick: () => {
@@ -12820,13 +12820,13 @@
   }
   function getBtn(eVm, btn, clickHandler, active = false) {
     const toggled = active || (btn.type === "toggle" ? btn.toggled ? btn.toggled(eVm) : btn.cmd && eVm.caret.is(btn.cmd, btn.param) : false), child = [];
-    if (btn.tip && eVm.$q.platform.is.desktop) {
+    if (eVm.$q.platform.is.desktop && (btn.tip || btn.htmlTip)) {
       const Key = btn.key ? h("div", [
         h("small", `(CTRL + ${String.fromCharCode(btn.key)})`)
       ]) : null;
       child.push(
         h(QTooltip_default, { delay: 1e3 }, () => [
-          h("div", { innerHTML: btn.tip }),
+          h("div", btn.htmlTip ? { innerHTML: btn.htmlTip } : btn.tip),
           Key
         ])
       );
@@ -12837,6 +12837,7 @@
       color: toggled ? btn.toggleColor || eVm.props.toolbarToggleColor : btn.color || eVm.props.toolbarColor,
       textColor: toggled && !eVm.props.toolbarPush ? null : btn.textColor || eVm.props.toolbarTextColor,
       label: btn.label,
+      "aria-label": btn.label == null ? btn.tip : void 0,
       disable: btn.disable ? typeof btn.disable === "function" ? btn.disable(eVm) : true : false,
       size: "sm",
       onClick(e) {
@@ -13008,7 +13009,6 @@
         getGroup([
           h(QBtn_default, {
             key: "qedt_btm_rem",
-            tabindex: -1,
             ...eVm.buttonProps.value,
             label: eVm.$q.lang.label.remove,
             noCaps: true,
@@ -14717,6 +14717,11 @@
           state.getShadowControl()
         );
       }
+      hasLabel.value === true && node.push(
+        h("div", {
+          class: labelClass.value
+        }, hSlot(slots.label, props4.label))
+      );
       if (state.getControl !== void 0) {
         node.push(state.getControl());
       } else if (slots.rawControl !== void 0) {
@@ -14732,11 +14737,6 @@
           }, slots.control(controlSlotScope.value))
         );
       }
-      hasLabel.value === true && node.push(
-        h("div", {
-          class: labelClass.value
-        }, hSlot(slots.label, props4.label))
-      );
       props4.suffix !== void 0 && props4.suffix !== null && node.push(
         h("div", {
           class: "q-field__suffix no-pointer-events row items-center"
@@ -16211,7 +16211,7 @@
     phone: "(###) ### - ####",
     card: "#### #### #### ####"
   };
-  var TOKENS = {
+  var { tokenMap: DEFAULT_TOKEN_MAP, tokenKeys: DEFAULT_TOKEN_MAP_KEYS } = getTokenMap({
     "#": { pattern: "[\\d]", negate: "[^\\d]" },
     S: { pattern: "[a-zA-Z]", negate: "[^a-zA-Z]" },
     N: { pattern: "[0-9a-zA-Z]", negate: "[^0-9a-zA-Z]" },
@@ -16219,22 +16219,51 @@
     a: { pattern: "[a-zA-Z]", negate: "[^a-zA-Z]", transform: (v) => v.toLocaleLowerCase() },
     X: { pattern: "[0-9a-zA-Z]", negate: "[^0-9a-zA-Z]", transform: (v) => v.toLocaleUpperCase() },
     x: { pattern: "[0-9a-zA-Z]", negate: "[^0-9a-zA-Z]", transform: (v) => v.toLocaleLowerCase() }
-  };
-  var KEYS = Object.keys(TOKENS);
-  KEYS.forEach((key) => {
-    TOKENS[key].regex = new RegExp(TOKENS[key].pattern);
   });
-  var tokenRegexMask = new RegExp("\\\\([^.*+?^${}()|([\\]])|([.*+?^${}()|[\\]])|([" + KEYS.join("") + "])|(.)", "g");
+  function getTokenMap(tokens) {
+    const tokenKeys = Object.keys(tokens);
+    const tokenMap = {};
+    tokenKeys.forEach((key) => {
+      const entry = tokens[key];
+      tokenMap[key] = {
+        ...entry,
+        regex: new RegExp(entry.pattern)
+      };
+    });
+    return { tokenMap, tokenKeys };
+  }
+  function getTokenRegexMask(keys) {
+    return new RegExp("\\\\([^.*+?^${}()|([\\]])|([.*+?^${}()|[\\]])|([" + keys.join("") + "])|(.)", "g");
+  }
   var escRegex = /[.*+?^${}()|[\]\\]/g;
+  var DEFAULT_TOKEN_REGEX_MASK = getTokenRegexMask(DEFAULT_TOKEN_MAP_KEYS);
   var MARKER = String.fromCharCode(1);
   var useMaskProps = {
     mask: String,
     reverseFillMask: Boolean,
     fillMask: [Boolean, String],
-    unmaskedValue: Boolean
+    unmaskedValue: Boolean,
+    maskTokens: Object
   };
   function use_mask_default(props4, emit, emitValue, inputRef) {
     let maskMarked, maskReplaced, computedMask, computedUnmask, pastedTextStart, selectionAnchor;
+    const tokens = computed(() => {
+      if (props4.maskTokens === void 0 || props4.maskTokens === null) {
+        return {
+          tokenMap: DEFAULT_TOKEN_MAP,
+          tokenRegexMask: DEFAULT_TOKEN_REGEX_MASK
+        };
+      }
+      const { tokenMap: customTokens } = getTokenMap(props4.maskTokens);
+      const tokenMap = {
+        ...DEFAULT_TOKEN_MAP,
+        ...customTokens
+      };
+      return {
+        tokenMap,
+        tokenRegexMask: getTokenRegexMask(Object.keys(tokenMap))
+      };
+    });
     const hasMask = ref(null);
     const innerValue = ref(getInitialMaskedValue());
     function getIsTypeText() {
@@ -16288,9 +16317,9 @@
       }
       const localComputedMask = NAMED_MASKS[props4.mask] === void 0 ? props4.mask : NAMED_MASKS[props4.mask], fillChar = typeof props4.fillMask === "string" && props4.fillMask.length !== 0 ? props4.fillMask.slice(0, 1) : "_", fillCharEscaped = fillChar.replace(escRegex, "\\$&"), unmask = [], extract = [], mask = [];
       let firstMatch = props4.reverseFillMask === true, unmaskChar = "", negateChar = "";
-      localComputedMask.replace(tokenRegexMask, (_, char1, esc, token2, char2) => {
+      localComputedMask.replace(tokens.value.tokenRegexMask, (_, char1, esc, token2, char2) => {
         if (token2 !== void 0) {
-          const c = TOKENS[token2];
+          const c = tokens.value.tokenMap[token2];
           mask.push(c);
           negateChar = c.negate;
           if (firstMatch === true) {
@@ -16347,7 +16376,7 @@
     function updateMaskValue(rawVal, updateMaskInternalsFlag, inputType) {
       const inp = inputRef.value, end = inp.selectionEnd, endReverse = inp.value.length - end, unmasked = unmaskValue(rawVal);
       updateMaskInternalsFlag === true && updateMaskInternals();
-      const preMasked = maskValue(unmasked), masked = props4.fillMask !== false ? fillWithMask(preMasked) : preMasked, changed2 = innerValue.value !== masked;
+      const preMasked = maskValue(unmasked, updateMaskInternalsFlag), masked = props4.fillMask !== false ? fillWithMask(preMasked) : preMasked, changed2 = innerValue.value !== masked;
       inp.value !== masked && (inp.value = masked);
       changed2 === true && (innerValue.value = masked);
       document.activeElement === inp && nextTick(() => {
@@ -16502,12 +16531,12 @@
         inp.setSelectionRange(start, inp.selectionEnd, "forward");
       }
     }
-    function maskValue(val) {
+    function maskValue(val, updateMaskInternalsFlag) {
       if (val === void 0 || val === null || val === "") {
         return "";
       }
       if (props4.reverseFillMask === true) {
-        return maskValueReverse(val);
+        return maskValueReverse(val, updateMaskInternalsFlag);
       }
       const mask = computedMask;
       let valIndex = 0, output = "";
@@ -16515,7 +16544,9 @@
         const valChar = val[valIndex], maskDef = mask[maskIndex];
         if (typeof maskDef === "string") {
           output += maskDef;
-          valChar === maskDef && valIndex++;
+          if (updateMaskInternalsFlag === true && valChar === maskDef) {
+            valIndex++;
+          }
         } else if (valChar !== void 0 && maskDef.regex.test(valChar)) {
           output += maskDef.transform !== void 0 ? maskDef.transform(valChar) : valChar;
           valIndex++;
@@ -16525,7 +16556,7 @@
       }
       return output;
     }
-    function maskValueReverse(val) {
+    function maskValueReverse(val, updateMaskInternalsFlag) {
       const mask = computedMask, firstTokenIndex = maskMarked.indexOf(MARKER);
       let valIndex = val.length - 1, output = "";
       for (let maskIndex = mask.length - 1; maskIndex >= 0 && valIndex !== -1; maskIndex--) {
@@ -16533,7 +16564,9 @@
         let valChar = val[valIndex];
         if (typeof maskDef === "string") {
           output = maskDef + output;
-          valChar === maskDef && valIndex--;
+          if (updateMaskInternalsFlag === true && valChar === maskDef) {
+            valIndex--;
+          }
         } else if (valChar !== void 0 && maskDef.regex.test(valChar)) {
           do {
             output = (maskDef.transform !== void 0 ? maskDef.transform(valChar) : valChar) + output;
@@ -18320,21 +18353,17 @@
       function setByOffset(offset2) {
         model.value = model.value + offset2;
       }
-      const inputEvents = computed(() => {
-        function updateModel2() {
-          model.value = newPage.value;
-          newPage.value = null;
-        }
-        return {
-          "onUpdate:modelValue": (val) => {
-            newPage.value = val;
-          },
-          onKeyup: (e) => {
-            isKeyCode(e, 13) === true && updateModel2();
-          },
-          onBlur: updateModel2
-        };
-      });
+      function updateModel2() {
+        model.value = newPage.value;
+        newPage.value = null;
+        $q.platform.is.mobile === true && document.activeElement.blur();
+      }
+      function onInputValue(val) {
+        newPage.value = val;
+      }
+      function onKeyup2(e) {
+        isKeyCode(e, 13) === true && updateModel2();
+      }
       function getBtn2(cfg, page, active) {
         const data = {
           "aria-label": page,
@@ -18481,7 +18510,9 @@
               placeholder: inputPlaceholder.value,
               min: minProp.value,
               max: maxProp.value,
-              ...inputEvents.value
+              "onUpdate:modelValue": onInputValue,
+              onKeyup: onKeyup2,
+              onBlur: updateModel2
             }) : h("div", {
               class: "q-pagination__middle row justify-center"
             }, contentMiddle),
@@ -24054,7 +24085,7 @@
                 ...btnProps,
                 icon: navIcon.value[0],
                 disable: isFirstPage.value,
-                ariaLabel: $q.lang.pagination.first,
+                "aria-label": $q.lang.pagination.first,
                 onClick: firstPage
               })
             );
@@ -24064,7 +24095,7 @@
                 ...btnProps,
                 icon: navIcon.value[1],
                 disable: isFirstPage.value,
-                ariaLabel: $q.lang.pagination.prev,
+                "aria-label": $q.lang.pagination.prev,
                 onClick: prevPage
               }),
               h(QBtn_default, {
@@ -24072,7 +24103,7 @@
                 ...btnProps,
                 icon: navIcon.value[2],
                 disable: isLastPage.value,
-                ariaLabel: $q.lang.pagination.next,
+                "aria-label": $q.lang.pagination.next,
                 onClick: nextPage
               })
             );
@@ -24082,7 +24113,7 @@
                 ...btnProps,
                 icon: navIcon.value[3],
                 disable: isLastPage.value,
-                ariaLabel: $q.lang.pagination.last,
+                "aria-label": $q.lang.pagination.last,
                 onClick: lastPage
               })
             );
@@ -27719,7 +27750,7 @@
   // src/plugins/addressbar/AddressbarColor.js
   var metaValue;
   function getProp() {
-    return client.is.winphone ? "msapplication-navbutton-color" : client.is.safari ? "apple-mobile-web-app-status-bar-style" : "theme-color";
+    return client.is.winphone ? "msapplication-navbutton-color" : "theme-color";
   }
   function getMetaTag(v) {
     const els = document.getElementsByTagName("META");
@@ -29717,7 +29748,7 @@
       }
       runNextPromise();
     });
-    const threads = Array(threadsNumber).fill(getPromiseThread());
+    const threads = Array(threadsNumber).fill(null).map(getPromiseThread);
     return Promise.all(threads).then(() => resultAggregator);
   }
 
@@ -29835,7 +29866,7 @@
     console.error("[ Quasar ] Vue is required to run. Please add a script tag for it before loading Quasar.");
   }
   window.Quasar = {
-    version: "2.18.1",
+    version: "2.18.6",
     install(app2, opts) {
       install_quasar_default(app2, {
         components: components_exports,

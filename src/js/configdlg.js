@@ -27,7 +27,7 @@ const template = `
                                         <span class="">{{ $t('Memory using limit')}}</span>
                                     </div>
                                     <div class="col-4">
-                                        <q-input v-model="appconf.confs.application.UseMemory" type="number" min="1" max="8" step="0.25"  dense></q-input>
+                                        <q-input v-model="appconf.confs.application.UseMemory" type="number" min="1" max="8" step="0.25"  dense filled></q-input>
                                     </div>
                                     <div class="col-12">
                                         [<span v-text="showPreviewMemory"></span>] MB<br>
@@ -39,7 +39,7 @@ const template = `
                                         <span class="">{{ $t('Mouse wheel speed')}}</span>
                                     </div>
                                     <div class="col-4">
-                                        <q-input v-model="appconf.confs.application.MouseWheelSpeed" type="number" :in="1" :max="5" :step="0.1" dense></q-input>
+                                        <q-input v-model="appconf.confs.application.MouseWheelSpeed" type="number" :in="1" :max="5" :step="0.1" dense filled></q-input>
                                     </div>
                                 </div>
                                 <q-separator class="q-mt-sm q-mb-md"></q-separator>
@@ -53,7 +53,7 @@ const template = `
                                         <span class="">{{ $t('msg_distance_camera_viewpoint')}}</span>
                                     </div>
                                     <div class="col-4 col-md-2">
-                                        <q-input v-model="appconf.confs.application.distance_camera_viewpoint" type="number" min="0.1" max="5" step="0.1" dense></q-input>
+                                        <q-input v-model="appconf.confs.application.distance_camera_viewpoint" type="number" min="0.1" max="5" step="0.1" dense filled></q-input>
                                     </div>
                                     <div class="col-1 col-md-7">
                                     </div>
@@ -73,13 +73,13 @@ const template = `
                                         <span class="">{{ $t('msg_vpad_rotaterate')}}</span>
                                     </div>
                                     <div class="col-2">
-                                        <q-input v-model="appconf.confs.application.CameraKeyrotateSpeed" type="number" :min="0.01" :max="2" :step="0.01" dense></q-input>
+                                        <q-input v-model="appconf.confs.application.CameraKeyrotateSpeed" type="number" :min="0.01" :max="2" :step="0.01" dense filled></q-input>
                                     </div>
                                     <div class="col-3 offset-1">
                                         <span class="">{{ $t('msg_vpad_translaterate')}}</span>
                                     </div>
                                     <div class="col-2">
-                                        <q-input v-model="appconf.confs.application.CameraKeymoveSpeed" type="number" :min="0.01" :max="0.25" :step="0.01" dense></q-input>
+                                        <q-input v-model="appconf.confs.application.CameraKeymoveSpeed" type="number" :min="0.01" :max="0.25" :step="0.01" dense filled></q-input>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-left:1rem;">
@@ -90,13 +90,13 @@ const template = `
                                         <span class="">{{ $t('msg_vpad_rotaterate')}}</span>
                                     </div>
                                     <div class="col-2">
-                                        <q-input v-model.number="appconf.confs.application.vpad_rotaterate" type="number" :min="0.01" :max="0.1" :step="0.01" dense></q-input>
+                                        <q-input v-model.number="appconf.confs.application.vpad_rotaterate" type="number" :min="0.01" :max="0.1" :step="0.01" dense filled></q-input>
                                     </div>
                                     <div class="col-3 offset-1">
                                         <span class="">{{ $t('msg_vpad_translaterate')}}</span>
                                     </div>
                                     <div class="col-2">
-                                        <q-input v-model.number="appconf.confs.application.vpad_translaterate" type="number" :min="0.1" :max="2" :step="0.01" dense></q-input>
+                                        <q-input v-model.number="appconf.confs.application.vpad_translaterate" type="number" :min="0.1" :max="2" :step="0.01" dense filled></q-input>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-left:1rem;">
@@ -107,13 +107,13 @@ const template = `
                                         <span class="">{{ $t('msg_vpad_rotaterate')}}</span>
                                     </div>
                                     <div class="col-2">
-                                        <q-input v-model="appconf.confs.application.vrar_rotaterate" type="number" :min="0.01" :max="9999" :step="0.01" dense></q-input>
+                                        <q-input v-model="appconf.confs.application.vrar_rotaterate" type="number" :min="0.01" :max="9999" :step="0.01" dense filled></q-input>
                                     </div>
                                     <div class="col-3 offset-1">
                                         <span class="">{{ $t('msg_vpad_translaterate')}}</span>
                                     </div>
                                     <div class="col-2">
-                                        <q-input v-model="appconf.confs.application.vrar_moverate" type="number" :min="0.01" :max="9999" :step="0.01" dense></q-input>
+                                        <q-input v-model="appconf.confs.application.vrar_moverate" type="number" :min="0.01" :max="9999" :step="0.01" dense filled></q-input>
                                     </div>
                                 </div>
 
@@ -207,7 +207,7 @@ const template = `
                                     <span class="">{{ $t('msg_not_autoload_over_mb')}}</span>
                                 </div>
                                 <div class="col-2 q-pl-sm">
-                                    <q-input v-model="appconf.confs.application.not_autoload_over_mb" type="number" min="1" max="9999" step="1" dense></q-input>
+                                    <q-input v-model="appconf.confs.application.not_autoload_over_mb" type="number" min="1" max="9999" step="1" dense filled></q-input>
                                 </div>
                                 <div class="col-1 q-pt-md">
                                     <span>MB</span>
@@ -224,7 +224,7 @@ const template = `
                                     <span>{{ $t('msg_backup_project_interval')}}</span>
                                 </div>
                                 <div class="col-2 q-pl-sm">
-                                    <q-input v-model="appconf.confs.application.backup_project_interval" type="number" min="1" max="10" step="1" dense></q-input>
+                                    <q-input v-model="appconf.confs.application.backup_project_interval" type="number" min="1" max="10" step="1" dense filled></q-input>
                                 </div>
                                 <div class="col-1 q-pt-md">
                                     <span>{{ $t('msg_backup_project_interval2')}}</span>
@@ -243,7 +243,7 @@ const template = `
                                     </q-btn>
                                 </div>
                                 <div class="col-11">
-                                    <q-input v-model="appconf.confs.fileloader.easyik.sampleurl" type="text" dense></q-input>
+                                    <q-input v-model="appconf.confs.fileloader.easyik.sampleurl" type="text" dense filled></q-input>
                                 </div>
                             </div>
                         </q-item-section>
@@ -259,24 +259,24 @@ const template = `
                                 </div>
                                 <div class="col-5">
                                     <q-select
-                                        :options="SupportedRecordCodecs"
+                                        :options="SupportedRecordCodecs" filled
                                         v-model="elements.record.codec.selected"
                                         @update:model-value="recordcodec_onchange"
                                     ></q-select>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row q-mt-sm">
                                 <div class="col-8 col-sm-3 q-pt-sm q-pl-sm">
                                     <span class="">{{ $t('msg_record_framerate')}}</span>
                                 </div>
                                 <div class="col-4 col-sm-2 q-pl-sm">
-                                    <q-input v-model="appconf.confs.files.record_framerate" type="number" min="1" max="120" step="1" dense></q-input>
+                                    <q-input v-model="appconf.confs.files.record_framerate" type="number" min="1" max="120" step="1" dense filled></q-input>
                                 </div>
                                 <div class="col-8 col-sm-3 q-pt-sm q-pl-sm">
                                     <span class="">{{ $t('msg_record_videobps')}}</span>
                                 </div>
                                 <div class="col-4 col-sm-2 q-pl-sm">
-                                    <q-input v-model="appconf.confs.files.record_videobps" type="number" min="1" max="5" step="0.1" dense></q-input>
+                                    <q-input v-model="appconf.confs.files.record_videobps" type="number" min="1" max="5" step="0.1" dense filled></q-input>
                                 </div>
                             </div>
                         </q-item-section>
@@ -337,7 +337,7 @@ const template = `
                                     </div>
                                     <div class="col-7">
                                         <q-select v-model="elements.model.vrarctrl_left.selected"
-                                            :options="elements.model.vrarctrl_left.options"
+                                            :options="elements.model.vrarctrl_left.options" filled
                                             @update:model-value="vrarctrl_panel_left_onchange"
                                         ></q-select>
                                     </div>
@@ -346,7 +346,7 @@ const template = `
                                     </div>
                                     <div class="col-7">
                                         <q-select v-model="elements.model.vrarctrl_right.selected"
-                                            :options="elements.model.vrarctrl_right.options"
+                                            :options="elements.model.vrarctrl_right.options" filled
                                             @update:model-value="vrarctrl_panel_right_onchange"
                                         ></q-select>
                                     </div>
@@ -361,13 +361,13 @@ const template = `
                                     </div>
                                     <div class="col-3"></div>
                                     <div class="col-3 q-pl-xs">
-                                        <q-input label="X:" v-model="appconf.confs.model.vrar_camera_initpos_x" type="number" min="-99" max="99" step="0.01" dense :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
+                                        <q-input label="X:" v-model="appconf.confs.model.vrar_camera_initpos_x" type="number" min="-99" max="99" step="0.01" dense filled :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
                                     </div>
                                     <div class="col-3 q-pl-xs">
-                                        <q-input label="Y:" v-model="appconf.confs.model.vrar_camera_initpos_y" type="number" min="-99" max="99" step="0.01" dense :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
+                                        <q-input label="Y:" v-model="appconf.confs.model.vrar_camera_initpos_y" type="number" min="-99" max="99" step="0.01" dense filled :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
                                     </div>
                                     <div class="col-3 q-pl-xs">
-                                        <q-input label="Z:" v-model="appconf.confs.model.vrar_camera_initpos_z" type="number" min="-99" max="99" step="0.01" dense :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
+                                        <q-input label="Z:" v-model="appconf.confs.model.vrar_camera_initpos_z" type="number" min="-99" max="99" step="0.01" dense filled :disable="appconf.confs.model.vrar_save_camerapos"></q-input>
                                     </div>
                                 </div>
                             </q-item-section>
@@ -383,15 +383,15 @@ const template = `
                                         <span class="">{{ $t('msg_initial_framecount')}}</span>
                                     </div>
                                     <div class="col-4">
-                                        <q-input v-model.number="appconf.confs.animation.initial_framecount" type="number" :min="60" :max="300" :step="1" dense></q-input>
+                                        <q-input v-model.number="appconf.confs.animation.initial_framecount" type="number" :min="60" :max="300" :step="1" dense filled></q-input>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row q-mt-sm">
                                     <div class="col-8 q-pt-sm">
                                         <span class="">{{ $t('msg_default_baseDuration')}}</span>
                                     </div>
                                     <div class="col-4">
-                                        <q-input v-model="appconf.confs.animation.base_duration" type="number" :min="0.01" :max="2" :step="0.01" dense></q-input>
+                                        <q-input v-model="appconf.confs.animation.base_duration" type="number" :min="0.01" :max="2" :step="0.01" dense filled></q-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -402,7 +402,7 @@ const template = `
                                         {{ $t('msg_recover_firstpose_timeout') }}
                                     </div>
                                     <div class="col-3">
-                                        <q-input v-model="appconf.confs.animation.recover_firstpose_timeout" type="number" :min="0" :max="2000" :step="100" dense></q-input>
+                                        <q-input v-model="appconf.confs.animation.recover_firstpose_timeout" type="number" :min="0" :max="2000" :step="100" dense filled></q-input>
                                     </div>
                                 </div>
                                 <div class="row common_ui_off">
@@ -477,15 +477,15 @@ const template = `
                                         <q-checkbox v-model="appconf.confs.fileloader.gdrive.enabled"></q-checkbox>
                                     </div>
                                     <div class="col-11 offset-1">
-                                        <q-input v-model="appconf.confs.fileloader.gdrive.url" type="text" dense></q-input>
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.url" type="text" dense filled></q-input>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row q-mt-sm">
                                     <div class="col-2 q-pt-sm">
                                         <span>APIKEY</span>
                                     </div>
                                     <div class="col-10">
-                                        <q-input v-model="appconf.confs.fileloader.gdrive.apikey" type="text" dense></q-input>
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.apikey" type="text" dense filled></q-input>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -494,61 +494,61 @@ const template = `
                                     </div>
                                 </div>
                                 <div class="row q-pl-md">
-                                    <div class="col-2">
+                                    <div class="col-2 q-pt-sm">
                                         Project
                                     </div>
-                                    <div class="col-7">
-                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.project" type="text" dense></q-input>
+                                    <div class="col-7 q-pb-xs">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.project" type="text" dense filled></q-input>
                                     </div>
                                     <div class="col-3">
                                         <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.project" :label="$t('gdrive_by_name')"></q-toggle>
                                     </div>
 
-                                    <div class="col-2">
+                                    <div class="col-2 q-pt-sm">
                                         Motion
                                     </div>
-                                    <div class="col-7">
-                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.motion" type="text" dense></q-input>
+                                    <div class="col-7 q-pb-xs">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.motion" type="text" dense filled></q-input>
                                     </div>
                                     <div class="col-3">
                                         <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.motion" :label="$t('gdrive_by_name')"></q-toggle>
                                     </div>
 
-                                    <div class="col-2">
+                                    <div class="col-2 q-pt-sm">
                                         Pose
                                     </div>
-                                    <div class="col-7">
-                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.pose" type="text" dense></q-input>
+                                    <div class="col-7 q-pb-xs">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.pose" type="text" dense filled></q-input>
                                     </div>
                                     <div class="col-3">
                                         <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.pose" :label="$t('gdrive_by_name')"></q-toggle>
                                     </div>
 
-                                    <div class="col-2">
+                                    <div class="col-2 q-pt-sm">
                                         VRM
                                     </div>
-                                    <div class="col-7">
-                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.vrm" type="text" dense></q-input>
+                                    <div class="col-7 q-pb-xs">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.vrm" type="text" dense filled></q-input>
                                     </div>
                                     <div class="col-3">
                                         <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.vrm" :label="$t('gdrive_by_name')"></q-toggle>
                                     </div>
 
-                                    <div class="col-2">
+                                    <div class="col-2 q-pt-sm">
                                         OtherObject
                                     </div>
-                                    <div class="col-7">
-                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.other" type="text" dense></q-input>
+                                    <div class="col-7 q-pb-xs">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.other" type="text" dense filled></q-input>
                                     </div>
                                     <div class="col-3">
                                         <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.other" :label="$t('gdrive_by_name')"></q-toggle>
                                     </div>
 
-                                    <div class="col-2">
+                                    <div class="col-2 q-pt-sm">
                                         Image
                                     </div>
-                                    <div class="col-7">
-                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.image" type="text" dense></q-input>
+                                    <div class="col-7 q-pb-xs">
+                                        <q-input v-model="appconf.confs.fileloader.gdrive.user.image" type="text" dense filled></q-input>
                                     </div>
                                     <div class="col-3">
                                         <q-toggle v-model="appconf.confs.fileloader.gdrive.userByName.image" :label="$t('gdrive_by_name')"></q-toggle>
@@ -790,70 +790,70 @@ const template = `
 `;
 
 export function defineConfigDlg(app, Quasar) {
-    app.component("ConfigDlg",{
-        template : template,
-        props : {
-            modelValue : Boolean,
-            appconfig : VVAppConfig
+    app.component("ConfigDlg", {
+        template: template,
+        props: {
+            modelValue: Boolean,
+            appconfig: VVAppConfig
         },
-        emits : [
+        emits: [
             "update:model-value",
             "change-config"
         ],
         setup(props, context) {
-            const {modelValue, appconfig } = Vue.toRefs(props);
-            const { t  } = VueI18n.useI18n({ useScope: 'global' });
+            const { modelValue, appconfig } = Vue.toRefs(props);
+            const { t } = VueI18n.useI18n({ useScope: 'global' });
 
             const cns_vrarctrllist = [
-                {label:t("vrarctrl_panel_0"), value:1},
-                {label:t("vrarctrl_panel_1"), value:0},
+                { label: t("vrarctrl_panel_0"), value: 1 },
+                { label: t("vrarctrl_panel_1"), value: 0 },
             ];
 
             const show = Vue.ref(false);
             const tabIndex = Vue.ref("application");
             const appconf = Vue.ref(new VVAppConfig());
             const elements = Vue.ref({
-                application : {
-                    preview_memory : new Number(DEFAULTMEM)
+                application: {
+                    preview_memory: new Number(DEFAULTMEM)
                 },
-                model : {
-                    vrarctrl_left : {
-                        options : cns_vrarctrllist,
-                        selected : cns_vrarctrllist[0],
+                model: {
+                    vrarctrl_left: {
+                        options: cns_vrarctrllist,
+                        selected: cns_vrarctrllist[0],
                     },
-                    vrarctrl_right : {
-                        options : cns_vrarctrllist,
-                        selected : cns_vrarctrllist[1],
+                    vrarctrl_right: {
+                        options: cns_vrarctrllist,
+                        selected: cns_vrarctrllist[1],
                     }
                 },
-                fileloader : {
-                    isName : {
-                        project : false, motion: false, pose : false,
-                        vrm : false, other: false, image: false
+                fileloader: {
+                    isName: {
+                        project: false, motion: false, pose: false,
+                        vrm: false, other: false, image: false
                     }
                 },
-                record : {
+                record: {
                     codec: {
-                        selected : "video/webm",
-                        options : [
+                        selected: "video/webm",
+                        options: [
 
                         ]
                     }
                 },
-                aiapis : {
+                aiapis: {
                     tabIndex: "txt2img",
-                    txt2img : {
-                        sampler_name : {
+                    txt2img: {
+                        sampler_name: {
                             selected: "k_euler_a"
                         }
                     },
-                    img2img : {
-                        sampler_name : {
+                    img2img: {
+                        sampler_name: {
                             selected: "k_euler_a"
                         }
-                        
+
                     },
-                    sampler_name : {
+                    sampler_name: {
                         options: ["DDIM", "PLMS", 'k_dpm_2_a', 'k_dpm_2', 'k_euler_a', 'k_euler', 'k_heun', 'k_lms'],
                     }
                 }
@@ -867,9 +867,9 @@ export function defineConfigDlg(app, Quasar) {
                     appconf.value.confs = JSON.original(appconfig.value.confs); //Vue.toRaw(appconfig.value); //.copy();
                     backupdata = JSON.original(appconfig.value);
 
-                    elements.value.application.preview_memory = 
+                    elements.value.application.preview_memory =
                         (DEFAULTMEM * appconf.value.confs.application.UseMemory) / 1024 / 1024;
-                    
+
                     elements.value.model.vrarctrl_left.selected = cns_vrarctrllist[appconf.value.confs.model.vrarctrl_panel_left];
                     elements.value.model.vrarctrl_right.selected = cns_vrarctrllist[appconf.value.confs.model.vrarctrl_panel_right];
 
@@ -878,10 +878,10 @@ export function defineConfigDlg(app, Quasar) {
             });
 
             //---computed-------------------------------
-            const showPreviewMemory = Vue.computed( () => {
+            const showPreviewMemory = Vue.computed(() => {
                 return (DEFAULTMEM * appconf.value.confs.application.UseMemory) / 1024 / 1024;
             });
-            const SupportedRecordCodecs = Vue.computed( () => {
+            const SupportedRecordCodecs = Vue.computed(() => {
                 var checkCodecs = [
                     "video/webm",
                     "video/mp4",
@@ -899,20 +899,20 @@ export function defineConfigDlg(app, Quasar) {
 
             //---method----------------------------------
             const historyClear_onclick = () => {
-                appConfirm(t("msg_clear_history"),()=>{
+                appConfirm(t("msg_clear_history"), () => {
                     AppDB.clearHistory();
                 });
             }
             const ok_onclick = () => {
                 show.value = false;
-                context.emit("update:model-value",show.value);
-                context.emit("change-config",appconf.value);
+                context.emit("update:model-value", show.value);
+                context.emit("change-config", appconf.value);
             }
             const cancel_onclick = () => {
                 show.value = false;
                 console.log(appconf.value);
                 console.log(backupdata);
-                context.emit("update:model-value",show.value);
+                context.emit("update:model-value", show.value);
             }
             const vrarctrl_panel_left_onchange = (val) => {
                 console.log(val);
@@ -938,11 +938,11 @@ export function defineConfigDlg(app, Quasar) {
                 //---watch---
                 wa_modelValue,
                 //---computed---
-                showPreviewMemory,SupportedRecordCodecs,
+                showPreviewMemory, SupportedRecordCodecs,
                 //---method---
-                ok_onclick,cancel_onclick,historyClear_onclick,
-                vrarctrl_panel_left_onchange,vrarctrl_panel_right_onchange,
-                easyIkModeURL_reset_onclick,recordcodec_onchange,
+                ok_onclick, cancel_onclick, historyClear_onclick,
+                vrarctrl_panel_left_onchange, vrarctrl_panel_right_onchange,
+                easyIkModeURL_reset_onclick, recordcodec_onchange,
             }
         }
     });

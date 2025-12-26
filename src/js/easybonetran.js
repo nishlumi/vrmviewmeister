@@ -87,9 +87,9 @@ const template = `
                     <q-tab-panels v-model="appdata.elements.tab" animated>
                         <q-tab-panel name="posture">
                             <q-select v-model="appdata.elements.postureBox.selected" 
-                                :options="appdata.elements.postureBox.options" 
+                                :options="appdata.data.postureBox.options" 
                                 :label="$t('posture')"
-                                filled 
+                                filled use-input input-debounce="0" @filter="cmbfilter_posture"
                                 @update:model-value="posturebox_onchange"
                             >
                                 <template v-slot:option="scope">
@@ -106,9 +106,9 @@ const template = `
                         </q-tab-panel>
                         <q-tab-panel name="gaze">
                             <q-select v-model="appdata.elements.eyeBox.selected" 
-                                :options="appdata.elements.eyeBox.options" 
+                                :options="appdata.data.eyeBox.options" 
                                 :label="$t('gaze')"
-                                filled 
+                                filled  use-input input-debounce="0" @filter="cmbfilter_eyebox"
                             >
                                 <template v-slot:option="scope">
                                     <q-item v-bind="scope.itemProps">
@@ -124,9 +124,9 @@ const template = `
                         </q-tab-panel>
                         <q-tab-panel name="rightarm">
                             <q-select v-model="appdata.elements.rightArmBox.selected" 
-                                :options="appdata.elements.rightArmBox.options" 
+                                :options="appdata.data.rightArmBox.options" 
                                 :label="$t('RightHand')"
-                                filled 
+                                filled  use-input input-debounce="0" @filter="cmbfilter_rightarm"
                             >
                                 <template v-slot:option="scope">
                                     <q-item v-bind="scope.itemProps">
@@ -142,9 +142,9 @@ const template = `
                         </q-tab-panel>
                         <q-tab-panel name="leftarm">
                             <q-select v-model="appdata.elements.armBox.selected" 
-                                :options="appdata.elements.armBox.options" 
+                                :options="appdata.data.leftarmBox.options" 
                                 :label="$t('LeftHand')"
-                                filled 
+                                filled  use-input input-debounce="0" @filter="cmbfilter_leftarm"
                             >
                                 <template v-slot:option="scope">
                                     <q-item v-bind="scope.itemProps">
@@ -160,9 +160,9 @@ const template = `
                         </q-tab-panel>
                         <q-tab-panel name="rightleg">
                             <q-select v-model="appdata.elements.rightLegBox.selected" 
-                                :options="appdata.elements.rightLegBox.options" 
+                                :options="appdata.data.rightLegBox.options" 
                                 :label="$t('RightFoot')"
-                                filled
+                                filled use-input input-debounce="0" @filter="cmbfilter_rightleg"
                             >
                                 <template v-slot:option="scope">
                                     <q-item v-bind="scope.itemProps">
@@ -178,9 +178,9 @@ const template = `
                         </q-tab-panel>
                         <q-tab-panel name="leftleg">
                             <q-select v-model="appdata.elements.legBox.selected" 
-                                :options="appdata.elements.legBox.options" 
+                                :options="appdata.data.leftlegBox.options" 
                                 :label="$t('LeftFoot')"
-                                filled 
+                                filled  use-input input-debounce="0" @filter="cmbfilter_leftleg"
                             >
                                 <template v-slot:option="scope">
                                     <q-item v-bind="scope.itemProps">
@@ -200,9 +200,9 @@ const template = `
                     <div class="row q-mb-sm">
                         <div class="col-12">
                             <q-select v-model="appdata.elements.eyeBox.selected" 
-                                :options="appdata.elements.eyeBox.options" 
+                                :options="appdata.data.eyeBox.options" 
                                 :label="$t('gaze')"
-                                filled 
+                                filled use-input input-debounce="0" @filter="cmbfilter_eyebox"
                             >
                                 <template v-slot:prepend>
                                     <img :src="cmp_select_eye_image" width="48" height="48">
@@ -223,9 +223,9 @@ const template = `
                     <div class="row q-mb-sm">                        
                         <div class="col-12">
                             <q-select v-model="appdata.elements.postureBox.selected" 
-                                :options="appdata.elements.postureBox.options" 
+                                :options="appdata.data.postureBox.options" 
                                 :label="$t('posture')"
-                                filled 
+                                filled use-input input-debounce="0" @filter="cmbfilter_posture"
                                 @update:model-value="posturebox_onchange"
                             >
                                 <template v-slot:prepend>
@@ -247,9 +247,9 @@ const template = `
                     <div class="row q-mb-sm">                        
                         <div class="col-12">
                             <q-select v-model="appdata.elements.rightArmBox.selected" 
-                                :options="appdata.elements.rightArmBox.options" 
+                                :options="appdata.data.rightArmBox.options" 
                                 :label="$t('RightHand')"
-                                filled 
+                                filled use-input input-debounce="0" @filter="cmbfilter_rightarm"
                             >
                                 <template v-slot:prepend>
                                     <img :src="cmp_select_rightarm_image" width="48" height="48">
@@ -270,9 +270,9 @@ const template = `
                     <div class="row q-mb-sm">                        
                         <div class="col-12">
                             <q-select v-model="appdata.elements.armBox.selected" 
-                                :options="appdata.elements.armBox.options" 
+                                :options="appdata.data.leftarmBox.options" 
                                 :label="$t('LeftHand')"
-                                filled 
+                                filled use-input input-debounce="0" @filter="cmbfilter_leftarm"
                             >
                                 <template v-slot:prepend>
                                     <img :src="cmp_select_leftarm_image" width="48" height="48">
@@ -293,9 +293,9 @@ const template = `
                     <div class="row q-mb-sm">                        
                         <div class="col-12">
                             <q-select v-model="appdata.elements.rightLegBox.selected" 
-                                :options="appdata.elements.rightLegBox.options" 
+                                :options="appdata.data.rightLegBox.options" 
                                 :label="$t('RightFoot')"
-                                filled 
+                                filled use-input input-debounce="0" @filter="cmbfilter_rightleg"
                             >
                                 <template v-slot:prepend>
                                     <img :src="cmp_select_rightleg_image" width="48" height="48">
@@ -316,9 +316,9 @@ const template = `
                     <div class="row q-mb-sm">                        
                         <div class="col-12">
                             <q-select v-model="appdata.elements.legBox.selected" 
-                                :options="appdata.elements.legBox.options" 
+                                :options="appdata.data.leftlegBox.options" 
                                 :label="$t('LeftFoot')"
-                                filled 
+                                filled use-input input-debounce="0" @filter="cmbfilter_leftleg"
                             >
                                 <template v-slot:prepend>
                                     <img :src="cmp_select_leftleg_image" width="48" height="48">
@@ -464,6 +464,25 @@ export class BaseData {
             TPose : {},
             defaultData : "",
             mathScope : {},
+            //---temporary current options
+            postureBox : {
+                options : [{label:"---",value:null,image:""}],  
+            },
+            eyeBox : {
+                options : [{label:"---",value:null,image:""}],
+            },
+            leftarmBox : {
+                options : [{label:"---",value:null,image:""}],
+            },
+            leftlegBox : {
+                options : [{label:"---",value:null,image:""}],
+            },
+            rightArmBox : {
+                options : [{label:"---",value:null,image:""}],
+            },
+            rightLegBox : {
+                options : [{label:"---",value:null,image:""}],
+            },
         };
     }
 }
@@ -662,6 +681,91 @@ export function defineEasyBoneTranDlg(app, Quasar) {
 
 
             //---functions---------------------------------------------------------
+            const cmbfilter_posture = (val, update) => {
+                //combo_filter(appdata.data.postureBox.options, appdata.elements.postureBox.options, val, update);
+                if (val === '') {
+                    update(() => {
+                        appdata.data.postureBox.options = appdata.elements.postureBox.options.concat();
+                    })
+                    return;
+                }
+
+                update(() => {
+                    const needle = val.toLowerCase()
+                    appdata.data.postureBox.options = appdata.elements.postureBox.options.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+                });
+            }
+            const cmbfilter_eyebox = (val, update) => {
+                //combo_filter(appdata.data.eyeBox.options, appdata.elements.eyeBox.options, val, update);
+                if (val === '') {
+                    update(() => {
+                        appdata.data.eyeBox.options = appdata.elements.eyeBox.options.concat();
+                    })
+                    return;
+                }
+
+                update(() => {
+                    const needle = val.toLowerCase()
+                    appdata.data.eyeBox.options = appdata.elements.eyeBox.options.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+                });
+            }
+            const cmbfilter_leftarm = (val, update) => {
+                //combo_filter(appdata.data.leftarmBox.options, appdata.elements.armBox.options, val, update);
+                if (val === '') {
+                    update(() => {
+                        appdata.data.leftarmBox.options = appdata.elements.armBox.options.concat();
+                    })
+                    return;
+                }
+
+                update(() => {
+                    const needle = val.toLowerCase()
+                    appdata.data.leftarmBox.options = appdata.elements.armBox.options.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+                });
+            }
+            const cmbfilter_leftleg= (val, update) => {
+                //combo_filter(appdata.data.leftlegBox.options, appdata.elements.legBox.options, val, update);
+                if (val === '') {
+                    update(() => {
+                        appdata.data.leftlegBox.options = appdata.elements.legBox.options.concat();
+                    })
+                    return;
+                }
+
+                update(() => {
+                    const needle = val.toLowerCase()
+                    appdata.data.leftlegBox.options = appdata.elements.legBox.options.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+                });
+            }
+            const cmbfilter_rightarm = (val, update) => {
+                //combo_filter(appdata.data.rightArmBox.options, appdata.elements.rightArmBox.options, val, update);
+                if (val === '') {
+                    update(() => {
+                        appdata.data.rightArmBox.options = appdata.elements.rightArmBox.options.concat();
+                    })
+                    return;
+                }
+
+                update(() => {
+                    const needle = val.toLowerCase()
+                    appdata.data.rightArmBox.options = appdata.elements.rightArmBox.options.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+                });
+            }
+            const cmbfilter_rightleg = (val, update) => {
+                //combo_filter(appdata.data.rightLegBox.options, appdata.elements.rightLegBox.options, val, update);
+                if (val === '') {
+                    update(() => {
+                        appdata.data.rightLegBox.options = appdata.elements.rightLegBox.options.concat();
+                    })
+                    return;
+                }
+
+                update(() => {
+                    const needle = val.toLowerCase()
+                    appdata.data.rightArmBox.options = appdata.elements.rightArmBox.options.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+                });
+            }
+            
             /**
              * 
              * @param {String} data 
@@ -725,12 +829,16 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 });
                 appdata.elements.postureBox.options.splice(0, appdata.elements.postureBox.options.length);
                 appdata.elements.postureBox.options.push({label:"---",value:null,image:""});
+                appdata.data.postureBox.options.splice(0, appdata.data.postureBox.options.length);
+                appdata.data.postureBox.options.push({label:"---",value:null,image:""});
                 for (var o of postures) {
-                    appdata.elements.postureBox.options.push( {
+                    let item = {
                         label: o.name,
                         value : o,
                         image: o.image,
-                    });
+                    };
+                    appdata.elements.postureBox.options.push(item);
+                    appdata.data.postureBox.options.push(item);
                 }
                 //---reload current select data
                 if (appdata.elements.postureBox.selected) {
@@ -749,12 +857,17 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 });
                 appdata.elements.eyeBox.options.splice(0, appdata.elements.eyeBox.options.length);
                 appdata.elements.eyeBox.options.push({label:"---",value:null,image:""});
+                appdata.data.eyeBox.options.splice(0, appdata.data.eyeBox.options.length);
+                appdata.data.eyeBox.options.push({label:"---",value:null,image:""});
                 for (var o of eyeview) {
-                    appdata.elements.eyeBox.options.push( {
+                    let item = {
                         label: o.name,
                         value : o,
                         image: o.image,
-                    });
+                    };
+                    appdata.elements.eyeBox.options.push(item);
+                    appdata.data.eyeBox.options.push(item);
+                    
                 }
                 //---reload current select data
                 if (appdata.elements.eyeBox.selected) {
@@ -773,12 +886,16 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 });
                 appdata.elements.armBox.options.splice(0, appdata.elements.armBox.options.length);
                 appdata.elements.armBox.options.push({label:"---",value:null,image:""});
+                appdata.data.leftarmBox.options.splice(0, appdata.data.leftarmBox.options.length);
+                appdata.data.leftarmBox.options.push({label:"---",value:null,image:""});
                 for (var o of arms) {
-                    appdata.elements.armBox.options.push( {
+                    let item = {
                         label: o.name,
                         value : o,
                         image: o.image,
-                    });
+                    };
+                    appdata.elements.armBox.options.push(item);
+                    appdata.data.leftarmBox.options.push(item);
                 }
                 //---reload current select data
                 if (appdata.elements.armBox.selected) {
@@ -796,12 +913,16 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 });
                 appdata.elements.rightArmBox.options.splice(0, appdata.elements.rightArmBox.options.length);
                 appdata.elements.rightArmBox.options.push({label:"---",value:null,image:""});
+                appdata.data.rightArmBox.options.splice(0, appdata.data.rightArmBox.options.length);
+                appdata.data.rightArmBox.options.push({label:"---",value:null,image:""});
                 for (var o of arms) {
-                    appdata.elements.rightArmBox.options.push( {
+                    let item = {
                         label: o.name,
                         value : o,
                         image: o.image,
-                    });
+                    };
+                    appdata.elements.rightArmBox.options.push(item);
+                    appdata.data.rightArmBox.options.push(item);
                 }
                 //---reload current select data
                 if (appdata.elements.rightArmBox.selected) {
@@ -821,12 +942,16 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 });
                 appdata.elements.legBox.options.splice(0, appdata.elements.legBox.options.length);
                 appdata.elements.legBox.options.push({label:"---",value:null,image:""});
+                appdata.data.leftlegBox.options.splice(0, appdata.data.leftlegBox.options.length);
+                appdata.data.leftlegBox.options.push({label:"---",value:null,image:""});
                 for (var o of legs) {
-                    appdata.elements.legBox.options.push( {
+                    let item = {
                         label: o.name,
                         value : o,
                         image: o.image,
-                    });
+                    };
+                    appdata.elements.legBox.options.push(item);
+                    appdata.data.leftlegBox.options.push(item);
                 }
                 //---reload current select data
                 if (appdata.elements.legBox.selected) {
@@ -844,12 +969,16 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 });
                 appdata.elements.rightLegBox.options.splice(0, appdata.elements.rightLegBox.options.length);
                 appdata.elements.rightLegBox.options.push({label:"---",value:null,image:""});
+                appdata.data.rightLegBox.options.splice(0, appdata.data.rightLegBox.options.length);
+                appdata.data.rightLegBox.options.push({label:"---",value:null,image:""});
                 for (var o of legs) {
-                    appdata.elements.rightLegBox.options.push( {
+                    let item = {
                         label: o.name,
                         value : o,
                         image: o.image,
-                    });
+                    };
+                    appdata.elements.rightLegBox.options.push(item);
+                    appdata.data.rightLegBox.options.push(item);
                 }
                 //---reload current select data
                 if (appdata.elements.rightLegBox.selected) {
@@ -1294,6 +1423,7 @@ export function defineEasyBoneTranDlg(app, Quasar) {
                 defaultbtn_onclick,openfile_onclick,apply_onclick,reload_onclick,
                 rfile_onchange,
                 posturebox_onchange,selclear_onclick,selrandom_onclick,
+                cmbfilter_posture, cmbfilter_eyebox, cmbfilter_leftarm,cmbfilter_leftleg,cmbfilter_rightarm,cmbfilter_rightleg,
                 //element--------------
                 btpdlg,btpdlg_bar,rfile,
                 //watch----------------
