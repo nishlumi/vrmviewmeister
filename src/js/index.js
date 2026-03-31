@@ -211,7 +211,7 @@ const app = Vue.createApp({
             if (ishit) {
                 var resjs = JSON.parse(ishit);
                 if (resjs["code"]) {
-                    var vrhreqres = await mainData.vroidhubapi.request_token(resjs.code)
+                    var vrhreqres = await mainData.vroidhubapi.request_token(resjs.code, "authorization_code", resjs.state)
                     Quasar.LocalStorage.remove("callback_code");
                     mainData.states.vroidhub_api = true;
                 }

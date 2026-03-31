@@ -37,6 +37,17 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
     ipcMain.handle("/vroidhub/authorize", async (event, param) => {
         var url = `https://hub.vroid.com/oauth/authorize`;
         var urlprm = `response_type=code&client_id=${VRH_CLIENT_ID}&redirect_uri=${FIXEDREDIRECT}&scope=default`;
+
+        if (param.state) {
+            urlprm += `&state=${param.state}`;
+        }
+        if (param.code_challenge) {
+            urlprm += `&code_challenge=${param.code_challenge}`;
+        }
+        if (param.code_challenge_method) {
+            urlprm += `&code_challenge_method=${param.code_challenge_method}`;
+        }
+
         var finalurl = `${url}?${urlprm}`;
         return {url:finalurl, cd:0};
     });
@@ -56,6 +67,9 @@ exports.defineIPC4VRoidHub = function (ipcMain, vid, vsec) {
             grant_type : grant_type,
             code : param.code,
         };
+        if (param.code_verifier) {
+            urlprm["code_verifier"] = param.code_verifier;
+        }
         if (grant_type == "refresh_token") {
             urlprm[`refresh_token`] = reftoken;
         }

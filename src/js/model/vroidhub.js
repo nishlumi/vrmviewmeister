@@ -36,6 +36,37 @@ export class VRoidHubConnector {
             licenses:[],
         };
 
+        this.pkce_storage_key = "vrh_pkce";
+    }
+
+    //---PKCE Utilities---
+    _generateRandomString(length) {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+        let result = '';
+        const values = new Uint32Array(length);
+        window.crypto.getRandomValues(values);
+        for (let i = 0; i < length; i++) {
+            result += charset[values[i] % charset.length];
+        }
+        return result;
+    }
+
+    async _sha256(plain) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(plain);
+        return window.crypto.subtle.digest('SHA-256', data);
+    }
+
+    _base64urlEncode(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let str = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            str += String.fromCharCode(bytes[i]);
+        }
+        return btoa(str)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
     }
     destroy() {
         //---Remove licenses in bulk
@@ -81,34 +112,33 @@ export class VRoidHubConnector {
      * 
      * @param {appMainData} mainData 
      */
-    generateAuthLink(mainData = null) {
+    async generateAuthLink(mainData = null) {
+        //---Generate PKCE parameters---
+        const state = this._generateRandomString(32);
+        const code_verifier = this._generateRandomString(64);
+        const hash = await this._sha256(code_verifier);
+        const code_challenge = this._base64urlEncode(hash);
+
+        //---Save for token request---
+        const pkce_data = {
+            state: state,
+            code_verifier: code_verifier
+        };
+        Quasar.SessionStorage.set(this.pkce_storage_key, pkce_data);
+
+        const uparams = new URLSearchParams();
+        uparams.append("redirect_uri", location.origin + "/redirect");
+        uparams.append("state", state);
+        uparams.append("code_challenge", code_challenge);
+        uparams.append("code_challenge_method", "S256");
+
         if (window.elecAPI) {
-            elecAPI.callVroidHub("/vroidhub/authorize",{
-                "redirect_uri" : location.origin + "/redirect"
-            })
+            elecAPI.callVroidHub("/vroidhub/authorize", Object.fromEntries(uparams))
             .then(async res => {
                 mainData.elements.vroidhubAuthorizer.url = res.url;
                 mainData.elements.vroidhubAuthorizer.show = true;
-                /*appPrompt("Do you open VRoidHub authorize page?\nPlease paste to browser.", (res) => {
-                    
-                    appPrompt("Input code.",(val) => {
-                        mainData.vroidhubapi.request_token(val)
-                        .then(res => {
-                            Quasar.LocalStorage.remove("callback_code");
-                            mainData.states.vroidhub_api = true;
-                        });
-                    });
-                },res.url);*/
             });
-            //TODO
-            //don't jump, manually authorize...
         }else{
-            var params = {
-                headers : this.headers,
-            }
-            var uparams = new URLSearchParams();
-            uparams.append("redirect_uri",location.origin + "/redirect");
-    
             fetch("/vroidhub/authorize?" + uparams.toString(),{
                 "method": "GET",
             })
@@ -121,20 +151,39 @@ export class VRoidHubConnector {
                     }else{
                         alert("Error: connecting VRoidHub...");
                     }
-                    
                 }
             });
         }
     }
-    async request_token(code,grantopt = "authorization_code") {
+    async request_token(code,grantopt = "authorization_code", incoming_state = null) {
         var def = new Promise(async (resolve,reject) => {
+            const pkce_data = Quasar.SessionStorage.getItem(this.pkce_storage_key);
+            
+            if (grantopt == "authorization_code") {
+                if (!pkce_data) {
+                    console.error("PKCE error: Missing session data.");
+                    reject({cd:9, err:"PKCE error: Session data lost. Please try authorize again."});
+                    return;
+                }
+                if (incoming_state && pkce_data.state !== incoming_state) {
+                    console.error("PKCE error: State mismatch.");
+                    reject({cd:9, err:"PKCE error: State mismatch. For your protection, we've stopped the login. Please try again."});
+                    return;
+                }
+            }
+
             if (window.elecAPI) {
-                elecAPI.callVroidHub("/vroidhub/request-token",{
+                const params = {
                     "redirect_uri" : location.origin + "/redirect",
                     "grant_type" : grantopt,
                     "code" : code,
                     "refresh_token" : this.savedata.token.refresh_token
-                })
+                };
+                if (pkce_data && grantopt == "authorization_code") {
+                    params["code_verifier"] = pkce_data.code_verifier;
+                }
+
+                elecAPI.callVroidHub("/vroidhub/request-token", params)
                 .then(resjs => {
                     if (resjs.cd == 0) {
                         this.savedata.appid = resjs.appid;
@@ -158,6 +207,9 @@ export class VRoidHubConnector {
                 uparams.append("code",code);
                 if (grantopt == "refresh_token") {
                     uparams.append("refresh_token",this.savedata.token.refresh_token)
+                }
+                if (pkce_data && grantopt == "authorization_code") {
+                    uparams.append("code_verifier", pkce_data.code_verifier);
                 }
     
                 var finalheaders = {};

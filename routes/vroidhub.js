@@ -20,23 +20,19 @@ const collectHubHeaders = (req) => {
 router.get("/authorize", async function (req, res) {
     var url = `https://hub.vroid.com/oauth/authorize`;
     var urlprm = `response_type=code&client_id=${process.env.VRH_CLIENT_ID}&redirect_uri=${req.query.redirect_uri}&scope=default`;
+    
+    if (req.query.state) {
+        urlprm += `&state=${req.query.state}`;
+    }
+    if (req.query.code_challenge) {
+        urlprm += `&code_challenge=${req.query.code_challenge}`;
+    }
+    if (req.query.code_challenge_method) {
+        urlprm += `&code_challenge_method=${req.query.code_challenge_method}`;
+    }
+
     var finalurl = `${url}?${urlprm}`;
-    //console.log(finalurl);
     res.send({url:finalurl, cd:0});
-    /*
-    const result = await fetch(finalurl,{
-        method: "GET",
-        headers: {
-            "X-Api-Version" : 11
-        }
-    });
-    if (result.ok) {
-        var restext = await result.text();
-        res.send({url:restext, cd:0});
-    }else{
-        console.log(result.statusText);
-        res.send({url:"", cd:9});
-    }*/
 });
 /**
  * generate token url for OAuth.
@@ -56,6 +52,9 @@ router.post("/request-token",async function(req,res){
         grant_type : grant_type,
         code : req.query.code,
     };
+    if (req.query.code_verifier) {
+        urlprm["code_verifier"] = req.query.code_verifier;
+    }
     if (grant_type == "refresh_token") {
         urlprm[`refresh_token`] = reftoken;
     }
