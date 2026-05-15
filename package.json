@@ -4,7 +4,7 @@
     "name": "ISHII Eiju"
   },
   "description": "Web app for VRoid(VRM) : Posing, Animation",
-  "version": "2.19.1",
+  "version": "2.19.2",
   "engines": {
     "node": ">=22.0.0"
   },
@@ -85,6 +85,7 @@
   },
   "dependencies": {
     "@azure/storage-blob": "^12.29.1",
+    "@zip.js/zip.js": "^2.8.26",
     "archiver": "^7.0.1",
     "body-parser": "^2.2.1",
     "compression": "^1.8.1",
@@ -96,6 +97,7 @@
     "express": "^5.2.1",
     "express-session": "^1.18.2",
     "js-yaml": "^4.1.1",
+    "localforage": "^1.10.0",
     "mime-types": "^3.0.2",
     "morgan": "~1.10.1",
     "node-fetch": "^3.3.2",
